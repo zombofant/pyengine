@@ -68,10 +68,11 @@ class Window(object):
         if w < 0 or h < 0:
             self._raiseDimensionsTooSmall(w, h)
             
-        sfVideoMode = sfVideoMode or sf.VideoMode(w, h)
+        self._sfVideoMode = sfVideoMode or sf.VideoMode(w, h)
+        self._sfStyles = sf.Style.Resize | sf.Style.Close
         super(Window, self).__init__(**kwargs)
         self._initEventHandlers()
-        self.window = sf.Window(sfVideoMode, initialTitle)
+        self.window = sf.Window(self._sfVideoMode, initialTitle, self._sfStyles)
         self.window.UseVerticalSync(True)
         
         self._width, self._height = self.window.GetWidth(), self.window.GetHeight()
@@ -204,8 +205,14 @@ class Window(object):
     
     @Title.setter
     def Title(self, value):
-        # TODO: handle setting of title properly
-        raise Exception("TODO")
+        """
+        Recreates the window with the new title using SFMLs create().
+        Unfortunately, PySFML does not seem to provide a simpler way to
+        do this at the moment.
+        """
+        settings = self.window.GetSettings()
+        self.window.Create(self._sfVideoMode, value, self._sfStyles, settings)
+        self._title = value
         
     @property
     def VSync(self):
@@ -227,3 +234,4 @@ class Window(object):
     def SyncedFrameLength(self, value):
         assert not self._terminated
         self._syncedFrameLength = float(value)
+
