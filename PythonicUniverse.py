@@ -4,6 +4,13 @@
 File name: PythonicUniverse.py
 This file is part of: pyuni
 
+DOCUMENTATION
+
+Note that this part of the License Header can be used for custom
+comments. This and ONLY this part please. If any garbage is in the other
+parts of the license header, it will likely produce garbage on automated
+header generation :).
+
 LICENSE
 
 The contents of this file are subject to the Mozilla Public License
@@ -22,7 +29,8 @@ provisions of GPL License are applicable instead of those above.
 
 FEEDBACK & QUESTIONS
 
-For feedback and questions about pyuni please e-mail one of the authors:
+For feedback and questions about pyuni please e-mail one of the authors
+named in the AUTHORS file.
 """
 from __future__ import unicode_literals, print_function, division
 from our_future import *
