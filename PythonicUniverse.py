@@ -30,4 +30,12 @@ Nothing yet.
 
 from __future__ import unicode_literals, print_function, division
 from our_future import *
-print("Nothing to see here")
+
+# global PyOpenGL flags MUST ONLY be set here.
+import OpenGL
+OpenGL.ERROR_ON_COPY
+
+if __name__ == '__main__':
+    from Engine.Application import Window
+    app = Window()
+    app.run()
