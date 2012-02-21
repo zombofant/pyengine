@@ -1,6 +1,6 @@
 #!/usr/bin/python2
 # encoding=utf8
-# File name: PythonicUniverse.py
+# File name: pyUniverse.py
 # This file is part of: pyuni
 # 
 # LICENSE
