@@ -33,12 +33,20 @@ if not os.isatty(sys.stdin.fileno()):
 loader = unittest.TestLoader()
 
 class AwesomeTextResult(unittest.TestResult):
+    success = []
+    
     def startTest(self, test):
         print("{1}{0}{2}... ".format(test, bcolors.EMPH, bcolors.ENDC), end='')
         super(AwesomeTextResult, self).startTest(test)
 
+    def _skipBlank(self, s):
+        for line in s.split("\n"):
+            line = line.rstrip()
+            if len(line) > 0:
+                yield line
+
     def _indented(self, s, indent):
-        return indent + (("\n"+indent).join(s.split("\n")))
+        return indent + (("\n"+indent).join(self._skipBlank(s)))
 
     def _formatError(self, err):
         s = "".join(traceback.format_exception(*err))
@@ -56,6 +64,7 @@ class AwesomeTextResult(unittest.TestResult):
 
     def addSuccess(self, test):
         super(AwesomeTextResult, self).addSuccess(test)
+        self.success.append(test)
         print("{0}ok{1}".format(bcolors.PASSED, bcolors.ENDC))
 
     def addSkip(self, test, reason):
@@ -69,9 +78,36 @@ class AwesomeTextResult(unittest.TestResult):
         self._formatError(err)
 
     def addUnexpectedSuccess(self, test):
-        super(AwesomeTextResult, self).addExpectedFailure(test)
+        super(AwesomeTextResult, self).addUnexpectedSuccess(test)
         print("{0}unexpected success{1}".format(bcolors.WARNING, bcolors.ENDC))
+
+    def _colouredNumber(self, count, nonZero="", zero=""):
+        return "{0}{2}{1}".format(zero if count == 0 else nonZero, bcolors.ENDC, count)
+
+    def printStats(self, suite):
+        passedCount = len(self.success)
+        errorCount = len(self.errors)
+        failureCount = len(self.failures)
+        skippedCount = len(self.skipped)
+        expectedFailureCount = len(self.expectedFailures)
+        unexpectedSuccessCount = len(self.unexpectedSuccesses)
+
+        passedColour = bcolors.WARNING
+        if passedCount == self.testsRun:
+            passedColour = bcolors.PASSED
+        elif passedCount == 0:
+            passedColour = bcolors.FAILED
+        
+        print("{0}Statistics:{1}".format(bcolors.EMPH, bcolors.ENDC))
+        print("  passed                 : {0}{2}{1}".format(passedColour, bcolors.ENDC, passedCount))
+        print("  skipped                : {0}".format(self._colouredNumber(skippedCount, bcolors.OKBLUE, bcolors.PASSED)))
+        print("  expected failures      : {0}".format(self._colouredNumber(expectedFailureCount, bcolors.WARNING, bcolors.PASSED)))
+        print("  unexpected successes   : {0}".format(self._colouredNumber(unexpectedSuccessCount, bcolors.WARNING, bcolors.PASSED)))
+        print("  errors                 : {0}".format(self._colouredNumber(errorCount, bcolors.FAILED, bcolors.PASSED)))
+        print("  failures               : {0}".format(self._colouredNumber(failureCount, bcolors.FAILED, bcolors.PASSED)))
+        print("  total                  : {0}".format(self.testsRun))
 
 results = AwesomeTextResult()
 tests = loader.discover(os.getcwd(), "test_*.py")
 tests.run(results)
+results.printStats(tests)
