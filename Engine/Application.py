@@ -59,7 +59,7 @@ class Window(object):
     
     def __init__(self, 
             initialGeometry=None,
-            initialTitle="Unnamed application",
+            initialTitle=None,
             sfVideoMode=None,
             **kwargs):
         if (sfVideoMode is not None) and (initialGeometry is not None):
@@ -67,11 +67,15 @@ class Window(object):
         w, h = (int(x) for x in initialGeometry or (800, 600))
         if w < 0 or h < 0:
             self._raiseDimensionsTooSmall(w, h)
+
+        if(initialTitle is None):
+            initialTitle = self.__class__.__name__
             
-        sfVideoMode = sfVideoMode or sf.VideoMode(w, h)
+        self._sfVideoMode = sfVideoMode or sf.VideoMode(w, h)
+        self._sfStyles = sf.Style.Resize | sf.Style.Close
         super(Window, self).__init__(**kwargs)
         self._initEventHandlers()
-        self.window = sf.Window(sfVideoMode, initialTitle)
+        self.window = sf.Window(self._sfVideoMode, initialTitle, self._sfStyles)
         self.window.UseVerticalSync(True)
         
         self._width, self._height = self.window.GetWidth(), self.window.GetHeight()
@@ -204,8 +208,7 @@ class Window(object):
     
     @Title.setter
     def Title(self, value):
-        # TODO: handle setting of title properly
-        raise Exception("TODO")
+        raise NotImplementedError("Title setting is not supported by SFML.")
         
     @property
     def VSync(self):
@@ -227,3 +230,4 @@ class Window(object):
     def SyncedFrameLength(self, value):
         assert not self._terminated
         self._syncedFrameLength = float(value)
+
