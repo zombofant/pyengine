@@ -33,7 +33,7 @@ from our_future import *
 
 # global PyOpenGL flags MUST ONLY be set here.
 import OpenGL
-OpenGL.ERROR_ON_COPY
+OpenGL.ERROR_ON_COPY = True
 
 if __name__ == '__main__':
     from pyUniverse.PythonicUniverse import PythonicUniverse

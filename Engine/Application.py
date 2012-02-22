@@ -208,14 +208,7 @@ class Window(object):
 
     @Title.setter
     def Title(self, value):
-        """
-        Recreates the window with the new title using SFMLs create().
-        Unfortunately, PySFML does not seem to provide a simpler way to
-        do this at the moment.
-        """
-        settings = self.window.GetSettings()
-        self.window.Create(self._sfVideoMode, value, self._sfStyles, settings)
-        self._title = value
+        raise NotImplementedError("Title setting is not supported by SFML.")
 
     @property
     def VSync(self):
