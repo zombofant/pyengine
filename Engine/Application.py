@@ -68,7 +68,7 @@ class Window(object):
         if w < 0 or h < 0:
             self._raiseDimensionsTooSmall(w, h)
 
-        if(initialTitle is None):
+        if initialTitle is None:
             initialTitle = self.__class__.__name__
             
         self._sfVideoMode = sfVideoMode or sf.VideoMode(w, h)
