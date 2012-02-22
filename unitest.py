@@ -25,6 +25,7 @@ class bcolors:
 import unittest
 import os
 import sys
+import traceback
 
 if not os.isatty(sys.stdin.fileno()):
     bcolors.disable()
@@ -36,8 +37,12 @@ class AwesomeTextResult(unittest.TestResult):
         print("{1}{0}{2}... ".format(test, bcolors.EMPH, bcolors.ENDC), end='')
         super(AwesomeTextResult, self).startTest(test)
 
+    def _indented(self, s, indent):
+        return indent + (("\n"+indent).join(s.split("\n")))
+
     def _formatError(self, err):
-        print(err)
+        s = "".join(traceback.format_exception(*err))
+        print(self._indented(s, "    "))
     
     def addError(self, test, err):
         super(AwesomeTextResult, self).addError(test, err)
