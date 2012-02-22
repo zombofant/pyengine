@@ -59,7 +59,7 @@ class Window(object):
     
     def __init__(self, 
             initialGeometry=None,
-            initialTitle="Unnamed application",
+            initialTitle=None,
             sfVideoMode=None,
             **kwargs):
         if (sfVideoMode is not None) and (initialGeometry is not None):
@@ -67,6 +67,9 @@ class Window(object):
         w, h = (int(x) for x in initialGeometry or (800, 600))
         if w < 0 or h < 0:
             self._raiseDimensionsTooSmall(w, h)
+
+        if(initialTitle is None):
+            initialTitle = self.__class__.__name__
             
         self._sfVideoMode = sfVideoMode or sf.VideoMode(w, h)
         self._sfStyles = sf.Style.Resize | sf.Style.Close
