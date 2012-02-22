@@ -22,8 +22,36 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
+from __future__ import unicode_literals, print_function, division
+from our_future import *
+import BoxModel
 
 class Widget(object):
+    Margin = BoxModel.Margin
+    Padding = BoxModel.Padding
+    Border = BoxModel.Border
+    _parent = None
+    _childClasses = Widget
+    _flags = set()
+    _children = []
+    
     def __init__(self, **kwargs):
         super(Widget, self).__init__(**kwargs)
+
+    @property
+    def Parent(self):
+        return self._parent
+
+    @Parent.setter
+    def Parent(self, value):
+        if self._parent == value:
+            return
+        if self._parent is not None:
+            self._parent.remove(self)
+        self._parent = value
+        if self._parent is not None:
+            self._parent.add(self)
+
+    def add(self, child):
+        assert isinstance(child, Widget)
         
