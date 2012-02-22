@@ -90,4 +90,3 @@ class PythonicUniverse(Window):
     def onMouseMoved(self, event):
         self._quadPos = (event.MouseMove.X, event.MouseMove.Y)
 
-

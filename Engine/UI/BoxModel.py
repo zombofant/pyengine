@@ -23,21 +23,69 @@
 # authors named in the AUTHORS file.
 ########################################################################
 
-class BaseBorder(object):
+class BaseBox(object):
     def __init__(self, *args):
         if len(args) == 1:
-            self._left, self._right, self._top, self._bottom = (args[0], )*4
+            self._left, self._right, self._top, self._bottom = (int(args[0]), )*4
         elif len(args) == 4:
-            self._left, self._right, self._top, self._bottom = args
+            self._left, self._right, self._top, self._bottom = (int(x) for x in args)
         else:
             raise ValueError("BaseBorder expects 1 or 4 arguments.")
-            
+
+    def __set__(self, instance, value):
+        if type(value) == int:
+            self._left, self._right, self._top, self._bottom = value
+            return
+        value = tuple((int(x) for x in value))
+        if len(value) != 4:
+            raise ValueError("BaseBorder needs a tuple of 4 ints or 1 int")
+        self._left, self._right, self._top, self._bottom = value
+    
     @property
     def Left(self):
         return self._left
-    
+
     @Left.setter
     def Left(self, value):
         if self._left == value:
             return
         self._left = value
+
+    @property
+    def Right(self):
+        return self._right
+
+    @Right.setter
+    def Right(self, value):
+        if self._right == value:
+            return
+        self._right = value
+
+    @property
+    def Top(self):
+        return self._top
+
+    @Top.setter
+    def Top(self, value):
+        if self._top == value:
+            return
+        self._top = value
+
+    @property
+    def Bottom(self):
+        return self._bottom
+
+    @Bottom.setter
+    def Bottom(self, value):
+        if self._bottom == value:
+            return
+        self._bottom = value
+
+class Margin(BaseBox):
+    pass
+
+class Padding(BaseBox):
+    pass
+
+class Border(BaseBox):
+    pass
