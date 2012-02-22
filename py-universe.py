@@ -36,6 +36,6 @@ import OpenGL
 OpenGL.ERROR_ON_COPY = True
 
 if __name__ == '__main__':
-    from pyUniverse.PythonicUniverse import PythonicUniverse
+    from Client.PythonicUniverse import PythonicUniverse
     app = PythonicUniverse()
     app.run()
