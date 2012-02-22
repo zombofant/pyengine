@@ -30,7 +30,7 @@ class BaseBox(object):
         if len(args) == 1:
             self._left, self._right, self._top, self._bottom = (int(args[0]), )*4
         elif len(args) == 4:
-            self._left, self._right, self._top, self._bottom = (int(x) for x in args)
+            self._left, self._top, self._right, self._bottom = (int(x) for x in args)
         else:
             raise ValueError("BaseBorder expects 1 or 4 arguments.")
 
