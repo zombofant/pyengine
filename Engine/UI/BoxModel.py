@@ -32,7 +32,7 @@ class BaseBox(object):
         elif len(args) == 4:
             self._left, self._top, self._right, self._bottom = (int(x) for x in args)
         else:
-            raise ValueError("BaseBorder expects 1 or 4 arguments.")
+            raise ValueError("BaseBox expects 1 or 4 arguments.")
 
     def __set__(self, instance, value):
         if type(value) == int:
@@ -40,8 +40,12 @@ class BaseBox(object):
             return
         value = tuple((int(x) for x in value))
         if len(value) != 4:
-            raise ValueError("BaseBorder needs a tuple of 4 ints or 1 int")
+            raise ValueError("BaseBox needs a tuple of 4 ints or 1 int")
         self._left, self._right, self._top, self._bottom = value
+
+    def _checkValue(self, v):
+        if int(v) < 0:
+            raise ValueError("Box value must be non negative.")
     
     @property
     def Left(self):
@@ -51,6 +55,7 @@ class BaseBox(object):
     def Left(self, value):
         if self._left == value:
             return
+        self._checkValue(value)
         self._left = value
 
     @property
@@ -61,6 +66,7 @@ class BaseBox(object):
     def Right(self, value):
         if self._right == value:
             return
+        self._checkValue(value)
         self._right = value
 
     @property
@@ -71,6 +77,7 @@ class BaseBox(object):
     def Top(self, value):
         if self._top == value:
             return
+        self._checkValue(value)
         self._top = value
 
     @property
@@ -81,6 +88,7 @@ class BaseBox(object):
     def Bottom(self, value):
         if self._bottom == value:
             return
+        self._checkValue(value)
         self._bottom = value
 
 class Margin(BaseBox):
