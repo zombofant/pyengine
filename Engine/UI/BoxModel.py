@@ -27,7 +27,9 @@ from our_future import *
 
 class BaseBox(object):
     def __init__(self, *args):
-        if len(args) == 1:
+        if len(args) == 0:
+            self._left, self._right, self._top, self._bottom = 0, 0, 0, 0
+        elif len(args) == 1:
             self._left, self._right, self._top, self._bottom = (int(args[0]), )*4
         elif len(args) == 4:
             self._left, self._top, self._right, self._bottom = (int(x) for x in args)
@@ -97,5 +99,5 @@ class Margin(BaseBox):
 class Padding(BaseBox):
     pass
 
-class Border(BaseBox):
+class Border(object):
     pass

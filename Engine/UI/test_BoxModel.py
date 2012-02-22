@@ -4,30 +4,38 @@ from random import randint
 
 class BoxModelInstanceTest(unittest.TestCase):
     def setUp(self):
-        self.instance = BoxModel.BaseBox(0)
+        self.instance = BoxModel.BaseBox()
 
     def tearDown(self):
         del self.instance
 
 class BoxModelInit(unittest.TestCase):
+    def checkValues(self, l, t, r, b):
+        self.assertEqual(self.instance.Left, l)
+        self.assertEqual(self.instance.Top, t)
+        self.assertEqual(self.instance.Right, r)
+        self.assertEqual(self.instance.Bottom, b)
+    
     def test_init0(self):
-        self.assertRaises(ValueError, BoxModel.BaseBox)
+        self.instance = BoxModel.BaseBox()
+        self.checkValues(0, 0, 0, 0)
 
     def test_init1(self):
         r = randint(0, 100)
-        instance = BoxModel.BaseBox(r)
-        self.assertEqual(instance.Left, r)
-        self.assertEqual(instance.Top, r)
-        self.assertEqual(instance.Right, r)
-        self.assertEqual(instance.Bottom, r)
+        self.instance = BoxModel.BaseBox(r)
+        self.checkValues(r, r, r, r)
 
     def test_init4(self):
-        l, r, t, b = randint(0, 100), randint(0, 100), randint(0, 100), randint(0, 100)
-        instance = BoxModel.BaseBox(l, t, r, b)
-        self.assertEqual(instance.Left, l)
-        self.assertEqual(instance.Top, t)
-        self.assertEqual(instance.Right, r)
-        self.assertEqual(instance.Bottom, b)
+        # guarantee that all values are random and non-equal
+        l = randint(1, 100)
+        r = randint(1, 100) + l
+        t = randint(1, 100) + r
+        b = randint(1, 100) + t
+        self.instance = BoxModel.BaseBox(l, t, r, b)
+        self.checkValues(l, t, r, b)
+
+    def tearDown(self):
+        del self.instance
 
 class BoxModelProperties(BoxModelInstanceTest):
     def test_left(self):
