@@ -24,84 +24,47 @@
 ########################################################################
 from __future__ import unicode_literals, print_function, division
 from our_future import *
-from PySFML import sf
+import pyglet
 import time
 
 """
-This class basically implements a game loop efficiently. We currently
-only support one window; We do not need more now.
-
-.. note::
-    If you override methods after the Window.__init__ was executed, you
-    also have to change the method reference in the *eventHandlers*
-    dictionary.
-
+Application and Window base classes.
+This primarily provides for handling of multiple-head setups
 """
-class Window(object):
-    EventHandlers = {
-        sf.Event.Closed: "onClosed",
-        sf.Event.Resized: "onResized",
-        sf.Event.LostFocus: "onLostFocus",
-        sf.Event.GainedFocus: "onGainedFocus",
-        sf.Event.TextEntered: "onTextEntered",
-        sf.Event.KeyPressed: "onKeyPressed",
-        sf.Event.KeyReleased: "onKeyReleased",
-        sf.Event.MouseWheelMoved: "onMouseWheelMoved",
-        sf.Event.MouseButtonPressed: "onMouseButtonPressed",
-        sf.Event.MouseButtonReleased: "onMouseButtonReleased",
-        sf.Event.MouseMoved: "onMouseMoved",
-        sf.Event.MouseEntered: "onMouseEntered",
-        sf.Event.MouseLeft: "onMouseLeft",
-        sf.Event.JoyButtonPressed: "onJoyButtonPressed",
-        sf.Event.JoyButtonReleased: "onJoyButtonReleased",
-        sf.Event.JoyMoved: "onJoyMoved"
-    }
 
-    def __init__(self,
-            initialGeometry=None,
-            initialTitle=None,
-            sfVideoMode=None,
-            **kwargs):
-        if (sfVideoMode is not None) and (initialGeometry is not None):
-            raise ValueError("Only one of sfVideoMode and initialGeometry must be set.")
-        w, h = (int(x) for x in initialGeometry or (800, 600))
-        if w < 0 or h < 0:
-            self._raiseDimensionsTooSmall(w, h)
+class Application(object):
 
-        if initialTitle is None:
-            initialTitle = self.__class__.__name__
+    def __init__(self, geometry=(800, 600), fullscreen=False, **kwargs):
+        super(Application, self).__init__(self, **kwargs)
 
-        self._sfVideoMode = sfVideoMode or sf.VideoMode(w, h)
-        self._sfStyles = sf.Style.Resize | sf.Style.Close
-        super(Window, self).__init__(**kwargs)
-        self._initEventHandlers()
-        self.window = sf.Window(self._sfVideoMode, initialTitle, self._sfStyles)
-        self.window.UseVerticalSync(True)
+        self.fullscreen = fullscreen
+        self.windows = []
 
-        self._width, self._height = self.window.GetWidth(), self.window.GetHeight()
-        self._title = initialTitle
-        self._vsync = True
-        self._terminated = True
-        self._syncedFrameLength = 0.01
-        self.clock = sf.Clock()
+        if fullscreen:
+            self._ConstructFullscreen()
+        else:
+            win = self.makeWin(geometry, (0,0))
+            self.windows.append(win)
 
-    def _initEventHandlers(self):
-        self.eventHandlers = {}
-        for evType, methName in self.EventHandlers.iteritems():
-            try:
-                method = getattr(self, methName)
-                self.eventHandlers[evType] = method
-            except:
-                pass
+    def _ConstructFullscreen(self):
+        pass
 
-    def _raiseDimensionsTooSmall(self, w, h):
-        raise ValueError("Width and height must be positive (got w={0}, h={1})".format(w, h))
-
-    def render(self):
+    def makeWin(self, geometry, ui_logical):
         """
-        This method is called at the end of any game loop iteration,
-        just before a skippedFrame call (or the next iteration, if no
-        frame skipping takes place).
+        Factory method to create Window objects, should return the
+        Window subclass used in the application.
+        """
+        raise NotImplementedError()
+
+    def run(self):
+        pyglet.clock.schedule(self.updateUnsynced)
+        pyglet.app.run()
+
+    def updateUnsynced(self, timeDelta):
+        """
+        This method is called once in every game loop iteration. So an
+        arbitary amount of time may have passed, which is given by the
+        *timeDelta* argument.
         """
 
     def updateSynced(self):
@@ -112,122 +75,133 @@ class Window(object):
         amount of time specified.
         """
 
-    def updateUnsynced(self, timeDelta):
+    def _fold_coords(self, win, x, y):
         """
-        This method is called once in every game loop iteration. So an
-        arbitary amount of time may have passed, which is given by the
-        *timeDelta* argument.
+        Fold window coordinates *x*, *y* from window *win* to logical
+        UI coordinates
         """
+        lx, ly = win.UILogicalCoords
+        return lx+x, ly+y
 
-    def run(self):
-        """
-        The run method is fully local, except for the *_terminated*
-        attribute. Everything else is pulled into the run scope, so
-        you cannot change any attributes of a *Window* instance so that
-        this method takes note if it.
+    def _on_close(self, win):
+        self._application._on_close(self)
 
-        An exception are those attributes which are just wrappers for
-        attributes of the lower level, like Height, Width and VSync.
-        """
+    def _on_draw(self, win):
+        pass
 
-        self._terminated = False
-        clock = self.clock
-        window = self.window
-        event = sf.Event()
-        syncedFrameLength = self._syncedFrameLength
+    def _on_key_press(self, win, symbol, modifiers):
+        self.dispatchKeyDown(symbol, modifiers)
 
-        timeDelta = 0.
-        thisTimeDelta = 0.
-        while not self._terminated:
-            while window.GetEvent(event):
-                if event.Type in self.eventHandlers:
-                    self.eventHandlers[event.Type](event)
+    def _on_key_release(self, win, symbol, modifiers):
+        self.dispatchKeyUp(symbol, modifiers)
 
-            thisTimeDelta = clock.GetElapsedTime()
-            clock.Reset()
-            timeDelta += thisTimeDelta
-            skipFrame = True
-            while timeDelta >= syncedFrameLength:
-                skipFrame = False
-                timeDelta -= syncedFrameLength
-                self.updateSynced()
+    def _on_mouse_drag(self, win, x, y, dx, dy, buttons, modifiers):
+        lx, ly = self._fold_coords(x, y)
+        self.dispatchMouseMotion(lx, ly, dx, dy, buttons, modifiers)
 
-            self.updateUnsynced(timeDelta)
-            self.render()
-            if skipFrame:
-                self.skippedFrame()
+    def _on_mouse_motion(self, win, x, y, dx, dy):
+        lx, ly = self._fold_coords(x, y)
 
-    def skippedFrame(self):
-        """
-        This only gets called if a frame went on too fast, so that the
-        threshold given by *SyncedFrameLength* was not passed. By
-        default, this implements a sleep call for a time of
-        ``SyncedFrameLength/2.``
-        """
-        time.sleep(self._syncedFrameLength / 2.)
+        # the last two arguments are modifier bitmaps, as we don't get
+        # any just pass none of them
+        self.dispatchMouseMotion(lx, ly, dx, dy, 0, 0)
 
-    def terminate(self):
-        self._terminated = True
 
-    def onClosed(self, event):
-        """
-        Calls ``self.terminate()``.
-        """
-        self.terminate()
+    def _on_mouse_press(self, win, x, y, button, modifiers):
+        lx, ly = self._fold_coords(x, y)
+        self.dispatchMouseDown(lx, ly, button, modifiers)
 
-    def onResized(self, event):
-        """
-        Adjusts the properties. Make sure you call this per super() if
-        you override this method.
-        """
-        self._width, self._height = event.Size.Width, event.Size.Height
+    def _on_mouse_release(self, win, x, y, button, modifiers):
+        lx, ly = self._fold_coords(x, y)
+        self.dispatchMouseUp(lx, ly, button, modifiers)
 
-    @property
-    def Width(self):
-        return self._width
+    def _on_mouse_scroll(self, win, x, y, scroll_x, scroll_y):
+        lx, ly = self._fold_coords(x, y)
+        self._application.dispatchScroll(lx, ly, scroll_x, scroll_y)
 
-    @property
-    def Height(self):
-        return self._height
+    def _on_resize(self, win, width, height):
+        pass
 
-    @property
-    def Dimensions(self):
-        return (self._width, self._height)
+    def _on_text(self, win, text):
+        self.dispatchText(text)
 
-    @Dimensions.setter
-    def Dimensions(self, value):
-        w, h = (int(x) for x in value)
+    def _on_text_motion(self, win, motion):
+        self.dispatchTextMotion(motion)
+
+    def _on_text_motion_select(self, win, motion):
+        self.dispatchTextMotionSelect(motion)
+
+class Window(pyglet.window.Window):
+
+    def __init__(self, application, ui_logical
+            initialGeometry=None,
+            initialTitle=None,
+            **kwargs):
+
+        w, h = (int(x) for x in initialGeometry or (800, 600))
         if w < 0 or h < 0:
             self._raiseDimensionsTooSmall(w, h)
-        self._width, self._height = w, h
-        self.window.SetSize(w, h)
+
+        if initialTitle is None:
+            initialTitle = type(self).__name__
+
+        super(Window, self).__init__(**kwargs)
+
+        self._application = application
+
+        self._title = initialTitle
+        self._terminated = True
+        self._syncedFrameLength = 0.01
+        self._ui_logical_coords = ui_logical
 
     @property
-    def Title(self):
-        return self._title
+    def UILogicalCoords(self):
+        return self._ui_logical_coords
 
-    @Title.setter
-    def Title(self, value):
-        raise NotImplementedError("Title setting is not supported by SFML.")
+    def _raiseDimensionsTooSmall(self, w, h):
+        raise ValueError("Width and height must be positive (got w={0}, h={1})".format(w, h))
 
-    @property
-    def VSync(self):
-        return self._vsync
+    def on_close(self):
+        self._application._on_close(self)
 
-    @VSync.setter
-    def VSync(self, value):
-        value = bool(value)
-        if value == self._vsync:
-            return
-        self.window.UseVerticalSync(value)
-        self._vsync = value
+    def on_context_lost(self):
+        raise RuntimeError()
 
-    @property
-    def SyncedFrameLength(self):
-        return self._syncedFrameLength
+    def on_context_state_lost(self):
+        raise RuntimeError()
 
-    @SyncedFrameLength.setter
-    def SyncedFrameLength(self, value):
-        assert not self._terminated
-        self._syncedFrameLength = float(value)
+    def on_draw(self):
+        self._application._on_draw(self)
 
+    def on_key_press(self, symbol, modifiers):
+        self._application._on_key_press(self, symbol, modifiers)
+
+    def on_key_release(self, symbol, modifiers):
+        self._application._on_key_release(self)
+
+    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
+        self._application._on_mouse_motion(self, x, y, dx, dy, buttons, modifiers)
+
+    def on_mouse_motion(self, x, y, dx, dy):
+        self._application._on_mouse_motion(self, x, y, dx, dy)
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        self._application._on_mouse_press(self, x, y, button, modifiers)
+
+    def on_mouse_release(self, x, y, button, modifiers):
+        self._application._on_mouse_release(self, x, y, button, modifiers)
+
+    def on_mouse_scroll(self, x, y, scroll_x, scroll_y):
+        self._application._on_mouse_scroll(self, x, y, scroll_x, scroll_y)
+
+    def on_resize(self, width, height):
+        self._application._on_resize(self, width, height)
+
+    def on_text(self, text):
+        self._application._on_text(self, text)
+
+    def on_text_motion(self, motion):
+        self._application._on_text_motion(self, motion)
+
+    def on_text_motion_select(self, motion):
+        self._application._on_text_motion_select(self, motion)
