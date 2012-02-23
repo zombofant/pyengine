@@ -133,10 +133,15 @@ class RectOperators(RectTest):
     def test_contains(self):
         a = Rect.Rect(0, 0, 10, 10)
         b = Rect.Rect(1, 1, 9, 9)
-        self.assertTrue(b in a)
-        self.assertFalse(a in b)
+        self.assertIn(b, a)
+        self.assertNotIn(a, b)
 
         x, y = randint(1, 100), randint(1, 100)
         r, b = x + randint(1, 100), y + randint(1, 100)
         a = Rect.Rect(x, y, r, b)
-        self.assertTrue(a in a)
+        self.assertIn(a, a)
+
+    def test_contains_tuple(self):
+        a = Rect.Rect(0, 0, 10, 10)
+        self.assertIn((5, 5), a)
+        self.assertNotIn((13, 13), a)
