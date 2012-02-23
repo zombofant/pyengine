@@ -169,17 +169,19 @@ class AwesomeTextResult(unittest.TestResult):
         elif passedCount == 0:
             passedColour = Colors.Failure
         
-        print(Colors("Statistics:", Colors.Header))
+        testsTotal = suite.countTestCases()
+        print("{0} ({1} tests in total):".format(Colors("Statistics", Colors.Header), testsTotal))
         print("  passed                 : {0}".format(Colors(passedCount, passedColour)))
         print("  skipped                : {0}".format(self._colouredNumber(skippedCount, Colors.Skipped, Colors.Success)))
         print("  expected failures      : {0}".format(self._colouredNumber(expectedFailureCount, Colors.ExpectedFailure, Colors.Success)))
         print("  unexpected successes   : {0}".format(self._colouredNumber(unexpectedSuccessCount, Colors.UnexpectedSuccess, Colors.Success)))
         print("  errors                 : {0}".format(self._colouredNumber(errorCount, Colors.Error, Colors.Success)))
         print("  failures               : {0}".format(self._colouredNumber(failureCount, Colors.Failure, Colors.Success)))
-        print("  total                  : {0}".format(self.testsRun))
+        print("  ran                    : {0}".format(Colors(self.testsRun, Colors.Success if self.testsRun == testsTotal else Colors.Warning)))
 
 results = AwesomeTextResult()
 results.ttyWidth = ttyWidth
 tests = loader.discover(os.getcwd(), "test_*.py")
+print("Running {0} unittests (detected from auto-discovery)".format(tests.countTestCases()))
 tests.run(results)
 results.printStats(tests)
