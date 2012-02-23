@@ -21,7 +21,12 @@ class TestUnittest(unittest.TestCase):
 
     def test_failure(self):
         self.assertTrue(False)
+        
+class TestUnittest2(unittest.TestCase):
+    def runTest(self):
+        self.assertTrue(False)
 
 # Only for testing the unittest framework output. Remove del to test
 # output for all cases.
 del TestUnittest
+del TestUnittest2
