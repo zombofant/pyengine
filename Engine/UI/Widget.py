@@ -39,20 +39,48 @@ class Widget(object):
         self._children = []
         self._left = 0
         self._top = 0
+        self.Visible = True
+        self.Enabled = True
         self.AbsoluteRect = Rect(self._left, self._top)
         if parent is not None:
             assert isinstance(parent, Widget)
             parent.add(self)
 
-    @property
-    def Parent(self):
-        return self._parent
+    def __contains__(self, child):
+        return child in self._children
+
+    def __delitem__(self, key):
+        l = self._children[key]
+        if isinstance(key, slice):
+            for child in l:
+                child._parent = None
+        else:
+            l._parent = None
+        del self._children[key]
+
+    def __getitem__(self, key):
+        return self._children.__getitem__(key)
+
+    def __iter__(self):
+        return iter(self._children)
+
+    def __len__(self):
+        return len(self._children)
+
+    def __reversed__(self):
+        return reversed(self._children)
+        
+    def _absMetricsChanged(self):
+        self.align()
 
     def _checkPotentialChild(self, child):
         if not isinstance(child, self._childClasses):
             raise TypeError("Got {0}, but {1} only supports {2} as children.".format(type(child), self, self._childClasses))
         if child.Parent is not None:
             raise ValueError("A widget cannot be added multiple times (neither to the same nor to different parents).")
+
+    def _relMetricsChanged(self):
+        pass
 
     def _requireParent(self):
         if self._parent is None:
@@ -64,40 +92,93 @@ class Widget(object):
         self._children.append(child)
         child._parent = self
 
-    def __contains__(self, child):
-        return child in self._children
-
-    def __len__(self):
-        return len(self._children)
-
-    def __iter__(self):
-        return iter(self._children)
-
-    def __reversed__(self):
-        return reversed(self._children)
-
-    def __getitem__(self, key):
-        return self._children.__getitem__(key)
-
-    def __delitem__(self, key):
-        l = self._children[key]
-        if isinstance(key, slice):
-            for child in l:
-                child._parent = None
-        else:
-            l._parent = None
-        del self._children[key]
-
-    def index(self, child):
-        return self._children.index(child)
+    def align(self):
+        pass
 
     def bringToFront(self, key):
         child = self._children[key]
         del self._children[key]
         self._children.append(child)
 
+    def clientToAbsolute(self, p):
+        return (p[0] + self.AbsoluteRect.X, p[1] + self.AbsoluteRect.Y)
+
+    def clientToParent(self, p):
+        return (p[0] + self._left, p[1] + self._top)
+
+    def hitTest(self, p):
+        if not p in self.AbsoluteRect:
+            return None
+        for child in self:
+            hit = child.hitTest(p)
+            if hit is not None:
+                return hit
+        return self
+
+    def index(self, child):
+        return self._children.index(child)
+
+    def onKeyDown(self):
+        pass
+
+    def onKeyUp(self):
+        pass
+
+    def onMouseDown(self):
+        pass
+
+    def onMouseMove(self):
+        pass
+
+    def onMouseUp(self):
+        pass
+
+    def onResize(self):
+        pass
+
+    def onScroll(self):
+        pass
+
+    def onTextInput(self):
+        pass
+
+    def parentToClient(self, p):
+        return (p[0] - self._left, p[1] - self._top)
+
     def sendToBack(self, key):
         child = self._children[key]
         del self._children[key]
         self._children.insert(0, child)
+
+    def update(self, deltaT):
+        pass
+
+    @property
+    def Parent(self):
+        return self._parent
+
+    @propery
+    def Left(self):
+        return self._left
+
+    @Left.setter
+    def Left(self, value):
+        value = int(value)
+        if value == self._left:
+            return
+        self._left = value
+        self._relMetricsChanged()
+
+    @property
+    def Top(self):
+        return self._top
+
+    @Top.setter
+    def Top(self, value):
+        value = int(value)
+        if value == self._top:
+            return
+        self._top = value
+        self._relMetricsChanged()
+
     

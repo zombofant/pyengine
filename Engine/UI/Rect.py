@@ -189,9 +189,13 @@ class Rect(object):
     def __contains__(self, other):
         if isinstance(other, _NotARect):
             return True
-        if not isinstance(other, Rect):
+        if isinstance(other, Rect):
+            return self._x <= other._x and self._y <= other._y and self._right >= other._right and self._bottom >= other._bottom
+        try:
+            x, y = other
+        except (ValueError, TypeError):
             return NotImplemented
-        return self._x <= other._x and self._y <= other._y and self._right >= other._right and self._bottom >= other._bottom
+        return x >= self._x and x < self._right and y >= self._y and y < self._bottom
 
     def __repr__(self):
         return "Rect({0}, {1}, {2}, {3})".format(self._x, self._y, self._right, self._bottom)
