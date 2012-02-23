@@ -27,7 +27,7 @@ from our_future import *
 import BoxModel
 
 class Widget(object):
-    def __init__(self, **kwargs):
+    def __init__(self, parent=None, **kwargs):
         super(Widget, self).__init__(**kwargs)
         self.Margin = BoxModel.Margin()
         self.Padding = BoxModel.Padding()
@@ -36,30 +36,34 @@ class Widget(object):
         self._childClasses = Widget
         self._flags = set()
         self._children = []
+        self._left = 0
+        self._top = 0
+        if parent is not None:
+            assert isinstance(parent, Widget)
+            parent.add(self)
 
     @property
     def Parent(self):
         return self._parent
 
     def _checkPotentialChild(self, child):
-        if child.Parent is not None:
-            raise ValueError("A widget cannot be added multiple times (neither to the same nor to different parents).")
         if not isinstance(child, self._childClasses):
             raise TypeError("Got {0}, but {1} only supports {2} as children.".format(type(child), self, self._childClasses))
+        if child.Parent is not None:
+            raise ValueError("A widget cannot be added multiple times (neither to the same nor to different parents).")
 
     def _requireParent(self):
         if self._parent is None:
             raise ValueError("This operation on {0} requires it to have a parent.".format(self))
 
     def add(self, child):
-        assert isinstance(child, Widget)
         assert not (child in self._children and not child.Parent == self)
         self._checkPotentialChild(child)
         self._children.append(child)
         child._parent = self
 
     def __contains__(self, child):
-        return child in self
+        return child in self._children
 
     def __len__(self):
         return len(self._children)
