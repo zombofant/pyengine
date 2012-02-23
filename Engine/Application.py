@@ -55,7 +55,7 @@ class Application(UI.Root.Root):
         Factory method to create Window objects, should return the
         Window subclass used in the application.
         """
-        raise NotImplementedError()
+        return Window
 
     def run(self):
         pyglet.clock.schedule(self.updateUnsynced)
@@ -134,7 +134,7 @@ class Application(UI.Root.Root):
 
 class Window(pyglet.window.Window):
 
-    def __init__(self, application, ui_logical
+    def __init__(self, application, ui_logical,
             initialGeometry=None,
             initialTitle=None,
             **kwargs):

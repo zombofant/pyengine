@@ -157,7 +157,7 @@ class Widget(object):
     def Parent(self):
         return self._parent
 
-    @propery
+    @property
     def Left(self):
         return self._left
 
