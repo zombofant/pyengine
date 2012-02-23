@@ -27,31 +27,71 @@ from our_future import *
 import BoxModel
 
 class Widget(object):
-    Margin = BoxModel.Margin
-    Padding = BoxModel.Padding
-    Border = BoxModel.Border
-    _parent = None
-    _childClasses = Widget
-    _flags = set()
-    _children = []
-    
     def __init__(self, **kwargs):
         super(Widget, self).__init__(**kwargs)
+        self.Margin = BoxModel.Margin()
+        self.Padding = BoxModel.Padding()
+        self.Border = BoxModel.Border()
+        self._parent = None
+        self._childClasses = Widget
+        self._flags = set()
+        self._children = []
 
     @property
     def Parent(self):
         return self._parent
 
-    @Parent.setter
-    def Parent(self, value):
-        if self._parent == value:
-            return
-        if self._parent is not None:
-            self._parent.remove(self)
-        self._parent = value
-        if self._parent is not None:
-            self._parent.add(self)
+    def _checkPotentialChild(self, child):
+        if child.Parent is not None:
+            raise ValueError("A widget cannot be added multiple times (neither to the same nor to different parents).")
+        if not isinstance(child, self._childClasses):
+            raise TypeError("Got {0}, but {1} only supports {2} as children.".format(type(child), self, self._childClasses))
+
+    def _requireParent(self):
+        if self._parent is None:
+            raise ValueError("This operation on {0} requires it to have a parent.".format(self))
 
     def add(self, child):
         assert isinstance(child, Widget)
-        
+        assert not (child in self._children and not child.Parent == self)
+        self._checkPotentialChild(child)
+        self._children.append(child)
+        child._parent = self
+
+    def __contains__(self, child):
+        return child in self
+
+    def __len__(self):
+        return len(self._children)
+
+    def __iter__(self):
+        return iter(self._children)
+
+    def __reversed__(self):
+        return reversed(self._children)
+
+    def __getitem__(self, key):
+        return self._children.__getitem__(key)
+
+    def __delitem__(self, key):
+        l = self._children[key]
+        if isinstance(key, slice):
+            for child in l:
+                child._parent = None
+        else:
+            l._parent = None
+        del self._children[key]
+
+    def index(self, child):
+        return self._children.index(child)
+
+    def bringToFront(self, key):
+        child = self._children[key]
+        del self._children[key]
+        self._children.append(child)
+
+    def sendToBack(self, key):
+        child = self._children[key]
+        del self._children[key]
+        self._children.insert(0, child)
+    
