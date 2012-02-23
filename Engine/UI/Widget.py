@@ -118,29 +118,29 @@ class Widget(object):
     def index(self, child):
         return self._children.index(child)
 
-    def onKeyDown(self):
-        pass
+    def onKeyDown(self, symbol, modifiers):
+        return False
 
-    def onKeyUp(self):
-        pass
+    def onKeyUp(self, symbol, modifiers):
+        return False
 
-    def onMouseDown(self):
-        pass
+    def onMouseDown(self, x, y, buttons, modifiers):
+        return False
 
-    def onMouseMove(self):
-        pass
+    def onMouseMove(self, x, y, dx, dy, buttons, modifiers):
+        return False
 
-    def onMouseUp(self):
-        pass
+    def onMouseUp(self, x, y, buttons, modifiers):
+        return False
 
     def onResize(self):
-        pass
+        self.align()
 
-    def onScroll(self):
-        pass
+    def onScroll(self, scrollX, scrollY):
+        return False
 
-    def onTextInput(self):
-        pass
+    def onTextInput(self, symbol, modifiers):
+        return False
 
     def parentToClient(self, p):
         return (p[0] - self._left, p[1] - self._top)

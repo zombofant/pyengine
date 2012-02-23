@@ -26,16 +26,17 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 import pyglet
 import time
+import UI.Root
 
 """
 Application and Window base classes.
 This primarily provides for handling of multiple-head setups
 """
 
-class Application(object):
+class Application(UI.Root.Root):
 
     def __init__(self, geometry=(800, 600), fullscreen=False, **kwargs):
-        super(Application, self).__init__(self, **kwargs)
+        super(Application, self).__init__(**kwargs)
 
         self.fullscreen = fullscreen
         self.windows = []
@@ -117,7 +118,7 @@ class Application(object):
 
     def _on_mouse_scroll(self, win, x, y, scroll_x, scroll_y):
         lx, ly = self._fold_coords(x, y)
-        self._application.dispatchScroll(lx, ly, scroll_x, scroll_y)
+        self.dispatchScroll(lx, ly, scroll_x, scroll_y)
 
     def _on_resize(self, win, width, height):
         pass
@@ -126,10 +127,10 @@ class Application(object):
         self.dispatchText(text)
 
     def _on_text_motion(self, win, motion):
-        self.dispatchTextMotion(motion)
+        self.dispatchCaretMotion(motion)
 
     def _on_text_motion_select(self, win, motion):
-        self.dispatchTextMotionSelect(motion)
+        self.dispatchCaretMotionSelect(motion)
 
 class Window(pyglet.window.Window):
 
@@ -137,7 +138,7 @@ class Window(pyglet.window.Window):
             initialGeometry=None,
             initialTitle=None,
             **kwargs):
-
+        
         w, h = (int(x) for x in initialGeometry or (800, 600))
         if w < 0 or h < 0:
             self._raiseDimensionsTooSmall(w, h)
