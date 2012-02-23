@@ -155,7 +155,7 @@ class Window(object):
             self.updateUnsynced(timeDelta)
             self.render()
             if skipFrame:
-                skippedFrame = True
+                self.skippedFrame()
 
     def skippedFrame(self):
         """
