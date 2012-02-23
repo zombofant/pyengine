@@ -25,6 +25,7 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 import BoxModel
+from Rect import Rect
 
 class Widget(object):
     def __init__(self, parent=None, **kwargs):
