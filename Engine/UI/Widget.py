@@ -25,6 +25,7 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 import BoxModel
+from Rect import Rect
 
 class Widget(object):
     def __init__(self, parent=None, **kwargs):
@@ -38,6 +39,7 @@ class Widget(object):
         self._children = []
         self._left = 0
         self._top = 0
+        self.AbsoluteRect = Rect(self._left, self._top)
         if parent is not None:
             assert isinstance(parent, Widget)
             parent.add(self)

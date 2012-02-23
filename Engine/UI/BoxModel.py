@@ -36,7 +36,7 @@ class BaseBox(object):
         else:
             raise ValueError("BaseBox expects 1 or 4 arguments.")
 
-    def __set__(self, instance, value):
+    def assign(self, value):
         if type(value) == int:
             self._left, self._right, self._top, self._bottom = value
             return

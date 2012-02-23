@@ -2,20 +2,14 @@ import BoxModel
 import unittest
 from random import randint
 
-class BoxModelInstanceTest(unittest.TestCase):
-    def setUp(self):
-        self.instance = BoxModel.BaseBox()
-
-    def tearDown(self):
-        del self.instance
-
-class BoxModelInit(unittest.TestCase):
+class BoxModelTest(unittest.TestCase):
     def checkValues(self, l, t, r, b):
         self.assertEqual(self.instance.Left, l)
         self.assertEqual(self.instance.Top, t)
         self.assertEqual(self.instance.Right, r)
         self.assertEqual(self.instance.Bottom, b)
-    
+
+class BoxModelInit(BoxModelTest):
     def test_init0(self):
         self.instance = BoxModel.BaseBox()
         self.checkValues(0, 0, 0, 0)
@@ -33,6 +27,13 @@ class BoxModelInit(unittest.TestCase):
         b = randint(1, 100) + t
         self.instance = BoxModel.BaseBox(l, t, r, b)
         self.checkValues(l, t, r, b)
+
+    def tearDown(self):
+        del self.instance
+
+class BoxModelInstanceTest(BoxModelTest):
+    def setUp(self):
+        self.instance = BoxModel.BaseBox()
 
     def tearDown(self):
         del self.instance
