@@ -99,3 +99,44 @@ class RectConstraints(RectInstanceTest):
 
     def test_height(self):
         self.assertRaises(ValueError, self.setattrWrapper("Height", -1))
+
+    def test_right(self):
+        x = randint(10, 100)
+        self.instance.X = x
+        self.assertRaises(ValueError, self.setattrWrapper("Right", x-1))
+
+    def test_bottom(self):
+        y = randint(10, 100)
+        self.instance.Y = y
+        self.assertRaises(ValueError, self.setattrWrapper("Bottom", y-1))
+
+class RectOperators(RectTest):
+    def test_and(self):
+        a = Rect.Rect(10, 10, 20, 20)
+        b = Rect.Rect(-5, -5, 30, 30)
+        self.assertEqual(a & b, a)
+
+        b = Rect.Rect(15, 15, 30, 30)
+        self.assertEqual(a & b, Rect.Rect(15, 15, 20, 20))
+
+    def test_and_invalid(self):
+        a = Rect.Rect(0, 0, 10, 10)
+        b = Rect.Rect(10, 10, 20, 20)
+        self.assertEqual(a & b, Rect.Rect(10, 10, 10, 10))
+        a = Rect.Rect(0, 0, 9, 9)
+        self.assertEqual(a & b, Rect.NotARect)
+
+    def test_empty(self):
+        self.assertEqual(Rect.Rect() & Rect.NotARect, Rect.NotARect)
+        self.assertEqual(Rect.NotARect & Rect.Rect(), Rect.NotARect)
+
+    def test_contains(self):
+        a = Rect.Rect(0, 0, 10, 10)
+        b = Rect.Rect(1, 1, 9, 9)
+        self.assertTrue(b in a)
+        self.assertFalse(a in b)
+
+        x, y = randint(1, 100), randint(1, 100)
+        r, b = x + randint(1, 100), y + randint(1, 100)
+        a = Rect.Rect(x, y, r, b)
+        self.assertTrue(a in a)

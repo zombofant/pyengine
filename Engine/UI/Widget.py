@@ -39,6 +39,7 @@ class Widget(object):
         self._children = []
         self._left = 0
         self._top = 0
+        self.AbsoluteRect = Rect(self._left, self._top)
         if parent is not None:
             assert isinstance(parent, Widget)
             parent.add(self)

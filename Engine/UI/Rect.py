@@ -1,6 +1,31 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
+class _NotARect(object):
+    def __eq__(self, other):
+        if isinstance(other, _NotARect):
+            return True
+        elif isinstance(other, Rect):
+            return False
+        else:
+            return NotImplemented
+
+    def __contains__(self, other):
+        if isinstance(other, (_NotARect, Rect)):
+            return False
+        else:
+            return NotImplemented
+
+    def __and__(self, other):
+        if isinstance(other, (_NotARect, Rect)):
+            return self
+        else:
+            return NotImplemented
+
+    def __repr__(self):
+        return "NotARect"
+NotARect = _NotARect()
+
 class Rect(object):
     @staticmethod
     def _checkDimension(value):
@@ -142,16 +167,32 @@ class Rect(object):
         self.X = self._x + byX
         self.Y = sefl._y + byY
 
+    def __eq__(self, other):
+        if isinstance(other, _NotARect):
+            return False
+        elif isinstance(other, Rect):
+            return self._x == other._x and self._y == other._y and self._width == other._width and self._height == other._height
+        else:
+            return NotImplemented
+
     def __and__(self, other):
+        if isinstance(other, _NotARect):
+            return NotARect
         if not isinstance(other, Rect):
             return NotImplemented
-        r1, b1 = self._x + self._width - 1, self._y + self._height - 1
-        r2, b2 = other._x + other._width - 1, other._x + other._height - 1
         x, y = max(self._x, other._x), max(self._y, other._y)
-        return Rect(x, y, min(r1, r2) - x, min(b1, b2) - y)
+        r, b = min(self._right, other._right), min(self._bottom, other._bottom)
+        if r < x or b < y:
+            return NotARect
+        return Rect(x, y, r, b)
 
     def __contains__(self, other):
+        if isinstance(other, _NotARect):
+            return True
         if not isinstance(other, Rect):
             return NotImplemented
-            
+        return self._x <= other._x and self._y <= other._y and self._right >= other._right and self._bottom >= other._bottom
+
+    def __repr__(self):
+        return "Rect({0}, {1}, {2}, {3})".format(self._x, self._y, self._right, self._bottom)
         
