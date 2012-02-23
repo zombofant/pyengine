@@ -29,6 +29,8 @@ class Colors(object):
         self.TestClass = ''
         self.TestName = ''
         self.Reset = ''
+        self.Header = ''
+        self.Warning = ''
     
     def __call__(self, string, colour):
         return "{0}{2}{1}".format(colour, self.Reset, string)
@@ -48,7 +50,7 @@ STATE_EXPECTED_FAILURE = 5
 
 Colors = Colors()
 ttyWidth = 80
-if not os.isatty(sys.stdin.fileno()):
+if not os.isatty(sys.stdout.fileno()):
     Colors.disable()
 else:
     rows, cols = os.popen('stty size', 'r').read().split()
