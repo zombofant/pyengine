@@ -37,11 +37,12 @@ class Widget(object):
         self._childClasses = Widget
         self._flags = set()
         self._children = []
-        self._left = 0
-        self._top = 0
         self.Visible = True
         self.Enabled = True
-        self.AbsoluteRect = Rect(self._left, self._top)
+        self.RelativeRect = Rect(0, 0)
+        self.RelativeRect._onChange = self._relMetricsChanged
+        self.AbsoluteRect = Rect(0, 0)
+        self.AbsoluteRect._onChange = self._absMetricsChanged
         if parent is not None:
             assert isinstance(parent, Widget)
             parent.add(self)
@@ -71,7 +72,7 @@ class Widget(object):
         return reversed(self._children)
         
     def _absMetricsChanged(self):
-        self.align()
+        self.onResize()
 
     def _checkPotentialChild(self, child):
         if not isinstance(child, self._childClasses):

@@ -57,6 +57,8 @@ class Rect(object):
             raise ValueError("Rect dimensions must be non negative.")
         return value
         
+    _onChange = None
+        
     def __init__(self, *args):
         """
         Takes zero, two or four integer (castable) arguments.
@@ -94,6 +96,8 @@ class Rect(object):
             return
         self._x = value
         self._right = self._x + self._width
+        if self._onChange is not None:
+            self._onChange()
 
     @property
     def Y(self):
@@ -106,6 +110,8 @@ class Rect(object):
             return
         self._y = value
         self._bottom = self._y + self._height
+        if self._onChange is not None:
+            self._onChange()
 
     @property
     def Left(self):
@@ -120,6 +126,8 @@ class Rect(object):
             raise ValueError("Left must be smaller than or equal to right.")
         self._x = value
         self._width = self._right - self._x
+        if self._onChange is not None:
+            self._onChange()
 
     @property
     def Top(self):
@@ -134,6 +142,8 @@ class Rect(object):
             raise ValueError("Top must be smaller than or equal to bottom.")
         self._y = value
         self._height = self._bottom - self._y
+        if self._onChange is not None:
+            self._onChange()
 
     @property
     def Width(self):
@@ -146,6 +156,8 @@ class Rect(object):
             return
         self._width = self._checkDimension(value)
         self._right = self._x + self._width
+        if self._onChange is not None:
+            self._onChange()
 
     @property
     def Height(self):
@@ -158,6 +170,8 @@ class Rect(object):
             return
         self._height = self._checkDimension(value)
         self._bottom = self._y + self._height
+        if self._onChange is not None:
+            self._onChange()
 
     @property
     def Right(self):
@@ -172,6 +186,8 @@ class Rect(object):
             raise ValueError("Right must be larger than or equal to left.")
         self._right = value
         self._width = self._right - self._x
+        if self._onChange is not None:
+            self._onChange()
 
     @property
     def Bottom(self):
@@ -186,6 +202,8 @@ class Rect(object):
             raise ValueError("Bottom must be larger than or equal to top.")
         self._bottom = value
         self._height = self._bottom - self._y
+        if self._onChange is not None:
+            self._onChange()
 
     def transpose(self, byX, byY):
         self.X = self._x + byX
@@ -223,4 +241,3 @@ class Rect(object):
 
     def __repr__(self):
         return "Rect({0}, {1}, {2}, {3})".format(self._x, self._y, self._right, self._bottom)
-        
