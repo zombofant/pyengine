@@ -80,20 +80,23 @@ class Model(object):
 
 """
 The OBJModel provides a Model interface with support for loading
-3d geometry data from wavefront obj formatted files.
+3d geometry wavefront obj formatted data.
 See http://www.martinreddy.net/gfx/3d/OBJ.spec for a format specification.
 """
 class OBJModel(Model):
 
-    def __init__(self, filename=None):
+    """
+    Construct an OBJModel instance.
+    An iterable may be supplied to load OBJ data from.
+    """
+    def __init__(self, iterableOBJData=None):
         super(OBJModel, self).__init__()
-        if filename is not None:
-            self.loadFromFile(filename)
+        if iterableOBJData is not None:
+            self.loadFromIterable(iterableOBJData)
 
-    def loadFromFile(self, filename):
-        with open(str(filename), 'r') as objf:
-            self.loadFromIterable(objf)
-
+    """
+    The actual geometry data loader.
+    """
     def loadFromIterable(self, iterable):
         vertices, normals, texcoords, faces = [], [], [], []
         for line in iterable:
