@@ -27,11 +27,11 @@ from our_future import *
 from pyglet.gl import *
 
 """
-The GLModel class stores 3D model data like vertices, normals,
+The Model class stores 3D model data like vertices, normals,
 faces and texture coordinates, rotation, position, scale and so on.
 It also provides methods to modify and render the model using OpenGL.
 """
-class GLModel(object):
+class Model(object):
 
     def __init__(self):
         self._clear()
@@ -102,14 +102,14 @@ class GLModel(object):
 
 
 """
-The OBJGLModel provides a GLModel interface with support for loading
+The OBJModel provides a Model interface with support for loading
 3d geometry data from wavefront obj formatted files.
 See http://www.martinreddy.net/gfx/3d/OBJ.spec for a format specification.
 """
-class OBJGLModel(GLModel):
+class OBJModel(Model):
 
     def __init__(self, filename=None):
-        super(OBJGLModel, self).__init__()
+        super(OBJModel, self).__init__()
         if filename is not None:
             self.loadFromFile(filename)
 
