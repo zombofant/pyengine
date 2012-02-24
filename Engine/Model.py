@@ -24,7 +24,8 @@
 ########################################################################
 from __future__ import unicode_literals, print_function, division
 from our_future import *
-from pyglet.gl import *
+from OpenGL.GL import *
+import sys
 
 """
 The Model class stores 3D model data like vertices, normals,
@@ -114,32 +115,33 @@ class OBJModel(Model):
             self.loadFromFile(filename)
 
     def loadFromFile(self, filename):
-        vertices, normals, texcoords, faces = [], [], [], []
         with open(str(filename), 'r') as objf:
-            for line in objf:
-                if line[0] == '#' : continue
-                parts = line.strip().split(' ')
-                if parts[0] == 'v':
-                    vertices.append([float(x) for x in parts[1:]])
-                elif parts[0] == 'vn':
-                    normals.append([float(x) for x in parts[1:]])
-                elif parts[0] == 'vt':
-                    texcoords.append([float(x) for x in parts[1:]])
-                elif parts[0] == 'f':
-                    face = []
-                    for i in range(1,len(parts)):
-                        fcomp = []
-                        fcomps = parts[i].split('/')
-                        for j in range(0,3):
-                            if len(fcomps) <= j or fcomps[j] == '':
-                                fcomp.append(None)
-                            else:
-                                fcomp.append(int(fcomps[j])-1)
-                        face.append(fcomp)
-                    faces.append(face)
-                else:
-                    print("FIXME: Unhandled obj data: %s" % line)
-        print('GameModel loaded from %s' % filename)
+            self.loadFromIterable(objf)
+
+    def loadFromIterable(self, iterable):
+        vertices, normals, texcoords, faces = [], [], [], []
+        for line in iterable:
+            if line[0] == '#' : continue
+            parts = line.strip().split(' ')
+            if parts[0] == 'v':
+                vertices.append([float(x) for x in parts[1:]])
+            elif parts[0] == 'vn':
+                normals.append([float(x) for x in parts[1:]])
+            elif parts[0] == 'vt':
+                texcoords.append([float(x) for x in parts[1:]])
+            elif parts[0] == 'f':
+                face = []
+                for fcomps in (part.split('/') for part in parts[1:]):
+                    fcomp = []
+                    for j in range(0,3):
+                        if len(fcomps) <= j or fcomps[j] == '':
+                            fcomp.append(None)
+                        else:
+                            fcomp.append(int(fcomps[j])-1)
+                    face.append(fcomp)
+                faces.append(face)
+            else:
+                print("FIXME: Unhandled obj data: %s" % line, file=sys.stderr)
         self._vertices = vertices
         self._normals = normals
         self._texcoords = texcoords
