@@ -25,6 +25,7 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 from OpenGL.GL import *
+from pyglet.graphics import vertex_list_indexed
 import sys
 
 """
@@ -35,47 +36,44 @@ It also provides methods to modify and render the model using OpenGL.
 class Model(object):
 
     def __init__(self):
+        self._vertexList = None
         self._clear()
 
     def _clear(self):
-        self._vertices, self._faces, self_normals, self._faces = [], [], [], []
+        if self._vertexList is not None:
+            del self._vertexList
+            self._vertexList = None
+        self._faces = []
 
-    def _test_render(self):
-        # XXX: this will be removed later
-        glPushMatrix()
-        glTranslatef(0,0,-4)
-        glRotatef(45,1,0,0)
-        glRotatef(24,0,1,0)
-        for face in self.faces:
-            glBegin(GL_POLYGON)
-            glColor3f(1,0,0)
-            for ids in face:
-                if ids[1] is not None:
-                    texCoord = self.texCoords[ids[1]]
-                    glTexCoord2f(texCoord[0], texCoord[1])
-                if ids[2] is not None:
-                    normal = self.normals[ids[2]]
-                    glNormal3f(normal[0], normal[1], normal[2])
-                vertex = self.vertices[ids[0]]
-                glVertex3f(vertex[0], vertex[1], vertex[2])
-            glEnd()
-        glPopMatrix()
+    """
+    Set the vertex data. At least indices and vertices have to be passed in
+    order to construct the vertex list. Please not that a complete new
+    vertex list is created when calling this method. This means all previous
+    vertex data will be dropped.
+    Each vertex at a given position in the list of vertices corresponds to the
+    normal/texCoord at this position in the respective list (if not None)
+    """
+    def _setVertexData(self, indices, vertices, normals=None, texCoords=None):
+        self._clear()
+        size = len(vertices) // 3
+        data = [('v3f/static', list(vertices))]
+        if normals is not None:
+            data.append(('n3f/static', list(normals)))
+        if texCoords is not None:
+            data.append(('t2f/static', list(texCoords)))
+        self._vertexList = vertex_list_indexed(size, list(indices), *data)
+
+    def draw(self):
+        if self._vertexList is None: return
+        self._vertexList.draw(GL_TRIANGLES)
 
     @property
     def vertices(self):
-        return self._vertices
+        return self._vertexList.vertices
 
     @property
-    def normals(self):
-        return self._normals
-
-    @property
-    def texcoords(self):
-        return self._texcoords
-
-    @property
-    def faces(self):
-        return self._faces
+    def indices(self):
+        return self._vertexList.indices
 
 
 """
@@ -95,6 +93,26 @@ class OBJModel(Model):
             self.loadFromIterable(iterableOBJData)
 
     """
+    Pack data in lists as expected by Model._setVertexData() and call it.
+    """
+    def _storeVertexData(self, faces, vertices, normals, texcoords):
+        size = len(vertices) // 3
+        packed_normals, packed_texcoords = [None]*size*3, [None]*size*2
+        indices = []
+        for comps in [elems for f in faces for elems in f]:
+            vpos = comps[0]
+            indices.append(vpos)
+            if comps[1] is not None:
+                tpos = comps[1]
+                packed_texcoords[vpos*2:vpos*2+2] = texcoords[tpos*2:tpos*2+2]
+            if comps[2] is not None:
+                npos = comps[2]
+                packed_normals[vpos*3:vpos*3+3] = normals[npos*3:npos*3+3]
+        if None in packed_texcoords: packed_texcoords = None
+        if None in packed_normals: packed_normals = None
+        self._setVertexData(indices, vertices, packed_normals, packed_texcoords)
+
+    """
     The actual geometry data loader.
     """
     def loadFromIterable(self, iterable):
@@ -103,11 +121,11 @@ class OBJModel(Model):
             if line[0] == '#' : continue
             parts = line.strip().split(' ')
             if parts[0] == 'v':
-                vertices.append([float(x) for x in parts[1:]])
+                vertices.extend([float(x) for x in parts[1:]])
             elif parts[0] == 'vn':
-                normals.append([float(x) for x in parts[1:]])
+                normals.extend([float(x) for x in parts[1:]])
             elif parts[0] == 'vt':
-                texcoords.append([float(x) for x in parts[1:]])
+                texcoords.extend([float(x) for x in parts[1:]])
             elif parts[0] == 'f':
                 face = []
                 for fcomps in (part.split('/') for part in parts[1:]):
@@ -121,8 +139,5 @@ class OBJModel(Model):
                 faces.append(face)
             else:
                 print("FIXME: Unhandled obj data: %s" % line, file=sys.stderr)
-        self._vertices = vertices
-        self._normals = normals
-        self._texcoords = texcoords
-        self._faces = faces
+        self._storeVertexData(faces, vertices, normals, texcoords)
 
