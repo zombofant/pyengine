@@ -1,5 +1,29 @@
 #!/usr/bin/python2
 # encoding=utf8
+# File name: unitest.py
+# This file is part of: pyuni
+#
+# LICENSE
+#
+# The contents of this file are subject to the Mozilla Public License
+# Version 1.1 (the "License"); you may not use this file except in
+# compliance with the License. You may obtain a copy of the License at
+# http://www.mozilla.org/MPL/
+#
+# Software distributed under the License is distributed on an "AS IS"
+# basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
+# the License for the specific language governing rights and limitations
+# under the License.
+#
+# Alternatively, the contents of this file may be used under the terms
+# of the GNU General Public license (the  "GPL License"), in which case
+# the provisions of GPL License are applicable instead of those above.
+#
+# FEEDBACK & QUESTIONS
+#
+# For feedback and questions about pyuni please e-mail one of the
+# authors named in the AUTHORS file.
+########################################################################
 
 from __future__ import unicode_literals, print_function, division
 from our_future import *
@@ -29,6 +53,8 @@ class Colors(object):
         self.TestClass = ''
         self.TestName = ''
         self.Reset = ''
+        self.Header = ''
+        self.Warning = ''
     
     def __call__(self, string, colour):
         return "{0}{2}{1}".format(colour, self.Reset, string)
@@ -48,7 +74,7 @@ STATE_EXPECTED_FAILURE = 5
 
 Colors = Colors()
 ttyWidth = 80
-if not os.isatty(sys.stdin.fileno()):
+if not os.isatty(sys.stdout.fileno()):
     Colors.disable()
 else:
     rows, cols = os.popen('stty size', 'r').read().split()
@@ -169,17 +195,19 @@ class AwesomeTextResult(unittest.TestResult):
         elif passedCount == 0:
             passedColour = Colors.Failure
         
-        print(Colors("Statistics:", Colors.Header))
+        testsTotal = suite.countTestCases()
+        print("{0} ({1} tests in total):".format(Colors("Statistics", Colors.Header), testsTotal))
         print("  passed                 : {0}".format(Colors(passedCount, passedColour)))
         print("  skipped                : {0}".format(self._colouredNumber(skippedCount, Colors.Skipped, Colors.Success)))
         print("  expected failures      : {0}".format(self._colouredNumber(expectedFailureCount, Colors.ExpectedFailure, Colors.Success)))
         print("  unexpected successes   : {0}".format(self._colouredNumber(unexpectedSuccessCount, Colors.UnexpectedSuccess, Colors.Success)))
         print("  errors                 : {0}".format(self._colouredNumber(errorCount, Colors.Error, Colors.Success)))
         print("  failures               : {0}".format(self._colouredNumber(failureCount, Colors.Failure, Colors.Success)))
-        print("  total                  : {0}".format(self.testsRun))
+        print("  ran                    : {0}".format(Colors(self.testsRun, Colors.Success if self.testsRun == testsTotal else Colors.Warning)))
 
 results = AwesomeTextResult()
 results.ttyWidth = ttyWidth
 tests = loader.discover(os.getcwd(), "test_*.py")
+print("Running {0} unittests (detected from auto-discovery)".format(tests.countTestCases()))
 tests.run(results)
 results.printStats(tests)
