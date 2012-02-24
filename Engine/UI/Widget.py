@@ -27,97 +27,23 @@ from our_future import *
 import BoxModel
 from Rect import Rect
 
-class Widget(object):
-    def __init__(self, parent=None, **kwargs):
-        super(Widget, self).__init__(**kwargs)
-        self.Margin = BoxModel.Margin()
-        self.Padding = BoxModel.Padding()
-        self.Border = BoxModel.Border()
-        self._parent = None
-        self._childClasses = Widget
-        self._flags = set()
-        self._children = []
+class AbstractWidget(object):
+    def __init__(self, **kwargs):
         self.Visible = True
         self.Enabled = True
         self.RelativeRect = Rect(0, 0)
         self.RelativeRect._onChange = self._relMetricsChanged
-        self.AbsoluteRect = Rect(0, 0)
-        self.AbsoluteRect._onChange = self._absMetricsChanged
-        if parent is not None:
-            assert isinstance(parent, Widget)
-            parent.add(self)
-
-    def __contains__(self, child):
-        return child in self._children
-
-    def __delitem__(self, key):
-        l = self._children[key]
-        if isinstance(key, slice):
-            for child in l:
-                child._parent = None
-        else:
-            l._parent = None
-        del self._children[key]
-
-    def __getitem__(self, key):
-        return self._children.__getitem__(key)
-
-    def __iter__(self):
-        return iter(self._children)
-
-    def __len__(self):
-        return len(self._children)
-
-    def __reversed__(self):
-        return reversed(self._children)
+        self.Rect = Rect(0, 0)
+        self.Rect._onChange = self._absMetricsChanged
         
     def _absMetricsChanged(self):
         self.onResize()
 
-    def _checkPotentialChild(self, child):
-        if not isinstance(child, self._childClasses):
-            raise TypeError("Got {0}, but {1} only supports {2} as children.".format(type(child), self, self._childClasses))
-        if child.Parent is not None:
-            raise ValueError("A widget cannot be added multiple times (neither to the same nor to different parents).")
-
     def _relMetricsChanged(self):
         pass
 
-    def _requireParent(self):
-        if self._parent is None:
-            raise ValueError("This operation on {0} requires it to have a parent.".format(self))
-
-    def add(self, child):
-        assert not (child in self._children and not child.Parent == self)
-        self._checkPotentialChild(child)
-        self._children.append(child)
-        child._parent = self
-
     def align(self):
         pass
-
-    def bringToFront(self, key):
-        child = self._children[key]
-        del self._children[key]
-        self._children.append(child)
-
-    def clientToAbsolute(self, p):
-        return (p[0] + self.AbsoluteRect.X, p[1] + self.AbsoluteRect.Y)
-
-    def clientToParent(self, p):
-        return (p[0] + self._left, p[1] + self._top)
-
-    def hitTest(self, p):
-        if not p in self.AbsoluteRect:
-            return None
-        for child in self:
-            hit = child.hitTest(p)
-            if hit is not None:
-                return hit
-        return self
-
-    def index(self, child):
-        return self._children.index(child)
 
     def onKeyDown(self, symbol, modifiers):
         return False
@@ -143,13 +69,40 @@ class Widget(object):
     def onTextInput(self, symbol, modifiers):
         return False
 
+class Widget(AbstractWidget):
+    def __init__(self, parent, **kwargs):
+        if not isinstance(parent, WidgetContainer):
+            raise ValueError("Widget parent must be an instance of WidgetContainer (e.g. ParentWidget).")
+        super(Widget, self).__init__(**kwargs)
+        self.Margin = BoxModel.Margin()
+        self.Padding = BoxModel.Padding()
+        self.Border = BoxModel.Border()
+        self._parent = parent
+        self._rootWidget = self._parent.getRootWidget()
+        self._flags = set()
+
+    def _requireParent(self):
+        if self._parent is None:
+            raise ValueError("This operation on {0} requires it to have a parent.".format(self))
+        
+    def _parentChanged(self):
+        assert self._parent is None or isinstance(self._parent, WidgetContainer)
+        if self._parent is not None:
+            self._rootWidget = self._parent._rootWidget
+        else:
+            self._rootWidget = None
+
+    def hitTest(self, p):
+        return self if p in self.AbsoluteRect else None
+
+    def clientToAbsolute(self, p):
+        return (p[0] + self.AbsoluteRect.X, p[1] + self.AbsoluteRect.Y)
+
+    def clientToParent(self, p):
+        return (p[0] + self._left, p[1] + self._top)
+
     def parentToClient(self, p):
         return (p[0] - self._left, p[1] - self._top)
-
-    def sendToBack(self, key):
-        child = self._children[key]
-        del self._children[key]
-        self._children.insert(0, child)
 
     def update(self, deltaT):
         pass
@@ -157,29 +110,74 @@ class Widget(object):
     @property
     def Parent(self):
         return self._parent
+        
+class WidgetContainer(object):
+    def __init__(self, **kwargs):
+        super(WidgetContainer, self).__init__(**kwargs)
+        self._childClasses = Widget
+        self._children = []
 
-    @property
-    def Left(self):
-        return self._left
+    def __contains__(self, child):
+        return child in self._children
 
-    @Left.setter
-    def Left(self, value):
-        value = int(value)
-        if value == self._left:
-            return
-        self._left = value
-        self._relMetricsChanged()
+    def __delitem__(self, key):
+        l = self._children[key]
+        if isinstance(key, slice):
+            for child in l:
+                child._parent = None
+        else:
+            l._parent = None
+        del self._children[key]
 
-    @property
-    def Top(self):
-        return self._top
+    def __getitem__(self, key):
+        return self._children.__getitem__(key)
 
-    @Top.setter
-    def Top(self, value):
-        value = int(value)
-        if value == self._top:
-            return
-        self._top = value
-        self._relMetricsChanged()
+    def __iter__(self):
+        return iter(self._children)
 
-    
+    def __len__(self):
+        return len(self._children)
+
+    def __reversed__(self):
+        return reversed(self._children)
+
+    def _checkPotentialChild(self, child):
+        if not isinstance(child, self._childClasses):
+            raise TypeError("Got {0}, but {1} only supports {2} as children.".format(type(child), self, self._childClasses))
+        if child.Parent is not None:
+            raise ValueError("A widget cannot be added multiple times (neither to the same nor to different parents).")
+
+    def _hitTest(self, p):
+        for child in self:
+            hit = child.hitTest(p)
+            if hit is not None:
+                return hit
+        return hit
+
+    def add(self, child):
+        assert not (child in self._children and not child.Parent == self and not isinstance(child, RootWidget))
+        self._checkPotentialChild(child)
+        self._children.append(child)
+        child._parent = self
+
+    def index(self, child):
+        return self._children.index(child)
+
+class ParentWidget(Widget, WidgetContainer):
+    def __init__(self, parent, **kwargs):
+        super(ParentWidget, self).__init__(parent)
+
+    def bringToFront(self, key):
+        child = self._children[key]
+        del self._children[key]
+        self._children.append(child)
+
+    def hitTest(self, p):
+        if not p in self.Rect:
+            return None
+        return self._hitTest(p) or self
+
+    def sendToBack(self, key):
+        child = self._children[key]
+        del self._children[key]
+        self._children.insert(0, child)

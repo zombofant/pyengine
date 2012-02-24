@@ -27,17 +27,17 @@ from our_future import *
 
 import pyglet
 import pyglet.window.mouse as mouse
-from Widget import Widget
+from Widget import AbstractWidget, WidgetContainer
 from Screen import Screen
 from Flags import *
 
-class Root(Widget):
+class Root(AbstractWidget, WidgetContainer):
     def __init__(self, **kwargs):
         super(Root, self).__init__(**kwargs)
+        self._childClasses = Screen
         self._mouseCapture = None
         self._mouseCaptureButton = 0
         self._focused = None
-        # self._childClasses = Screen
         self._activeButtonMask = mouse.LEFT | mouse.MIDDLE | mouse.RIGHT
     
     def _findKeyEventTarget(self):
