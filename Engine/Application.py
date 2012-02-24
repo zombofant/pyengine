@@ -85,8 +85,8 @@ class Application(RootWidget):
         
         for i, screen, x, y, w, h, primary in screens:
             self._newScreen((x, y), (w, h), True, primary, screen)
-            totalWidth = max(x + w)
-            totalHeight = max(y + h)
+            totalWidth = max(totalWidth, x + w)
+            totalHeight = max(totalHeight, y + h)
 
         self.Rect.Width = totalWidth
         self.Rect.Height = totalHeight
@@ -108,7 +108,16 @@ class Application(RootWidget):
         fbo = Framebuffer(w, h)
         uiTex = Texture2D(w, h, GL_RGBA8)
         fbo[GL_COLOR_ATTACHMENT0] = uiTex
-        fbo.validate()
+        try:
+            fbo.validate()
+        except Exception:
+            # we may have a problem with non-quadratic textures
+            w = max(w, h)
+            h = max(w, h)
+            fbo = Framebuffer(w, h)
+            uiTex = Texture2D(w, h, GL_RGBA8)
+            fbo[GL_COLOR_ATTACHMENT0] = uiTex
+            fbo.validate()
         self._fbo = fbo
         self._uiTexture = uiTex
         domain = pyglet.graphics.vertexdomain.create_domain(b"v2f/static", b"t2f/static")
@@ -231,7 +240,7 @@ class Application(RootWidget):
         # FIXME: Redraw only parts of the UI which need to
         # glEnable(GL_SCISSOR_TEST)
         # glScissor(
-        glClearColor(0.0, 0.0, 0.0, 0.0)
+        glClearColor(0.0, 0.0, 1.0, 0.1)
         glClear(GL_COLOR_BUFFER_BIT)
         # TODO: render UI here
         # glDisable(GL_SCISSOR_TEST)
@@ -241,6 +250,9 @@ class Application(RootWidget):
         raise NotImplementedError("Cannot render without FBO support currently.")
 
     def _renderWindowWithFBO(self, window):
+        glClearColor(0.0, 0.0, 0.0, 1.0)
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        
         for sceneWidget in window._sceneWidgets:
             x, y, w, h = sceneWidget.Rect.XYWH
             xlog, ylog = window.UILogicalCoords
