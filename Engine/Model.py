@@ -39,21 +39,13 @@ class Model(object):
 
     def _clear(self):
         self._vertices, self._faces, self_normals, self._faces = [], [], [], []
-        self._posX, self._posY, self._posZ = 0., 0., 0.
-        self._angleX, self._angleY, self._angleZ = 0., 0., 0.
-        self._scaleX, self._scaleY, self._scaleZ = 1., 1., 1.
 
-    def _transform(self):
-        glTranslatef(self._posX, self._posY, self._posZ)
-        glRotatef(self._angleX, 1., 0., 0.)
-        glRotatef(self._angleY, 0., 1., 0.)
-        glRotatef(self._angleZ, 0., 0., 1.)
-        glScalef(self._scaleX, self._scaleY, self._scaleZ)
-
-    def render(self):
-        # FIXME: implement VBOs
+    def _test_render(self):
+        # XXX: this will be removed later
         glPushMatrix()
-        self._transform()
+        glTranslatef(0,0,-4)
+        glRotatef(45,1,0,0)
+        glRotatef(24,0,1,0)
         for face in self.faces:
             glBegin(GL_POLYGON)
             glColor3f(1,0,0)
@@ -68,22 +60,6 @@ class Model(object):
                 glVertex3f(vertex[0], vertex[1], vertex[2])
             glEnd()
         glPopMatrix()
-
-    @property
-    def position(self):
-        return [self._posX, self._posY, self._posZ]
-
-    @position.setter
-    def position(self, value):
-        self._posX, self._posY, self._posZ = value
-
-    @property
-    def rotation(self):
-        return [self._angleX, self._angleY, self._angleZ]
-
-    @rotation.setter
-    def rotation(self, value):
-        self._angleX, self._angleY, self._angleZ = value
 
     @property
     def vertices(self):
