@@ -27,8 +27,16 @@ from our_future import *
 import BoxModel
 from Rect import Rect
 
+"""
+Abstract base class for widgets. Do not derive from this if you are not
+creating a root widget. For root widgets, derive from *AbstractWidget*
+and *WidgetContainer*.
+
+See *Widget* and *ParentWidget* for other widgets.
+"""
 class AbstractWidget(object):
     def __init__(self, **kwargs):
+        super(AbstractWidget, self).__init__(**kwargs)
         self.Visible = True
         self.Enabled = True
         self.RelativeRect = Rect(0, 0)
@@ -69,6 +77,12 @@ class AbstractWidget(object):
     def onTextInput(self, symbol, modifiers):
         return False
 
+"""
+Base class for non-parent widgets. Use this for any widget which will
+not contain other widgets.
+
+See *ParentWidget* for parents, *AbstractWidget* for root widgets.
+"""
 class Widget(AbstractWidget):
     def __init__(self, parent, **kwargs):
         if not isinstance(parent, WidgetContainer):
@@ -77,9 +91,9 @@ class Widget(AbstractWidget):
         self.Margin = BoxModel.Margin()
         self.Padding = BoxModel.Padding()
         self.Border = BoxModel.Border()
-        self._parent = parent
-        self._rootWidget = self._parent.getRootWidget()
+        self._parent = None
         self._flags = set()
+        parent.add(self)
 
     def _requireParent(self):
         if self._parent is None:
@@ -88,7 +102,7 @@ class Widget(AbstractWidget):
     def _parentChanged(self):
         assert self._parent is None or isinstance(self._parent, WidgetContainer)
         if self._parent is not None:
-            self._rootWidget = self._parent._rootWidget
+            self._rootWidget = self._parent.getRootWidget()
         else:
             self._rootWidget = None
 
@@ -110,7 +124,15 @@ class Widget(AbstractWidget):
     @property
     def Parent(self):
         return self._parent
-        
+
+"""
+Abstraction of a container which can contain widgets. It is list based
+(thus ordered) and implements a basic typecheck.
+
+Do not derive from this if you are not implementing a root widget. For
+root widgets, see *AbstractWidget*, for normal widgets which may contain
+other widgets see *ParentWidget*.
+"""
 class WidgetContainer(object):
     def __init__(self, **kwargs):
         super(WidgetContainer, self).__init__(**kwargs)
@@ -125,8 +147,10 @@ class WidgetContainer(object):
         if isinstance(key, slice):
             for child in l:
                 child._parent = None
+                child._parentChanged()
         else:
             l._parent = None
+            l._parentChanged()
         del self._children[key]
 
     def __getitem__(self, key):
@@ -159,18 +183,31 @@ class WidgetContainer(object):
         self._checkPotentialChild(child)
         self._children.append(child)
         child._parent = self
+        child._parentChanged()
 
     def index(self, child):
         return self._children.index(child)
 
+"""
+Base class for widgets which contain other widgets. This derives from
+Widget and WidgetContainer, so all of the benefits apply here.
+"""
 class ParentWidget(Widget, WidgetContainer):
     def __init__(self, parent, **kwargs):
         super(ParentWidget, self).__init__(parent)
+
+    def _parentChanged(self):
+        super(ParentWidget, self)._parentChanged()
+        for child in self:
+            child._parentChanged()
 
     def bringToFront(self, key):
         child = self._children[key]
         del self._children[key]
         self._children.append(child)
+
+    def getRootWidget(self):
+        return self._rootWidget
 
     def hitTest(self, p):
         if not p in self.Rect:

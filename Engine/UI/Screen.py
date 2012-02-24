@@ -25,10 +25,10 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-from Widget import Widget
+from Widget import ParentWidget
 
-class Screen(Widget):
-    def __init__(self, **kwargs):
-        super(Screen, self).__init__(**kwargs)
+class Screen(ParentWidget):
+    def __init__(self, parent, **kwargs):
+        super(Screen, self).__init__(parent, **kwargs)
 
     

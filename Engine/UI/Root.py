@@ -28,17 +28,21 @@ from our_future import *
 import pyglet
 import pyglet.window.mouse as mouse
 from Widget import AbstractWidget, WidgetContainer
-from Screen import Screen
 from Flags import *
 
-class Root(AbstractWidget, WidgetContainer):
+"""
+This widget implements dispatching of events and can work as a parent
+for other widgets. It also handles focus and mouse capturing. For this
+it respects the *Focusable* flag, which must be set by a widget which
+wants to recieve the focus.
+"""
+class RootWidget(AbstractWidget, WidgetContainer):
     def __init__(self, **kwargs):
-        super(Root, self).__init__(**kwargs)
-        self._childClasses = Screen
+        super(RootWidget, self).__init__(**kwargs)
         self._mouseCapture = None
         self._mouseCaptureButton = 0
         self._focused = None
-        self._activeButtonMask = mouse.LEFT | mouse.MIDDLE | mouse.RIGHT
+        self.ActiveButtonMask = mouse.LEFT | mouse.MIDDLE | mouse.RIGHT
     
     def _findKeyEventTarget(self):
         return self._focused or self
@@ -62,7 +66,7 @@ class Root(AbstractWidget, WidgetContainer):
     def dispatchMouseDown(self, x, y, button, modifiers):
         target, x, y = self._mapMouseEvent(x, y)
         target.onMouseDown(x, y, button, modifiers)
-        if target is not self._mouseCapture and button & self._activeButtonMask:
+        if target is not self._mouseCapture and button & self.ActiveButtonMask:
             if Focusable in target.Flags:
                 self._focused = target
             self._mouseCapture = target
@@ -94,4 +98,5 @@ class Root(AbstractWidget, WidgetContainer):
         target = self._findKeyEventTarget()
         target.onCaretMotionSelect(motion)
         
-    
+    def getRootWidget(self):
+        return self

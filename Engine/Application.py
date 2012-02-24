@@ -26,25 +26,27 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 import pyglet
 import time
-import UI.Root
+from UI.Root import RootWidget
 from UI.Screen import Screen
+
+__docformat__ = "restructuredtext"
 
 """
 Application and Window base classes.
 This primarily provides for handling of multiple-head setups
 """
 
-class Application(UI.Root.Root):
+class Application(RootWidget):
     def __init__(self, geometry=(800, 600), fullscreen=False, **kwargs):
         super(Application, self).__init__(**kwargs)
         self.fullscreen = fullscreen
         self.windows = []
+        self._childClasses = Screen
 
         if fullscreen:
             self._constructFullscreen()
         else:
-            win = self.makeWin((0, 0), geometry)
-            self.windows.append(win)
+            self._newScreen((0, 0), geometry)
 
     def _constructFullscreen(self):
         """
@@ -65,16 +67,14 @@ class Application(UI.Root.Root):
                 screen[3] -= minY
         
         for i, screen, x, y, w, h, primary in screens:
-            window = self.makeWin((x, y), None, screen)
-            widget = Screen()
-            widget.Left = x
-            widget.Top = y
-            widget.Width = w
-            widget.Height = h
-            self.add(widget)
-            if primary:
-                # TODO: add scene widget here
-                pass
+            self._newScreen((x, y), (w, h), True, primary, screen)
+
+    def _newScreen(self, ui_logical, geometry, fullscreen=False, primary=True, screen=None):        
+        window = self.makeWin(ui_logical, None if fullscreen else geometry, screen)
+        widget = Screen(self)
+        widget.Left, widget.Top = ui_logical
+        widget.Width, widget.Height = geometry
+        self.windows.append((window, widget))
 
     def makeWin(self, ui_logical, geometry=None, screen=None):
         """
