@@ -22,3 +22,9 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
+from Rect import *
+from BoxModel import *
+from Widget import *
+from Screen import *
+from Root import *
+from Scene import *

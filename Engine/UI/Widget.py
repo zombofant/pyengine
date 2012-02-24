@@ -24,6 +24,9 @@
 ########################################################################
 from __future__ import unicode_literals, print_function, division
 from our_future import *
+
+__all__ = ["AbstractWidget", "ParentWidget", "Widget"]
+
 import BoxModel
 from Rect import Rect
 
@@ -107,7 +110,7 @@ class Widget(AbstractWidget):
             self._rootWidget = None
 
     def hitTest(self, p):
-        return self if p in self.AbsoluteRect else None
+        return self if p in self.Rect else None
 
     def clientToAbsolute(self, p):
         return (p[0] + self.AbsoluteRect.X, p[1] + self.AbsoluteRect.Y)
@@ -182,12 +185,16 @@ class WidgetContainer(object):
                 return hit
         return hit
 
+    def _newChild(self, widget):
+        pass
+
     def add(self, child):
         assert not (child in self._children and not child.Parent == self and not isinstance(child, RootWidget))
         self._checkPotentialChild(child)
         self._children.append(child)
         child._parent = self
         child._parentChanged()
+        self._newChild(child)
 
     def index(self, child):
         return self._children.index(child)
@@ -199,6 +206,9 @@ Widget and WidgetContainer, so all of the benefits apply here.
 class ParentWidget(Widget, WidgetContainer):
     def __init__(self, parent, **kwargs):
         super(ParentWidget, self).__init__(parent)
+
+    def _newChild(self, widget):
+        self.align()
 
     def _parentChanged(self):
         super(ParentWidget, self)._parentChanged()

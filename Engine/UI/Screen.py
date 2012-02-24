@@ -25,12 +25,18 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
+__all__ = ["ScreenWidget"]
+
 from Widget import ParentWidget
 
-class Screen(ParentWidget):
+class ScreenWidget(ParentWidget):
     def __init__(self, parent, window, **kwargs):
-        super(Screen, self).__init__(parent, **kwargs)
+        super(ScreenWidget, self).__init__(parent, **kwargs)
         self._window = window
+
+    def align(self):
+        for child in self:
+            child.Rect.assign(self.Rect)
 
     @property
     def Window(self):

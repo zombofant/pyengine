@@ -25,6 +25,8 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
+__all__ = ["NotARect", "Rect"]
+
 class _NotARect(object):
     def __eq__(self, other):
         if isinstance(other, _NotARect):
@@ -209,11 +211,43 @@ class Rect(object):
         self.X = self._x + byX
         self.Y = sefl._y + byY
 
+    def assign(self, other):
+        if not isinstance(other, Rect):
+            raise TypeError("Expected Rect, got {0}".format(type(other)))
+        self._x, self._y, self._width, self._height = other._x, other._y, other._width, other._height
+        self._right, self._bottom = other._right, other._bottom
+        if self._onChange is not None:
+            self._onChange()
+
+    @property
+    def XYWH(self):
+        return self._x, self._y, self._width, self._height
+
+    @XYWH.setter
+    def XYWH(self, t):
+        x, y, w, h = t
+        self._x = int(x)
+        self._y = int(y)
+        self._width = self._checkDimension(w)
+        self._height = self._checkDimension(h)
+        self._right = self._x + self._width
+        self._bottom = self._y + self._height
+        if self._onChange is not None:
+            self._onChange()
+
     def __eq__(self, other):
         if isinstance(other, _NotARect):
             return False
         elif isinstance(other, Rect):
             return self._x == other._x and self._y == other._y and self._width == other._width and self._height == other._height
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, _NotARect):
+            return True
+        elif isinstance(other, Rect):
+            return self._x != other._x or self._y != other._y or self._width != other._width or self._height != other._height
         else:
             return NotImplemented
 

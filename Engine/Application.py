@@ -26,9 +26,7 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 import pyglet
 import time
-from UI.Rect import Rect
-from UI.Root import RootWidget
-from UI.Screen import Screen
+from UI import Rect, RootWidget, ScreenWidget, SceneWidget
 from OpenGL.GL import *
 from OpenGL.GL.framebufferobjects import *
 from GL import Framebuffer, Texture2D, Renderbuffer, makePOT
@@ -45,7 +43,7 @@ class Application(RootWidget):
         super(Application, self).__init__(**kwargs)
         self.fullscreen = fullscreen
         self.windows = []
-        self._childClasses = Screen
+        self._childClasses = ScreenWidget
         self._primaryWidget = None
         self.SyncedFrameLength = 0.01
         self.SyncedSpeedFactor = 1.
@@ -95,9 +93,8 @@ class Application(RootWidget):
 
     def _newScreen(self, ui_logical, geometry, fullscreen=False, primary=True, screen=None):        
         window = self.makeWin(ui_logical, None if fullscreen else geometry, screen)
-        widget = Screen(self, window)
-        widget.Left, widget.Top = ui_logical
-        widget.Width, widget.Height = geometry
+        widget = ScreenWidget(self, window)
+        widget.Rect.XYWH = (ui_logical[0], ui_logical[1], geometry[0], geometry[1])
         t = (window, widget)
         self.windows.append(t)
         if primary:
@@ -135,6 +132,27 @@ class Application(RootWidget):
             vl.vertices = vertices
             vl.tex_coords = texCoords
             window.FBOVertexList = vl
+
+    def _getWidgetScreen(self, widget):
+        p = widget
+        while p is not None and p is not self:
+            if isinstance(p, ScreenWidget):
+                return p
+            p = p._parent
+        else:
+            return None
+
+    def addSceneWidget(self, widget):
+        if not isinstance(widget, SceneWidget):
+            raise ValueError("Scene widgets must derive from SceneWidget")
+        screen = self._getWidgetScreen(widget)
+        assert screen is not None
+        if screen.Rect & widget.Rect != widget.Rect:
+            raise ValueError("Scene widget leaves screen boundaries")
+        window = screen.Window
+        assert window is not None
+        assert not (widget in window._sceneWidgets)
+        window._sceneWidgets.append(widget)
 
     def hitTest(self, p):
         return self._hitTest(p) or self
@@ -212,8 +230,9 @@ class Application(RootWidget):
         # FIXME: Redraw only parts of the UI which need to
         # glEnable(GL_SCISSOR_TEST)
         # glScissor(
-        glClearColor(0.1, 0.1, 0.1, 1.0)
+        glClearColor(0.0, 0.0, 0.0, 0.0)
         glClear(GL_COLOR_BUFFER_BIT)
+        # TODO: render UI here
         # glDisable(GL_SCISSOR_TEST)
         Framebuffer.unbind()
 
@@ -221,9 +240,24 @@ class Application(RootWidget):
         raise NotImplementedError("Cannot render without FBO support currently.")
 
     def _renderWindowWithFBO(self, window):
+        for sceneWidget in window._sceneWidgets:
+            x, y, w, h = sceneWidget.Rect.XYWH
+            xlog, ylog = window.UILogicalCoords
+            x -= xlog
+            y -= ylog
+            glViewport(x, y, w, h)
+            sceneWidget.renderScene()
+        
+        glViewport(0, 0, window.width, window.height)
+        glClear(GL_DEPTH_BUFFER_BIT)
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         self._uiTexture.bind()
         glEnable(GL_TEXTURE_2D)
         window.FBOVertexList.draw(GL_TRIANGLE_STRIP)
+        glDisable(GL_TEXTURE_2D)
+        Texture2D.unbind()
+        glDisable(GL_BLEND)
 
     def _fold_coords(self, win, x, y):
         """
@@ -293,6 +327,7 @@ class Window(pyglet.window.Window):
         self._terminated = True
         self._syncedFrameLength = 0.01
         self._ui_logical_coords = ui_logical
+        self._sceneWidgets = []
 
     @property
     def UILogicalCoords(self):
@@ -335,7 +370,6 @@ class Window(pyglet.window.Window):
         self._application._on_mouse_scroll(self, x, y, scroll_x, scroll_y)
 
     def on_resize(self, width, height):
-        glViewport(0, 0, width, height)
         self._application._on_resize(self, width, height)
 
     def on_text(self, text):
