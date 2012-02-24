@@ -103,3 +103,7 @@ class RootWidget(AbstractWidget, WidgetContainer):
         
     def getRootWidget(self):
         return self
+
+    def update(self, timeDelta):
+        for child in self:
+            child.update(timeDelta)

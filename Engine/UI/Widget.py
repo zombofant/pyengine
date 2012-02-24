@@ -232,3 +232,7 @@ class ParentWidget(Widget, WidgetContainer):
         child = self._children[key]
         del self._children[key]
         self._children.insert(0, child)
+
+    def update(self, timeDelta):
+        for child in self:
+            child.update(timeDelta)

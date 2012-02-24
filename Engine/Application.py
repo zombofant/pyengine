@@ -198,6 +198,7 @@ class Application(RootWidget):
             self.updateSynced()
         self._aggregatedTime = syncedTime
         self.updateUnsynced(timeDelta)
+        super(Application, self).update(timeDelta)
         self.render()
 
     def updateUnsynced(self, timeDelta):
