@@ -32,4 +32,3 @@ class GLObject(object):
         
     def __del__(self):
         pass
-

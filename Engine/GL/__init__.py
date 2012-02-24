@@ -26,3 +26,14 @@ from Shader import Shader
 from Renderbuffer import Renderbuffer
 from Texture import Texture1D, Texture2D
 from Framebuffer import Framebuffer
+
+def makePOT(v):
+    # From http://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2
+    # Credit: Sean Anderson
+    v -= 1
+    v |= v >> 1
+    v |= v >> 2
+    v |= v >> 4
+    v |= v >> 8
+    v |= v >> 16
+    return v + 1

@@ -26,8 +26,12 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 import pyglet
 import time
+from UI.Rect import Rect
 from UI.Root import RootWidget
 from UI.Screen import Screen
+from OpenGL.GL import *
+from OpenGL.GL.framebufferobjects import *
+from GL import Framebuffer, Texture2D, Renderbuffer, makePOT
 
 __docformat__ = "restructuredtext"
 
@@ -37,17 +41,25 @@ This primarily provides for handling of multiple-head setups
 """
 
 class Application(RootWidget):
-    def __init__(self, geometry=(800, 600), fullscreen=False, **kwargs):
+    def __init__(self, geometry=(800, 600), fullscreen=False, useFramebuffer=True, **kwargs):
         super(Application, self).__init__(**kwargs)
         self.fullscreen = fullscreen
         self.windows = []
         self._childClasses = Screen
         self._primaryWidget = None
+        self.SyncedFrameLength = 0.01
+        self.SyncedSpeedFactor = 1.
+        self._aggregatedTime = 0.
 
         if fullscreen:
             self._constructFullscreen()
         else:
-            self._constructWindowed()
+            self._constructWindowed(geometry)
+
+        if useFramebuffer:
+            self._buildFramebuffer()
+            self.render = self._renderWithFBO
+            self.renderWindow = self._renderWindowWithFBO
 
     def _constructWindowed(self, geometry):
         window, widget = self._newScreen((0, 0), geometry)
@@ -93,6 +105,40 @@ class Application(RootWidget):
             self._primaryWidget = widget
         return t
 
+    def _buildFramebuffer(self):
+        w = makePOT(self.Rect.Width)
+        h = makePOT(self.Rect.Height)
+        fbo = Framebuffer(w, h)
+        uiTex = Texture2D(w, h, GL_RGBA8)
+        fbo[GL_COLOR_ATTACHMENT0] = uiTex
+        fbo.validate()
+        self._fbo = fbo
+        self._uiTexture = uiTex
+        domain = pyglet.graphics.vertexdomain.create_domain(b"v2f/static", b"t2f/static")
+        vertices = [
+            -1.0, 1.0,
+            1.0, 1.0,
+            -1.0, -1.0,
+            1.0, -1.0
+        ]
+        vertexLists = []
+        for window, widget in self.windows:
+            vl = domain.create(4)
+            xmin, xmax = widget.Rect.Left / w, widget.Rect.Right / h
+            ymin, ymax = widget.Rect.Top / h, widget.Rect.Bottom / h
+            texCoords = [
+                xmin, ymax,
+                xmax, ymax,
+                xmin, ymin,
+                xmax, ymin
+            ]
+            vl.vertices = vertices
+            vl.tex_coords = texCoords
+            window.FBOVertexList = vl
+
+    def hitTest(self, p):
+        return self._hitTest(p) or self
+
     def makeWin(self, ui_logical, geometry=None, screen=None):
         """
         Factory method to create Window objects, should return the
@@ -118,8 +164,23 @@ class Application(RootWidget):
             return Window(self, ui_logical, width=geometry[0], height=geometry[1], screen=screen)
 
     def run(self):
-        pyglet.clock.schedule(self.updateUnsynced)
+        pyglet.clock.schedule(self.update)
         pyglet.app.run()
+
+    def update(self, timeDelta):
+        """
+        This method gets called by pyglet on every frame iteration. It
+        dispatches the passed time to *updateSynced* and
+        *updateUnsynced*.
+        """
+        syncedTime = self._aggregatedTime + timeDelta * self.SyncedSpeedFactor
+        frameLength = self.SyncedFrameLength
+        while syncedTime >= frameLength:
+            syncedTime -= frameLength
+            self.updateSynced()
+        self._aggregatedTime = syncedTime
+        self.updateUnsynced(timeDelta)
+        self.render()
 
     def updateUnsynced(self, timeDelta):
         """
@@ -127,7 +188,6 @@ class Application(RootWidget):
         arbitary amount of time may have passed, which is given by the
         *timeDelta* argument.
         """
-        
 
     def updateSynced(self):
         """
@@ -139,9 +199,31 @@ class Application(RootWidget):
 
     def render(self):
         """
-        Renders the UI.
+        Renders the UI. Note that after initalization, this function
+        will have been replaced with *_renderWithFBO* if useFramebuffer
+        has been passed to the constructor.
         """
-        
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        # FIXME: Rendering without FBO support
+        raise NotImplementedError("Cannot render without FBO support currently.")
+
+    def _renderWithFBO(self):
+        self._fbo.bind()
+        # FIXME: Redraw only parts of the UI which need to
+        # glEnable(GL_SCISSOR_TEST)
+        # glScissor(
+        glClearColor(0.1, 0.1, 0.1, 1.0)
+        glClear(GL_COLOR_BUFFER_BIT)
+        # glDisable(GL_SCISSOR_TEST)
+        Framebuffer.unbind()
+
+    def renderWindow(self, window):
+        raise NotImplementedError("Cannot render without FBO support currently.")
+
+    def _renderWindowWithFBO(self, window):
+        self._uiTexture.bind()
+        glEnable(GL_TEXTURE_2D)
+        window.FBOVertexList.draw(GL_TRIANGLE_STRIP)
 
     def _fold_coords(self, win, x, y):
         """
@@ -152,10 +234,10 @@ class Application(RootWidget):
         return lx+x, ly+y
 
     def _on_close(self, win):
-        self._application._on_close(self)
+        pyglet.app.exit()
 
     def _on_draw(self, win):
-        pass
+        self.renderWindow(win)
 
     def _on_key_press(self, win, symbol, modifiers):
         self.dispatchKeyDown(symbol, modifiers)
@@ -164,34 +246,34 @@ class Application(RootWidget):
         self.dispatchKeyUp(symbol, modifiers)
 
     def _on_mouse_drag(self, win, x, y, dx, dy, buttons, modifiers):
-        lx, ly = self._fold_coords(x, y)
-        self.dispatchMouseMotion(lx, ly, dx, dy, buttons, modifiers)
+        lx, ly = self._fold_coords(win, x, y)
+        self.dispatchMouseMove(lx, ly, dx, dy, buttons, modifiers)
 
     def _on_mouse_motion(self, win, x, y, dx, dy):
-        lx, ly = self._fold_coords(x, y)
+        lx, ly = self._fold_coords(win, x, y)
 
         # the last two arguments are modifier bitmaps, as we don't get
         # any just pass none of them
-        self.dispatchMouseMotion(lx, ly, dx, dy, 0, 0)
+        self.dispatchMouseMove(lx, ly, dx, dy, 0, 0)
 
 
     def _on_mouse_press(self, win, x, y, button, modifiers):
-        lx, ly = self._fold_coords(x, y)
+        lx, ly = self._fold_coords(win, x, y)
         self.dispatchMouseDown(lx, ly, button, modifiers)
 
     def _on_mouse_release(self, win, x, y, button, modifiers):
-        lx, ly = self._fold_coords(x, y)
+        lx, ly = self._fold_coords(win, x, y)
         self.dispatchMouseUp(lx, ly, button, modifiers)
 
     def _on_mouse_scroll(self, win, x, y, scroll_x, scroll_y):
-        lx, ly = self._fold_coords(x, y)
+        lx, ly = self._fold_coords(win, x, y)
         self.dispatchScroll(lx, ly, scroll_x, scroll_y)
 
     def _on_resize(self, win, width, height):
         pass
 
     def _on_text(self, win, text):
-        self.dispatchText(text)
+        self.dispatchTextInput(text)
 
     def _on_text_motion(self, win, motion):
         self.dispatchCaretMotion(motion)
@@ -235,10 +317,10 @@ class Window(pyglet.window.Window):
         self._application._on_key_press(self, symbol, modifiers)
 
     def on_key_release(self, symbol, modifiers):
-        self._application._on_key_release(self)
+        self._application._on_key_release(self, symbol, modifiers)
 
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
-        self._application._on_mouse_motion(self, x, y, dx, dy, buttons, modifiers)
+        self._application._on_mouse_drag(self, x, y, dx, dy, buttons, modifiers)
 
     def on_mouse_motion(self, x, y, dx, dy):
         self._application._on_mouse_motion(self, x, y, dx, dy)
@@ -253,6 +335,7 @@ class Window(pyglet.window.Window):
         self._application._on_mouse_scroll(self, x, y, scroll_x, scroll_y)
 
     def on_resize(self, width, height):
+        glViewport(0, 0, width, height)
         self._application._on_resize(self, width, height)
 
     def on_text(self, text):

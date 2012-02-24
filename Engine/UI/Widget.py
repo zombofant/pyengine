@@ -74,7 +74,7 @@ class AbstractWidget(object):
     def onScroll(self, scrollX, scrollY):
         return False
 
-    def onTextInput(self, symbol, modifiers):
+    def onTextInput(self, text):
         return False
 
 """
@@ -124,6 +124,10 @@ class Widget(AbstractWidget):
     @property
     def Parent(self):
         return self._parent
+
+    @property
+    def Flags(self):
+        return self._flags
 
 """
 Abstraction of a container which can contain widgets. It is list based

@@ -24,6 +24,7 @@
 ########################################################################
 from Base import *
 from Renderbuffer import RenderbufferBase
+import numpy as np
 
 class TextureBase(GLObject):
     def __init__(self, format=None, **kwargs):
@@ -33,7 +34,7 @@ class TextureBase(GLObject):
         self.id = glGenTextures(1)
         
     def __del__(self):
-        glDeleteTextures(self.id)
+        glDeleteTextures(np.array((self.id,)))
         super(TextureBase, self).__del__()
         
     def bind(self):

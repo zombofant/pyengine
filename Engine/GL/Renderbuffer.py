@@ -23,6 +23,7 @@
 # authors named in the AUTHORS file.
 ########################################################################
 from Base import *
+import numpy as np
 
 class RenderbufferBase(GLObject):
     def __init__(self, width=None, height=None, **kwargs):
@@ -55,7 +56,7 @@ class Renderbuffer(RenderbufferBase):
         glBindRenderbuffer(GL_RENDERBUFFER, 0)
         
     def __del__(self):
-        glDeleteRenderbuffers(self.id)
+        glDeleteFramebuffers(np.array((self.id,)))
     
     def attach(self, target):
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, target, GL_RENDERBUFFER, self.id)

@@ -24,6 +24,7 @@
 ########################################################################
 from Base import *
 from Renderbuffer import RenderbufferBase
+import numpy as np
 
 class Framebuffer(GLObject):
     def __init__(self, width=None, height=None, **kwargs):
@@ -41,7 +42,7 @@ class Framebuffer(GLObject):
             self._attachments[i] = None
             
     def __del__(self):
-        glDeleteFramebuffers(self.id)
+        glDeleteFramebuffers(np.array((self.id,)))
         super(Framebuffer, self).__del__()
     
     def __setitem__(self, key, value):
@@ -89,7 +90,7 @@ class Framebuffer(GLObject):
             GL_FRAMEBUFFER_INCOMPLETE_FORMATS: "Format mismatch",
             GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER: "Draw buffer error",
             GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER: "Read buffer error",
-            GL_FRAMEBUFFER_UNSUPPORTED: "Framebufferobjects unsupported."
+            GL_FRAMEBUFFER_UNSUPPORTED: "Unsupported framebuffer setup"
         }[errno]
         if error is not None:
             raise Exception(error)

@@ -42,14 +42,15 @@ class RootWidget(AbstractWidget, WidgetContainer):
         self._mouseCapture = None
         self._mouseCaptureButton = 0
         self._focused = None
+        self._flags = frozenset()
         self.ActiveButtonMask = mouse.LEFT | mouse.MIDDLE | mouse.RIGHT
     
     def _findKeyEventTarget(self):
         return self._focused or self
 
     def _mapMouseEvent(self, x, y):
-        target = self._mouseCapture or self.hitTest(x, y)
-        return (target, x - target.AbsoluteRect.Left, y - target.AbsoluteRect.Top)
+        target = self._mouseCapture or self.hitTest((x, y))
+        return (target, x - target.Rect.Left, y - target.Rect.Top)
     
     def dispatchKeyDown(self, *args):
         target = self._findKeyEventTarget()
@@ -67,7 +68,7 @@ class RootWidget(AbstractWidget, WidgetContainer):
         target, x, y = self._mapMouseEvent(x, y)
         target.onMouseDown(x, y, button, modifiers)
         if target is not self._mouseCapture and button & self.ActiveButtonMask:
-            if Focusable in target.Flags:
+            if Focusable in target._flags:
                 self._focused = target
             self._mouseCapture = target
 
@@ -77,7 +78,7 @@ class RootWidget(AbstractWidget, WidgetContainer):
 
     def dispatchMouseUp(self, x, y, button, modifiers):
         target, x, y = self._mapMouseEvent(x, y)
-        target.onMouseUp(x, y, dx, dy, button, modifiers)
+        target.onMouseUp(x, y, button, modifiers)
         if target is self._mouseCapture and button & self._mouseCaptureButton:
             self._mouseCapture = None
             self._mouseCaptureButton = 0
