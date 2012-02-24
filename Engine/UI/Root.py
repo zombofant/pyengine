@@ -33,7 +33,7 @@ from Flags import *
 
 class Root(Widget):
     def __init__(self, **kwargs):
-        super(Widget, self).__init__(**kwargs)
+        super(Root, self).__init__(**kwargs)
         self._mouseCapture = None
         self._mouseCaptureButton = 0
         self._focused = None

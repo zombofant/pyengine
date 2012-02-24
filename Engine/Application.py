@@ -27,6 +27,7 @@ from our_future import *
 import pyglet
 import time
 import UI.Root
+from UI.Screen import Screen
 
 """
 Application and Window base classes.
@@ -34,28 +35,70 @@ This primarily provides for handling of multiple-head setups
 """
 
 class Application(UI.Root.Root):
-
     def __init__(self, geometry=(800, 600), fullscreen=False, **kwargs):
         super(Application, self).__init__(**kwargs)
-
         self.fullscreen = fullscreen
         self.windows = []
 
         if fullscreen:
-            self._ConstructFullscreen()
+            self._constructFullscreen()
         else:
-            win = self.makeWin(geometry, (0,0))
+            win = self.makeWin((0, 0), geometry)
             self.windows.append(win)
 
-    def _ConstructFullscreen(self):
-        pass
+    def _constructFullscreen(self):
+        """
+        Detect screens and create screen widgets for each. Also create
+        the ui coordinate map.
+        """
+        display = pyglet.window.get_platform().get_default_display()
+        screens = display.get_screens()
+        default = display.get_default_screen()
+        
+        # convert the screen list in a list we can use
+        screens = [[i, screen, screen.x, screen.y, screen.width, screen.height, screen is default] for i, screen in enumerate(screens)]
+        minX = min((screen[2] for screen in screens))
+        minY = min((screen[3] for screen in screens))
+        if minX != 0 or minY != 0:
+            for screen in screens:
+                screen[2] -= minX
+                screen[3] -= minY
+        
+        for i, screen, x, y, w, h, primary in screens:
+            window = self.makeWin((x, y), None, screen)
+            widget = Screen()
+            widget.Left = x
+            widget.Top = y
+            widget.Width = w
+            widget.Height = h
+            self.add(widget)
+            if primary:
+                # TODO: add scene widget here
+                pass
 
-    def makeWin(self, geometry, ui_logical):
+    def makeWin(self, ui_logical, geometry=None, screen=None):
         """
         Factory method to create Window objects, should return the
         Window subclass used in the application.
+        
+        :Parameters:
+            `ui_logical` : (int, int)
+                UI logical coordinates. These may differ from the window 
+                coordinates.
+            `geometry` : (int, int) or *None*
+                This must be ``(width, height)`` for a non-fullscreen
+                window or None for a fullscreen window.
+            `screen` : pyglet.window.Screen or *None*
+                This parameter is mandatory if no geometry is given to
+                determine the screen to create the window on. Otherwise
+                it internally defaults to the default screen.
         """
-        return Window
+        if geometry is None:
+            if screen is None:
+                raise ValueError("screen must be given if a fullscreen window is to be created.")
+            return Window(self, ui_logical, fullscreen=True, screen=screen)
+        else:
+            return Window(self, ui_logical, width=geometry[0], height=geometry[1], screen=screen)
 
     def run(self):
         pyglet.clock.schedule(self.updateUnsynced)
@@ -67,6 +110,7 @@ class Application(UI.Root.Root):
         arbitary amount of time may have passed, which is given by the
         *timeDelta* argument.
         """
+        
 
     def updateSynced(self):
         """
@@ -135,22 +179,12 @@ class Application(UI.Root.Root):
 class Window(pyglet.window.Window):
 
     def __init__(self, application, ui_logical,
-            initialGeometry=None,
-            initialTitle=None,
             **kwargs):
         
-        w, h = (int(x) for x in initialGeometry or (800, 600))
-        if w < 0 or h < 0:
-            self._raiseDimensionsTooSmall(w, h)
-
-        if initialTitle is None:
-            initialTitle = type(self).__name__
-
         super(Window, self).__init__(**kwargs)
 
         self._application = application
 
-        self._title = initialTitle
         self._terminated = True
         self._syncedFrameLength = 0.01
         self._ui_logical_coords = ui_logical
