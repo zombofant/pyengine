@@ -69,10 +69,12 @@ class Model(object):
 
     @property
     def vertices(self):
+        if self._vertexList is None: return None
         return self._vertexList.vertices
 
     @property
     def indices(self):
+        if self._vertexList is None: return None
         return self._vertexList.indices
 
 
@@ -114,10 +116,12 @@ class OBJModel(Model):
 
     """
     The actual geometry data loader.
+    Note: All faces in the obj data are expected to be triangles.
     """
     def loadFromIterable(self, iterable):
         vertices, normals, texcoords, faces = [], [], [], []
         for line in iterable:
+            if len(line) < 1 : continue
             if line[0] == '#' : continue
             parts = line.strip().split(' ')
             if parts[0] == 'v':
@@ -138,6 +142,9 @@ class OBJModel(Model):
                     face.append(fcomp)
                 faces.append(face)
             else:
-                print("FIXME: Unhandled obj data: %s" % line, file=sys.stderr)
+                #print("FIXME: Unhandled obj data: %s" % line, file=sys.stderr)
+                pass
+        if len(faces) < 1:
+            raise Exception('No faces found in geometric data!')
         self._storeVertexData(faces, vertices, normals, texcoords)
 
