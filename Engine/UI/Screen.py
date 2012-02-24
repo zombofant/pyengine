@@ -28,7 +28,12 @@ from our_future import *
 from Widget import ParentWidget
 
 class Screen(ParentWidget):
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent, window, **kwargs):
         super(Screen, self).__init__(parent, **kwargs)
+        self._window = window
+
+    @property
+    def Window(self):
+        return self._window
 
     

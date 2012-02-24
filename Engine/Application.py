@@ -42,16 +42,21 @@ class Application(RootWidget):
         self.fullscreen = fullscreen
         self.windows = []
         self._childClasses = Screen
+        self._primaryWidget = None
 
         if fullscreen:
             self._constructFullscreen()
         else:
-            self._newScreen((0, 0), geometry)
+            self._constructWindowed()
+
+    def _constructWindowed(self, geometry):
+        window, widget = self._newScreen((0, 0), geometry)
+        self.Rect.Width = window.width
+        self.Rect.Height = window.height
 
     def _constructFullscreen(self):
         """
-        Detect screens and create screen widgets for each. Also create
-        the ui coordinate map.
+        Detect screens and create screen widgets for each.
         """
         display = pyglet.window.get_platform().get_default_display()
         screens = display.get_screens()
@@ -65,16 +70,28 @@ class Application(RootWidget):
             for screen in screens:
                 screen[2] -= minX
                 screen[3] -= minY
+        totalWidth = 0
+        totalHeight = 0
         
         for i, screen, x, y, w, h, primary in screens:
             self._newScreen((x, y), (w, h), True, primary, screen)
+            totalWidth = max(x + w)
+            totalHeight = max(y + h)
+
+        self.Rect.Width = totalWidth
+        self.Rect.Height = totalHeight
 
     def _newScreen(self, ui_logical, geometry, fullscreen=False, primary=True, screen=None):        
         window = self.makeWin(ui_logical, None if fullscreen else geometry, screen)
-        widget = Screen(self)
+        widget = Screen(self, window)
         widget.Left, widget.Top = ui_logical
         widget.Width, widget.Height = geometry
-        self.windows.append((window, widget))
+        t = (window, widget)
+        self.windows.append(t)
+        if primary:
+            assert self._primaryWidget is None
+            self._primaryWidget = widget
+        return t
 
     def makeWin(self, ui_logical, geometry=None, screen=None):
         """
@@ -119,6 +136,12 @@ class Application(RootWidget):
         took too long, but each call still represents the guaranteed
         amount of time specified.
         """
+
+    def render(self):
+        """
+        Renders the UI.
+        """
+        
 
     def _fold_coords(self, win, x, y):
         """
