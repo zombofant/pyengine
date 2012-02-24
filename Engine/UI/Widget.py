@@ -80,6 +80,12 @@ class AbstractWidget(object):
     def onTextInput(self, text):
         return False
 
+    def onCaretMotion(self, motion):
+        return False
+
+    def onCaretMotionSelect(self, motion):
+        return False
+
 """
 Base class for non-parent widgets. Use this for any widget which will
 not contain other widgets.
@@ -183,7 +189,7 @@ class WidgetContainer(object):
             hit = child.hitTest(p)
             if hit is not None:
                 return hit
-        return hit
+        return None
 
     def _newChild(self, widget):
         pass
