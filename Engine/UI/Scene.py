@@ -1,4 +1,4 @@
-# File name: test_unittest.py
+# File name: Scene.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -22,35 +22,34 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
-import unittest
+from __future__ import unicode_literals, print_function, division
+from our_future import *
 
-class TestUnittest(unittest.TestCase):
-    @unittest.expectedFailure
-    def test_expectedFailure(self):
-        self.assertTrue(False)
+__all__ = ["SceneWidget"]
 
-    @unittest.skip("Because we can")
-    def test_skip(self):
+from Widget import Widget
+from OpenGL.GL import *
+from OpenGL.GLU import *
+
+class SceneWidget(Widget):
+    def __init__(self, parent, **kwargs):
+        # FIXME: pass scene graph and camera to use ;)
+        super(SceneWidget, self).__init__(parent, **kwargs)
+        self.FOV = 60.0
+        self.ZNear = 1.0
+        self.ZFar = 100.0
+
+    def _setupProjection(self):
+        glMatrixMode(GL_PROJECTION)
+        glLoadIdentity()
+        gluPerspective(self.FOV, self.Rect.Width / self.Rect.Height, self.ZNear, self.ZFar)
+        glMatrixMode(GL_MODELVIEW)
+        glLoadIdentity()
+
+    def _resetProjection(self):
+        glMatrixMode(GL_PROJECTION)
+        glLoadIdentity()
+        glMatrixMode(GL_MODELVIEW)
+
+    def renderScene(self):
         pass
-
-    @unittest.expectedFailure
-    def test_unexpectedSuccess(self):
-        pass
-
-    def test_pass(self):
-        pass
-
-    def test_error(self):
-        raise Exception()
-
-    def test_failure(self):
-        self.assertTrue(False)
-        
-class TestUnittest2(unittest.TestCase):
-    def runTest(self):
-        self.assertTrue(False)
-
-# Only for testing the unittest framework output. Remove del to test
-# output for all cases.
-del TestUnittest
-del TestUnittest2

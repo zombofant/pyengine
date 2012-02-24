@@ -1,4 +1,4 @@
-# File name: test_unittest.py
+# File name: __init__.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -22,35 +22,9 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
-import unittest
-
-class TestUnittest(unittest.TestCase):
-    @unittest.expectedFailure
-    def test_expectedFailure(self):
-        self.assertTrue(False)
-
-    @unittest.skip("Because we can")
-    def test_skip(self):
-        pass
-
-    @unittest.expectedFailure
-    def test_unexpectedSuccess(self):
-        pass
-
-    def test_pass(self):
-        pass
-
-    def test_error(self):
-        raise Exception()
-
-    def test_failure(self):
-        self.assertTrue(False)
-        
-class TestUnittest2(unittest.TestCase):
-    def runTest(self):
-        self.assertTrue(False)
-
-# Only for testing the unittest framework output. Remove del to test
-# output for all cases.
-del TestUnittest
-del TestUnittest2
+from Rect import *
+from BoxModel import *
+from Widget import *
+from Screen import *
+from Root import *
+from Scene import *

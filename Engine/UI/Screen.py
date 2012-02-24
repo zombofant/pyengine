@@ -1,4 +1,4 @@
-# File name: test_unittest.py
+# File name: Screen.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -22,35 +22,24 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
-import unittest
+from __future__ import unicode_literals, print_function, division
+from our_future import *
 
-class TestUnittest(unittest.TestCase):
-    @unittest.expectedFailure
-    def test_expectedFailure(self):
-        self.assertTrue(False)
+__all__ = ["ScreenWidget"]
 
-    @unittest.skip("Because we can")
-    def test_skip(self):
-        pass
+from Widget import ParentWidget
 
-    @unittest.expectedFailure
-    def test_unexpectedSuccess(self):
-        pass
+class ScreenWidget(ParentWidget):
+    def __init__(self, parent, window, **kwargs):
+        super(ScreenWidget, self).__init__(parent, **kwargs)
+        self._window = window
 
-    def test_pass(self):
-        pass
+    def align(self):
+        for child in self:
+            child.Rect.assign(self.Rect)
 
-    def test_error(self):
-        raise Exception()
+    @property
+    def Window(self):
+        return self._window
 
-    def test_failure(self):
-        self.assertTrue(False)
-        
-class TestUnittest2(unittest.TestCase):
-    def runTest(self):
-        self.assertTrue(False)
-
-# Only for testing the unittest framework output. Remove del to test
-# output for all cases.
-del TestUnittest
-del TestUnittest2
+    

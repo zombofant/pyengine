@@ -1,42 +1,138 @@
 #!/usr/bin/python2
 # encoding=utf8
+# File name: unitest.py
+# This file is part of: pyuni
+#
+# LICENSE
+#
+# The contents of this file are subject to the Mozilla Public License
+# Version 1.1 (the "License"); you may not use this file except in
+# compliance with the License. You may obtain a copy of the License at
+# http://www.mozilla.org/MPL/
+#
+# Software distributed under the License is distributed on an "AS IS"
+# basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
+# the License for the specific language governing rights and limitations
+# under the License.
+#
+# Alternatively, the contents of this file may be used under the terms
+# of the GNU General Public license (the  "GPL License"), in which case
+# the provisions of GPL License are applicable instead of those above.
+#
+# FEEDBACK & QUESTIONS
+#
+# For feedback and questions about pyuni please e-mail one of the
+# authors named in the AUTHORS file.
+########################################################################
 
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    PASSED = '\033[01;32m'
-    WARNING = '\033[93m'
-    FAILED = '\033[01;31m'
-    EMPH = '\033[01m'
-    ENDC = '\033[0m'
+class Colors(object):
+    # HEADER = '\033[95m'
+    
+    Header = '\033[01m'
+    Warning = '\033[93m'
+    Success = '\033[01;32m' 
+    Skipped = '\033[94m'
+    Error = '\033[01;31m'
+    Failure = Error
+    UnexpectedSuccess = Warning
+    ExpectedFailure = Warning
+    TestClass = Header
+    TestName = Header
+    Reset = '\033[0m'
 
     def disable(self):
-        self.EMPH = ''
-        self.HEADER = ''
-        self.OKBLUE = ''
-        self.PASSED = ''
-        self.WARNING = ''
-        self.CANNOT_PASS = ''
-        self.ENDC = ''
+        self.Success = ''
+        self.Skipped = ''
+        self.Failure = ''
+        self.Error = ''
+        self.UnexpectedSuccess = ''
+        self.ExpectedFailure = ''
+        self.TestClass = ''
+        self.TestName = ''
+        self.Reset = ''
+        self.Header = ''
+        self.Warning = ''
+    
+    def __call__(self, string, colour):
+        return "{0}{2}{1}".format(colour, self.Reset, string)
 
 import unittest
+from unittest.util import strclass
 import os
 import sys
 import traceback
 
-if not os.isatty(sys.stdin.fileno()):
-    bcolors.disable()
+STATE_PASS = 0
+STATE_SKIP = 1
+STATE_ERROR = 2
+STATE_FAILURE = 3
+STATE_UNEXPECTED_SUCCESS = 4
+STATE_EXPECTED_FAILURE = 5
+
+Colors = Colors()
+ttyWidth = 80
+if not os.isatty(sys.stdout.fileno()):
+    Colors.disable()
+else:
+    rows, cols = os.popen('stty size', 'r').read().split()
+    ttyWidth = int(cols)
 
 loader = unittest.TestLoader()
 
 class AwesomeTextResult(unittest.TestResult):
     success = []
+    testNoteIndent = "        "
+    stateNames = [
+        ("ok",                  Colors.Success),
+        ("skipped",             Colors.Skipped),
+        ("error",               Colors.Error),
+        ("failure",             Colors.Failure),
+        ("unexpected success",  Colors.UnexpectedSuccess),
+        ("expected failure",    Colors.ExpectedFailure)
+    ]
+    maxStateNameLen = len(stateNames[STATE_UNEXPECTED_SUCCESS][0])
+    ttyWidth = 80
+    
+    def __init__(self, *args, **kwargs):
+        super(AwesomeTextResult, self).__init__(*args, **kwargs)
+        self._previousPath = None
+        
+    def _formatTestName(self, name, indent=" "*2, color=Colors.TestName):
+        testNameLen = self.ttyWidth - (self.maxStateNameLen + (len(indent+" $")) - (len(color) + len(Colors.Reset)))
+        return ("{1}{0:.<"+unicode(testNameLen)+"s} ").format(Colors(name, color)+" ", indent)
+    
+    def _printTestName(self, test):
+        try:
+            methodName = test._testMethodName
+        except AttributeError:
+            methodName = str(test).partition(" ")[0]
+        if methodName[:5] == "test_":
+            methodName = methodName[5:]
+        elif methodName == "runTest":
+            methodName = None
+        modulePath = type(test).__module__.split(".")
+        deepest = modulePath[-1]
+        if deepest[:5] == "test_":
+            modulePath[-1] = deepest[5:]
+        modulePath.append(type(test).__name__)
+        if methodName is None:
+            print(self._formatTestName(".".join(modulePath), "", Colors.TestClass), end='')
+            self.testNoteIndent = " "*4
+        else:
+            if self._previousPath != modulePath:
+                self._previousPath = modulePath
+                print("{0}:".format(Colors(".".join(modulePath), Colors.TestClass)))
+            print(self._formatTestName(methodName), end='')
+            self.testNoteIndent = " "*6
+    
+    def _printState(self, state):
+        print(Colors(*self.stateNames[state]))
     
     def startTest(self, test):
-        print("{1}{0}{2}... ".format(test, bcolors.EMPH, bcolors.ENDC), end='')
+        self._printTestName(test)
         super(AwesomeTextResult, self).startTest(test)
 
     def _skipBlank(self, s):
@@ -45,44 +141,45 @@ class AwesomeTextResult(unittest.TestResult):
             if len(line) > 0:
                 yield line
 
-    def _indented(self, s, indent):
+    def _indented(self, s, indent=None):
+        indent = indent or self.testNoteIndent
         return indent + (("\n"+indent).join(self._skipBlank(s)))
 
     def _formatError(self, err):
         s = "".join(traceback.format_exception(*err))
-        print(self._indented(s, "    "))
+        print(self._indented(s), file=sys.stderr)
     
     def addError(self, test, err):
         super(AwesomeTextResult, self).addError(test, err)
-        print("{0}error{1}".format(bcolors.FAILED, bcolors.ENDC))
+        print(Colors("error", Colors.Error))
         self._formatError(err)
 
     def addFailure(self, test, err):
         super(AwesomeTextResult, self).addFailure(test, err)
-        print("{0}failure{1}".format(bcolors.FAILED, bcolors.ENDC))
+        print(Colors("failure", Colors.Failure))
         self._formatError(err)
 
     def addSuccess(self, test):
         super(AwesomeTextResult, self).addSuccess(test)
         self.success.append(test)
-        print("{0}ok{1}".format(bcolors.PASSED, bcolors.ENDC))
+        print(Colors("ok", Colors.Success))
 
     def addSkip(self, test, reason):
         super(AwesomeTextResult, self).addSkip(test, reason)
-        print("{0}skipped{1}".format(bcolors.OKBLUE, bcolors.ENDC))
-        print("    "+reason)
+        print(Colors("skip", Colors.Error))
+        print(self.testNoteIndent+reason)
 
     def addExpectedFailure(self, test, err):
         super(AwesomeTextResult, self).addExpectedFailure(test, err)
-        print("{0}expected failure{1}".format(bcolors.WARNING, bcolors.ENDC))
+        print(Colors("expected failure", Colors.ExpectedFailure))
         self._formatError(err)
 
     def addUnexpectedSuccess(self, test):
         super(AwesomeTextResult, self).addUnexpectedSuccess(test)
-        print("{0}unexpected success{1}".format(bcolors.WARNING, bcolors.ENDC))
+        print(Colors("unexpected success", Colors.UnexpectedSuccess))
 
     def _colouredNumber(self, count, nonZero="", zero=""):
-        return "{0}{2}{1}".format(zero if count == 0 else nonZero, bcolors.ENDC, count)
+        return Colors(unicode(count), zero if count == 0 else nonZero)
 
     def printStats(self, suite):
         passedCount = len(self.success)
@@ -92,22 +189,25 @@ class AwesomeTextResult(unittest.TestResult):
         expectedFailureCount = len(self.expectedFailures)
         unexpectedSuccessCount = len(self.unexpectedSuccesses)
 
-        passedColour = bcolors.WARNING
+        passedColour = Colors.Warning
         if passedCount == self.testsRun:
-            passedColour = bcolors.PASSED
+            passedColour = Colors.Success
         elif passedCount == 0:
-            passedColour = bcolors.FAILED
+            passedColour = Colors.Failure
         
-        print("{0}Statistics:{1}".format(bcolors.EMPH, bcolors.ENDC))
-        print("  passed                 : {0}{2}{1}".format(passedColour, bcolors.ENDC, passedCount))
-        print("  skipped                : {0}".format(self._colouredNumber(skippedCount, bcolors.OKBLUE, bcolors.PASSED)))
-        print("  expected failures      : {0}".format(self._colouredNumber(expectedFailureCount, bcolors.WARNING, bcolors.PASSED)))
-        print("  unexpected successes   : {0}".format(self._colouredNumber(unexpectedSuccessCount, bcolors.WARNING, bcolors.PASSED)))
-        print("  errors                 : {0}".format(self._colouredNumber(errorCount, bcolors.FAILED, bcolors.PASSED)))
-        print("  failures               : {0}".format(self._colouredNumber(failureCount, bcolors.FAILED, bcolors.PASSED)))
-        print("  total                  : {0}".format(self.testsRun))
+        testsTotal = suite.countTestCases()
+        print("{0} ({1} tests in total):".format(Colors("Statistics", Colors.Header), testsTotal))
+        print("  passed                 : {0}".format(Colors(passedCount, passedColour)))
+        print("  skipped                : {0}".format(self._colouredNumber(skippedCount, Colors.Skipped, Colors.Success)))
+        print("  expected failures      : {0}".format(self._colouredNumber(expectedFailureCount, Colors.ExpectedFailure, Colors.Success)))
+        print("  unexpected successes   : {0}".format(self._colouredNumber(unexpectedSuccessCount, Colors.UnexpectedSuccess, Colors.Success)))
+        print("  errors                 : {0}".format(self._colouredNumber(errorCount, Colors.Error, Colors.Success)))
+        print("  failures               : {0}".format(self._colouredNumber(failureCount, Colors.Failure, Colors.Success)))
+        print("  ran                    : {0}".format(Colors(self.testsRun, Colors.Success if self.testsRun == testsTotal else Colors.Warning)))
 
 results = AwesomeTextResult()
+results.ttyWidth = ttyWidth
 tests = loader.discover(os.getcwd(), "test_*.py")
+print("Running {0} unittests (detected from auto-discovery)".format(tests.countTestCases()))
 tests.run(results)
 results.printStats(tests)

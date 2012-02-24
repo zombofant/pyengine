@@ -1,4 +1,4 @@
-# File name: test_unittest.py
+# File name: limits.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -22,35 +22,17 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
-import unittest
 
-class TestUnittest(unittest.TestCase):
-    @unittest.expectedFailure
-    def test_expectedFailure(self):
-        self.assertTrue(False)
+from OpenGL.GL.ARB import *
+from OpenGL.GL.glget import *
+from OpenGL.GL.glget import addGLGetConstant
+addGLGetConstant(0x880F, (1,) )
 
-    @unittest.skip("Because we can")
-    def test_skip(self):
-        pass
-
-    @unittest.expectedFailure
-    def test_unexpectedSuccess(self):
-        pass
-
-    def test_pass(self):
-        pass
-
-    def test_error(self):
-        raise Exception()
-
-    def test_failure(self):
-        self.assertTrue(False)
-        
-class TestUnittest2(unittest.TestCase):
-    def runTest(self):
-        self.assertTrue(False)
-
-# Only for testing the unittest framework output. Remove del to test
-# output for all cases.
-del TestUnittest
-del TestUnittest2
+def getAll():
+    global MAX_PROGRAM_NATIVE_TEX_INSTRUCTIONS_ARB
+    
+    MAX_PROGRAM_NATIVE_TEX_INSTRUCTIONS_ARB = glGetIntegerv(0x880F)
+    
+def printAll():
+    global MAX_PROGRAM_NATIVE_TEX_INSTRUCTIONS_ARB
+    print("Max native tex instructions: {0}".format(MAX_PROGRAM_NATIVE_TEX_INSTRUCTIONS_ARB))
