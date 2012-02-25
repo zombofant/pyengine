@@ -45,8 +45,10 @@ def MountDict():
 
 class Mount(object):
     def __init__(self, **kwargs):
-        assert self.__class__ is not Mount
         super(Mount, self).__init__(**kwargs)
+
+    def getRealPath(self, file):
+        return None
     
     def fileReadable(self, file):
         raise NotImplementedError("Mount.fileReadable not specified")

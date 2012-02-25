@@ -26,7 +26,16 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 import unittest
-from FileSystem import MountPriority, MountDict, FileSystem
+from FileSystem import MountPriority, MountDict, FileSystem, Mount
+
+class AbstractMount(unittest.TestCase):
+    def test_interface(self):
+        mount = Mount()
+        self.assertEqual(mount.getRealPath(""), None)
+        self.assertRaises(NotImplementedError, mount.fileReadable, "")
+        self.assertRaises(NotImplementedError, mount.fileWritable, "")
+        self.assertRaises(NotImplementedError, mount.open, "", "r")
+        del mount
 
 class MountPriorities(unittest.TestCase):
     def test_priorities(self):
