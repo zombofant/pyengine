@@ -32,19 +32,19 @@ class Manager(object):
     def __init__(self):
         self._resources = {}
 
-    def _open(self, uri, "r"):
+    def _open(self, uri):
         raise NotImplementedError("Cannot open yet—this requires a VFS.")
 
     def require(self, uri, loaderCall, requiredClass):
         if uri in self._resources:
             instance = self._resources[uri]
             if not isinstance(instance, requiredClass):
-                raise TypeError("Existing resource for <{0}> has incompatible class {1} ({2} requested)".format(uri, type(instance), requiredClass)
+                raise TypeError("Existing resource for <{0}> has incompatible class {1} ({2} requested)".format(uri, type(instance), requiredClass))
         else:
             f = self._open(uri, "r")
             instance = loaderCall(f)
             assert isinstance(instance, Resource)
             if not isinstance(instance, requiredClass):
-                raise TypeError("Just created resource for <{0}> has incompatible class {1} ({2} requested)".format(uri, type(instance), requiredClass)
+                raise TypeError("Just created resource for <{0}> has incompatible class {1} ({2} requested)".format(uri, type(instance), requiredClass))
             self._resources[uri] = instance
         return instance
