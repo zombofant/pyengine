@@ -25,6 +25,9 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
+class VFSIOError(IOError):
+    pass
+
 class MountPriority(object):
     def __new__(cls):
         raise NotImplementedError("Not instanciatable")
@@ -94,24 +97,23 @@ class FileSystem(object):
                     return (key, i, path, obj)
         return None
 
-    def _findFile(self, filePath):
+    def _findFileMounts(self, filePath):
         for key, value in self._mounts:
             for path, obj in value:
                 if filePath.startswith(path):
                     if path == filePath:
                         continue
-                    return (path, filePath[len(path):], obj)
-        return None
+                    yield (path, filePath[len(path):], obj)
 
     def _sortMounts(self):
         for key, value in self._mounts:
             value.sort(key=lambda x: len(x[0]))
 
-    def _getFileMount(self, path):
+    def _getFileMounts(self, path):
         path = self._normalizePath(path)
         self._checkPath(path)
-        mountPoint, subPath, mount = self._findFile(path)
-        return mount, subPath
+        for mountPoint, subPath, mount in self._findFileMounts(path):
+            yield mount, subPath
 
     def mount(self, mountPoint, mountObject, priority):
         if not isinstance(mountObject, Mount):
@@ -121,20 +123,33 @@ class FileSystem(object):
             raise ValueError("Mount {0} is already mounted at {1} with priority {2}".format(existing[3], existing[2], existing[0]))
         path = self._normalizePath(mountPoint)
         self._checkPath(path)
-        existing = self._findMountPoint(path)
-        if existing is not None:
-            raise ValueError("Mount {0} is already mounted at {1} with priority {2}".format(existing[3], existing[2], existing[0]))
-        self._mountDict[priority].append(mountPoint, mountObject)
+        self._mountDict[priority].append(path, mountObject)
         self._sortMounts()
 
     def fileReadable(self, path):
-        mount, subPath = self._getFileMount(path)
-        return mount.fileReadable(path)
+        for mount, subPath in self._getFileMounts(path):
+            try:
+                if mount.fileReadable(path):
+                    return True
+            except IOError:
+                continue
+        return False
 
     def fileWritable(self, path):
-        mount, subPath = self._getFileMount(path)
-        return mount.fileWritable(path)
+        for mount, subPath in self._getFileMounts(path):
+            try:
+                if mount.fileWritable(path):
+                    return True
+            except IOError:
+                continue
+        return False
 
     def open(self, path, flag='r'):
-        mount, subPath = self._getFileMount(path)
-        return mount.open(subPath, flag)
+        for mount, subPath in self._getFileMounts(path):
+            try:
+                f = mount.open(subPath, flag)
+                if f is not None:
+                    return f
+            except IOError:
+                continue
+        raise VFSIOError("Cannot open file '{0}' with flags '{1}'".format(path, flag))

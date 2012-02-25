@@ -27,9 +27,9 @@ from our_future import *
 
 __all__ = ["GlobalVFS", "open"]
 
-#from FreeDesktop import XDGFileSystem
+from FileSystem import FileSystem
 
-#GlobalVFS = XDGFileSystem()
+GlobalVFS = FileSystem()
 
 def open(uri, flag, mode):
     return GlobalVFS.open(uri, flag, mode)
