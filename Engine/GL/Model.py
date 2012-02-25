@@ -24,8 +24,6 @@
 ########################################################################
 from __future__ import unicode_literals, print_function, division
 from our_future import *
-from OpenGL.GL import GL_TRIANGLES
-from pyglet.graphics import vertex_list_indexed
 import sys
 
 # Try to load pyglet. If it fails, we provide a fallback since this
@@ -33,8 +31,9 @@ import sys
 # not have a dependency on pyglet.
 try:
     from pyglet.graphics import vertex_list_indexed
+    from OpenGL.GL import GL_TRIANGLES
 except ImportError:
-    pass
+    raise NotImplemented('We need a fallback here')
 
 class Model(object):
     """
@@ -84,80 +83,4 @@ class Model(object):
     def indices(self):
         if self._vertexList is None: return None
         return self._vertexList.indices
-
-
-
-class ModelLoader(object):
-
-    def __init__(self):
-        super(ModelLoader, self).__init__()
-
-    def load(self, iterable):
-        """
-        This method has to be implemented by all ModelLoader subclasses and
-        returns an iterable containing faces.
-        """
-
-class OBJModelLoader(ModelLoader):
-    """
-    The OBJModelLoader provides a ModelLoader that is capable of loading
-    wavefront obj formatted geometric data.
-    """
-
-    def __init__(self):
-        super(OBJModelLoader, self).__init__()
-
-    def _packVertexData(self, faces, vertices, normals, texcoords):
-        """
-        Pack data in lists as expected by Model._setVertexData() and call it.
-        """
-        size = len(vertices) // 3
-        packed_normals, packed_texcoords = [None]*size*3, [None]*size*2
-        indices = []
-        for comps in [elems for f in faces for elems in f]:
-            vpos = comps[0]
-            indices.append(vpos)
-            if comps[1] is not None:
-                tpos = comps[1]
-                packed_texcoords[vpos*2:vpos*2+2] = texcoords[tpos*2:tpos*2+2]
-            if comps[2] is not None:
-                npos = comps[2]
-                packed_normals[vpos*3:vpos*3+3] = normals[npos*3:npos*3+3]
-        if None in packed_texcoords: packed_texcoords = None
-        if None in packed_normals: packed_normals = None
-        return (indices, vertices, packed_normals, packed_texcoords)
-
-    def load(self, iterable):
-        """
-        The actual geometry data loader.
-        Note: All faces in the obj data are expected to be triangles.
-        """
-        vertices, normals, texcoords, faces = [], [], [], []
-        for line in iterable:
-            if len(line) < 1 : continue
-            if line[0] == '#' : continue
-            parts = line.strip().split(' ')
-            if parts[0] == 'v':
-                vertices.extend([float(x) for x in parts[1:]])
-            elif parts[0] == 'vn':
-                normals.extend([float(x) for x in parts[1:]])
-            elif parts[0] == 'vt':
-                texcoords.extend([float(x) for x in parts[1:]])
-            elif parts[0] == 'f':
-                face = []
-                for fcomps in (part.split('/') for part in parts[1:]):
-                    fcomp = []
-                    for j in range(0,3):
-                        if len(fcomps) <= j or fcomps[j] == '':
-                            fcomp.append(None)
-                        else:
-                            fcomp.append(int(fcomps[j])-1)
-                    face.append(fcomp)
-                faces.append(face)
-            else:
-                #print("FIXME: Unhandled obj data: %s" % line, file=sys.stderr)
-                pass
-        if len(faces) < 1:
-            raise Exception('No faces found in geometric data!')
-        return self._packVertexData(faces, vertices, normals, texcoords)
 
