@@ -24,15 +24,24 @@
 ########################################################################
 from __future__ import unicode_literals, print_function, division
 from our_future import *
+from OpenGL.GL import GL_TRIANGLES
 from pyglet.graphics import vertex_list_indexed
 import sys
 
-"""
-The Model class stores 3D model data like vertices, normals,
-faces and texture coordinates, rotation, position, scale and so on.
-It also provides methods to modify and render the model using OpenGL.
-"""
+# Try to load pyglet. If it fails, we provide a fallback since this
+# class will be used by the dedicated server application which does
+# not have a dependency on pyglet.
+try:
+    from pyglet.graphics import vertex_list_indexed
+except ImportError:
+    pass
+
 class Model(object):
+    """
+    The Model class stores 3D model data like vertices, normals,
+    faces and texture coordinates, rotation, position, scale and so on.
+    It also provides methods to modify and render the model using OpenGL.
+    """
 
     def __init__(self):
         self._vertexList = None
@@ -44,15 +53,15 @@ class Model(object):
             self._vertexList = None
         self._faces = []
 
-    """
-    Set the vertex data. At least indices and vertices have to be passed in
-    order to construct the vertex list. Please not that a complete new
-    vertex list is created when calling this method. This means all previous
-    vertex data will be dropped.
-    Each vertex at a given position in the list of vertices corresponds to the
-    normal/texCoord at this position in the respective list (if not None)
-    """
     def _setVertexData(self, indices, vertices, normals=None, texCoords=None):
+        """
+        Set the vertex data. At least indices and vertices have to be passed
+        in order to construct the vertex list. Please not that a complete new
+        vertex list is created when calling this method. This means all
+        previous vertex data will be dropped.
+        Each vertex at a given position in the list of vertices corresponds to
+        the normal/texCoord at this position in the respective list (if not None)
+        """
         self._clear()
         size = len(vertices) // 3
         data = [('v3f/static', list(vertices))]
@@ -77,26 +86,31 @@ class Model(object):
         return self._vertexList.indices
 
 
-"""
-The OBJModel provides a Model interface with support for loading
-3d geometry wavefront obj formatted data.
-See http://www.martinreddy.net/gfx/3d/OBJ.spec for a format specification.
-"""
-class OBJModel(Model):
 
-    """
-    Construct an OBJModel instance.
-    An iterable may be supplied to load OBJ data from.
-    """
-    def __init__(self, iterableOBJData=None):
-        super(OBJModel, self).__init__()
-        if iterableOBJData is not None:
-            self.loadFromIterable(iterableOBJData)
+class ModelLoader(object):
 
+    def __init__(self):
+        super(ModelLoader, self).__init__()
+
+    def load(self, iterable):
+        """
+        This method has to be implemented by all ModelLoader subclasses and
+        returns an iterable containing faces.
+        """
+
+class OBJModelLoader(ModelLoader):
     """
-    Pack data in lists as expected by Model._setVertexData() and call it.
+    The OBJModelLoader provides a ModelLoader that is capable of loading
+    wavefront obj formatted geometric data.
     """
-    def _storeVertexData(self, faces, vertices, normals, texcoords):
+
+    def __init__(self):
+        super(OBJModelLoader, self).__init__()
+
+    def _packVertexData(self, faces, vertices, normals, texcoords):
+        """
+        Pack data in lists as expected by Model._setVertexData() and call it.
+        """
         size = len(vertices) // 3
         packed_normals, packed_texcoords = [None]*size*3, [None]*size*2
         indices = []
@@ -111,13 +125,13 @@ class OBJModel(Model):
                 packed_normals[vpos*3:vpos*3+3] = normals[npos*3:npos*3+3]
         if None in packed_texcoords: packed_texcoords = None
         if None in packed_normals: packed_normals = None
-        self._setVertexData(indices, vertices, packed_normals, packed_texcoords)
+        return (indices, vertices, packed_normals, packed_texcoords)
 
-    """
-    The actual geometry data loader.
-    Note: All faces in the obj data are expected to be triangles.
-    """
-    def loadFromIterable(self, iterable):
+    def load(self, iterable):
+        """
+        The actual geometry data loader.
+        Note: All faces in the obj data are expected to be triangles.
+        """
         vertices, normals, texcoords, faces = [], [], [], []
         for line in iterable:
             if len(line) < 1 : continue
@@ -145,5 +159,5 @@ class OBJModel(Model):
                 pass
         if len(faces) < 1:
             raise Exception('No faces found in geometric data!')
-        self._storeVertexData(faces, vertices, normals, texcoords)
+        return self._packVertexData(faces, vertices, normals, texcoords)
 
