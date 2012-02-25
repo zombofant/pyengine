@@ -28,7 +28,7 @@ from our_future import *
 import unittest
 from FileSystem import MountPriority, MountDict, FileSystem
 
-class MountPriorityTest(unittest.TestCase):
+class MountPriorities(unittest.TestCase):
     def test_priorities(self):
         self.assertGreater(MountPriority.Discriminated, MountPriority.PractiallyInexistant)
         self.assertGreater(MountPriority.Fallback, MountPriority.Discriminated)
@@ -47,3 +47,14 @@ class MountPriorityTest(unittest.TestCase):
         dict, list = MountDict()
         for key, value in list:
             self.assertIs(dict[key], value)
+
+class FileSystemInstanceTest(unittest.TestCase):
+    def setUp(self):
+        self.instance = FileSystem()
+
+    def tearDown(self):
+        del self.instance
+
+class FileSystemMount(FileSystemInstanceTest):
+    def test_typeCheck(self):
+        self.assertRaises(TypeError, self.instance.mount, "/", int, MountPriority.FileSystem)

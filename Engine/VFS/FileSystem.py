@@ -44,7 +44,18 @@ def MountDict():
     return (d, l)
 
 class Mount(object):
-    pass
+    def __init__(self, **kwargs):
+        assert self.__class__ is not Mount
+        super(Mount, self).__init__(**kwargs)
+    
+    def fileReadable(self, file):
+        raise NotImplementedError("Mount.fileReadable not specified")
+
+    def fileWritable(self, file):
+        raise NotImplementedError("Mount.fileWritable not specified")
+
+    def open(self, file, flag):
+        raise NotImplementedError("Mount.open not specified")
 
 class FileSystem(object):
     def __init__(self, **kwargs):
@@ -85,7 +96,20 @@ class FileSystem(object):
         for key, value in self._mounts:
             for path, obj in value:
                 if filePath.startswith(path):
-                    return obj
+                    if path == filePath:
+                        continue
+                    return (path, filePath[len(path):], obj)
+        return None
+
+    def _sortMounts(self):
+        for key, value in self._mounts:
+            value.sort(key=lambda x: len(x[0]))
+
+    def _getFileMount(self, path):
+        path = self._normalizePath(path)
+        self._checkPath(path)
+        mountPoint, subPath, mount = self._findFile(path)
+        return mount, subPath
 
     def mount(self, mountPoint, mountObject, priority):
         if not isinstance(mountObject, Mount):
@@ -101,5 +125,14 @@ class FileSystem(object):
         self._mountDict[priority].append(mountPoint, mountObject)
         self._sortMounts()
 
-    def open(self, uri, flag, mode):
-        pass
+    def fileReadable(self, path):
+        mount, subPath = self._getFileMount(path)
+        return mount.fileReadable(path)
+
+    def fileWritable(self, path):
+        mount, subPath = self._getFileMount(path)
+        return mount.fileWritable(path)
+
+    def open(self, path, flag='r'):
+        mount, subPath = self._getFileMount(path)
+        return mount.open(subPath, flag)
