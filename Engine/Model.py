@@ -24,7 +24,6 @@
 ########################################################################
 from __future__ import unicode_literals, print_function, division
 from our_future import *
-from OpenGL.GL import *
 from pyglet.graphics import vertex_list_indexed
 import sys
 
