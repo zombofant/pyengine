@@ -28,6 +28,15 @@ from our_future import *
 import platform
 
 def absolutify(path):
+    """
+    Attempts to create an absolute path from a segment of a relative
+    path.
+
+    If the path somehow leaves its own scope (like /../ does) a
+    ValueError is raised.
+
+    If the path misses a leading slash, it is added.
+    """
     segments = path.split('/')
     if len(segments[0]) == 0:
         del segments[0]

@@ -31,8 +31,6 @@ from Errors import VFSPermissionDeniedError, VFSFileNotFoundError, SemanticExcep
 from Utils import absolutify, normalizeVFSPath, isWriteFlag
 import StringIO
 
-# FIXME: Introduce proper Error classes
-
 class Mount(object):
     def __init__(self, **kwargs):
         super(Mount, self).__init__(**kwargs)
@@ -50,6 +48,10 @@ class Mount(object):
         raise NotImplementedError("Mount.open not specified")
 
 class MountDirectory(Mount):
+    """
+    Provides access to a real file system directory.
+    """
+    
     def __init__(self, path, readOnly=True, **kwargs):
         super(MountDirectory, self).__init__(**kwargs)
         self.path = os.path.realpath(os.path.abspath(path))

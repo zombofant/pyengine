@@ -22,15 +22,32 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
+u"""
+Implements the FreeDesktop.org basedir standard from
+<http://standards.freedesktop.org/basedir-spec/basedir-spec-0.8.html>
+"""
+
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 import os
 import platform
 
+XDGDefaults = {
+    'XDG_DATA_DIRS': '',
+    'XDG_CONFIG_DIRS': '',
+    'XDG_CONFIG_HOME': '',
+    'XDG_DATA_HOME': '',
+}
+"""
+Provides drop-in replacement defaults according to the basedir spec
+(with additional values for windows machines) for the environment
+variables defined by the spec.
+"""
+
 if platform.system() == "Linux":
     XDGDefaults = {
-        'XDG_DATA_DIRS': '/usr/local/share:/usr/share:.',
+        'XDG_DATA_DIRS': '/usr/local/share:/usr/share',
         'XDG_CONFIG_DIRS': '/etc/xdg',
         'XDG_CONFIG_HOME': '~/.config',
         'XDG_DATA_HOME': '~/.local/share',
@@ -54,18 +71,26 @@ def _splitDirs(dirs, appDirName):
             continue
         yield dir
 
-def __platform_includeCWD():
-    return platform.system() == "Windows"
+def getDirSet(globalKey, homeKey, appDirName):
+    """
+    Detects directories from environment variables named *globalKey*
+    and *homeKey* (or their drop-in replacements from *XDGDefaults*),
+    appending *appDirName*.
+    
+    The environment value behind *globalKey* is splitted using
+    *os.path.pathsep*, each element gets the *appDirName* appended using
+    *os.path.join*.
 
-def getDirSet(globalKey, homeKey, appDirName, includeCWD):
+    For *homeKey*, just *appDirName* gets appended. If a fallback to the
+    XDGDefaults dict is neccessary, os.path.expanduser is applied on it,
+    so that ~ gets replaced by the users home directory.
+    """
     globalDirs = _splitDirs(os.environ.get(globalKey, XDGDefaults[globalKey]), appDirName)
-    if includeCWD:
-        globalDirs.append(os.path.abspath('.'))
-
+    
     homeDir = os.path.join(os.environ.get(homeKey, os.path.expanduser(XDGDefaults[homeKey])), appDirName)
     return globalDirs, homeDir
 
-def requireDirs(appDirName, includeCWD=None):
+def requireDirs(appDirName):
     """
     Returns a tuple whose entries represent the recommended data
     and config paths respectively.
@@ -81,14 +106,11 @@ def requireDirs(appDirName, includeCWD=None):
     dataHome and configHome will always be set, directories are created
     as neccessary.
     """
-    if includeCWD is None:
-        includeCWD = __platform_includeCWD()
-
-    dataDirs, dataHome = getDirSet("XDG_DATA_DIRS", "XDG_DATA_HOME", appDirName, includeCWD)
+    dataDirs, dataHome = getDirSet("XDG_DATA_DIRS", "XDG_DATA_HOME", appDirName)
     if not os.path.isdir(dataHome):
         os.makedirs(dataHome)
 
-    configDirs, configHome = getDirSet("XDG_CONFIG_DIRS", "XDG_CONFIG_HOME", appDirName, includeCWD)
+    configDirs, configHome = getDirSet("XDG_CONFIG_DIRS", "XDG_CONFIG_HOME", appDirName)
     if not os.path.isdir(configHome):
         os.makedirs(configHome)
     
