@@ -24,7 +24,7 @@
 ########################################################################
 from Base import *
 
-class Shader(GLObject):
+class Shader(Object):
     def __init__(self, **kwargs):
         super(Shader, self).__init__(**kwargs)
         self.id = None

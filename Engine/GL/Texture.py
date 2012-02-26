@@ -26,7 +26,7 @@ from Base import *
 from Renderbuffer import RenderbufferBase
 import numpy as np
 
-class TextureBase(GLObject):
+class TextureBase(Object):
     def __init__(self, format=None, **kwargs):
         assert format is not None
         super(TextureBase, self).__init__(**kwargs)

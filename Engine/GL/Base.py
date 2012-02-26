@@ -25,10 +25,111 @@
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GL.framebufferobjects import *
+from pyglet.graphics import Group, OrderedGroup
 
-class GLObject(object):
-    def __init__(self):
+class Object(object):
+    def __init__(self, **kwargs):
+        super(Object, self).__init__(**kwargs)
         self.id = None
-        
-    def __del__(self):
+
+class StateObject(Object):
+    def bind(self):
+        self._bindFunc(self._bindClass, self.id)
+
+    @classmethod
+    def unbind(cls):
+        cls._bindFunc(self._bindClass, 0)
+
+class StateContext(object):
+    def __init__(self, stateObj, **kwargs):
+        super(StateContext, self).__init__(**kwargs)
+        self._bindCall = self._stateObj.bind
+        if isinstance(stateObj, StateObject):
+            self._unbindCall = type(self._stateObj).unbind
+        elif isinstance(stateObj, StateContext):
+            # FIXME: order the calls in a list instead of calling
+            # recursively
+            self._unbindCall = self._stateObj.unbind
+        else:
+            raise TypeError("StateContext requires a StateObject or a StateContext. Got {0} {1}".format(type(stateObj), stateObj))
+    
+    def setContext(self):
         pass
+
+    def bind(self):
+        self.setContext()
+        self._bindCall()
+
+    def unbind(self):
+        self.setContext()
+        self._unbindCall()
+
+class ActiveTexture(StateContext):
+    def __init__(self, stateObj, textureUnit, **kwargs):
+        super(ActiveTexture, self).__init__(stateObj, **kwargs)
+        self._textureUnit = textureUnit
+
+    def setContext(self):
+        glActiveTexture(self._textureUnit)
+
+class StateObjectGroup(Group):
+    def __init__(self, *args, **kwargs):
+        parent = None
+        # 2to3: this can be made better in python3 using keyword-only
+        # arguments
+        if "parent" in kwargs:
+            parent = kwargs["parent"]
+            del kwargs["parent"]
+        super(Group, self).__init__(parent, **kwargs)
+        setCalls = []
+        unsetCalls = []
+        for stateObj in args:
+            if isinstance(stateObj, Group):
+                setCalls.append(stateObj.set_state)
+                unsetCalls.append(stateObj.unset_state)
+            elif isinstance(stateObj, StateObject):
+                setCalls.append(stateObj.bind)
+                unsetCalls.append(type(stateObj).unbind)
+            elif isinstance(stateObj, StateContext):
+                setCalls.append(stateObj.bind)
+                unsetCalls.append(stateObj.unbind)
+        unsetCalls.reverse()
+        self._setCalls = tuple(setCalls)
+        self._unsetCalls = tuple(unsetCalls)
+
+    def set_state(self):
+        for call in self._setCalls:
+            call()
+
+    def unset_state(self):
+        for call in self._unsetCalls:
+            call()
+
+    def __hash__(self):
+        return hash((self._setCalls, self._unsetCalls))
+
+class OrderedStateObjectGroup(StateObjectGroup):
+    def __init__(self, *args, **kwargs):
+        order = 0
+        # 2to3: keyword-only argument
+        if "order" in kwargs:
+            order = kwargs["order"]
+            del kwargs["order"]
+        super(OrderedStateObjectGroup, self).__init__(*args, **kwargs)
+        self.order = order
+
+    # XXX: Is this a correct implementation? Mainly copied from
+    # pyglet/graphics/__init__.py, however it seems wrong to me.
+    def __cmp__(self, other):
+        if isinstance(other, (OrderedStateObjectGroup, OrderedGroup)):
+            return cmp(self.order, other.order)
+        return -1
+
+    def __eq__(self, other):
+        return (
+            (self.__class__ == other.__class__ or OrderedGroup == other.__class__) and
+            (self.order == other.order) and
+            (self.parent == other.parent))
+
+    def __hash__(self):
+        return hash((self.order, self.parent, self._setCalls, self._unsetCalls))

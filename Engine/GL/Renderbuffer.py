@@ -25,7 +25,7 @@
 from Base import *
 import numpy as np
 
-class RenderbufferBase(GLObject):
+class RenderbufferBase(Object):
     def __init__(self, width=None, height=None, **kwargs):
         assert width is not None
         assert height is not None
