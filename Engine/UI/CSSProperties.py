@@ -1,4 +1,4 @@
-# File name: BoxModel.py
+# File name: CSSProperties.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -25,7 +25,7 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-__all__ = ["Padding", "Margin", "Border"]
+__all__ = ["Padding", "Margin", "Border", "Background"]
 
 class BaseBox(object):
     def __init__(self, *args):
@@ -103,3 +103,7 @@ class Padding(BaseBox):
 
 class Border(object):
     pass
+
+class Background(object):
+    @property
+    

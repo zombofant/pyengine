@@ -84,6 +84,9 @@ class HasCSSClass(Selector):
         else:
             return None
 
+class Rule(object):
+    pass
+
 class Theme(object):
     def __init__(self, **kwargs):
         super(Theme, self).__init__(**kwargs)
@@ -96,6 +99,19 @@ class WidgetStyle(object):
         self._margin = Margin()
         self._background = Background()
 
+    def __iadd__(self, other):
+        if not isinstance(other, Rule):
+            return NotImplemented
+        if hasattr(other, "Border"):
+            self._border.assign(other.Border)
+        if hasattr(other, "Padding"):
+            self._padding.assign(other.Padding)
+        if hasattr(other, "Margin"):
+            self._margin.assign(other.Margin)
+        if hasattr(other, "Background"):
+            self._background.assign(other.Background)
+        return self
+        
     @property
     def Border(self):
         return self._border
