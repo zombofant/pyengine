@@ -28,7 +28,9 @@ from our_future import *
 import platform
 
 def absolutify(path):
-    segments = path.split('/')[1:]
+    segments = path.split('/')
+    if len(segments[0]) == 0:
+        del segments[0]
     i = 0
     while i < len(segments):
         segment = segments[i]
