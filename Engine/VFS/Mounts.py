@@ -27,6 +27,11 @@ from our_future import *
 
 import os.path
 
+from Utils import absolutify, normalizeVFSPath, isWriteFlag
+import StringIO
+
+# FIXME: Introduce proper Error classes
+
 class Mount(object):
     def __init__(self, **kwargs):
         super(Mount, self).__init__(**kwargs)
@@ -59,10 +64,53 @@ class MountDirectory(Mount):
         return (not self._readOnly) and os.access(self.getRealPath(path), os.W_OK)
 
     def open(self, path, flag):
-        if flag.startswith("w") and self._readOnly:
+        # FIXME: is this sufficient to detect a write access?
+        if self._readOnly and isWriteFlag(flag):
             raise IOError(13, "Permission denied: '"+self.getRealPath(path)+"'")
         return open(self.getRealPath(path), flag)
 
     @property
     def ReadOnly(self):
         return self._readOnly
+
+
+# FIXME: Implement write IO
+class MountVirtual(Mount):
+    """
+    Supports adding strings as text files in a virtual file system.
+    """
+    
+    def __init__(self, **kwargs):
+        super(MountVirtual, self).__init__(**kwargs)
+        self._files = {}
+
+    def _manglePath(self, path):
+        return absolutify(normalizeVFSPath(unicode(path)))
+
+    def __setitem__(self, vfspath, data):
+        vfspath = self._manglePath(vfspath)
+        if vfspath in self._files:
+            # FIXME: Decide on an error to raise here
+            pass
+        self._files[vfspath] = unicode(data)
+
+    def __delitem__(self, vfspath):
+        del self._files[self._manglePath(vfspath)]
+
+    def fileReadable(self, path):
+        return self._manglePath(path) in self._files
+
+    def fileWritable(self, path):
+        return False and (self._manglePath(path) in self._files)
+
+    def open(self, path, flag):
+        path = self._manglePath(path)
+        if isWriteFlag(flag):
+            raise IOError(13, "Permission denied: '"+path+"'")
+        if not path in self._files:
+            raise IOError(2, "No such file or directory: '"+path+"'")
+        return StringIO.StringIO(self._files[path])
+        
+    @property
+    def ReadOnly(self):
+        return True

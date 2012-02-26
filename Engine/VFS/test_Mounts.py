@@ -1,3 +1,4 @@
+# encoding=utf8
 # File name: test_Mounts.py
 # This file is part of: pyuni
 #
@@ -26,24 +27,25 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 import unittest
-from Mounts import Mount, MountDirectory
+import Mounts
 import os
 
 class AbstractMount(unittest.TestCase):
     def test_interface(self):
-        mount = Mount()
+        mount = Mounts.Mount()
         self.assertEqual(mount.getRealPath(""), None)
         self.assertRaises(NotImplementedError, mount.fileReadable, "")
         self.assertRaises(NotImplementedError, mount.fileWritable, "")
         self.assertRaises(NotImplementedError, mount.open, "", "r")
         del mount
 
+
 class MountDirectoryEquivalence(unittest.TestCase):
     def _translateModuleName(self):
         return os.path.join(*__name__.split(".")) + ".py"
     
     def setUp(self):
-        self.instance = MountDirectory(os.getcwd(), readOnly=False)
+        self.instance = Mounts.MountDirectory(os.getcwd(), readOnly=False)
         self.modulePath = self._translateModuleName()
         self.realPath = os.path.join(os.getcwd(), self.modulePath)
 
@@ -67,10 +69,11 @@ class MountDirectoryEquivalence(unittest.TestCase):
         del self.modulePath
         del self.realPath
 
+
 class MountDirectoryReadOnly(MountDirectoryEquivalence):
     def setUp(self):
         super(MountDirectoryReadOnly, self).setUp()
-        self.instance = MountDirectory(os.getcwd(), readOnly=True)
+        self.instance = Mounts.MountDirectory(os.getcwd(), readOnly=True)
 
     def test_init(self):
         self.assertTrue(self.instance.ReadOnly)
@@ -80,4 +83,39 @@ class MountDirectoryReadOnly(MountDirectoryEquivalence):
 
     def test_openw(self):
         self.assertRaises(IOError, self.instance.open, self.modulePath, "w")
-        
+
+
+class MountVirtual(unittest.TestCase):
+    def setUp(self):
+        self.instance = Mounts.MountVirtual()
+
+    def test_readOnly(self):
+        self.assertTrue(self.instance.ReadOnly)
+
+    def test_add(self):
+        path = "/test.txt"
+        data = """Meow"""
+        self.assertFalse(self.instance.fileReadable(path))
+        self.instance[path] = data
+        self.assertTrue(self.instance.fileReadable(path))
+        self.assertEqual(self.instance.open(path, "r").read(), data)
+
+    def test_addASCII(self):
+        path = "/test.txt"
+        data = b"""Meow"""
+        self.instance[path] = data
+        self.assertTrue(self.instance.fileReadable(path))
+        self.assertEqual(str(self.instance.open(path, "r").read()), data)
+
+    def test_addLatin1(self):
+        path = "/test.txt"
+        data = """Meöw""".encode("latin1")
+        self.assertRaises(UnicodeDecodeError, self.instance.__setitem__, path, data)
+
+    def test_addUTF8(self):
+        path = "/test.txt"
+        data = """Meöw""".encode("utf8")
+        self.assertRaises(UnicodeDecodeError, self.instance.__setitem__, path, data)
+    
+    def tearDown(self):
+        del self.instance

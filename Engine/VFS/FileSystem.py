@@ -25,8 +25,10 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-from Mounts import Mount, MountDirectory
 import Engine.FreeDesktop as FreeDesktop
+
+from Utils import normalizeVFSPath, validateVFSPath
+from Mounts import Mount, MountDirectory
 
 class VFSIOError(IOError):
     pass
@@ -53,22 +55,6 @@ class FileSystem(object):
     def __init__(self, **kwargs):
         super(FileSystem, self).__init__(**kwargs)
         self._mountDict, self._mounts = MountDict()
-
-    def _normalizePath(self, path):
-        path = path.replace('\\', '/')
-        if len(path) > 1 and path[-1] == '/':
-            path = path[:-1]
-        return path
-
-    def _checkPath(self, path):
-        nodes = path.split('/')
-        if len(nodes[0]) > 0:
-            raise ValueError("Paths must start with /")
-        for node in nodes[1:]:
-            if node == "." or node == "..":
-                raise ValueError("Relative paths are not allowed")
-            if len(node) == 0:
-                raise ValueError("// must not occur in a path")
 
     def _findMount(self, mount):
         for key, value in self._mounts:
@@ -97,8 +83,8 @@ class FileSystem(object):
             value.sort(key=lambda x: len(x[0]))
 
     def _getFileMounts(self, path):
-        path = self._normalizePath(path)
-        self._checkPath(path)
+        path = normalizeVFSPath(path)
+        validateVFSPath(path)
         for mountPoint, subPath, mount in self._findFileMounts(path):
             yield mount, subPath
 
@@ -108,8 +94,8 @@ class FileSystem(object):
         existing = self._findMount(mountObject)
         if existing is not None:
             raise ValueError("Mount {0} is already mounted at {1} with priority {2}".format(existing[3], existing[2], existing[0]))
-        path = self._normalizePath(mountPoint)
-        self._checkPath(path)
+        path = normalizeVFSPath(mountPoint)
+        validateVFSPath(path)
         self._mountDict[priority].append(path, mountObject)
         self._sortMounts()
 
