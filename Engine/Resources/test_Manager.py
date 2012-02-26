@@ -1,4 +1,5 @@
-# File name: test_Resource.py
+# encoding=utf8
+# File name: test_Manager.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -26,7 +27,15 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 import unittest
-from Base import Resource
+from Manager import ResourceManager
 
-class ResourceTest(unittest.TestCase):
-    pass
+class ResourceManagerTest(unittest.TestCase):
+    def _encodedDataIterable(self, encoding):
+        return (line.encode(encoding) for line in self.data.split("\n"))
+
+class ResourceManagerSingletonTest(unittest.TestCase):
+    def test_singleton(self):
+        instanceA, instanceB = ResourceManager(), ResourceManager()
+        self.assertEqual(instanceA, instanceB)
+        del instanceA, instanceB
+

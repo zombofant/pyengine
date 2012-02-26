@@ -1,5 +1,4 @@
-# encoding=utf8
-# File name: test_Text.py
+# File name: test_ResourceLoader.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -27,35 +26,7 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 import unittest
-from Text import TextLoader
+from Base import ResourceLoader
 
-class TextTest(unittest.TestCase):
-    def _encodedDataIterable(self, encoding):
-        return (line.encode(encoding) for line in self.data.split("\n"))
-
-class TextInitTest(unittest.TestCase):
-    def test_init(self):
-        data = """foo bar
-this is a blindtext"""
-        instance = TextLoader()
-        result = instance.load(data.split("\n"))
-        self.assertEqual(result, data)
-        del instance
-        
-class TextEncodingTest(TextTest):
-    def setUp(self):
-        self.data = "✔"
-
-    def test_encodingUTF8(self):
-        instance = TextLoader()
-        result = instance.load(self._encodedDataIterable("utf8"))
-        self.assertEqual(result, self.data)
-        del instance
-
-    def test_decodeError(self):
-        instance = TextLoader()
-        self.assertRaises(UnicodeDecodeError, instance.load, self._encodedDataIterable("utf8"), None, encoding="ascii")
-        del instance
-
-    def tearDown(self):
-        del self.data
+class ResourceLoaderTest(unittest.TestCase):
+    pass

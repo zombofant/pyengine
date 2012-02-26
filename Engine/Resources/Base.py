@@ -25,8 +25,47 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-class Resource(object):
-    def __init__(self, fileLike, **kwargs):
+class ResourceLoader(object):
+
+    def __init__(self, **kwargs):
         # do not allow direct instanciation
-        assert self.__class__ != Resource
-        super(Resource, self).__init__(**kwargs)
+        assert self.__class__ != ResourceLoader
+        super(ResourceLoader, self).__init__(**kwargs)
+
+    def load(self, fileLike, targetClass=None, **loaderArgs):
+        """
+        The actual loader that returns the loaded instance.
+        This has to be overwritten by all subclasses.
+        """
+        raise Exception('You forgot to overwrite the load() method!')
+        return None
+
+    def supportedTargetClasses(self):
+        """
+        Return the list of supported target classes.
+        This has to be overwritten by all subclasses.
+        """
+        raise Exception('You forgot to overwrite supportedTargetClasses!')
+        return []
+
+    def defaultTargetClass(self):
+        """
+        Return the default target class this loader creates when loading.
+        Defaults to the first class in supportedTargetClasses().
+        This method may be overwritten by subclasses if necessary.
+        """
+        return self.supportedTargetClasses()[0]
+
+    def resourceTypes(self):
+        """
+        Return the resource type this loader is able to load.
+        This method has to be overwritten by all subclasses.
+        """
+        raise Exception('You forgot to overwrite resourceType()!')
+        return []
+
+# every resource loader should have a line like the one below at the end of
+# its file in order to register an instance of itself with the resource manager
+#from Manager import ResourceManager
+#ResourceManager().registerResourceLoader(MyResourceLoader())
+
