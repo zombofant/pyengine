@@ -96,13 +96,13 @@ class FileSystem(object):
             raise ValueError("Mount {0} is already mounted at {1} with priority {2}".format(existing[3], existing[2], existing[0]))
         path = normalizeVFSPath(mountPoint)
         validateVFSPath(path)
-        self._mountDict[priority].append(path, mountObject)
+        self._mountDict[priority].append((path, mountObject))
         self._sortMounts()
 
     def fileReadable(self, path):
         for mount, subPath in self._getFileMounts(path):
             try:
-                if mount.fileReadable(path):
+                if mount.fileReadable(subPath):
                     return True
             except IOError:
                 continue
@@ -111,7 +111,7 @@ class FileSystem(object):
     def fileWritable(self, path):
         for mount, subPath in self._getFileMounts(path):
             try:
-                if mount.fileWritable(path):
+                if mount.fileWritable(subPath):
                     return True
             except IOError:
                 continue

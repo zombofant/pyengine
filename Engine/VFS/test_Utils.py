@@ -54,6 +54,11 @@ class NormalizeVFSPath(unittest.TestCase):
         path = "/with/trailing/slash/"
         self.assertEqual(path[:-1], normalizeVFSPath(path))
 
+    def test_singleFile(self):
+        path_bad = "test.txt"
+        path_good = "/test.txt"
+        self.assertEqual(path_good, absolutify(path_bad))
+
 class ValidateVFSPath(unittest.TestCase):
     def test_goodPath(self):
         path = "/some/okay/vfs/path"
