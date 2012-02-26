@@ -27,7 +27,7 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 import unittest
-from Text import Text
+from Text import TextLoader
 
 class TextTest(unittest.TestCase):
     def _encodedDataIterable(self, encoding):
@@ -37,20 +37,25 @@ class TextInitTest(unittest.TestCase):
     def test_init(self):
         data = """foo bar
 this is a blindtext"""
-        instance = Text(data.split("\n"))
-        self.assertEqual(instance.Contents, data)
+        instance = TextLoader()
+        result = instance.load(data.split("\n"))
+        self.assertEqual(result, data)
+        del instance
         
 class TextEncodingTest(TextTest):
     def setUp(self):
         self.data = "✔"
 
     def test_encodingUTF8(self):
-        instance = Text(self._encodedDataIterable("utf8"))
-        self.assertEqual(instance.Contents, self.data)
+        instance = TextLoader()
+        result = instance.load(self._encodedDataIterable("utf8"))
+        self.assertEqual(result, self.data)
         del instance
 
     def test_decodeError(self):
-        self.assertRaises(UnicodeDecodeError, Text, self._encodedDataIterable("utf8"), encoding="ascii")
+        instance = TextLoader()
+        self.assertRaises(UnicodeDecodeError, instance.load, self._encodedDataIterable("utf8"), None, encoding="ascii")
+        del instance
 
     def tearDown(self):
         del self.data

@@ -25,9 +25,22 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-from Base import Resource
+from Base import ResourceLoader
 
-class Text(Resource):
-    def __init__(self, fileLike, encoding="utf8", **kwargs):
-        self.Contents = "\n".join((line.decode(encoding) for line in fileLike))
-        super(Text, self).__init__(fileLike, **kwargs)
+class TextLoader(ResourceLoader):
+
+    def __init__(self, **kwargs):
+        super(TextLoader, self).__init__(**kwargs)
+
+    def load(self, fileLike, targetClass=str, encoding="utf8"):
+        return "\n" . join((line.decode(encoding) for line in fileLike))
+
+    def supportedTargetClasses(self):
+        return [unicode, str]
+
+    def resourceTypes(self):
+        return ['txt']
+
+from Manager import ResourceManager
+ResourceManager().registerResourceLoader(TextLoader())
+

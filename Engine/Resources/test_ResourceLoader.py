@@ -1,4 +1,4 @@
-# File name: test_Resource.py
+# File name: test_ResourceLoader.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -26,7 +26,7 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 import unittest
-from Base import Resource
+from Base import ResourceLoader
 
-class ResourceTest(unittest.TestCase):
+class ResourceLoaderTest(unittest.TestCase):
     pass
