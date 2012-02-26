@@ -32,7 +32,7 @@ class ResourceLoader(object):
         assert self.__class__ != ResourceLoader
         super(ResourceLoader, self).__init__(**kwargs)
 
-    def load(self, fileLike, targetClass=None):
+    def load(self, fileLike, targetClass=None, **loaderArgs):
         """
         The actual loader that returns the loaded instance.
         This has to be overwritten by all subclasses.
@@ -45,7 +45,7 @@ class ResourceLoader(object):
         Return the list of supported target classes.
         This has to be overwritten by all subclasses.
         """
-        raise Exception('You forgot to overwrite getSupportedTargetClasses!')
+        raise Exception('You forgot to overwrite supportedTargetClasses!')
         return []
 
     def defaultTargetClass(self):
@@ -61,7 +61,7 @@ class ResourceLoader(object):
         Return the resource type this loader is able to load.
         This method has to be overwritten by all subclasses.
         """
-        raise Exception('You forgot to overwrite getResourceType()!')
+        raise Exception('You forgot to overwrite resourceType()!')
         return []
 
 # every resource loader should have a line like the one below at the end of

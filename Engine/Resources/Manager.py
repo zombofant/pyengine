@@ -99,7 +99,7 @@ class ResourceManager(object):
     def _resourceTypeFromURI(self, uri):
         pId = str(uri).rfind('.')
         if pId > -1:
-            return uri[pId+1:]
+            return uri[pId+1:].lower()
         raise TypeError('Cannot get resource type from uri: {0}'.format(uri))
 
     def require(self, uri, resourceType=None, requiredClass=None, **loaderArgs):

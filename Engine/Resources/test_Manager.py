@@ -1,4 +1,5 @@
-# File name: Text.py
+# encoding=utf8
+# File name: test_Manager.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -25,25 +26,16 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-from Base import ResourceLoader
-
-class TextLoader(ResourceLoader):
-
-    def __init__(self, **kwargs):
-        super(TextLoader, self).__init__(**kwargs)
-
-    def load(self, fileLike, targetClass=None, encoding="utf8"):
-        # since the load code is the same for all supported target classes
-        # we just ignore the targetClass parameter here
-        return "\n" . join((line.decode(encoding) for line in fileLike))
-
-    def supportedTargetClasses(self):
-        return [unicode, str]
-
-    def resourceTypes(self):
-        return ['txt']
-
-# register an instance of TextLoader with the resource manager
+import unittest
 from Manager import ResourceManager
-ResourceManager().registerResourceLoader(TextLoader())
+
+class ResourceManagerTest(unittest.TestCase):
+    def _encodedDataIterable(self, encoding):
+        return (line.encode(encoding) for line in self.data.split("\n"))
+
+class ResourceManagerSingletonTest(unittest.TestCase):
+    def test_singleton(self):
+        instanceA, instanceB = ResourceManager(), ResourceManager()
+        self.assertEqual(instanceA, instanceB)
+        del instanceA, instanceB
 
