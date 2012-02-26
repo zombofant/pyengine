@@ -25,32 +25,71 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-from FileSystem import FileSystem
-from Mounts import MountDirectory
-
 import os
 import platform
 
 if platform.system() == "Linux":
     XDGDefaults = {
-        'XDG_DATA_DIRS': '/usr/local/share:/usr/share',
+        'XDG_DATA_DIRS': '/usr/local/share:/usr/share:.',
         'XDG_CONFIG_DIRS': '/etc/xdg',
         'XDG_CONFIG_HOME': '~/.config',
-        'XDG_DATA_HOME': '~/.local/share'
+        'XDG_DATA_HOME': '~/.local/share',
     }
 elif platform.system() == "Windows":
-    # FIXME: add XDG defaults for windows
-    raise NotImplementedError("nothing to see here yet.")
+    XDGDefaults = {
+        'XDG_DATA_DIRS': '',
+        'XDG_CONFIG_DIRS': '',
+        'XDG_CONFIG_HOME': '~/.config',
+        'XDG_DATA_HOME': '~/.local/share',
+    }
+else:
+    raise NotImplementedError("XDG paths are not defined on {0}".format(platform.system()))
     
-def _splitDirs(dirs):
-    # TODO: split directories.
+def _splitDirs(dirs, appDirName):
     for dir in dirs.split(os.path.pathsep):
-        pass
+        if len(dir) == 0:
+            continue
+        dir = os.path.join(os.path.abspath(dir), appDirName)
+        if not os.path.isdir(dir):
+            continue
+        yield dir
 
-def XDGFileSystem(applicationName):
-    fs = FileSystem()
-    userDir = os.path.expanduser("~")
-    dataDirs = os.environ.get('XDG_DATA_DIRS', '/usr/local/share/:/usr/share/')
+def platform_includeCWD():
+    return platform.system() == "Windows"
 
-    # TODO
-    # fs.mount('/data', MountDirectory()
+def getDirSet(globalKey, homeKey, appDirName, includeCWD):
+    globalDirs = _splitDirs(os.environ.get(globalKey, XDGDefaults[globalKey]), appDirName)
+    if includeCWD:
+        globalDirs.append(os.path.abspath('.'))
+
+    homeDir = os.path.join(os.environ.get(homeKey, os.path.expanduser(XDGDefaults[homeKey])), appDirName)
+    return globalDirs, homeDir
+
+def requireDirs(appDirName, includeCWD=None):
+    """
+    Returns a tuple whose entries represent the recommended data
+    and config paths respectively.
+    
+    The returned tuple has the following structure:
+    ``(dataDirs, dataHome, configDirs, configHome)``
+    with dataDirs and configDirs being lists and dataHome and configHome
+    being strings.
+    
+    dataDirs and configDirs may be empty if the directories they were
+    supposed to point to did not exist.
+    
+    dataHome and configHome will always be set, directories are created
+    as neccessary.
+    """
+    if includeCWD is None:
+        includeCWD = __platform_includeCWD()
+
+    dataDirs, dataHome = getDirSet("XDG_DATA_DIRS", "XDG_DATA_HOME", appDirName, includeCWD)
+    if not os.path.isdir(dataHome):
+        makedirs(dataHome)
+
+    configDirs, configHome = getDirSet("XDG_CONFIG_DIRS", "XDG_CONFIG_HOME", appDirName, includeCWD)
+    if not os.path.isdir(configHome):
+        makedirs(configHome)
+    
+    return dataDirs, dataHome, configDirs, configHome

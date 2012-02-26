@@ -26,8 +26,17 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 import unittest
-from Mounts import MountDirectory
+from Mounts import Mount, MountDirectory
 import os
+
+class AbstractMount(unittest.TestCase):
+    def test_interface(self):
+        mount = Mount()
+        self.assertEqual(mount.getRealPath(""), None)
+        self.assertRaises(NotImplementedError, mount.fileReadable, "")
+        self.assertRaises(NotImplementedError, mount.fileWritable, "")
+        self.assertRaises(NotImplementedError, mount.open, "", "r")
+        del mount
 
 class MountDirectoryEquivalence(unittest.TestCase):
     def _translateModuleName(self):

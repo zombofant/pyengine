@@ -25,8 +25,23 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-from FileSystem import Mount
 import os.path
+
+class Mount(object):
+    def __init__(self, **kwargs):
+        super(Mount, self).__init__(**kwargs)
+
+    def getRealPath(self, file):
+        return None
+    
+    def fileReadable(self, file):
+        raise NotImplementedError("Mount.fileReadable not specified")
+
+    def fileWritable(self, file):
+        raise NotImplementedError("Mount.fileWritable not specified")
+
+    def open(self, file, flag):
+        raise NotImplementedError("Mount.open not specified")
 
 class MountDirectory(Mount):
     def __init__(self, path, readOnly=True, **kwargs):

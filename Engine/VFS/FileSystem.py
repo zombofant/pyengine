@@ -25,6 +25,9 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
+from Mounts import Mount, MountDirectory
+import Engine.FreeDesktop as FreeDesktop
+
 class VFSIOError(IOError):
     pass
 
@@ -45,22 +48,6 @@ def MountDict():
     l = [(value, []) for value in values]
     d = dict(l)
     return (d, l)
-
-class Mount(object):
-    def __init__(self, **kwargs):
-        super(Mount, self).__init__(**kwargs)
-
-    def getRealPath(self, file):
-        return None
-    
-    def fileReadable(self, file):
-        raise NotImplementedError("Mount.fileReadable not specified")
-
-    def fileWritable(self, file):
-        raise NotImplementedError("Mount.fileWritable not specified")
-
-    def open(self, file, flag):
-        raise NotImplementedError("Mount.open not specified")
 
 class FileSystem(object):
     def __init__(self, **kwargs):
@@ -153,3 +140,16 @@ class FileSystem(object):
             except IOError:
                 continue
         raise VFSIOError("Cannot open file '{0}' with flags '{1}'".format(path, flag))
+
+class XDGFileSystem(FileSystem):
+    def _setupMounts(self, mountPoint, globalDirs, homeDir):
+        for dir in globalDirs:
+            mount(mountPoint, MountDirectory(dir, readOnly=True), MountPriorities.FileSystem)
+        mount(mountPoint, MountDirectory(homeDir, readOnly=False), MountPriorities.Important)
+    
+    def __init__(self, appDirName, dataMountPoint="/data", configMountPoint="/config", **kwargs):
+        super(XDGFileSystem, self).__init__(**kwargs)
+        dataDirs, dataHome, configDirs, configHome = FreeDesktop.requireDirs(appDirName)
+
+        self._setupMounts(dataMountPoint, dataDirs, dataHome)
+        self._setupMounts(configMountPoint, configDirs, configHome)
