@@ -54,7 +54,7 @@ def _splitDirs(dirs, appDirName):
             continue
         yield dir
 
-def platform_includeCWD():
+def __platform_includeCWD():
     return platform.system() == "Windows"
 
 def getDirSet(globalKey, homeKey, appDirName, includeCWD):
