@@ -102,7 +102,7 @@ class ResourceManager(object):
             return uri[pId+1:].lower()
         raise TypeError('Cannot get resource type from uri: {0}'.format(uri))
 
-    def require(self, uri, resourceType=None, requiredClass=None, **loaderArgs):
+    def require(self, uri, requiredClass=None, resourceType=None, **loaderArgs):
         """
         Load the given resource (or return cached instance).
         A resource can only be loaded if a loader is registered for the
