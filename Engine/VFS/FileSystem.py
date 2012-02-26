@@ -175,8 +175,8 @@ class XDGFileSystem(FileSystem):
     
     def _setupMounts(self, mountPoint, globalDirs, homeDir):
         for dir in globalDirs:
-            mount(mountPoint, MountDirectory(dir, readOnly=True), MountPriorities.FileSystem)
-        mount(mountPoint, MountDirectory(homeDir, readOnly=False), MountPriorities.Important)
+            self.mount(mountPoint, MountDirectory(dir, readOnly=True), MountPriority.FileSystem)
+        self.mount(mountPoint, MountDirectory(homeDir, readOnly=False), MountPriority.Important)
     
     def __init__(self, appDirName, dataMountPoint="/data", configMountPoint="/config", **kwargs):
         """
