@@ -1,4 +1,4 @@
-# File name: ModelData.py
+# File name: Model.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -25,52 +25,24 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-from Base import Resource
+from Base import ResourceLoader
+from Engine.GL.Model import Model
 
-class ModelData(Resource):
-    """
-    ModelData provides an interface to iterables pointing to 3D geometric
-    data that has been loaded from resources (e.g. model files exported
-    with blender).
-    """
-
-    def __init__(self, fileLike, loader=OBJModelLoader):
-        super(ModelData, self).__init__()
-        assert isinstance(loader, ModelLoader)
-        self._data = loader.load(fileLike)
-
-    def __getattr__(self, name):
-        if name in self._data: return self._data[name]
-        return None
-
-class ModelDataLoader(object):
-    """
-    ModelDataLoader is the base class of all model data loaders.
-    """
-
-    def __init__(self):
-        super(ModelLoader, self).__init__()
-        assert self.__class__ != ModelDataLoader
-
-    def load(self, iterable):
-        """
-        This method has to be implemented by all ModelLoader subclasses and
-        returns a dictionary containing the data.
-        """
-
-class OBJModelDataLoader(ModelDataLoader):
+class OBJModelLoader(ResourceLoader):
     """
     The OBJModelLoader provides a ModelLoader that is capable of loading
     wavefront obj formatted geometric data.
     """
 
     def __init__(self):
-        # FIXME: make singleton
-        super(OBJModelDataLoader, self).__init__()
+        super(OBJModelLoader, self).__init__()
+        self._supportedTargetClasses = [Model]
+        self._defaultTargetClass = Model
+        self._resourceTypes = ['obj']
 
     def _packVertexData(self, faces, vertices, normals, texcoords):
         """
-        Pack data in well formed lists as expected by ModelData.
+        Pack data in well formed lists.
         """
         size = len(vertices) // 3
         packed_normals, packed_texcoords = [None]*size*3, [None]*size*2
@@ -84,17 +56,17 @@ class OBJModelDataLoader(ModelDataLoader):
             if comps[2] is not None:
                 npos = comps[2]
                 packed_normals[vpos*3:vpos*3+3] = normals[npos*3:npos*3+3]
-        if None in packed_texcoords: packed_texcoords = []
-        if None in packed_normals: packed_normals = []
+        if None in packed_texcoords: packed_texcoords = None
+        if None in packed_normals: packed_normals = None
         return (indices, vertices, packed_normals, packed_texcoords)
 
-    def load(self, iterable):
+    def load(self, fileLike, targetClass=Model):
         """
         The actual geometry data loader.
-        Note: All faces in the obj data are expected to be triangles.
+        Note: All faces in the obj data are expected to be triangulated.
         """
         vertices, normals, texcoords, faces = [], [], [], []
-        for line in iterable:
+        for line in fileLike:
             if len(line) < 1 : continue
             if line[0] == '#' : continue
             parts = line.strip().split(' ')
@@ -122,6 +94,9 @@ class OBJModelDataLoader(ModelDataLoader):
             raise Exception('No faces found in geometric data!')
         # pack data into desired format and return it
         data = self._packVertexData(faces, vertices, normals, texcoords)
-        return {'indices': data[0], 'vertices': data[1],
-            'normals': data[2], 'texCoords': data[3]}
+        return Model(indices=data[0], vertices=data[1], normals=data[2], texCoords=data[3])
+
+# register loader with resource manager
+from Manager import ResourceManager
+ResourceManager().registerResourceLoader(OBJModelLoader())
 

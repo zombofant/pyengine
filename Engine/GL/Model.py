@@ -42,9 +42,11 @@ class Model(object):
     It also provides methods to modify and render the model using OpenGL.
     """
 
-    def __init__(self):
+    def __init__(self, indices=None, vertices=None, normals=None, texCoords=None):
         self._vertexList = None
         self._clear()
+        if indices is not None and vertices is not None:
+            self._setVertexData(indices, vertices, normals, texCoords)
 
     def _clear(self):
         if self._vertexList is not None:
