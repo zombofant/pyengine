@@ -1,5 +1,5 @@
 # encoding=utf8
-# File name: test_Text.py
+# File name: test_TextLoader.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -27,13 +27,13 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 import unittest
-from Text import TextLoader
+from TextLoader import TextLoader
 
-class TextTest(unittest.TestCase):
+class TextLoaderTest(unittest.TestCase):
     def _encodedDataIterable(self, encoding):
         return (line.encode(encoding) for line in self.data.split("\n"))
 
-class TextInitTest(unittest.TestCase):
+class TextLoaderInitTest(unittest.TestCase):
     def test_init(self):
         data = """foo bar
 this is a blindtext"""
@@ -42,7 +42,7 @@ this is a blindtext"""
         self.assertEqual(result, data)
         del instance
         
-class TextEncodingTest(TextTest):
+class TextLoaderEncodingTest(TextLoaderTest):
     def setUp(self):
         self.data = "✔"
 

@@ -28,7 +28,7 @@ from our_future import *
 class ResourceLoader(object):
     """
     The base class for all resource loader classes.
-    See the TextLoader in Text.py for a reference on how to implement
+    See the TextLoader in TextLoader.py for a reference on how to implement
     a resource loader class using ResourceLoader.
 
     Every resource loader should register itself to the resource manager

@@ -1,4 +1,4 @@
-# File name: Model.py
+# File name: ModelLoader.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -26,7 +26,8 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 from Base import ResourceLoader
-from Engine.GL.Model import Model
+from Engine.Model import Model
+from Engine.GL.RenderModel import RenderModel
 
 class OBJModelLoader(ResourceLoader):
     """
@@ -36,7 +37,7 @@ class OBJModelLoader(ResourceLoader):
 
     def __init__(self):
         super(OBJModelLoader, self).__init__()
-        self._supportedTargetClasses = [Model]
+        self._supportedTargetClasses = [Model, RenderModel]
         self._defaultTargetClass = Model
         self._resourceTypes = ['obj']
 
@@ -94,7 +95,11 @@ class OBJModelLoader(ResourceLoader):
             raise Exception('No faces found in geometric data!')
         # pack data into desired format and return it
         data = self._packVertexData(faces, vertices, normals, texcoords)
-        return Model(indices=data[0], vertices=data[1], normals=data[2], texCoords=data[3])
+        model = Model(indices = data[0], vertices = data[1], normals = data[2], texCoords =data[3])
+        if targetClass is Model:
+            return model
+        else:
+            return RenderModel(model)
 
 # register loader with resource manager
 from Manager import ResourceManager

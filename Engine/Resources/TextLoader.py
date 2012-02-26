@@ -1,4 +1,4 @@
-# File name: Text.py
+# File name: TextLoader.py
 # This file is part of: pyuni
 #
 # LICENSE
