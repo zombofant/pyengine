@@ -27,7 +27,6 @@ from our_future import *
 
 __all__ = ["AbstractWidget", "ParentWidget", "Widget"]
 
-import BoxModel
 from Rect import Rect
 
 class AbstractWidget(object):
@@ -100,9 +99,6 @@ class Widget(AbstractWidget):
         if not isinstance(parent, WidgetContainer):
             raise ValueError("Widget parent must be an instance of WidgetContainer (e.g. ParentWidget).")
         super(Widget, self).__init__(**kwargs)
-        self.Margin = BoxModel.Margin()
-        self.Padding = BoxModel.Padding()
-        self.Border = BoxModel.Border()
         self._parent = None
         self._flags = set()
         parent.add(self)

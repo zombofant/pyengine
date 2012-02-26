@@ -1,4 +1,4 @@
-# File name: test_BoxModel.py
+# File name: test_CSSProperties.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -22,7 +22,7 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
-import BoxModel
+import CSSProperties
 import unittest
 from random import randint
 
@@ -35,12 +35,12 @@ class BoxModelTest(unittest.TestCase):
 
 class BoxModelInit(BoxModelTest):
     def test_init0(self):
-        self.instance = BoxModel.BaseBox()
+        self.instance = CSSProperties.BaseBox()
         self.checkValues(0, 0, 0, 0)
 
     def test_init1(self):
         r = randint(0, 100)
-        self.instance = BoxModel.BaseBox(r)
+        self.instance = CSSProperties.BaseBox(r)
         self.checkValues(r, r, r, r)
 
     def test_init4(self):
@@ -49,7 +49,7 @@ class BoxModelInit(BoxModelTest):
         r = randint(1, 100) + l
         t = randint(1, 100) + r
         b = randint(1, 100) + t
-        self.instance = BoxModel.BaseBox(l, t, r, b)
+        self.instance = CSSProperties.BaseBox(l, t, r, b)
         self.checkValues(l, t, r, b)
 
     def tearDown(self):
@@ -57,7 +57,7 @@ class BoxModelInit(BoxModelTest):
 
 class BoxModelInstanceTest(BoxModelTest):
     def setUp(self):
-        self.instance = BoxModel.BaseBox()
+        self.instance = CSSProperties.BaseBox()
 
     def tearDown(self):
         del self.instance
