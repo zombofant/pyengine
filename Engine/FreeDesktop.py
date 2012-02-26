@@ -86,10 +86,10 @@ def requireDirs(appDirName, includeCWD=None):
 
     dataDirs, dataHome = getDirSet("XDG_DATA_DIRS", "XDG_DATA_HOME", appDirName, includeCWD)
     if not os.path.isdir(dataHome):
-        makedirs(dataHome)
+        os.makedirs(dataHome)
 
     configDirs, configHome = getDirSet("XDG_CONFIG_DIRS", "XDG_CONFIG_HOME", appDirName, includeCWD)
     if not os.path.isdir(configHome):
-        makedirs(configHome)
+        os.makedirs(configHome)
     
     return dataDirs, dataHome, configDirs, configHome
