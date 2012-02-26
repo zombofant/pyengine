@@ -27,6 +27,7 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 from Base import ResourceLoader
+from Engine.VFS.FileSystem import FileSystem
 
 class ResourceManager(object):
     """
@@ -42,17 +43,29 @@ class ResourceManager(object):
     # this is a simple singleton approach until we have a better one
     def __new__(cls, *args, **kwargs):
         if cls != type(cls.__singleton):
-            cls.__singleton = object.__new__(cls, *args, **kwargs)
+            cls.__singleton = super(type(ResourceManager), cls).__new__(cls, *args, **kwargs)
         return cls.__singleton
 
-    def __init__(self):
+    def __init__(self, fileSystem=None, **kwargs):
         if not hasattr(self, '_initialized'):
+            super(ResourceManager, self).__init__(**kwargs)
             self._resourceLoaders = {}
             self._resourceCache = {}
+            self._fileSystem = None
             self._initialized = True
 
+        # This bluntly and planned ignores the singletonness of
+        # ResourceManager. This allows for convinient setting of
+        # _fileSystem once.
+        if self._fileSystem is None and fileSystem is not None:
+            if not isinstance(fileSystem, FileSystem):
+                raise TypeError("FileSystem expected, got {0} {1}".format(type(fileSystem), fileSystem))
+            self._fileSystem = fileSystem
+
     def _open(self, uri, mode):
-        raise NotImplementedError("Cannot open yet—this requires a VFS.")
+        if self._fileSystem is None:
+            raise ValueError("Assign a file system first by calling ResourceManager(fileSystem=instance) first")
+        return self._fileSystem.open(uri, mode)
 
     def _findResourceLoader(self, resourceType, requiredClass):
         """
