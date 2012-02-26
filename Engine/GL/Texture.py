@@ -22,11 +22,16 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
+from __future__ import unicode_literals, print_function, division
+from our_future import *
+
 from Base import *
 from Renderbuffer import RenderbufferBase
 import numpy as np
 
-class TextureBase(Object):
+class TextureBase(BindableObject):
+    self._bindCall = glBindTexture
+    
     def __init__(self, format=None, **kwargs):
         assert format is not None
         super(TextureBase, self).__init__(**kwargs)
@@ -37,21 +42,14 @@ class TextureBase(Object):
         glDeleteTextures(np.array((self.id,)))
         super(TextureBase, self).__del__()
         
-    def bind(self):
-        glBindTexture(self._textureClass, self.id)
-        
     def __setitem__(self, key, value):
         if type(value) == int:
-            glTexParameteri(self._textureClass, key, value)
+            glTexParameteri(self._bindClass, key, value)
         else:
-            glTexParameterf(self._textureClass, key, value)
-        
-    @classmethod
-    def unbind(self):
-        glBindTexture(self._textureClass, 0)
+            glTexParameterf(self._bindClass, key, value)
         
 class Texture1D(TextureBase):
-    _textureClass = GL_TEXTURE_1D
+    _bindClass = GL_TEXTURE_1D
     
     def __init__(self, width=None, format=None, **kwargs):
         super(Texture1D, self).__init__(format=format, **kwargs)
@@ -68,7 +66,7 @@ class Texture1D(TextureBase):
         return self._dimensions
 
 class Texture2D(TextureBase, RenderbufferBase):
-    _textureClass = GL_TEXTURE_2D
+    _bindClass = GL_TEXTURE_2D
     
     def __init__(self, width=None, height=None, format=None, **kwargs):
         super(Texture2D, self).__init__(width=width, height=height, format=format, **kwargs)
@@ -79,9 +77,6 @@ class Texture2D(TextureBase, RenderbufferBase):
         self[GL_TEXTURE_WRAP_S] = GL_CLAMP_TO_EDGE
         self[GL_TEXTURE_WRAP_T] = GL_CLAMP_TO_EDGE
         Texture2D.unbind()
-        
-    def bind(self):
-        glBindTexture(GL_TEXTURE_2D, self.id)
         
     def attach(self, target):
         glFramebufferTexture2D(GL_FRAMEBUFFER, target, GL_TEXTURE_2D, self.id, 0)
