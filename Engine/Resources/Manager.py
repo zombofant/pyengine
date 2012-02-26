@@ -28,8 +28,6 @@ from our_future import *
 
 from Base import ResourceLoader
 
-# Note: Available loaders are imported at the end of this file
-
 class ResourceManager(object):
     """
     The resource manager provides access to resource loaders and caches
@@ -69,24 +67,24 @@ class ResourceManager(object):
         if resourceType in self._resourceLoaders:
             loader = self._resourceLoaders[resourceType]
             if requiredClass is None:
-                requiredClass = loader.defaultTargetClass()
-            if requiredClass in loader.supportedTargetClasses():
+                requiredClass = loader.defaultTargetClass
+            if requiredClass in loader.supportedTargetClasses:
                 return loader
             else:
-                raise Exception(
+                raise NotImplementedError(
                     "Loader for type '{0}' does not support target class <{1}>"
                     .format(resourceType, requiredClass))
         else:
-            raise Exception("No loader for type '{0}'".format(resourceType))
+            raise NotImplementedError("No loader for type '{0}'".format(resourceType))
 
     def _resourceCacheStore(self, uri, instance):
-        cacheId = "{0}_{1}".format(uri, type(instance))
+        cacheId = (uri, type(instance))
         if cacheId in self._resourceCache: # maybe this is more worth a exception?
             del self._resourceCache[cacheId]
         self._resourceCache[cacheId] = instance
 
     def _resourceCacheRead(self, uri, requiredClass):
-        cacheId = "{0}_{1}".format(uri, requiredClass)
+        cacheId = (uri, requiredClass)
         if cacheId in self._resourceCache:
             instance = self._resourceCache[cacheId]
             if not isinstance(instance, requiredClass):
@@ -97,7 +95,8 @@ class ResourceManager(object):
         return None
 
     def _resourceTypeFromURI(self, uri):
-        pId = str(uri).rfind('.')
+        # XXX: this will be replaced by a better vfs method soon
+        pId = uri.rfind('.')
         if pId > -1:
             return uri[pId+1:].lower()
         raise TypeError('Cannot get resource type from uri: {0}'.format(uri))
@@ -119,9 +118,9 @@ class ResourceManager(object):
             loader = self._findResourceLoader(resourceType, requiredClass)
             resFile = self._open(uri, "r")
             instance = loader.load(resFile, requiredClass, **loaderArgs)
-            # FIXME: close file handle
+            resFile.close()
             if requiredClass is None:
-                requiredClass = loader.defaultTargetClass()
+                requiredClass = loader.defaultTargetClass
             assert isinstance(instance, requiredClass) # sanity check
             self._resourceCacheStore(uri, instance)
         return instance
@@ -132,11 +131,8 @@ class ResourceManager(object):
         The loader has to be a subclass of ResourceLoader.
         """
         assert isinstance(loader, ResourceLoader)
-        for resourceType in loader.resourceTypes():
+        for resourceType in loader.resourceTypes:
             if resourceType in self._resourceLoaders:
                 raise Exception("Already registered a loader for type '{0}'".format(resourceType))
             self._resourceLoaders[resourceType] = loader
-
-# import all available loaders here
-from Text import TextLoader
 

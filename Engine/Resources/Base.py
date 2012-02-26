@@ -26,46 +26,62 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 class ResourceLoader(object):
+    """
+    The base class for all resource loader classes.
+    See the TextLoader in Text.py for a reference on how to implement
+    a resource loader class using ResourceLoader.
+
+    Every resource loader should register itself to the resource manager
+    by calling the managers registerResourceLoader() method in order to
+    be of any use.
+    """
 
     def __init__(self, **kwargs):
-        # do not allow direct instanciation
-        assert self.__class__ != ResourceLoader
+        """
+        Constructs a ResourceLoader class. ResourceLoader should never be
+        instantiated directly. All subclasses have to set the following
+        attributes to their apropriate values:
+            _supportedTargetClasses
+            _defaultTargetClass
+            _resourceTypes
+        See the property definitions below for more information on this
+        attributes and how they should look like.
+        """
         super(ResourceLoader, self).__init__(**kwargs)
+        self._supportedTargetClasses = []
+        self._defaultTargetClass = None
+        self._resourceTypes = []
 
     def load(self, fileLike, targetClass=None, **loaderArgs):
         """
         The actual loader that returns the loaded instance.
         This has to be overwritten by all subclasses.
         """
-        raise Exception('You forgot to overwrite the load() method!')
+        raise NotImplemented('You forgot to overwrite the load() method!')
         return None
 
+    @property
     def supportedTargetClasses(self):
         """
-        Return the list of supported target classes.
-        This has to be overwritten by all subclasses.
+        The list of supported target classes.
+        This property to be set by all subclasses.
         """
-        raise Exception('You forgot to overwrite supportedTargetClasses!')
-        return []
+        return self._supportedTargetClasses
 
+    @property
     def defaultTargetClass(self):
         """
-        Return the default target class this loader creates when loading.
+        The default target class this loader creates when loading.
         Defaults to the first class in supportedTargetClasses().
-        This method may be overwritten by subclasses if necessary.
+        This property may be set by subclasses if necessary.
         """
-        return self.supportedTargetClasses()[0]
+        return self._defaultTargetClass
 
+    @property
     def resourceTypes(self):
         """
-        Return the resource type this loader is able to load.
-        This method has to be overwritten by all subclasses.
+        The resource type this loader is able to load.
+        This property has to be set by all subclasses.
         """
-        raise Exception('You forgot to overwrite resourceType()!')
-        return []
-
-# every resource loader should have a line like the one below at the end of
-# its file in order to register an instance of itself with the resource manager
-#from Manager import ResourceManager
-#ResourceManager().registerResourceLoader(MyResourceLoader())
+        return self._resourceTypes
 
