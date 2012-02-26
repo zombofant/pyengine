@@ -72,7 +72,6 @@ class ResourceLoader(object):
     def defaultTargetClass(self):
         """
         The default target class this loader creates when loading.
-        Defaults to the first class in supportedTargetClasses().
         This property may be set by subclasses if necessary.
         """
         return self._defaultTargetClass
