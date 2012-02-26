@@ -124,16 +124,16 @@ class ResourceManager(object):
         If no requiredClass is given, the loaders default is used (which
         should be the right choice for most cases)
         """
+        if resourceType is None:
+            resourceType = self._resourceTypeFromURI(uri)
+        loader = self._findResourceLoader(resourceType, requiredClass)
+        if requiredClass is None:
+            requiredClass = loader.defaultTargetClass
         instance = self._resourceCacheRead(uri, requiredClass)
         if instance is None:
-            if resourceType is None:
-                resourceType = self._resourceTypeFromURI(uri)
-            loader = self._findResourceLoader(resourceType, requiredClass)
             resFile = self._open(uri, "r")
             instance = loader.load(resFile, requiredClass, **loaderArgs)
             resFile.close()
-            if requiredClass is None:
-                requiredClass = loader.defaultTargetClass
             assert isinstance(instance, requiredClass) # sanity check
             self._resourceCacheStore(uri, instance)
         return instance
