@@ -26,9 +26,11 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-import unittest
-import Mounts
 import os
+import unittest
+
+import Mounts
+import Errors
 
 class AbstractMount(unittest.TestCase):
     def test_interface(self):
@@ -58,6 +60,9 @@ class MountDirectoryEquivalence(unittest.TestCase):
     def test_open(self):
         self.assertIsInstance(self.instance.open(self.modulePath, "r"), file)
 
+    def test_openNOENT(self):
+        self.assertRaises(Errors.VFSFileNotFoundError, self.instance.open, "/some/bogus/path/to/a/bogus/file.bogus", "r")
+
     def test_readable(self):
         self.assertEqual(os.access(self.realPath, os.R_OK), self.instance.fileReadable(self.modulePath))
 
@@ -82,7 +87,7 @@ class MountDirectoryReadOnly(MountDirectoryEquivalence):
         self.assertFalse(self.instance.fileWritable(self.modulePath))
 
     def test_openw(self):
-        self.assertRaises(IOError, self.instance.open, self.modulePath, "w")
+        self.assertRaises(Errors.VFSPermissionDeniedError, self.instance.open, self.modulePath, "w")
 
 
 class MountVirtual(unittest.TestCase):
@@ -90,7 +95,14 @@ class MountVirtual(unittest.TestCase):
         self.instance = Mounts.MountVirtual()
 
     def test_readOnly(self):
+        path = "/test.txt"
+        data = """Meow"""
         self.assertTrue(self.instance.ReadOnly)
+        self.instance[path] = data
+        self.assertRaises(Errors.VFSPermissionDeniedError, self.instance.open, path, "w")
+
+    def test_openNOENT(self):
+        self.assertRaises(Errors.VFSFileNotFoundError, self.instance.open, "/anypath.txt", "r")
 
     def test_add(self):
         path = "/test.txt"

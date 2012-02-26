@@ -27,6 +27,7 @@ from our_future import *
 
 import os.path
 
+from Errors import VFSPermissionDeniedError, VFSFileNotFoundError, SemanticException
 from Utils import absolutify, normalizeVFSPath, isWriteFlag
 import StringIO
 
@@ -66,8 +67,14 @@ class MountDirectory(Mount):
     def open(self, path, flag):
         # FIXME: is this sufficient to detect a write access?
         if self._readOnly and isWriteFlag(flag):
-            raise IOError(13, "Permission denied: '"+self.getRealPath(path)+"'")
-        return open(self.getRealPath(path), flag)
+            raise VFSPermissionDeniedError(path)
+        try:
+            return open(self.getRealPath(path), flag)
+        except IOError as err:
+            newType = SemanticException.get(err.errno, None)
+            if newType is not None:
+                raise newType(path)
+            raise
 
     @property
     def ReadOnly(self):
@@ -106,9 +113,9 @@ class MountVirtual(Mount):
     def open(self, path, flag):
         path = self._manglePath(path)
         if isWriteFlag(flag):
-            raise IOError(13, "Permission denied: '"+path+"'")
+            raise VFSPermissionDeniedError(path)
         if not path in self._files:
-            raise IOError(2, "No such file or directory: '"+path+"'")
+            raise VFSFileNotFoundError(path)
         return StringIO.StringIO(self._files[path])
         
     @property
