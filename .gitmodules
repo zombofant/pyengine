@@ -9,3 +9,4 @@
 [submodule "utils/pyLR1"]
 	path = utils/pyLR1
 	url = https://github.com/sebastianriese/pyLR1
+	branch = master
