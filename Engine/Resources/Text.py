@@ -28,20 +28,22 @@ from our_future import *
 from Base import ResourceLoader
 
 class TextLoader(ResourceLoader):
+    """
+    Implement a loader for text resources.
+    """
 
     def __init__(self, **kwargs):
         super(TextLoader, self).__init__(**kwargs)
+        self._supportedTargetClasses = [unicode, str]
+        self._defaultTargetClass = unicode
+        self._resourceTypes = ['txt']
 
-    def load(self, fileLike, targetClass=None, encoding="utf8"):
-        # since the load code is the same for all supported target classes
-        # we just ignore the targetClass parameter here
-        return "\n" . join((line.decode(encoding) for line in fileLike))
-
-    def supportedTargetClasses(self):
-        return [unicode, str]
-
-    def resourceTypes(self):
-        return ['txt']
+    def load(self, fileLike, targetClass=unicode, encoding="utf8"):
+        text = "\n" . join((line.decode(encoding) for line in fileLike))
+        if targetClass is str:
+            return str(text)
+        else:
+            return unicode(text)
 
 # register an instance of TextLoader with the resource manager
 from Manager import ResourceManager
