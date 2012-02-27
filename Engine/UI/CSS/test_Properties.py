@@ -104,3 +104,27 @@ class BoxModelConstraints(BoxModelInstanceTest):
 
     def test_bottom(self):
         self.assertRaises(ValueError, self.setattrWrapper("Bottom", -1))
+
+class PropertyEq(BoxModelTest):
+    def test_BaseBox(self):
+        a, b = Properties.BaseBox(), Properties.BaseBox()
+        self.assertEqual(a, b)
+        a.Left = 10
+        b.Left = 10
+        self.assertEqual(a, b)
+        a.Left = 20
+        self.assertNotEqual(a, b)
+
+    def test_Border(self):
+        a, b = Properties.Border(), Properties.Border()
+        self.assertEqual(a, b)
+        a.Width = 10
+        b.Width = 10
+        self.assertEqual(a, b)
+        a.Width = 20
+        self.assertNotEqual(a, b)
+        b.Left.Width = 20
+        b.Right.Width = 20
+        a.Top.Width = 10
+        a.Bottom.Width = 10
+        self.assertEqual(a, b)

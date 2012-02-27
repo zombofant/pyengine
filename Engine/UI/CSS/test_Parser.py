@@ -30,6 +30,8 @@ import StringIO
 
 import Selectors
 import Rules
+import Values
+import Properties
 import Parser as _Parser
 
 class ParserInstanceTest(unittest.TestCase):
@@ -40,8 +42,6 @@ class ParserInstanceTest(unittest.TestCase):
     def _testRule(self, src, reference):
         parsedRule = self._parseCSS(src)[0]
         self.assertEqual(parsedRule, reference)
-        parsedRule = self._parseCSS(unicode(reference))[0]
-        self.assertEqual(parsedRule, reference)
     
     def setUp(self):
         self._parser = _Parser.Parser()
@@ -50,6 +50,11 @@ class ParserInstanceTest(unittest.TestCase):
         del self._parser
 
 class ParseSelectors(ParserInstanceTest):
+    def _testRule(self, src, reference):
+        super(ParseSelectors, self)._testRule(src, reference)
+        parsedRule = self._parseCSS(unicode(reference))[0]
+        self.assertEqual(parsedRule, reference)
+    
     def test_emptyRule(self):
         self._testRule(
             """
@@ -57,7 +62,7 @@ class ParseSelectors(ParserInstanceTest):
 
             }
             """,
-            Rules.Rule([Selectors.Is("test")], {})
+            Rules.Rule([Selectors.Is("test")], [])
         )
 
     def test_invalidSelector(self):
@@ -75,7 +80,7 @@ class ParseSelectors(ParserInstanceTest):
                 Selectors.AttributeClass("class1"),
                 Selectors.AttributeClass("class2"),
                 chained=Selectors.Is("test")
-            )], {})
+            )], [])
         )
 
     def test_attributes(self):
@@ -89,7 +94,7 @@ class ParseSelectors(ParserInstanceTest):
                 Selectors.AttributeExists("attr"),
                 Selectors.AttributeValue("attr2", "value"),
                 chained=Selectors.Is("test")
-            )], {})
+            )], [])
         )
 
     def test_nesting1(self):
@@ -102,7 +107,7 @@ class ParseSelectors(ParserInstanceTest):
             Rules.Rule([Selectors.DirectChildOf(
                 Selectors.Is("test1"),
                 chained=Selectors.Is("test2")
-            )], {})
+            )], [])
         )
         
 
@@ -116,7 +121,7 @@ class ParseSelectors(ParserInstanceTest):
             Rules.Rule([Selectors.ChildOf(
                 Selectors.Is("test1"),
                 chained=Selectors.Is("test2")
-            )], {})
+            )], [])
         )
 
     def test_complex(self):
@@ -144,5 +149,53 @@ class ParseSelectors(ParserInstanceTest):
                         )
                     )
                 )
-            ], {})
+            ], [])
         )
+
+class ParseProperties(ParserInstanceTest):
+    def _testRule(self, propsrc, **kwargs):
+        super(ParseProperties, self)._testRule(
+            """test {{ {0} }}""".format(propsrc),
+            Rules.Rule([Selectors.Is("test")], [], **kwargs)
+        )
+        
+    def _testBox(self, boxprop, boxkw, boxclass):
+        
+        kwargs = {boxkw: boxclass(1, 2, 3, 4)}
+        self._testRule(
+            """{0}: 1 2 3 4;""".format(boxprop),
+            **kwargs
+        )
+        
+        kwargs = {boxkw: boxclass(3, 2, 3, 4)}
+        self._testRule(
+            """{0}: 1 2 3 4;
+            {0}-left: 3;""".format(boxprop),
+            **kwargs
+        )
+        
+        kwargs = {boxkw: boxclass(1, 2, 3, 4)}
+        self._testRule(
+            """{0}-left: 3;
+            {0}: 1 2 3 4;""".format(boxprop),
+            **kwargs
+        )
+
+    @unittest.expectedFailure
+    def test_backgroundImage(self):
+        self._testRule(
+            """background: url("/data/images/test.png");""",
+            background=Properties.BackgroundImage(Values.Image("/data/images/test.png"))
+        )
+    
+    def test_backgroundColour(self):
+        self._testRule(
+            """background: rgba(0.1, 0.2, 0.3, 0.4);""",
+            background=Properties.BackgroundColour(Values.RGBA(0.1, 0.2, 0.3, 0.4))
+        )
+
+    def test_padding(self):
+        self._testBox("padding", "padding", Properties.Padding)
+
+    def test_margin(self):
+        self._testBox("margin", "margin", Properties.Margin)

@@ -26,7 +26,7 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 __all__ = ["Stretch", "Repeat", "Rect", "Repeats", "RGBA", "HSLA",
-    "HSVA", "GradientStep", "Gradient", "Image", "ImageRect"]
+    "HSVA", "GradientStep", "Gradient", "Image"]
 
 class Rect(object):
     def __init__(self, x, y, w, h):
@@ -56,7 +56,13 @@ class Repeats(object):
         self._y = yrepeat
 
 class Colour(object):
-    pass
+    def __eq__(self, other):
+        if not isinstance(other, Colour):
+            return NotImplemented
+        return (self._r == other._r and
+                self._g == other._g and
+                self._b == other._b and
+                self._a == other._a)
 
 
 class RGBA(Colour):
@@ -100,15 +106,8 @@ class Gradient(object):
 
 
 class Image(object):
-    def __init__(self, vfspath):
-        self._vfspath = vfspath
-
-
-class ImageRect(object):
-    def __init__(self, image, rect, repeat=None):
-        if not isinstance(image, Image):
-            raise TypeError("ImageRect needs an Image as first argument")
-        if not isinstance(rect, Rect):
+    def __init__(self, vfspath, rect=None, repeat=None):
+        if rect is not None and not isinstance(rect, Rect):
             raise TypeError("ImageRect needs a Rect as second argument")
         self._repeatX = Stretch
         self._repeatY = Stretch
@@ -117,5 +116,5 @@ class ImageRect(object):
                 raise TypeError("ImageRect needs a Repeats instance as repeat= argument")
             self._repeatX = repeat._x or self._repeatX
             self._repeatY = repeat._y or self._repeatY
-        self._image = image
+        self._vfspath = vfspath
         self._rect = rect

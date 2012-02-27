@@ -31,10 +31,10 @@ from Selectors import *
 from Selectors import AttributeClass, AttributeExists, AttributeValue
 from Values import *
 from Rules import Rule
+from Literals import *
 
 class StylesheetNamespace(object):
     image = Image
-    imagerect = ImageRect
     gradient = Gradient
     step = GradientStep
     rgba = RGBA
@@ -43,6 +43,7 @@ class StylesheetNamespace(object):
     stretch = Stretch
     repeat = Repeat
     rect = Rect
+    url = URLLiteral
 
     _tokenBlacklist = ["evaluateCall", "get"]
 
@@ -51,10 +52,9 @@ class StylesheetNamespace(object):
         return call(*args)
 
     def get(self, token):
-        token.tolower()
-        if token.startswith("_") or token in _tokenBlacklist or not hasattr(self, token):
+        token.lower()
+        if token.startswith("_") or token in self._tokenBlacklist or not hasattr(self, token):
             raise ValueError("Function {0} not defined in css".format(token))
         return getattr(self, token)
-        
 
 namespace = StylesheetNamespace()

@@ -25,10 +25,10 @@ rule:
 
 block:
     %empty:
-        $$.sem = {}
+        $$.sem = []
     block property:
         $$.sem = $1.sem
-        $$.sem.update($2.sem)
+        $$.sem.append($2.sem)
 
 propertyName:
     PROPTOKEN:
@@ -38,7 +38,7 @@ propertyName:
 
 property:
     propertyName ":" propvalue ";":
-        $$.sem = {$1.sem: $3.sem}
+        $$.sem = ($1.sem, $3.sem)
 
 selectors:
     selectors "," selector:
@@ -77,11 +77,7 @@ attribute:
         $$.sem = AttributeExists($1.sem)
 
 propvalue:
-    value:
-        $$.sem = $1.sem
-    boxliteral:
-        $$.sem = $1.sem
-    borderliteral:
+    complexliteral:
         $$.sem = $1.sem
     LCOLOURLITERAL:
         $$.sem = $1.sem[1:]
@@ -96,15 +92,11 @@ value:
     STRLITERAL:
         $$.sem = $1.sem
 
-boxliteral:
-    number number number number:
-        $$.sem = BaseBox($1.sem, $2.sem, $3.sem, $4.sem)
-    number number:
-        $$.sem = BaseBox($1.sem, $1.sem, $2.sem, $2.sem)
-
-borderliteral:
-    number TOKEN colourliteral:
-        raise NotImplementedError("Border literal not implemented (yet!)")
+complexliteral:
+    value:
+        $$.sem = ($1.sem, )
+    complexliteral value:
+        $$.sem = $1.sem + ($2.sem, )
 
 colourliteral:
     LCOLOURLITERAL:
