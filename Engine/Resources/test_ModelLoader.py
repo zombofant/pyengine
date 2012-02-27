@@ -76,7 +76,7 @@ class OBJModelLoaderTest(unittest.TestCase):
         try:
             from Engine.GL.RenderModel import RenderModel
         except ImportError:
-            return # class rendermodel not available
+            self.skipTest('RenderModel class not available')
         loader = OBJModelLoader()
         loadedInstance = loader.load(self._testModel, targetClass=RenderModel)
         self.assertIsInstance(loadedInstance, RenderModel)
