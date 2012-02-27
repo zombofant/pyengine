@@ -32,5 +32,19 @@ class Material(object):
     """
 
     def __init__(self, **kwargs):
-        super(Material, self).__init__(**kwargs)
+        super(Material, self).__init__()
+        self._dataTypes = ['textures']
+        self.setData(**kwargs)
+
+    def setData(self, **args):
+        for dtype in dict(**args):
+            self.__setattr__(dtype, args[dtype])
+
+    @property
+    def textures(self):
+        return self._textures
+
+    @textures.setter
+    def textures(self, value):
+        self._textures = list(value)
 

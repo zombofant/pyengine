@@ -44,7 +44,8 @@ class Model(object):
         corresponding setters below for details).
         """
         super(Model, self).__init__()
-        self._dataTypes = ['indices', 'vertices', 'normals', 'texCoords']
+        self._dataTypes = ['indices', 'vertices',
+            'normals', 'texCoords', 'materials']
         self.clear()
         if len(kwargs) > 0:
             self.setData(**kwargs)
@@ -167,6 +168,14 @@ class Model(object):
             value = [float(x) for x in value]
             if len(value) == 0: value = None
         self._texCoords = value
+
+    @property
+    def materials(self):
+        return self._materials
+
+    @materials.setter
+    def materials(self, value):
+        self._materials = value
 
     @property
     def faces(self):

@@ -78,7 +78,8 @@ class OBJModelLoader(ResourceLoader):
         The actual geometry data loader.
         Note: All faces in the obj data are expected to be triangulated.
         """
-        vertices, normals, texcoords, faces = [], [], [], []
+        faceCount = 0
+        vertices, normals, texcoords, faces, materials = [], [], [], [], []
         for line in fileLike:
             if len(line) < 1 : continue
             if line[0] == '#' : continue
@@ -99,11 +100,11 @@ class OBJModelLoader(ResourceLoader):
                         else:
                             fcomp.append(int(fcomps[j])-1)
                     face.append(fcomp)
+                    faceCount += 1
                 faces.append(face)
             elif parts[0] == 'usemtl':
                 if len(parts) == 2:
-                    mtl_filename = '/data/materials/%s.mtl' % parts[1]
-                    Material = ResourceManager().require(mtl_filename)
+                    materials.append([parts[1],faceCount])
             else:
                 #print("FIXME: Unhandled obj data: %s" % line, file=sys.stderr)
                 pass
@@ -111,7 +112,8 @@ class OBJModelLoader(ResourceLoader):
             raise Exception('No faces found in geometric data!')
         # pack data into desired format and return it
         data = self._packVertexData(faces, vertices, normals, texcoords)
-        model = Model(indices = data[0], vertices = data[1], normals = data[2], texCoords =data[3])
+        model = Model(indices = data[0], vertices = data[1], normals = data[2],
+            texCoords = data[3], materials = materials)
         if targetClass is Model:
             return model
         else:
@@ -140,7 +142,20 @@ class MaterialLoader(ResourceLoader):
         The mtl loader.
         Load the material with name materialName from 
         """
-        raise NotImplementedError
+        # FIXME: only parses face texture at the moment
+        inMaterial = False
+        textures = []
+        for line in fileLike:
+            if len(line) < 1 :
+                if inMaterial: break
+                continue
+            if line[0] == '#' : continue
+            parts = line.strip().split(' ')
+            if parts[0] == 'newmtl':
+                inMaterial = True
+            if parts[0] == 'map_Kd':
+                textures.append(parts[1])
+        return Material(textures=textures)
 
 # register loader with resource manager
 ResourceManager().registerResourceLoader(OBJModelLoader())

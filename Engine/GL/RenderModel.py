@@ -26,8 +26,10 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 from Engine.Model import Model
-from pyglet.graphics import vertex_list_indexed
 from OpenGL.GL import GL_TRIANGLES
+from Engine.Resources.Manager import ResourceManager
+
+import pyglet
 
 class RenderModel(Model):
     """
@@ -43,7 +45,7 @@ class RenderModel(Model):
         You may also create an instance by using the class method fromModel().
         """
         super(RenderModel, self).__init__()
-        self._vertexList = None
+        self._batch = pyglet.graphics.Batch()
         if model is not None:
             self._copyFromModel(model)
 
@@ -55,14 +57,14 @@ class RenderModel(Model):
             self._normals = model.normals
         if model.texCoords is not None:
             self._texCoords = model.texCoords
-        self._updateVertexList()
+        if model.materials is not None:
+            self._materials = model.materials
+        self.update()
 
     def _clear(self):
-        if self._vertexList is not None:
-            del self._vertexList
-            self._vertexList = None
+        pass
 
-    def _updateVertexList(self):
+    def update(self):
         """
         Update the vertex list. At least indices and vertices have to be
         available in order to construct a vertex list. Please not that a
@@ -71,13 +73,36 @@ class RenderModel(Model):
         """
         if None in (self.indices, self.vertices): return
         self._clear()
-        size = len(self.vertices) // 3
-        data = [('v3f/static', self.vertices)]
-        if self.normals is not None:
-            data.append(('n3f/static', self.normals))
-        if self.texCoords is not None:
-            data.append(('t2f/static', self.texCoords))
-        self._vertexList = vertex_list_indexed(size, self.indices, *data)
+        pos, nextMatSwitchIndex, matCount = 0, 0, 0
+        materials = self._materials
+        group = None
+        if materials is None: materials = [['(null)',0]]
+        print(materials)
+        for material in materials:
+            matCount += 1
+            nextMatSwitchIndex = material[1]
+            if material[0] == '(null)':
+                group = None
+            else:
+                #load material
+                mat = ResourceManager().require('/data/materials/%s.mtl' % material[0])
+                print(mat)
+                #set material group
+                pass
+            if matCount >= len(materials):
+                nextMatSwitchIndex = len(self.indices)
+            if pos == nextMatSwitchIndex:
+                continue
+            # FIXME put only required vertices in the list
+            size = len(self.vertices) // 3
+            data = [('v3f/static', self.vertices)]
+            if self.normals is not None:
+                data.append(('n3f/static', self.normals))
+            if self.texCoords is not None:
+                data.append(('t2f/static', self.texCoords))
+            self._batch.add_indexed(size, GL_TRIANGLES, group,
+                self.indices[pos:nextMatSwitchIndex], *data)
+            pos = nextMatSwitchIndex
 
     @classmethod
     def fromModel(cls, model):
@@ -90,19 +115,10 @@ class RenderModel(Model):
         renderModel._copyFromModel(model)
         return renderModel
 
-    def update(self):
-        """
-        This stores the model data in video memory and must be called everytime
-        the underlying model data has been changed. This allows to change
-        multiple data values and then commit the changes by calling update().
-        """
-        self._updateVertexList()
-
     def draw(self):
         """
         Draw the RenderModel using OpenGL.
         Call this in your render-loop to render the underlying model.
         """
-        if self._vertexList is None: return
-        self._vertexList.draw(GL_TRIANGLES)
+        self._batch.draw()
 
