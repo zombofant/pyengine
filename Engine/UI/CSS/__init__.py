@@ -26,7 +26,7 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 SYNTAX_FILE = "utils/CSSParser/Syntax.pyLRp"
-PARSER_FILE = "Engine/UI/CSS/Parser.py"
+PARSER_FILE = "Engine/UI/CSS/GeneratedParser.py"
 
 class TooOld(BaseException):
     pass
@@ -35,8 +35,11 @@ class TooOld(BaseException):
 import os
 try:
     mtime = os.stat(SYNTAX_FILE).st_mtime
-    import Parser
-    if Parser.__version__ != unicode(mtime):
+    try:
+        import GeneratedParser
+    except SyntaxError as err:
+        raise ImportError(err)
+    if GeneratedParser.__version__ != unicode(mtime):
         raise TooOld()
 except (ImportError, TooOld) as err:
     # try to find the parser generator, otherwise fail
@@ -90,8 +93,8 @@ except (ImportError, TooOld) as err:
             raise
     try:
         if isinstance(err, TooOld):
-            reload(Parser)
+            reload(GeneratedParser)
         else:
-            import Parser
+            import GeneratedParser
     except ImportError as err:
         raise ImportError("Despite having created the parser: {0}".format(err))

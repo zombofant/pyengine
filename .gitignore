@@ -1,4 +1,4 @@
 .local/
 *.pyc
 *~
-Engine/UI/CSS/Parser.py
+Engine/UI/CSS/GeneratedParser.py

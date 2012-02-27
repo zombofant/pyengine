@@ -26,4 +26,30 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 class Rule(object):
-    pass
+    def __init__(self, selectors, properties, **kwargs):
+        super(Rule, self).__init__(**kwargs)
+        self._selectors = selectors
+        self._properties = properties
+        self._foldProperties()
+
+    def _foldProperties(self):
+        # FIXME: implement folding properties
+        # padding-left, padding-right => padding: ...
+        pass
+
+    def __eq__(self, other):
+        if not isinstance(other, Rule):
+            return NotImplemented
+        return (self._selectors == other._selectors and self._properties == other._properties)
+
+    def __unicode__(self):
+        return """{0} {{
+    {1}
+}}""".format(
+            "\n, ".join(map(unicode, self._selectors)),
+            "\n    ".join(map(unicode, self._properties))
+        )
+
+    def __repr__(self):
+        return "<{0} selectors={1}, properties={2}>".format(self.__class__.__name__, len(self._selectors), len(self._properties))
+    

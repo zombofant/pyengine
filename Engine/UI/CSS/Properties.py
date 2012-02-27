@@ -1,4 +1,4 @@
-# File name: CSSProperties.py
+# File name: Properties.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -94,6 +94,14 @@ class BaseBox(object):
             return
         self._checkValue(value)
         self._bottom = value
+
+    def __eq__(self, other):
+        if not isinstance(other, BaseBox):
+            return NotImplemented
+        return (self._top == other._top and
+            self._left == other._left and
+            self._right == other._right and
+            self._bottom == other._bottom)
 
 class Margin(BaseBox):
     pass

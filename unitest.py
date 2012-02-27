@@ -167,6 +167,22 @@ parser.add_argument(
     action="store_true",
     help="Disable stats and informational output; If any test fails, the test, state and traceback is printed to stderr."
 )
+parser.add_argument(
+    "--start-at", "-o",
+    dest="onlySubDir",
+    type=unicode,
+    metavar="DIR",
+    default=os.getcwd(),
+    help="Start test discovery at DIR. Defaults to . (current directory)"
+)
+parser.add_argument(
+    "--project-dir", 
+    dest="projectDir",
+    type=unicode,
+    metavar="DIR",
+    default=os.getcwd(),
+    help="Set the project directory to DIR; This is important for imports to work correctly. Defaults to . (current directory)"
+)
 args = parser.parse_args()
 
 Colors = Colors()
@@ -347,7 +363,7 @@ class AwesomeTextResult(unittest.TestResult):
 
 results = AwesomeTextResult(args.ttyWidth, args.quiet, args.stripModulePrefix, args.stripMethodPrefix)
 results.ttyWidth = ttyWidth
-tests = loader.discover(os.getcwd(), args.pattern)
+tests = loader.discover(args.onlySubDir, args.pattern, args.projectDir)
 if tests.countTestCases() == 0:
     print("unitest.py: error: no tests found", file=sys.stderr)
     sys.exit(7)

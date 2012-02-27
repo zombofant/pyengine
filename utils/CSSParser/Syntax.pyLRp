@@ -13,15 +13,19 @@ from Minilanguage import *
 %parser
 
 cssfile:
-    %empty
-    cssfile rule
+    %empty:
+        $$.sem = []
+    cssfile rule:
+        $$.sem = $1.sem
+        $$.sem.append($2.sem)
 
 rule:
     selectors "{" block "}":
         $$.sem = Rule($1.sem, $3.sem)
 
 block:
-    %empty
+    %empty:
+        $$.sem = {}
     block property:
         $$.sem = $1.sem
         $$.sem.update($2.sem)
@@ -34,33 +38,30 @@ propertyName:
 
 property:
     propertyName ":" propvalue ";":
-        $$.sem = {$1.sem: $3.sem)
+        $$.sem = {$1.sem: $3.sem}
 
 selectors:
     selectors "," selector:
-        if isinstance($1.sem, Or):
-            $$.sem = $1.sem
-        else:
-            $$.sem = Or($1.sem)
-        $$.sem.addSelector($3.sem)
-    selector:
         $$.sem = $1.sem
+        $$.sem.append($3.sem)
+    selector:
+        $$.sem = [$1.sem]
 
 selector:
     constrainedToken:
         $$.sem = $1.sem
-    selector ">" constrainedToken:
-        $$.sem = DirectChildOf($3.sem, $1.sem)
-    selector constrainedToken:
-        $$.sem = ChildOf($2.sem, $1.sem)
+    constrainedToken ">" selector:
+        $$.sem = DirectChildOf($1.sem, chained=$3.sem)
+    constrainedToken selector:
+        $$.sem = ChildOf($1.sem, chained=$2.sem)
 
 constrainedToken:
     TOKEN:
         $$.sem = Is($1.sem)
-    TOKEN "[" attributes "]":
-        $$.sem = HasAttributes($1.sem, $3.sem)
-    TOKEN "." TOKEN:
-        $$.sem = HasCSSClass($1.sem, $3.sem)
+    constrainedToken "[" attributes "]":
+        $$.sem = HasAttributes(*$3.sem, chained=$1.sem)
+    constrainedToken "." TOKEN:
+        $$.sem = HasCSSClasses($3.sem, chained=$1.sem)
 
 attributes:
     attributes "," attribute:
@@ -71,7 +72,7 @@ attributes:
     
 attribute:
     TOKEN "=" STRLITERAL:
-        $$.sem = ($1.sem, $3.sem)
+        $$.sem = ($1.sem, $3.sem[1:-1])
     TOKEN:
         $$.sem = ($1.sem,)
 
@@ -91,19 +92,19 @@ value:
     call:
         $$.sem = $1.sem
     TOKEN:
-        $$.sem = $1.sem
+        $$.sem = namespace.get($1.sem)
     STRLITERAL:
         $$.sem = $1.sem
 
 boxliteral:
     number number number number:
-        $$.sem = "box(" + $1.sem + "," + $2.sem + "," + $3.sem + "," + $4.sem + ")"
+        $$.sem = BaseBox($1.sem, $2.sem, $3.sem, $4.sem)
     number number:
-        $$.sem = "box(" + $1.sem + "," + $2.sem + ")"
+        $$.sem = BaseBox($1.sem, $1.sem, $2.sem, $2.sem)
 
 borderliteral:
     number TOKEN colourliteral:
-        $$.sem = "border(" + $1.sem + " " + $2.sem + " " + $3.sem + ")"
+        raise NotImplementedError("Border literal not implemented (yet!)")
 
 colourliteral:
     LCOLOURLITERAL:
@@ -113,21 +114,22 @@ colourliteral:
 
 number:
     INTLITERAL:
-        $$.sem = $1.sem
+        $$.sem = int($1.sem)
     FLOATLITERAL:
-        $$.sem = $1.sem
+        $$.sem = float($1.sem)
 
 call:
     TOKEN "(" arguments ")":
-        $$.sem = $1.sem + "(" + $3.sem + ")"
+        $$.sem = namespace.evaluateCall($1.sem, *$3.sem)
 
 arguments:
     %empty:
-        $$.sem = ""
+        $$.sem = []
     arguments "," argument:
-        $$.sem = $1.sem + "," + $3.sem
-    argument:
         $$.sem = $1.sem
+        $$.sem.append($3.sem)
+    argument:
+        $$.sem = [$1.sem]
 
 argument:
 #    TOKEN "=" value:
