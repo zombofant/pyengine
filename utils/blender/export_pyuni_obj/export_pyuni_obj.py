@@ -45,17 +45,18 @@ def write_mtl(scene, filepath, path_mode, copy_set, mtl_dict):
     source_dir = bpy.data.filepath
     dest_dir = os.path.dirname(filepath)
 
-    file = open(filepath, "w", encoding="utf8", newline="\n")
-    file.write('# Blender MTL File: %r\n' % os.path.basename(bpy.data.filepath))
-    file.write('# Written by PyUniverse obj exporter\n')
-    file.write('# Material Count: %i\n' % len(mtl_dict))
-
     mtl_dict_values = list(mtl_dict.values())
     mtl_dict_values.sort(key=lambda m: m[0])
 
     # Write material/image combinations we have used.
     # Using mtl_dict.values() directly gives un-predictable order.
     for mtl_mat_name, mat, face_img in mtl_dict_values:
+
+        mtl_filepath = os.path.join(os.path.dirname(filepath), '%s.mtl' % mtl_mat_name)
+        file = open(mtl_filepath, "w", encoding="utf8", newline="\n")
+        file.write('# Blender MTL File: %r\n' % os.path.basename(bpy.data.filepath))
+        file.write('# Written by PyUniverse obj exporter\n')
+        #file.write('# Material Count: %i\n' % len(mtl_dict))
 
         # Get the Blender data for the material and the image.
         # Having an image named None will make a bug, dont do it :)
@@ -132,8 +133,7 @@ def write_mtl(scene, filepath, path_mode, copy_set, mtl_dict):
                 file.write('%s %s\n' % (key, 'bla'))
 
         file.write('\n\n')
-
-    file.close()
+        file.close()
 
 
 def test_nurbs_compat(ob):
