@@ -68,7 +68,7 @@ class Texture1D(TextureBase):
 class Texture2D(TextureBase, RenderbufferBase):
     _bindClass = GL_TEXTURE_2D
     
-    def __init__(self, width=None, height=None, format=None, **kwargs):
+    def __init__(self, width=None, height=None, format=None, data=None, **kwargs):
         super(Texture2D, self).__init__(width=width, height=height, format=format, **kwargs)
         self.bind()
         glTexImage2D(GL_TEXTURE_2D, 0, format, self._dimensions[0], self._dimensions[1], 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, 0)

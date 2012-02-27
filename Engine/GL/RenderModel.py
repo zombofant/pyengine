@@ -86,9 +86,8 @@ class RenderModel(Model):
             else:
                 #load material
                 mat = ResourceManager().require('/data/materials/%s.mtl' % material[0])
-                print(mat)
                 #set material group
-                pass
+                group = mat.stateGroup
             if matCount >= len(materials):
                 nextMatSwitchIndex = len(self.indices)
             if pos == nextMatSwitchIndex:

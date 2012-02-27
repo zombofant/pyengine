@@ -26,6 +26,11 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 import sys
 
+from StateManagement import StateObjectGroup
+from Texture import Texture2D
+from OpenGL.GL import GL_TEXTURE0, glEnable, glDisable, glBindTexture
+import pyglet
+
 class Material(object):
     """
     The Material class stores material data for 3D models
@@ -41,10 +46,27 @@ class Material(object):
             self.__setattr__(dtype, args[dtype])
 
     @property
+    def stateGroup(self):
+        if len(self._textures) == 0: return None
+        return TestGroup('data/textures/%s' % self._textures[0])
+
+    @property
     def textures(self):
         return self._textures
 
     @textures.setter
     def textures(self, value):
         self._textures = list(value)
+
+class TestGroup(pyglet.graphics.Group):
+    def __init__(self, texFilename):
+        super(TestGroup, self).__init__()
+        self._texture = pyglet.resource.texture(texFilename)
+
+    def set_state(self):
+        glEnable(self._texture.target)
+        glBindTexture(self._texture.target, self._texture.id)
+
+    def unset_state(self):
+        glDisable(self._texture.target)
 

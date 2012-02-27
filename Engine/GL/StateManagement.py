@@ -68,7 +68,7 @@ class StateObjectGroup(Group):
         if "parent" in kwargs:
             parent = kwargs["parent"]
             del kwargs["parent"]
-        super(Group, self).__init__(parent, **kwargs)
+        super(Group, self).__init__()
         setCalls = []
         unsetCalls = []
         for stateObj in args:
