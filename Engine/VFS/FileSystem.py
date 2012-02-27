@@ -197,7 +197,7 @@ class XDGFileSystem(FileSystem):
         location in the VFS.
         """
         super(XDGFileSystem, self).__init__(**kwargs)
-        dataDirs, dataHome, configDirs, configHome = FreeDesktop.requireDirs(appDirName, False)
+        dataDirs, dataHome, configDirs, configHome = FreeDesktop.requireDirs(appDirName)
 
         self._setupMounts(dataMountPoint, dataDirs, dataHome)
         self._setupMounts(configMountPoint, configDirs, configHome)

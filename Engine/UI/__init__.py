@@ -25,6 +25,10 @@
 from Rect import *
 from CSSProperties import *
 from Widget import *
-from Screen import *
-from Root import *
-from Scene import *
+try:
+    import pyglet
+    from Screen import *
+    from Root import *
+    from Scene import *
+except ImportError:
+    pass

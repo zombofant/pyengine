@@ -28,7 +28,7 @@ from our_future import *
 class ResourceLoader(object):
     """
     The base class for all resource loader classes.
-    See the TextLoader in Text.py for a reference on how to implement
+    See the TextLoader in TextLoader.py for a reference on how to implement
     a resource loader class using ResourceLoader.
 
     Every resource loader should register itself to the resource manager
@@ -72,7 +72,6 @@ class ResourceLoader(object):
     def defaultTargetClass(self):
         """
         The default target class this loader creates when loading.
-        Defaults to the first class in supportedTargetClasses().
         This property may be set by subclasses if necessary.
         """
         return self._defaultTargetClass

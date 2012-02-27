@@ -36,6 +36,6 @@ class ResourceManagerTest(unittest.TestCase):
 class ResourceManagerSingletonTest(unittest.TestCase):
     def test_singleton(self):
         instanceA, instanceB = ResourceManager(), ResourceManager()
-        self.assertEqual(instanceA, instanceB)
+        self.assertIs(instanceA, instanceB)
         del instanceA, instanceB
 
