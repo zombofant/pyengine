@@ -27,7 +27,13 @@ from our_future import *
 
 from Base import ResourceLoader
 from Engine.Model import Model
-from Engine.GL.RenderModel import RenderModel
+
+# At server side we probably cannot import GL classes. Therefore we
+# provide a fallback for this case:
+try:
+    from Engine.GL.RenderModel import RenderModel
+except ImportError:
+    pass
 
 class OBJModelLoader(ResourceLoader):
     """
@@ -37,7 +43,11 @@ class OBJModelLoader(ResourceLoader):
 
     def __init__(self):
         super(OBJModelLoader, self).__init__()
-        self._supportedTargetClasses = [Model, RenderModel]
+        self._supportedTargetClasses = [Model]
+        try: # add support for RenderModel if available
+            self._supportedTargetClasses.append(RenderModel)
+        except NameError:
+            pass
         self._defaultTargetClass = Model
         self._resourceTypes = ['obj']
 
