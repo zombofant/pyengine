@@ -1,4 +1,4 @@
-# File name: Base.py
+# File name: Minilanguage.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -25,20 +25,36 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-from OpenGL.GL import *
-from OpenGL.GLU import *
-from OpenGL.GL.framebufferobjects import *
+from Properties import *
+from Properties import BaseBox
+from Selectors import *
+from Selectors import AttributeClass, AttributeExists, AttributeValue
+from Values import *
+from Rules import Rule
+from Literals import *
 
-class Object(object):
-    def __init__(self, **kwargs):
-        super(Object, self).__init__(**kwargs)
-        self.id = None
+class StylesheetNamespace(object):
+    image = Image
+    gradient = Gradient
+    step = GradientStep
+    rgba = RGBA
+    hsva = HSVA
+    hsla = HSLA
+    stretch = Stretch
+    repeat = Repeat
+    rect = Rect
+    url = URLLiteral
 
-class BindableObject(Object):
-    def bind(self):
-        self._bindFunc(self._bindClass, self.id)
+    _tokenBlacklist = ["evaluateCall", "get"]
 
-    @classmethod
-    def unbind(cls):
-        cls._bindFunc(self._bindClass, 0)
+    def evaluateCall(self, call, *args):
+        call = self.get(call)
+        return call(*args)
 
+    def get(self, token):
+        token.lower()
+        if token.startswith("_") or token in self._tokenBlacklist or not hasattr(self, token):
+            raise ValueError("Function {0} not defined in css".format(token))
+        return getattr(self, token)
+
+namespace = StylesheetNamespace()

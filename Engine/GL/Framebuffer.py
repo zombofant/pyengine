@@ -22,11 +22,17 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
+from __future__ import unicode_literals, print_function, division
+from our_future import *
+
 from Base import *
 from Renderbuffer import RenderbufferBase
 import numpy as np
 
-class Framebuffer(GLObject):
+class Framebuffer(BindableObject):
+    _bindCall = glBindFramebuffer
+    _bindClass = GL_FRAMEBUFFER
+    
     def __init__(self, width=None, height=None, **kwargs):
         assert width is not None
         assert height is not None
@@ -109,7 +115,3 @@ class Framebuffer(GLObject):
         
     def setupViewport(self):
         glViewport(0, 0, self._dimensions[0], self._dimensions[1])
-        
-    @staticmethod
-    def unbind():
-        glBindFramebuffer(GL_FRAMEBUFFER, 0)

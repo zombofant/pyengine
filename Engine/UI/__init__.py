@@ -23,7 +23,6 @@
 # authors named in the AUTHORS file.
 ########################################################################
 from Rect import *
-from BoxModel import *
 from Widget import *
 try:
     import pyglet

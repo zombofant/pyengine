@@ -1,4 +1,4 @@
-# File name: test_BoxModel.py
+# File name: test_Properties.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -22,9 +22,13 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
-import BoxModel
+from __future__ import unicode_literals, print_function, division
+from our_future import *
+
 import unittest
 from random import randint
+
+import Properties
 
 class BoxModelTest(unittest.TestCase):
     def checkValues(self, l, t, r, b):
@@ -35,12 +39,12 @@ class BoxModelTest(unittest.TestCase):
 
 class BoxModelInit(BoxModelTest):
     def test_init0(self):
-        self.instance = BoxModel.BaseBox()
+        self.instance = Properties.BaseBox()
         self.checkValues(0, 0, 0, 0)
 
     def test_init1(self):
         r = randint(0, 100)
-        self.instance = BoxModel.BaseBox(r)
+        self.instance = Properties.BaseBox(r)
         self.checkValues(r, r, r, r)
 
     def test_init4(self):
@@ -49,7 +53,7 @@ class BoxModelInit(BoxModelTest):
         r = randint(1, 100) + l
         t = randint(1, 100) + r
         b = randint(1, 100) + t
-        self.instance = BoxModel.BaseBox(l, t, r, b)
+        self.instance = Properties.BaseBox(l, t, r, b)
         self.checkValues(l, t, r, b)
 
     def tearDown(self):
@@ -57,7 +61,7 @@ class BoxModelInit(BoxModelTest):
 
 class BoxModelInstanceTest(BoxModelTest):
     def setUp(self):
-        self.instance = BoxModel.BaseBox()
+        self.instance = Properties.BaseBox()
 
     def tearDown(self):
         del self.instance
@@ -100,3 +104,27 @@ class BoxModelConstraints(BoxModelInstanceTest):
 
     def test_bottom(self):
         self.assertRaises(ValueError, self.setattrWrapper("Bottom", -1))
+
+class PropertyEq(BoxModelTest):
+    def test_BaseBox(self):
+        a, b = Properties.BaseBox(), Properties.BaseBox()
+        self.assertEqual(a, b)
+        a.Left = 10
+        b.Left = 10
+        self.assertEqual(a, b)
+        a.Left = 20
+        self.assertNotEqual(a, b)
+
+    def test_Border(self):
+        a, b = Properties.Border(), Properties.Border()
+        self.assertEqual(a, b)
+        a.Width = 10
+        b.Width = 10
+        self.assertEqual(a, b)
+        a.Width = 20
+        self.assertNotEqual(a, b)
+        b.Left.Width = 20
+        b.Right.Width = 20
+        a.Top.Width = 10
+        a.Bottom.Width = 10
+        self.assertEqual(a, b)

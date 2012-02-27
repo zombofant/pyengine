@@ -1,4 +1,4 @@
-# File name: Base.py
+# File name: StylesheetMinilanguage.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -22,23 +22,19 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
-from __future__ import unicode_literals, print_function, division
-from our_future import *
 
-from OpenGL.GL import *
-from OpenGL.GLU import *
-from OpenGL.GL.framebufferobjects import *
 
-class Object(object):
-    def __init__(self, **kwargs):
-        super(Object, self).__init__(**kwargs)
-        self.id = None
+class Rule(object):
+    pass
 
-class BindableObject(Object):
-    def bind(self):
-        self._bindFunc(self._bindClass, self.id)
-
-    @classmethod
-    def unbind(cls):
-        cls._bindFunc(self._bindClass, 0)
-
+class StylesheetNamespace(object):
+    image = Image
+    imagerect = ImageRect
+    gradient = Gradient
+    step = GradientStep
+    rgba = RGBA
+    hsva = HSVA
+    hsla = HSLA
+    stretch = Stretch
+    repeat = Repeat
+    rect = Rect
