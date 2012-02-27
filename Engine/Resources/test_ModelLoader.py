@@ -33,8 +33,6 @@ from ModelLoader import OBJModelLoader
 class OBJModelLoaderTest(unittest.TestCase):
     _testModel = unicode("""
         # a comment
-
-        mtllib Cube.mtl
         o Cube
         v 1.000000 -1.000000 -1.000000
         v 1.000000 -1.000000 1.000000
@@ -50,7 +48,6 @@ class OBJModelLoaderTest(unittest.TestCase):
         vn -0.000000 -0.000000 1.000000
         vn -1.000000 -0.000000 -0.000000
         vn 0.000000 0.000000 -1.000000
-        usemtl Material
         s off
         f 1//1 2//1 3//1
         f 1//1 3//1 4//1
@@ -64,7 +61,7 @@ class OBJModelLoaderTest(unittest.TestCase):
         f 3//5 8//5 4//5
         f 5//6 1//6 4//6
         f 5//6 4//6 8//6
-        """)
+        """).split('\n')
 
     def test_loadModel(self):
         loader = OBJModelLoader()
@@ -78,6 +75,7 @@ class OBJModelLoaderTest(unittest.TestCase):
         except ImportError:
             self.skipTest('RenderModel class not available')
         loader = OBJModelLoader()
+        # FIXME create virtual material file and test it
         loadedInstance = loader.load(self._testModel, targetClass=RenderModel)
         self.assertIsInstance(loadedInstance, RenderModel)
         del loader, loadedInstance
