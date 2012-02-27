@@ -29,16 +29,33 @@ from Engine.Model import Model
 from pyglet.graphics import vertex_list_indexed
 from OpenGL.GL import GL_TRIANGLES
 
-class RenderModel(object):
+class RenderModel(Model):
     """
-    This class renders a Model.
+    This class extends the model class with GL methods in order to provide
+    a convenient renderable representation of the model.
     """
 
     def __init__(self, model=None):
+        """
+        Initialize a RenderModel.
+        You may pass a Model or RenderModel instance. The constructor will
+        then copy all model data from the given instance.
+        You may also create an instance by using the class method fromModel().
+        """
         super(RenderModel, self).__init__()
         self._vertexList = None
         if model is not None:
-            self.model = model
+            self._copyFromModel(model)
+
+    def _copyFromModel(self, model):
+        assert isinstance(model, Model)
+        self._indices = model.indices
+        self._vertices = model.vertices
+        if model.normals is not None:
+            self._normals = model.normals
+        if model.texCoords is not None:
+            self._texCoords = model.texCoords
+        self._updateVertexList()
 
     def _clear(self):
         if self._vertexList is not None:
@@ -52,28 +69,40 @@ class RenderModel(object):
         complete new vertex list is created when calling this method. This
         means all previous vertex data will be dropped.
         """
-        model = self._model
-        if None in (model.indices, model.vertices): return
+        if None in (self.indices, self.vertices): return
         self._clear()
-        size = len(model.vertices) // 3
-        data = [('v3f/static', model.vertices)]
-        if model.normals is not None:
-            data.append(('n3f/static', model.normals))
-        if model.texCoords is not None:
-            data.append(('t2f/static', model.texCoords))
-        self._vertexList = vertex_list_indexed(size, model.indices, *data)
+        size = len(self.vertices) // 3
+        data = [('v3f/static', self.vertices)]
+        if self.normals is not None:
+            data.append(('n3f/static', self.normals))
+        if self.texCoords is not None:
+            data.append(('t2f/static', self.texCoords))
+        self._vertexList = vertex_list_indexed(size, self.indices, *data)
 
-    @property
-    def model(self):
-        return self._model
-
-    @model.setter
-    def model(self, model):
+    @classmethod
+    def fromModel(cls, model):
+        """
+        Takes a given model and constructs a new RenderModel instance from it.
+        Returns the freshly created instance of RenderModel.
+        """
         assert isinstance(model, Model)
-        self._model = model
+        renderModel = RenderModel()
+        renderModel._copyFromModel(model)
+        return renderModel
+
+    def update(self):
+        """
+        This stores the model data in video memory and must be called everytime
+        the underlying model data has been changed. This allows to change
+        multiple data values and then commit the changes by calling update().
+        """
         self._updateVertexList()
 
     def draw(self):
+        """
+        Draw the RenderModel using OpenGL.
+        Call this in your render-loop to render the underlying model.
+        """
         if self._vertexList is None: return
         self._vertexList.draw(GL_TRIANGLES)
 

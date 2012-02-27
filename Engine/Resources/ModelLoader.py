@@ -109,7 +109,7 @@ class OBJModelLoader(ResourceLoader):
         if targetClass is Model:
             return model
         else:
-            return RenderModel(model)
+            return RenderModel.fromModel(model)
 
 # register loader with resource manager
 from Manager import ResourceManager
