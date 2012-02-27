@@ -71,7 +71,11 @@ class ParseSelectors(ParserInstanceTest):
 
             }
             """,
-            Rules.Rule([Selectors.HasCSSClasses("class1", "class2", chained=Selectors.Is("test"))], {})
+            Rules.Rule([Selectors.HasAttributes(
+                Selectors.AttributeClass("class1"),
+                Selectors.AttributeClass("class2"),
+                chained=Selectors.Is("test")
+            )], {})
         )
 
     def test_attributes(self):
@@ -81,7 +85,11 @@ class ParseSelectors(ParserInstanceTest):
 
             }
             """,
-            Rules.Rule([Selectors.HasAttributes(("attr",), ("attr2", "value"), chained=Selectors.Is("test"))], {})
+            Rules.Rule([Selectors.HasAttributes(
+                Selectors.AttributeExists("attr"),
+                Selectors.AttributeValue("attr2", "value"),
+                chained=Selectors.Is("test")
+            )], {})
         )
 
     def test_nesting1(self):
@@ -91,7 +99,10 @@ class ParseSelectors(ParserInstanceTest):
 
             }
             """,
-            Rules.Rule([Selectors.DirectChildOf(Selectors.Is("test1"), chained=Selectors.Is("test2"))], {})
+            Rules.Rule([Selectors.DirectChildOf(
+                Selectors.Is("test1"),
+                chained=Selectors.Is("test2")
+            )], {})
         )
         
 
@@ -102,7 +113,10 @@ class ParseSelectors(ParserInstanceTest):
 
             }
             """,
-            Rules.Rule([Selectors.ChildOf(Selectors.Is("test1"), chained=Selectors.Is("test2"))], {})
+            Rules.Rule([Selectors.ChildOf(
+                Selectors.Is("test1"),
+                chained=Selectors.Is("test2")
+            )], {})
         )
 
     def test_complex(self):
@@ -114,10 +128,21 @@ class ParseSelectors(ParserInstanceTest):
             """,
             Rules.Rule([
                 Selectors.DirectChildOf(
-                    Selectors.HasCSSClasses("class1", chained=Selectors.Is("test1")),
+                    Selectors.HasAttributes(
+                        Selectors.AttributeClass("class1"),
+                        chained=Selectors.Is("test1")
+                    ),
                     chained=Selectors.ChildOf(
-                    Selectors.HasAttributes(("attr2", "value2"), chained=Selectors.Is("test2")),
-                    chained=Selectors.HasAttributes(("attr3",), chained=Selectors.HasCSSClasses("class3", chained=Selectors.Is("test3")))
-                ))
+                        Selectors.HasAttributes(
+                            Selectors.AttributeValue("attr2", "value2"),
+                            chained=Selectors.Is("test2")
+                        ),
+                        chained=Selectors.HasAttributes(
+                            Selectors.AttributeExists("attr3"),
+                            Selectors.AttributeClass("class3"),
+                            chained=Selectors.Is("test3")
+                        )
+                    )
+                )
             ], {})
         )

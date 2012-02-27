@@ -28,6 +28,7 @@ from our_future import *
 from Properties import *
 from Properties import BaseBox
 from Selectors import *
+from Selectors import AttributeClass, AttributeExists, AttributeValue
 from Values import *
 from Rules import Rule
 

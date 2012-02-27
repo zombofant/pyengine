@@ -25,7 +25,7 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-__all__ = ["ChildOf", "DirectChildOf", "Is", "HasCSSClasses", 
+__all__ = ["ChildOf", "DirectChildOf", "Is", 
     "HasAttributes"]
 
 class Specifity(object):
@@ -147,43 +147,66 @@ class Is(Selector):
         specifity += Specifity(0, 0, 0, 1)
         return specifity
 
+class Attribute(object):
+    def __init__(self, **kwargs):
+        super(Attribute, self).__init__(**kwargs)
 
-class HasCSSClasses(Selector):
-    def __init__(self, *classes, **kwargs):
-        chainedClasses = None
-        if "chained" in kwargs:
-            chained = kwargs["chained"]
-            del kwargs["chained"]
-
-            if isinstance(chained, HasCSSClasses):
-                chainedClasses = chained._classes
-                chained = chained._chained
-        else:
-            chained = None
-        super(HasCSSClasses, self).__init__(chained=chained, **kwargs)
-        self._classes = set(classes)
-        if chainedClasses is not None:
-            self._classes |= chainedClasses
+class AttributeClass(Attribute):
+    def __init__(self, className, **kwargs):
+        super(AttributeClass, self).__init__(**kwargs)
+        self._className = className
 
     def _testWidget(self, widget):
-        for cssClass in self.classes:
-            if not cssClass in widget.CSSClasses:
-                return None
-        return widget
+        return self._className in widget._cssClasses
 
-    def _testEq(self, other):
-        return super(HasCSSClasses, self)._testEq(other) and self._classes == other._classes
+    def __hash__(self):
+        return hash((AttributeClass, self._className))
+
+    def __eq__(self, other):
+        if not isinstance(other, AttributeClass):
+            return NotImplemented
+        return self._className == other._className
 
     def __unicode__(self):
-        return "{0}{1}".format(self._chained, "".join("."+cls for cls in self._classes))
+        return ".{0}".format(self._className)
 
-    def specifity(self):
-        specifity = super(HasCSSClasses, self).specifity()
-        specifity += Specifity(0, 0, len(self._classes), 0)
-        return specifity
+class AttributeExists(Attribute):
+    def __init__(self, attrName, **kwargs):
+        super(AttributeExists, self).__init__(**kwargs)
+        self._attrName = attrName
 
-    def addClass(self, cssClass):
-        self._classes.add(cssClass)
+    def _testWidget(self, widget):
+        return hasattr(widget, self._attrName)
+
+    def __hash__(self):
+        return hash(self._attrName)
+
+    def __eq__(self, other):
+        if not isinstance(other, AttributeExists):
+            return NotImplemented
+        return self._attrName == other._attrName
+
+    def __unicode__(self):
+        return "[{0}]".format(self._attrName)
+
+class AttributeValue(AttributeExists):
+    def __init__(self, attrName, attrValue, **kwargs):
+        super(AttributeValue, self).__init__(attrName, **kwargs)
+        self._attrValue = attrValue
+
+    def _testWidget(self, widget):
+        return super(AttributeValue, self)._testWidget(widget) and getattr(widget, self._attrName) == self._attrValue
+
+    def __hash__(self):
+        return hash((self._attrName, self._attrValue))
+
+    def __eq__(self, other):
+        if not isinstance(other, AttributeValue):
+            return NotImplemented
+        return self._attrName == other._attrName and self._attrValue == other._attrValue
+
+    def __unicode__(self):
+        return '[{0}="{1}"]'.format(self._attrName, self._attrValue)
 
 
 class HasAttributes(Selector):
@@ -199,36 +222,24 @@ class HasAttributes(Selector):
         else:
             chained = None
         super(HasAttributes, self).__init__(chained=chained, **kwargs)
-        self._attrs = list(attrs)
-        for i, attr in enumerate(self._attrs):
-            attr = tuple(attr)
-            if len(attr) < 1 or len(attr) > 2:
-                raise ValueError("HasAttributes only accepts 1-tuples and 2-tuples.")
-            self._attrs[i] = attr
-        self._attrs = set(self._attrs)
+        self._attrs = set(attrs)
+        for attr in self._attrs:
+            if not isinstance(attr, Attribute):
+                raise TypeError("HasAttributes only accepts Attribute instances.")
         if chainedAttrs is not None:
             self._attrs |= chainedAttrs
     
     def _testWidget(self, widget):
         for attr in self._attrs:
-            if not hasattr(widget, attr[0]):
+            if not attr._testWidget(widget):
                 return None
-            if len(attr) == 2:
-                if not unicode(getattr(widget, attr[0])) == attr[1]:
-                    return None
         return widget
 
     def _testEq(self, other):
         return super(HasAttributes, self)._testEq(other) and self._attrs == other._attrs
 
-    def _formatAttr(self, attr):
-        if len(attr) == 1:
-            return attr[0]
-        else:
-            return '{0}="{1}"'.format(*attr)
-
     def __unicode__(self):
-        return "{0}[{1}]".format(self._chained, ",".join(map(self._formatAttr, self._attrs)))
+        return "{0}{1}".format(self._chained, "".join(map(unicode, self._attrs)))
 
     def specifity(self):
         specifity = super(HasAttributes, self).specifity()

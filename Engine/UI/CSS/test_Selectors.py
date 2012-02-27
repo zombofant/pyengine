@@ -30,7 +30,10 @@ import unittest
 import Selectors
 
 class SelectorEq(unittest.TestCase):
-    pass
+    def test_switchAttributes(self):
+        instanceA = Selectors.HasAttributes(Selectors.AttributeClass("testclass"), chained=Selectors.HasAttributes(Selectors.AttributeExists("testattr")))
+        instanceB = Selectors.HasAttributes(Selectors.AttributeExists("testattr"), chained=Selectors.HasAttributes(Selectors.AttributeClass("testclass")))
+        self.assertEqual(instanceA, instanceB)
 
 selectorClasses = [getattr(Selectors, name) for name in Selectors.__all__]
 
@@ -43,10 +46,7 @@ def buildSetup(cls):
             return cls(int)
     elif issubclass(cls, Selectors.HasAttributes):
         def setup():
-            return cls(("test",), ("test2", "value"))
-    elif issubclass(cls, Selectors.HasCSSClasses):
-        def setup():
-            return cls("someclass", "someotherclass")
+            return cls(Selectors.AttributeExists("test"), Selectors.AttributeValue("test2", "value"), Selectors.AttributeClass("testclass2"))
     else:
         raise NotImplementedError("Don't know how to setup a test for {0}".format(cls))
     return setup
@@ -95,32 +95,39 @@ class SelectorSpecifity(unittest.TestCase):
         self.assertEqual(Selectors.Specifity(0, 0, 0, 1), Selectors.Is(int).specifity())
 
     def test_HasAttribute(self):
-        self.assertEqual(Selectors.Specifity(0, 0, 2, 0), Selectors.HasAttributes(("test",), ("test2", "value")).specifity())
-
-    def test_HasCSSClasses(self):
-        self.assertEqual(Selectors.Specifity(0, 0, 2, 0), Selectors.HasCSSClasses("test", "test2").specifity())
+        self.assertEqual(
+            Selectors.Specifity(0, 0, 3, 0),
+            Selectors.HasAttributes(
+                Selectors.AttributeExists("test"),
+                Selectors.AttributeValue("test2", "value"),
+                Selectors.AttributeClass("test3")
+            ).specifity())
 
 class SelectorChainFolding(unittest.TestCase):
     def test_HasAttributes(self):
-        instanceB = Selectors.HasAttributes(("test",))
-        instanceA = Selectors.HasAttributes(("test2",), chained=instanceB)
+        attr1 = Selectors.AttributeExists("test")
+        attr2 = Selectors.AttributeExists("test2")
+        instanceB = Selectors.HasAttributes(attr1)
+        instanceA = Selectors.HasAttributes(attr2, chained=instanceB)
         self.assertIsNone(instanceA._chained)
-        self.assertEqual(instanceA._attrs, set((("test2",), ("test",))))
+        self.assertEqual(instanceA._attrs, set((attr1, attr2)))
 
         instanceC = Selectors.Is(int)
-        instanceB = Selectors.HasAttributes(("test",), chained=instanceC)
-        instanceA = Selectors.HasAttributes(("test2",), chained=instanceB)
+        instanceB = Selectors.HasAttributes(attr1, chained=instanceC)
+        instanceA = Selectors.HasAttributes(attr2, chained=instanceB)
         self.assertIs(instanceA._chained, instanceC)
-        self.assertEqual(instanceA._attrs, set((("test2",), ("test",))))
+        self.assertEqual(instanceA._attrs, set((attr1, attr2)))
         
     def test_HasCSSClasses(self):
-        instanceB = Selectors.HasCSSClasses("test")
-        instanceA = Selectors.HasCSSClasses("test2", chained=instanceB)
+        attr1 = Selectors.AttributeClass("test")
+        attr2 = Selectors.AttributeClass("test2")
+        instanceB = Selectors.HasAttributes(attr1)
+        instanceA = Selectors.HasAttributes(attr2, chained=instanceB)
         self.assertIsNone(instanceA._chained)
-        self.assertEqual(instanceA._classes, set(("test2", "test")))
+        self.assertEqual(instanceA._attrs, set((attr1, attr2)))
 
         instanceC = Selectors.Is(int)
-        instanceB = Selectors.HasCSSClasses("test", chained=instanceC)
-        instanceA = Selectors.HasCSSClasses("test2", chained=instanceB)
+        instanceB = Selectors.HasAttributes(attr1, chained=instanceC)
+        instanceA = Selectors.HasAttributes(attr2, chained=instanceB)
         self.assertIs(instanceA._chained, instanceC)
-        self.assertEqual(instanceA._classes, set(("test2", "test")))
+        self.assertEqual(instanceA._attrs, set((attr1, attr2)))

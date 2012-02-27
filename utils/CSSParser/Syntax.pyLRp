@@ -61,7 +61,7 @@ constrainedToken:
     constrainedToken "[" attributes "]":
         $$.sem = HasAttributes(*$3.sem, chained=$1.sem)
     constrainedToken "." TOKEN:
-        $$.sem = HasCSSClasses($3.sem, chained=$1.sem)
+        $$.sem = HasAttributes(AttributeClass($3.sem), chained=$1.sem)
 
 attributes:
     attributes "," attribute:
@@ -72,9 +72,9 @@ attributes:
     
 attribute:
     TOKEN "=" STRLITERAL:
-        $$.sem = ($1.sem, $3.sem[1:-1])
+        $$.sem = AttributeValue($1.sem, $3.sem[1:-1])
     TOKEN:
-        $$.sem = ($1.sem,)
+        $$.sem = AttributeExists($1.sem)
 
 propvalue:
     value:

@@ -30,7 +30,7 @@ from Renderbuffer import RenderbufferBase
 import numpy as np
 
 class TextureBase(BindableObject):
-    self._bindCall = glBindTexture
+    _bindCall = glBindTexture
     
     def __init__(self, format=None, **kwargs):
         assert format is not None
