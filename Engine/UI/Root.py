@@ -27,7 +27,7 @@ from our_future import *
 
 __all__ = ["RootWidget"]
 
-import Engine.pygletHeadless.window.mouse as mouse
+from Engine.pygletHeadless import mouse
 from Widget import AbstractWidget, WidgetContainer
 from Flags import *
 
