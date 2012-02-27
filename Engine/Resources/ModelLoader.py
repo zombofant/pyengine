@@ -53,25 +53,26 @@ class OBJModelLoader(ResourceLoader):
         self._defaultTargetClass = Model
         self._resourceTypes = ['obj']
 
-    def _packVertexData(self, faces, vertices, normals, texcoords):
+    def _packFaces(self, faces, vertices, normals, texcoords):
         """
-        Pack data in well formed lists.
+        Pack all data into faces as expected by Model.
         """
-        size = len(vertices) // 3
-        packed_normals, packed_texcoords = [None]*size*3, [None]*size*2
-        indices = []
-        for comps in [elems for f in faces for elems in f]:
-            vpos = comps[0]
-            indices.append(vpos)
-            if comps[1] is not None:
-                tpos = comps[1]
-                packed_texcoords[vpos*2:vpos*2+2] = texcoords[tpos*2:tpos*2+2]
-            if comps[2] is not None:
-                npos = comps[2]
-                packed_normals[vpos*3:vpos*3+3] = normals[npos*3:npos*3+3]
-        if None in packed_texcoords: packed_texcoords = None
-        if None in packed_normals: packed_normals = None
-        return (indices, vertices, packed_normals, packed_texcoords)
+        packed_faces = []
+        for face in faces:
+            fvertices, ftexcoords, fnormals = [], [], []
+            for elems in face:
+                vpos = elems[0]
+                fvertices.extend(vertices[vpos*3:vpos*3+3])
+                if elems[1] is not None:
+                    tpos = elems[1]
+                    ftexcoords.extend(texcoords[tpos*2:tpos*2+2])
+                if elems[2] is not None:
+                    npos = elems[2]
+                    fnormals.extend(normals[npos*3:npos*3+3])
+            if None in fnormals: fnormals = None
+            if None in ftexcoords: ftexcoords = None
+            packed_faces.append((fvertices, fnormals, ftexcoords))
+        return packed_faces
 
     def load(self, fileLike, targetClass=Model):
         """
@@ -100,20 +101,18 @@ class OBJModelLoader(ResourceLoader):
                         else:
                             fcomp.append(int(fcomps[j])-1)
                     face.append(fcomp)
-                    faceCount += 1
                 faces.append(face)
             elif parts[0] == 'usemtl':
                 if len(parts) == 2:
-                    materials.append([parts[1],faceCount])
+                    materials.append([parts[1],len(faces)])
             else:
                 #print("FIXME: Unhandled obj data: %s" % line, file=sys.stderr)
                 pass
         if len(faces) < 1:
             raise Exception('No faces found in geometric data!')
         # pack data into desired format and return it
-        data = self._packVertexData(faces, vertices, normals, texcoords)
-        model = Model(indices = data[0], vertices = data[1], normals = data[2],
-            texCoords = data[3], materials = materials)
+        faces = self._packFaces(faces, vertices, normals, texcoords)
+        model = Model(faces, materials = materials)
         if targetClass is Model:
             return model
         else:
