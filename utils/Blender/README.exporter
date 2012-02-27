@@ -2,7 +2,7 @@
 This is the exporter used to export 3D models for PythonicUniverse
 from blender. To use it you have to do the following:
 
-* Copy or symling the export_pyuni_obj directory into your home folder
+* Copy or symlink the export_pyuni_obj directory into your home folder
   under .blender/<version>/scripts/addons/
 * Start blender and go to File->User Preferences -> Addons
 * Select category 'Import-Export'
