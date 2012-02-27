@@ -1,8 +1,0 @@
-test2[test2] {
-    background: gradient(
-        step(0.0, rgba(0., 0., 0., 1.)),
-        step(1.0, rgba(1., 1., 1., a=1.))
-    );
-    background: imagerect("path to image", rect(0, 0, 100, 100));
-    
-}

@@ -1,4 +1,4 @@
-# File name: __init__.py
+# File name: StylesheetMinilanguage.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -22,9 +22,19 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
-from Rect import *
-from CSSProperties import *
-from Widget import *
-from Screen import *
-from Root import *
-from Scene import *
+
+
+class Rule(object):
+    pass
+
+class StylesheetNamespace(object):
+    image = Image
+    imagerect = ImageRect
+    gradient = Gradient
+    step = GradientStep
+    rgba = RGBA
+    hsva = HSVA
+    hsla = HSLA
+    stretch = Stretch
+    repeat = Repeat
+    rect = Rect

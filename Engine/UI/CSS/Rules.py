@@ -1,5 +1,4 @@
-#!/usr/bin/python2
-# File name: parser.py
+# File name: Rules.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -23,8 +22,8 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
-import sys
-import CSSParser
-lexer = CSSParser.Lexer(sys.argv[1])
-parser = CSSParser.Parser(lexer)
-parser.Parse()
+from __future__ import unicode_literals, print_function, division
+from our_future import *
+
+class Rule(object):
+    pass

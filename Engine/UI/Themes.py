@@ -26,66 +26,6 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 from Widget import Widget
-from CSS import Border, Padding, Margin, Background
-
-class Selector(object):
-    def __init__(self, chained=None, **kwargs):
-        super(Selector, self).__init__(**kwargs)
-        self._chained = chained
-    
-    def __contains__(self, other):
-        if not isinstance(other, Widget):
-            raise TypeError("Selector can only test against Widgets. Got {0} {1}".format(type(other), other))
-        if self._chained is not None:
-            other = other in self._chained
-        return self._testWidget(other)
-
-class ParentSelector(Selector):
-    def __init__(self, parentClass, **kwargs):
-        super(ParentSelector, self).__init__(**kwargs)
-        self._parentClass = parentClass
-
-class ChildOf(ParentSelector):
-    def _testWidget(self, widget):
-        p = widget.Parent
-        while p is not None:
-            if isinstance(p, self._parentClass):
-                return p
-        else:
-            return None
-
-class DirectChildOf(ParentSelector):
-    def _testWidget(self, widget):
-        p = widget.Parent
-        if isinstance(p, self._parentClass):
-            return p
-        else:
-            return None
-
-class Is(Selector):
-    def __init__(self, testClass, **kwargs):
-        super(Is, self).__init__(**kwargs)
-        self._testClass = testClass
-    
-    def _testWidget(self, widget):
-        if isinstance(widget, self._testClass):
-            return widget
-        else:
-            return None
-
-class HasCSSClass(Selector):
-    def __init__(self, cssClass, **kwargs):
-        super(HasCSSClass, self).__init__(**kwargs)
-        self._cssClass = cssClass
-
-    def _testWidget(self, widget):
-        if self._cssClass in widget.CSSClasses:
-            return widget
-        else:
-            return None
-
-class Rule(object):
-    pass
 
 class Theme(object):
     def __init__(self, **kwargs):

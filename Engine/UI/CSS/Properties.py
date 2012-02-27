@@ -105,5 +105,5 @@ class Border(object):
     pass
 
 class Background(object):
-    @property
+    pass
     
