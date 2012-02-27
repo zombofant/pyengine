@@ -87,9 +87,9 @@ class RenderModel(Model):
                     texCoords.extend([x for y in face[2:3] for x in y])
                 size = (nextMatSwitchIndex - pos) * 3
                 data = [('v3f/static', vertices)]
-                if normals is not None:
+                if len(normals) > 0:
                     data.append(('n3f/static', normals))
-                if texCoords is not None:
+                if len(texCoords) > 0:
                     data.append(('t2f/static', texCoords))
                 self._batch.add(size, GL_TRIANGLES, group, *data)
                 pos = nextMatSwitchIndex
