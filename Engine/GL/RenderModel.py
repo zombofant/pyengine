@@ -72,35 +72,33 @@ class RenderModel(Model):
         pos, nextMatSwitchIndex, matCount = 0, 0, 0
         materials = self._materials
         group = None
-        if materials is None: materials = [['(null)',0]]
+        if materials is None: materials = []
+        materials.append(['(null)',0])
         for material in materials:
             matCount += 1
             nextMatSwitchIndex = material[1]
+            if matCount >= len(materials):
+                nextMatSwitchIndex = len(self.faces)
+            if pos < nextMatSwitchIndex:
+                vertices, normals, texCoords = [], [], []
+                for face in self.faces[pos:nextMatSwitchIndex]:
+                    vertices.extend([x for y in face[0:1] for x in y])
+                    normals.extend([x for y in face[1:2] for x in y])
+                    texCoords.extend([x for y in face[2:3] for x in y])
+                size = (nextMatSwitchIndex - pos) * 3
+                data = [('v3f/static', vertices)]
+                if normals is not None:
+                    data.append(('n3f/static', normals))
+                if texCoords is not None:
+                    data.append(('t2f/static', texCoords))
+                self._batch.add(size, GL_TRIANGLES, group, *data)
+                pos = nextMatSwitchIndex
             if material[0] == '(null)':
                 group = None
             else:
-                #load material
                 mat = ResourceManager().require('/data/materials/%s.mtl' % material[0])
-                #set material group
                 group = mat.stateGroup
-            if matCount >= len(materials):
-                nextMatSwitchIndex = len(self.faces)
-            if pos == nextMatSwitchIndex:
-                continue
-            vertices, normals, texCoords = [], [], []
-            for face in self.faces[pos:nextMatSwitchIndex]:
-                vertices.extend([x for y in face[0:1] for x in y])
-                normals.extend([x for y in face[1:2] for x in y])
-                texCoords.extend([x for y in face[2:3] for x in y])
-            size = (nextMatSwitchIndex - pos) * 3
-            data = [('v3f/static', vertices)]
-            if normals is not None:
-                data.append(('n3f/static', normals))
-            if texCoords is not None:
-                data.append(('t2f/static', texCoords))
-            self._batch.add(size, GL_TRIANGLES, group, *data)
-            pos = nextMatSwitchIndex
-
+ 
     @classmethod
     def fromModel(cls, model):
         """
