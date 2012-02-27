@@ -26,19 +26,21 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 from Base import ResourceLoader
+from Manager import ResourceManager
 from Engine.Model import Model
 
 # At server side we probably cannot import GL classes. Therefore we
 # provide a fallback for this case:
 try:
     from Engine.GL.RenderModel import RenderModel
+    from Engine.GL.Material import Material
 except ImportError:
     pass
 
 class OBJModelLoader(ResourceLoader):
     """
     The OBJModelLoader provides a ModelLoader that is capable of loading
-    wavefront obj formatted geometric data.
+    wavefront obj formatted 3D model data.
     """
 
     def __init__(self):
@@ -98,6 +100,10 @@ class OBJModelLoader(ResourceLoader):
                             fcomp.append(int(fcomps[j])-1)
                     face.append(fcomp)
                 faces.append(face)
+            elif parts[0] == 'usemtl':
+                if len(parts) == 2:
+                    mtl_filename = '/data/materials/%s.mtl' % parts[1]
+                    Material = ResourceManager().require(mtl_filename)
             else:
                 #print("FIXME: Unhandled obj data: %s" % line, file=sys.stderr)
                 pass
@@ -111,7 +117,32 @@ class OBJModelLoader(ResourceLoader):
         else:
             return RenderModel.fromModel(model)
 
+class MaterialLoader(ResourceLoader):
+    """
+    The MaterialLoader loads model material data.
+    It loads exactly one material from the given fileLike and returns
+    a Material instance constructed from the data.
+    """
+
+    def __init__(self, **kwargs):
+        super(MaterialLoader, self).__init__(**kwargs)
+        # if the Material class is missing, the loader does nothing 
+        try:
+            self._supportedTargetClasses = [Material]
+            self._defaultTargetClass = Material
+            self._resourceTypes = ['mtl']
+        except NameError:
+            self._supportedTargetClasses, self._resourceTypes = [], []
+            self._defaultTargetClass = None
+
+    def load(self, fileLike, targetClass=Material):
+        """
+        The mtl loader.
+        Load the material with name materialName from 
+        """
+        raise NotImplementedError
+
 # register loader with resource manager
-from Manager import ResourceManager
 ResourceManager().registerResourceLoader(OBJModelLoader())
+ResourceManager().registerResourceLoader(MaterialLoader())
 

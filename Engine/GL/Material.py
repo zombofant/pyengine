@@ -1,4 +1,4 @@
-# File name: TextLoader.py
+# File name: Material.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -24,28 +24,13 @@
 ########################################################################
 from __future__ import unicode_literals, print_function, division
 from our_future import *
+import sys
 
-from Base import ResourceLoader
-from Manager import ResourceManager
-
-class TextLoader(ResourceLoader):
+class Material(object):
     """
-    Implement a loader for text resources.
+    The Material class stores material data for 3D models
     """
 
     def __init__(self, **kwargs):
-        super(TextLoader, self).__init__(**kwargs)
-        self._supportedTargetClasses = [unicode, str]
-        self._defaultTargetClass = unicode
-        self._resourceTypes = ['txt']
-
-    def load(self, fileLike, targetClass=unicode, encoding="utf8"):
-        text = "\n" . join((line.decode(encoding) for line in fileLike))
-        if targetClass is str:
-            return str(text)
-        else:
-            return unicode(text)
-
-# register an instance of TextLoader with the resource manager
-ResourceManager().registerResourceLoader(TextLoader())
+        super(Material, self).__init__(**kwargs)
 
