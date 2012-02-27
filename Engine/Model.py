@@ -28,7 +28,7 @@ import sys
 
 class Model(object):
     """
-    The ModelData class stores 3D model data like vertices, normals,
+    The Model class stores 3D model data like vertices, normals,
     faces and texture coordinates, rotation, position, scale and so on.
     It also provides useful methods to work the vertex data like
     calculating the model's bounding box for example.
