@@ -36,9 +36,9 @@ class Object(object):
 
 class BindableObject(Object):
     def bind(self):
-        self._bindFunc(self._bindClass, self.id)
+        self._bindCall(self._bindClass, self.id)
 
     @classmethod
     def unbind(cls):
-        cls._bindFunc(self._bindClass, 0)
+        cls._bindCall(cls._bindClass, 0)
 
