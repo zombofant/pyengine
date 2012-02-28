@@ -52,6 +52,7 @@ class OBJModelLoader(ResourceLoader):
             pass
         self._defaultTargetClass = Model
         self._resourceTypes = ['obj']
+        self._relativePathPrefix = '/data/models/'
 
     def load(self, fileLike, targetClass=Model):
         """
@@ -113,6 +114,7 @@ class MaterialLoader(ResourceLoader):
         except NameError:
             self._supportedTargetClasses, self._resourceTypes = [], []
             self._defaultTargetClass = None
+        self._relativePathPrefix = '/data/materials/'
 
     def load(self, fileLike, targetClass=Material):
         """
