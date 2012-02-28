@@ -1,4 +1,4 @@
-# File name: Themes.py
+# File name: Theme.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -25,6 +25,13 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
+import itertools
+
+import CSS.Literals as Literals
+from CSS.Box import Padding, Margin, BaseBox
+from CSS.Border import Border, BorderEdge
+from CSS.Fill import Fill, Colour, Transparent, Image
+
 class SelectorTuple(tuple):
     def __eq__(self, other):
         if not isinstance(self, SelectorTuple):
@@ -49,8 +56,8 @@ class Style(object):
             self.Margin = kwargs.pop("margin")
         if "border" in kwargs:
             self.Border = kwargs.pop("border")
-        super(Style, self).__init__(rules, **kwargs)
-        for rule in self._mergedRules:
+        super(Style, self).__init__(**kwargs)
+        for rule in rules:
             self._addRule(rule)
 
     def __deepcopy__(self, memo):
@@ -65,6 +72,33 @@ class Style(object):
     def _addRule(self, rule):
         for key, value in rule._properties:
             self._applyProperty(key, value)
+
+    def __add__(self, rules):
+        if isinstance(rules, Rule):
+            new = copy.deepcopy(self)
+            new._addRule(rules)
+        else:
+            new = copy.deepcopy(self)
+            for rule in rules:
+                new._addRule(rules)
+        return new
+
+    def __eq__(self, other):
+        if not isinstance(other, Style):
+            return NotImplemented
+        return (
+            self._background == other._background and
+            self._padding == other._padding and
+            self._margin == other._margin and
+            self._border == other._border
+        )
+
+    def __repr__(self):
+        return """<Style
+    Padding={0!r},
+    Margin={1!r},
+    Background={2!r},
+    Border={3!r}>""".format(self._padding, self._margin, self._background, self._border)
         
     def _applyProperty(self, key, value):
         if key in self._literalSetters:
@@ -94,7 +128,7 @@ class Style(object):
         self.Background = value
 
     def _setBorderEdge(self, edge, value):
-        setattr(self.Border, edge, value)
+        setattr(self.Border, edge, BorderEdge(value[0], value[2]))
 
     def _setBaseBoxEdge(self, box, edge, value):
         box = getattr(self, box)
@@ -153,10 +187,10 @@ class Style(object):
         "background-image": lambda self, value: self._setBackgroundImage(value),
         "background-repeat": lambda self, value: self._setBackgroundRepeat(value),
         "background-color": lambda self, value: self._setBackgroundColour(value),
-        "border-left": lambda self, value: self._setBorderEdge("Left", edge),
-        "border-right": lambda self, value: self._setBorderEdge("Right", edge),
-        "border-top": lambda self, value: self._setBorderEdge("Top", edge),
-        "border-bottom": lambda self, value: self._setBorderEdge("Bottom", edge),
+        "border-left": lambda self, value: self._setBorderEdge("Left", value),
+        "border-right": lambda self, value: self._setBorderEdge("Right", value),
+        "border-top": lambda self, value: self._setBorderEdge("Top", value),
+        "border-bottom": lambda self, value: self._setBorderEdge("Bottom", value),
         "padding-left": lambda self, value: self._setBaseBoxEdge("Padding", "Left", value),
         "padding-right": lambda self, value: self._setBaseBoxEdge("Padding", "Right", value),
         "padding-top": lambda self, value: self._setBaseBoxEdge("Padding", "Top", value),
@@ -176,7 +210,7 @@ class Theme(object):
         self._cache = {}
 
     def _sort(self):
-        self._rules.sort(cmp=lambda x, y: cmp(y[0], x[0]) or cmp(x[1], y[1]))
+        self._rules.sort(cmp=lambda x, y: cmp(x[0], y[0]) or cmp(x[1], y[1]))
 
     def addRules(self, rules, resort=True):
         for rule in rules:
@@ -187,7 +221,17 @@ class Theme(object):
             self._sort()
 
     def getWidgetStyle(self, widget):
-        matchingRules = [(selector, rule) for specifity, i, selector, rule in self._rules if widget in selector]
+        matchingRules = [(selector, rule) for specifity, i, selector, rule in self._rules if selector.testWidget(widget) is not None]
         if len(matchingRules) == 0:
             return Style()
-        
+        selectors, rules = zip(*matchingRules)
+        selectors = SelectorTuple(selectors)
+        if selectors in self._cache:
+            if widget.StyleRule is not None:
+                style = self._cache[selectors] + widget.StyleRule
+                return style
+            else:
+                return self._cache[selectors]
+        if widget.StyleRule is not None:
+            rules = itertools.chain(rules, (widget.StyleRule,))
+        return Style(*rules)

@@ -62,11 +62,9 @@ class Selector(object):
         super(Selector, self).__init__(**kwargs)
         self._chained = chained
     
-    def __contains__(self, other):
-        if not isinstance(other, Widget):
-            raise TypeError("Selector can only test against Widgets. Got {0} {1}".format(type(other), other))
+    def testWidget(self, other):
         if self._chained is not None:
-            other = other in self._chained
+            other = self._chained.testWidget(other)
         return self._testWidget(other)
 
     def _testEq(self, other):
@@ -104,8 +102,11 @@ class ChildOf(ParentSelector):
     def _testWidget(self, widget):
         p = widget.Parent
         while p is not None:
-            if self._parentSelector._testWidget(p):
+            if self._parentSelector.testWidget(p):
                 return p
+            if not hasattr(p, "Parent"):
+                return None
+            p = p.Parent
         else:
             return None
 
@@ -115,8 +116,10 @@ class ChildOf(ParentSelector):
 
 class DirectChildOf(ParentSelector):
     def _testWidget(self, widget):
+        if not hasattr(widget, "Parent"):
+            return None
         p = widget.Parent
-        if self._parentSelector._testWidget(p):
+        if self._parentSelector.testWidget(p):
             return p
         else:
             return None
@@ -195,7 +198,7 @@ class AttributeValue(AttributeExists):
         self._attrValue = attrValue
 
     def _testWidget(self, widget):
-        return super(AttributeValue, self)._testWidget(widget) and getattr(widget, self._attrName) == self._attrValue
+        return super(AttributeValue, self).testWidget(widget) and getattr(widget, self._attrName) == self._attrValue
 
     def __hash__(self):
         return hash((self._attrName, self._attrValue))
@@ -231,7 +234,7 @@ class HasAttributes(Selector):
     
     def _testWidget(self, widget):
         for attr in self._attrs:
-            if not attr._testWidget(widget):
+            if not attr.testWidget(widget):
                 return None
         return widget
 

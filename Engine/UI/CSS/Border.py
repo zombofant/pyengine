@@ -25,25 +25,25 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-from Fill import Fill, Colour
+from Fill import Fill, Colour, Transparent
 
 class BorderComponent(object):
-    def __init__(self, width=0, style=None, fill=None, **kwargs):
+    def __init__(self, width=0, fill=Transparent, **kwargs):
         super(BorderComponent, self).__init__(**kwargs)
         self.Width = width
         self.Fill = fill or Colour(0., 0., 0., 0.)
     
     def assign(self, other):
         if not isinstance(other, BorderComponent):
-            raise TypeError("Can only assign BorderComponents to BorderComponents")
+            raise TypeError("Can only assign BorderComponents to BorderComponents. Got {0} {1}".format(type(other), other))
         self.Width = other.Width
         self.Fill = other.Fill
 
 class BorderEdge(BorderComponent):
-    def __init__(self, **kwargs):
+    def __init__(self, width=0, fill=Transparent, **kwargs):
         self._width = None
         self._fill = None
-        super(BorderEdge, self).__init__(**kwargs)
+        super(BorderEdge, self).__init__(width, fill, **kwargs)
 
     @property
     def Width(self):
@@ -76,12 +76,12 @@ class BorderEdge(BorderComponent):
                 self._fill == other._fill)
 
     def __repr__(self):
-        return "BorderEdge(width={0!r}, style={1!r}, colour={2!r})".format(self._width, self._style, self._colour)
+        return "BorderEdge(width={0!r}, fill={1!r})".format(self._width, self._fill)
 
 class Border(BorderComponent):
-    def __init__(self, **kwargs):
+    def __init__(self, width=0, fill=Transparent, **kwargs):
         self._edges = [BorderEdge() for i in xrange(4)]
-        super(Border, self).__init__(**kwargs)
+        super(Border, self).__init__(width, fill, **kwargs)
     
     def assign(self, other):
         if isinstance(other, Border):            
@@ -152,3 +152,10 @@ class Border(BorderComponent):
             if not edgeA == edgeB:
                 return False
         return True
+
+    def __repr__(self):
+        return """<Border
+    Left={0!r},
+    Top={1!r},
+    Right={2!r},
+    Bottom={3!r}>""".format(self.Left, self.Top, self.Right, self.Bottom)

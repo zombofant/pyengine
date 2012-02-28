@@ -44,6 +44,8 @@ class StylesheetNamespace(object):
     repeat = Repeat
     rect = Rect
     url = URLLiteral
+    transparent = Transparent
+    solid = "solid"
 
     _tokenBlacklist = ["evaluateCall", "get"]
 
@@ -54,7 +56,8 @@ class StylesheetNamespace(object):
     def get(self, token):
         token.lower()
         if token.startswith("_") or token in self._tokenBlacklist or not hasattr(self, token):
-            raise ValueError("Function {0} not defined in css".format(token))
+            raise ValueError("Token {0!r} not defined in css".format(token))
         return getattr(self, token)
 
+elementNames = {}
 namespace = StylesheetNamespace()

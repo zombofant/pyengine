@@ -25,7 +25,7 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-from Fill import Image, Colour
+from Fill import Image, Colour, Transparent, Fill
 from Border import Border
 from Box import BaseBox
 
@@ -45,6 +45,10 @@ def BackgroundLiteral(*args):
             colour = first
         elif isinstance(first, Image):
             image = first
+        elif first is Transparent:
+            if len(args) > 1:
+                raise TypeError("Too many arguments for transparent BackgroundLiteral")
+            return first
         else:
             raise TypeError("Invalid first argument to BackgroundLiteral: {0} {1}".format(type(first), first))
         

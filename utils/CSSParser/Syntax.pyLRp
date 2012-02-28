@@ -57,7 +57,7 @@ selector:
 
 constrainedToken:
     TOKEN:
-        $$.sem = Is($1.sem)
+        $$.sem = Is(elementNames[$1.sem])
     constrainedToken "[" attributes "]":
         $$.sem = HasAttributes(*$3.sem, chained=$1.sem)
     constrainedToken "." TOKEN:

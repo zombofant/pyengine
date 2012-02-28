@@ -33,6 +33,7 @@ import Rules
 import Box
 from Fill import Image, Colour, Gradient
 import Parser as _Parser
+import Minilanguage
 
 class ParserInstanceTest(unittest.TestCase):
     def _parseCSS(self, src):
@@ -48,8 +49,13 @@ class ParserInstanceTest(unittest.TestCase):
     
     def setUp(self):
         self._parser = _Parser.Parser()
+        Minilanguage.elementNames["test"] = "test"
+        Minilanguage.elementNames["test1"] = "test1"
+        Minilanguage.elementNames["test2"] = "test2"
+        Minilanguage.elementNames["test3"] = "test3"
 
     def tearDown(self):
+        Minilanguage.elementNames.clear()
         del self._parser
 
 class ParseSelectors(ParserInstanceTest):

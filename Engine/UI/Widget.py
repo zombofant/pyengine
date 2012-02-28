@@ -28,6 +28,7 @@ from our_future import *
 __all__ = ["AbstractWidget", "ParentWidget", "Widget"]
 
 from CSS.Rect import Rect
+from CSS.Rules import Rule
 
 class AbstractWidget(object):
     """
@@ -46,6 +47,7 @@ class AbstractWidget(object):
         self.RelativeRect._onChange = self._relMetricsChanged
         self.Rect = Rect(0, 0)
         self.Rect._onChange = self._absMetricsChanged
+        self._styleRule = None
         
     def _absMetricsChanged(self):
         self.onResize()
@@ -86,6 +88,15 @@ class AbstractWidget(object):
     def onCaretMotionSelect(self, motion):
         return False
 
+    @property
+    def StyleRule(self):
+        return self._styleRule
+
+    @StyleRule.setter
+    def StyleRule(self, value):
+        if value is not None and not isinstance(value, Rule):
+            raise TypeError("Widget StyleRules must be CSS Rules")
+        self._styleRule = value
 
 class Widget(AbstractWidget):
     """
