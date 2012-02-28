@@ -44,6 +44,8 @@ class ResourceLoader(object):
             _supportedTargetClasses
             _defaultTargetClass
             _resourceTypes
+        The following attributes are optional:
+            _relativePathPrefix
         See the property definitions below for more information on this
         attributes and how they should look like.
         """
@@ -51,6 +53,7 @@ class ResourceLoader(object):
         self._supportedTargetClasses = []
         self._defaultTargetClass = None
         self._resourceTypes = []
+        self._relativePathPrefix = '/'
 
     def load(self, fileLike, targetClass=None, **loaderArgs):
         """
@@ -83,4 +86,13 @@ class ResourceLoader(object):
         This property has to be set by all subclasses.
         """
         return self._resourceTypes
+
+    @property
+    def relativePathPrefix(self):
+        """
+        The prefix to be prepended in relative paths.
+        If there is a request for 'somefile.ext', the loaders
+        relativePathPrefix will be prepended before opening the file.
+        """
+        return self._relativePathPrefix
 

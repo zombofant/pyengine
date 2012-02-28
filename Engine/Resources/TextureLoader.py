@@ -37,25 +37,34 @@ except ImportError:
 
 class TextureLoader(ResourceLoader):
     """
-    Implement a loader for text resources.
+    Implement a loader for texture resources.
     """
 
     def __init__(self, **kwargs):
         super(TextureLoader, self).__init__(**kwargs)
-        self._supportedTargetClasses = [Texture2D]
-        self._defaultTargetClass = Texture2D
-        self._resourceTypes = ['png', 'jpg']
-
-    def load(self, fileLike, targetClass=Texture2D):
-        img = image.load(fileLike.name, fileLike)
-        data = img.get_image_data()
-        tex = Texture2D(
+        try:
+            self._supportedTargetClasses = [Texture2D]
+            self._defaultTargetClass = Texture2D
+            self._resourceTypes = ['png', 'jpg']
+        except NameError:
+            self._supportedTargetClasses = []
+            self._defaultTargetClass = None
+            self._resourceTypes = []
+        self._relativePathPrefix = '/data/textures/'
+ 
+    def load(self, fileLike, targetClass=None):
+        """
+        Load the texture.
+        We simply use the pyglet image loading functionality at the moment.
+        """
+        data = image.load(fileLike.name, fileLike).get_image_data()
+        texture = Texture2D(
             width=data.width,
             height=data.height,
             format=GL_RGBA,
-            data=(GL_RGBA, GL_UNSIGNED_BYTE, data.get_data(data.format, data.pitch))
-        )
-        return tex
+            data=(GL_RGBA, GL_UNSIGNED_BYTE, data.get_data('RGBA', data.pitch)))
+        del data
+        return texture
 
 # register an instance of TextLoader with the resource manager
 ResourceManager().registerResourceLoader(TextureLoader())

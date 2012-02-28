@@ -124,11 +124,15 @@ class ResourceManager(object):
         If no requiredClass is given, the loaders default is used (which
         should be the right choice for most cases)
         """
+        if len(uri) < 1:
+            raise ValueError('uri must not be empty!')
         if resourceType is None:
             resourceType = self._resourceTypeFromURI(uri)
         loader = self._findResourceLoader(resourceType, requiredClass)
         if requiredClass is None:
             requiredClass = loader.defaultTargetClass
+        if not os.path.isabs(uri):
+            uri = os.path.join(loader.relativePathPrefix, uri)
         instance = self._resourceCacheRead(uri, requiredClass)
         if instance is None:
             resFile = self._open(uri, "r")
