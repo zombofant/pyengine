@@ -89,6 +89,12 @@ class __Transparent(Fill):
     # do not need to instanciate multiple Transparent fills.
     def __call__(self):
         return self
+
+    def __deepcopy__(self, memo):
+        return self
+
+    def __copy__(self):
+        return self
 Transparent = __Transparent()
 
 class Colour(Fill):
@@ -118,6 +124,17 @@ class Colour(Fill):
                     self._a == other._a)
         else:
             return False
+
+    def __deepcopy__(self, memo):
+        return Colour(self._r, self._g, self._b, self._a,
+            repeatX=self.RepeatX,
+            repeatY=self.RepeatY)
+
+    def __unicode__(self):
+        return "rgba({0}, {1}, {2}, {3})".format(self._r, self._g, self._b, self._a)
+
+    def __repr__(self):
+        return "Colour({0}, {1}, {2}, {3})".format(self._r, self._g, self._b, self._a)
 
 class Gradient(Fill):
     class Step(object):
@@ -160,6 +177,14 @@ class Gradient(Fill):
             raise ValueError("Gradient can only be stretched, not tiled.")
         self._repeatY = value
 
+    def __deepcopy__(self, memo):
+        return Gradient(
+            "horiz" if self._direction == (1, 0) else "vert",
+            *(Step(position, colour) for position, i, colour in self._steps),
+            repeatX=self.RepeatX,
+            repeatY=self.RepeatY
+        )
+
 class Image(Fill):
     def __init__(self, resource, rect=None, **kwargs):
         super(Image, self).__init__(**kwargs)
@@ -178,3 +203,11 @@ class Image(Fill):
                     self._repeatY == other._repeatY)
         else:
             return False
+
+    def __deepcopy__(self, memo):
+        return Image(
+            self._resource,
+            copy.deepcopy(self._rect, memo),
+            repeatX=self.RepeatX,
+            repeatY=self.RepeatY
+        )

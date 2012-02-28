@@ -39,9 +39,28 @@ class SelectorTuple(tuple):
 
 class Style(object):
     def __init__(self, *rules, **kwargs):
-        super(Style, self).__init__(rules)
+        self._background = kwargs.pop("background") if "background" in kwargs else Transparent
+        self._padding = Padding()
+        self._margin = Margin()
+        self._border = Border()
+        if "padding" in kwargs:
+            self.Padding = kwargs.pop("padding")
+        if "margin" in kwargs:
+            self.Margin = kwargs.pop("margin")
+        if "border" in kwargs:
+            self.Border = kwargs.pop("border")
+        super(Style, self).__init__(rules, **kwargs)
         for rule in self._mergedRules:
             self._addRule(rule)
+
+    def __deepcopy__(self, memo):
+        # FIXME: implement pickle interface
+        return Style(
+            background=copy.deepcopy(self.Background, memo),
+            padding=copy.deepcopy(self.Padding, memo),
+            margin=copy.deepcopy(self.Margin, memo),
+            border=copy.deepcopy(self.Border, memo)
+        )
 
     def _addRule(self, rule):
         for key, value in rule._properties:
@@ -154,14 +173,21 @@ class Theme(object):
         super(Theme, self).__init__(**kwargs)
         self._rules = []
         self._i = 0
+        self._cache = {}
 
     def _sort(self):
-        self._rules.sort(cmp=lambda x, y: cmp(x[0], y[0]) or cmp(x[1], y[1]))
+        self._rules.sort(cmp=lambda x, y: cmp(y[0], x[0]) or cmp(x[1], y[1]))
 
     def addRules(self, rules, resort=True):
         for rule in rules:
             for i, selector in zip(itertools.count(self._i), rule._selectors):
-                self._rules.append((selector.specifity(), i, rule))
+                self._rules.append((selector.specifity(), i, selector, rule))
             self._i = i
         if resort:
             self._sort()
+
+    def getWidgetStyle(self, widget):
+        matchingRules = [(selector, rule) for specifity, i, selector, rule in self._rules if widget in selector]
+        if len(matchingRules) == 0:
+            return Style()
+        

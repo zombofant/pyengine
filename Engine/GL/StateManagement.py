@@ -66,9 +66,8 @@ class StateObjectGroup(Group):
         # 2to3: this can be made better in python3 using keyword-only
         # arguments
         if "parent" in kwargs:
-            parent = kwargs["parent"]
-            del kwargs["parent"]
-        super(Group, self).__init__()
+            parent = kwargs.pop("parent")
+        super(Group, self).__init__(parent=parent, **kwargs)
         setCalls = []
         unsetCalls = []
         for stateObj in args:
@@ -101,8 +100,7 @@ class OrderedStateObjectGroup(StateObjectGroup):
         order = 0
         # 2to3: keyword-only argument
         if "order" in kwargs:
-            order = kwargs["order"]
-            del kwargs["order"]
+            order = kwargs.pop("order")
         super(OrderedStateObjectGroup, self).__init__(*args, **kwargs)
         self.order = order
 

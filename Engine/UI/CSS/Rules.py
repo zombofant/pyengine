@@ -47,7 +47,7 @@ class Rule(object):
     {1}
 }}""".format(
             "\n, ".join(map(unicode, self._selectors)),
-            "\n    ".join(("{0}: {1}".format(name, value) for name, value in self._properties))
+            "\n    ".join(("{0}: {1};".format(name, " ".join(map(unicode, value))) for name, value in self._properties))
         )
 
     def __repr__(self):
