@@ -26,8 +26,10 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 from Engine.Model import Model
-from pyglet.graphics import vertex_list_indexed
 from OpenGL.GL import GL_TRIANGLES
+from Engine.Resources.Manager import ResourceManager
+
+import pyglet
 
 class RenderModel(Model):
     """
@@ -43,66 +45,62 @@ class RenderModel(Model):
         You may also create an instance by using the class method fromModel().
         """
         super(RenderModel, self).__init__()
-        self._vertexList = None
+        self._batch = pyglet.graphics.Batch()
         if model is not None:
             self._copyFromModel(model)
 
     def _copyFromModel(self, model):
         assert isinstance(model, Model)
-        self._indices = model.indices
-        self._vertices = model.vertices
-        if model.normals is not None:
-            self._normals = model.normals
-        if model.texCoords is not None:
-            self._texCoords = model.texCoords
-        self._updateVertexList()
+        for dtype in self._dataTypes:
+            self.__setattr__(dtype, getattr(model, dtype))
+        self.update()
 
     def _clear(self):
-        if self._vertexList is not None:
-            del self._vertexList
-            self._vertexList = None
+        pass
 
-    def _updateVertexList(self):
+    def update(self):
         """
         Update the vertex list. At least indices and vertices have to be
         available in order to construct a vertex list. Please not that a
         complete new vertex list is created when calling this method. This
         means all previous vertex data will be dropped.
         """
-        if None in (self.indices, self.vertices): return
+        if len(self.packedFaces) < 1: return
         self._clear()
-        size = len(self.vertices) // 3
-        data = [('v3f/static', self.vertices)]
-        if self.normals is not None:
-            data.append(('n3f/static', self.normals))
-        if self.texCoords is not None:
-            data.append(('t2f/static', self.texCoords))
-        self._vertexList = vertex_list_indexed(size, self.indices, *data)
-
-    @classmethod
-    def fromModel(cls, model):
-        """
-        Takes a given model and constructs a new RenderModel instance from it.
-        Returns the freshly created instance of RenderModel.
-        """
-        assert isinstance(model, Model)
-        renderModel = RenderModel()
-        renderModel._copyFromModel(model)
-        return renderModel
-
-    def update(self):
-        """
-        This stores the model data in video memory and must be called everytime
-        the underlying model data has been changed. This allows to change
-        multiple data values and then commit the changes by calling update().
-        """
-        self._updateVertexList()
-
+        pos, nextMatSwitchIndex, matCount = 0, 0, 0
+        materials = self._materials
+        group = None
+        if materials is None: materials = []
+        materials.append(['(null)',0])
+        for material in materials:
+            matCount += 1
+            nextMatSwitchIndex = material[1]
+            if matCount >= len(materials):
+                nextMatSwitchIndex = len(self.packedFaces)
+            if pos < nextMatSwitchIndex:
+                vertices, normals, texCoords = [], [], []
+                for face in self.packedFaces[pos:nextMatSwitchIndex]:
+                    vertices.extend([x for y in face[0:1] for x in y])
+                    normals.extend([x for y in face[1:2] for x in y])
+                    texCoords.extend([x for y in face[2:3] for x in y])
+                size = (nextMatSwitchIndex - pos) * 3
+                data = [('v3f/static', vertices)]
+                if len(self.normals) > 0:
+                    data.append(('n3f/static', normals))
+                if len(self.texCoords) > 0:
+                    data.append(('t2f/static', texCoords))
+                self._batch.add(size, GL_TRIANGLES, group, *data)
+                pos = nextMatSwitchIndex
+            if material[0] == '(null)':
+                group = None
+            else:
+                mat_filename = '%s.mtl' % material[0]
+                group = ResourceManager().require(mat_filename).stateGroup
+ 
     def draw(self):
         """
         Draw the RenderModel using OpenGL.
         Call this in your render-loop to render the underlying model.
         """
-        if self._vertexList is None: return
-        self._vertexList.draw(GL_TRIANGLES)
+        self._batch.draw()
 

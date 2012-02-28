@@ -22,10 +22,13 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
+from __future__ import unicode_literals, print_function, division
+from our_future import *
+
 from Base import *
 import numpy as np
 
-class RenderbufferBase(GLObject):
+class RenderbufferBase(Object):
     def __init__(self, width=None, height=None, **kwargs):
         assert width is not None
         assert height is not None

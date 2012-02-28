@@ -25,6 +25,7 @@
 ########################################################################
 from __future__ import unicode_literals, print_function, division
 from our_future import *
+import os
 
 from Base import ResourceLoader
 from Engine.VFS.FileSystem import FileSystem
@@ -108,11 +109,10 @@ class ResourceManager(object):
         return None
 
     def _resourceTypeFromURI(self, uri):
-        # XXX: this will be replaced by a better vfs method soon
-        pId = uri.rfind('.')
-        if pId > -1:
-            return uri[pId+1:].lower()
-        raise TypeError('Cannot get resource type from uri: {0}'.format(uri))
+        ext = os.path.splitext(uri)[1]
+        if len(ext) < 2:
+            raise TypeError('Cannot get resource type from uri: {0}'.format(uri))
+        return ext[1:]
 
     def require(self, uri, requiredClass=None, resourceType=None, **loaderArgs):
         """
@@ -124,11 +124,15 @@ class ResourceManager(object):
         If no requiredClass is given, the loaders default is used (which
         should be the right choice for most cases)
         """
+        if len(uri) < 1:
+            raise ValueError('uri must not be empty!')
         if resourceType is None:
             resourceType = self._resourceTypeFromURI(uri)
         loader = self._findResourceLoader(resourceType, requiredClass)
         if requiredClass is None:
             requiredClass = loader.defaultTargetClass
+        if not os.path.isabs(uri):
+            uri = os.path.join(loader.relativePathPrefix, uri)
         instance = self._resourceCacheRead(uri, requiredClass)
         if instance is None:
             resFile = self._open(uri, "r")

@@ -27,17 +27,17 @@ from our_future import *
 
 __all__ = ["AbstractWidget", "ParentWidget", "Widget"]
 
-import BoxModel
 from Rect import Rect
 
-"""
-Abstract base class for widgets. Do not derive from this if you are not
-creating a root widget. For root widgets, derive from *AbstractWidget*
-and *WidgetContainer*.
-
-See *Widget* and *ParentWidget* for other widgets.
-"""
 class AbstractWidget(object):
+    """
+    Abstract base class for widgets. Do not derive from this if you are not
+    creating a root widget. For root widgets, derive from *AbstractWidget*
+    and *WidgetContainer*.
+
+    See *Widget* and *ParentWidget* for other widgets.
+    """
+
     def __init__(self, **kwargs):
         super(AbstractWidget, self).__init__(**kwargs)
         self.Visible = True
@@ -86,20 +86,19 @@ class AbstractWidget(object):
     def onCaretMotionSelect(self, motion):
         return False
 
-"""
-Base class for non-parent widgets. Use this for any widget which will
-not contain other widgets.
 
-See *ParentWidget* for parents, *AbstractWidget* for root widgets.
-"""
 class Widget(AbstractWidget):
+    """
+    Base class for non-parent widgets. Use this for any widget which will
+    not contain other widgets.
+
+    See *ParentWidget* for parents, *AbstractWidget* for root widgets.
+    """
+    
     def __init__(self, parent, **kwargs):
         if not isinstance(parent, WidgetContainer):
             raise ValueError("Widget parent must be an instance of WidgetContainer (e.g. ParentWidget).")
         super(Widget, self).__init__(**kwargs)
-        self.Margin = BoxModel.Margin()
-        self.Padding = BoxModel.Padding()
-        self.Border = BoxModel.Border()
         self._parent = None
         self._flags = set()
         parent.add(self)
@@ -138,15 +137,17 @@ class Widget(AbstractWidget):
     def Flags(self):
         return self._flags
 
-"""
-Abstraction of a container which can contain widgets. It is list based
-(thus ordered) and implements a basic typecheck.
 
-Do not derive from this if you are not implementing a root widget. For
-root widgets, see *AbstractWidget*, for normal widgets which may contain
-other widgets see *ParentWidget*.
-"""
-class WidgetContainer(object):
+class WidgetContainer(object):    
+    """
+    Abstraction of a container which can contain widgets. It is list based
+    (thus ordered) and implements a basic typecheck.
+
+    Do not derive from this if you are not implementing a root widget. For
+    root widgets, see *AbstractWidget*, for normal widgets which may contain
+    other widgets see *ParentWidget*.
+    """
+    
     def __init__(self, **kwargs):
         super(WidgetContainer, self).__init__(**kwargs)
         self._childClasses = Widget
@@ -205,11 +206,13 @@ class WidgetContainer(object):
     def index(self, child):
         return self._children.index(child)
 
-"""
-Base class for widgets which contain other widgets. This derives from
-Widget and WidgetContainer, so all of the benefits apply here.
-"""
+
 class ParentWidget(Widget, WidgetContainer):
+    """
+    Base class for widgets which contain other widgets. This derives from
+    Widget and WidgetContainer, so all of the benefits apply here.
+    """
+    
     def __init__(self, parent, **kwargs):
         super(ParentWidget, self).__init__(parent)
 

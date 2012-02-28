@@ -26,6 +26,7 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 from Base import ResourceLoader
+from Manager import ResourceManager
 
 class TextLoader(ResourceLoader):
     """
@@ -46,6 +47,5 @@ class TextLoader(ResourceLoader):
             return unicode(text)
 
 # register an instance of TextLoader with the resource manager
-from Manager import ResourceManager
 ResourceManager().registerResourceLoader(TextLoader())
 

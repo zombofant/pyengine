@@ -28,26 +28,47 @@ import sys
 
 class Model(object):
     """
-    The ModelData class stores 3D model data like vertices, normals,
+    The Model class stores 3D model data like vertices, normals,
     faces and texture coordinates, rotation, position, scale and so on.
     It also provides useful methods to work the vertex data like
     calculating the model's bounding box for example.
     See the class GL.RenderModel on how to render Models using OpenGL.
     """
+    _dataTypes = ('faces', 'vertices', 'normals', 'texCoords', 'materials')
 
-    def __init__(self, **kwargs):
+    def __init__(self, **args):
         """
         Construct a new Model instance.
-        You may pass the parameters indices, vertices, normals and
-        texCoords to initialize the model data during construction.
-        Each argument has to pass an appropriate list (see the
-        corresponding setters below for details).
+        You may pass the parameters faces and materials in oder to initialize
+        the model data during construction.
+        Each argument has to pass an appropriate list (see the corresponding
+        setters below for details).
         """
         super(Model, self).__init__()
-        self._dataTypes = ['indices', 'vertices', 'normals', 'texCoords']
         self.clear()
-        if len(kwargs) > 0:
-            self.setData(**kwargs)
+        self.setData(**args)
+
+    def _packFaces(self):
+        """
+        Pack faces into a convenient data structure.
+        See the faces property below for details.
+        """
+        self._packedFaces = []
+        for face in self.faces:
+            fvertices, ftexcoords, fnormals = [], [], []
+            for elems in face:
+                vpos = elems[0]
+                fvertices.extend(self.vertices[vpos*3:vpos*3+3])
+                if elems[1] is not None:
+                    tpos = elems[1]
+                    ftexcoords.extend(self.texCoords[tpos*2:tpos*2+2])
+                if elems[2] is not None:
+                    npos = elems[2]
+                    fnormals.extend(self.normals[npos*3:npos*3+3])
+            if None in fnormals: fnormals = None
+            if None in ftexcoords: ftexcoords = None
+            self._packedFaces.append((fvertices, fnormals, ftexcoords))
+        return self._packedFaces
 
     def clear(self):
         """
@@ -56,44 +77,13 @@ class Model(object):
         """
         for dtype in self._dataTypes:
             self.__setattr__(dtype, None)
+        self._packedFaces = None
 
-    def setData(self, **data):
-        """
-        Set multiple data types at once.
-        This works exactly like passing arguments to __init__.
-        """
-        dataDict = dict(**data)
+    def setData(self, **args):
+        arguments = dict(**args)
         for dtype in self._dataTypes:
-            if dtype in dataDict:
-                self.__setattr__(dtype, dataDict[dtype])
-
-    @property
-    def indices(self):
-        """
-        Returns the list of indices.
-        The list contains only ints pointing to the vertex at the
-        location described by the int. Since we only work with
-        triangulated faces, every three indices are describing a
-        single face of the model.
-        May be None if no indices have been set.
-        """
-        return self._indices
-
-    @indices.setter
-    def indices(self, value):
-        """
-        Set the indices used to create faces.
-        This list has to contain three ints for every face the model
-        is build with. The ints are indexes to the appropriate vertex
-        in the vertices list. Since in 3D space every vertex has three
-        components, if the index is - for example - 5, it points to
-        the three elements in vertices at position 5*3.
-        To unset this property, just supply a value of None.
-        """
-        if value is not None:
-            value = [int(x) for x in value]
-            if len(value) == 0: value = None
-        self._indices = value
+            if dtype in arguments:
+                self.__setattr__(dtype, arguments[dtype])
 
     @property
     def vertices(self):
@@ -106,16 +96,8 @@ class Model(object):
 
     @vertices.setter
     def vertices(self, value):
-        """
-        Set the list of vertices.
-        Each vertex consists of three components.
-        To unset this property, just supply a value of None.
-        """
-        if value is not None:
-            value = [float(x) for x in value]
-            if len(value) == 0: value = None
         self._vertices = value
-
+ 
     @property
     def normals(self):
         """
@@ -127,21 +109,8 @@ class Model(object):
 
     @normals.setter
     def normals(self, value):
-        """
-        Set the list of normals.
-        Normals consist of three components.
-        Every normal has to be placed at the same position as the
-        corresponding vertex in vertices. This means the same normals
-        may be found several time in the list if some vertices have
-        the same normals.
-        This list has to be of the same length as vertices.
-        To unset this property, just supply a value of None.
-        """
-        if value is not None:
-            value = [float(x) for x in value]
-            if len(value) == 0: value = None
         self._normals = value
-
+ 
     @property
     def texCoords(self):
         """
@@ -153,39 +122,55 @@ class Model(object):
 
     @texCoords.setter
     def texCoords(self, value):
-        """
-        Set the list of texture coordinates.
-        Every texture coordinate consists of two elements and has to be
-        placed at the same position in the list as the corresponding
-        vertex in vertices (this means if the vertex at position 3 in
-        the vertices list corresponds to the texture coordinate at
-        position 3 in the texture coordinate list (which is at index
-        3*2 for the vertex at index 3*3).
-        To unset this property, just supply a value of None.
-        """
-        if value is not None:
-            value = [float(x) for x in value]
-            if len(value) == 0: value = None
         self._texCoords = value
+ 
+    @property
+    def materials(self):
+        """
+        Return the list of materials.
+        See setter method for a description of the list format.
+        May be an empty list of no materials have been set.
+        """
+        return self._materials
+
+    @materials.setter
+    def materials(self, value):
+        """
+        Set the list of materials.
+        Every entry consists of a list containing two elements. The name of
+        the material and the face index at which the material has to be
+        activated during rendering.
+        """
+        if value is None: value = []
+        self._materials = value
 
     @property
     def faces(self):
         """
         Return a list of faces this model has.
-        The returned list contains a list for every face where each face
-        list contains lists for the three vertex components of every vertex
-        in the face.
-        This list is empty if no vertices or indices have been set.
+        See setter for a description of the list format.
+        This list may be empty if no vertices or indices have been set.
         """
-        if None in (self._indices, self._vertices):
-            return []
-        faces, vertices = [], []
-        for j in range(0, len(self._indices)):
-            pos = self._indices[j] * 3
-            comps = self._vertices[pos:pos+3]
-            vertices.append(comps)
-            if (j+1) % 3 == 0:
-                faces.append(vertices)
-                vertices = []
-        return faces
+        return self._faces
+
+    @faces.setter
+    def faces(self, value):
+        """
+        Set list of faces.
+        This data structure contains most information about a models geometry. A
+        face consists of a list of three elements. The list of vertices (3
+        elements per vertex), the list of normals (3 per vertex) and the list of
+        texture coordinates (2 per vertex).
+        """
+        if value is None: value = []
+        self._faces = value
+
+    @property
+    def packedFaces(self):
+        """
+        Return a list of packed face data.
+        """
+        if self._packedFaces is None:
+            self._packFaces()
+        return self._packedFaces
 
