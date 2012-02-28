@@ -116,7 +116,7 @@ class MaterialLoader(ResourceLoader):
             self._defaultTargetClass = None
         self._relativePathPrefix = '/data/materials/'
 
-    def load(self, fileLike, targetClass=Material):
+    def load(self, fileLike, targetClass=None):
         """
         The mtl loader.
         Load the material with name materialName from 

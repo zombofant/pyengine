@@ -52,7 +52,7 @@ class TextureLoader(ResourceLoader):
             self._resourceTypes = []
         self._relativePathPrefix = '/data/textures/'
  
-    def load(self, fileLike, targetClass=Texture2D):
+    def load(self, fileLike, targetClass=None):
         """
         Load the texture.
         We simply use the pyglet image loading functionality at the moment.
