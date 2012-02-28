@@ -25,12 +25,15 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
+import itertools
+
 __all__ = ["Parser"]
 
+from Rules import Rule
 import GeneratedParser
 genLexer = GeneratedParser.Lexer
 genParser = GeneratedParser.Parser
-
+        
 class Parser(object):
     def __init__(self, **kwargs):
         super(Parser, self).__init__(**kwargs)
@@ -39,3 +42,4 @@ class Parser(object):
         lexer = genLexer(filelike)
         parser = genParser(lexer)
         return parser.Parse()
+        
