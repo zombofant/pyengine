@@ -51,10 +51,8 @@ class RenderModel(Model):
 
     def _copyFromModel(self, model):
         assert isinstance(model, Model)
-        if model.faces is not None:
-            self._faces = model.faces
-        if model.materials is not None:
-            self._materials = model.materials
+        for dtype in self._dataTypes:
+            self.__setattr__(dtype, getattr(model, dtype))
         self.update()
 
     def _clear(self):
@@ -67,7 +65,7 @@ class RenderModel(Model):
         complete new vertex list is created when calling this method. This
         means all previous vertex data will be dropped.
         """
-        if self.faces is None: return
+        if len(self.packedFaces) < 1: return
         self._clear()
         pos, nextMatSwitchIndex, matCount = 0, 0, 0
         materials = self._materials
@@ -78,18 +76,18 @@ class RenderModel(Model):
             matCount += 1
             nextMatSwitchIndex = material[1]
             if matCount >= len(materials):
-                nextMatSwitchIndex = len(self.faces)
+                nextMatSwitchIndex = len(self.packedFaces)
             if pos < nextMatSwitchIndex:
                 vertices, normals, texCoords = [], [], []
-                for face in self.faces[pos:nextMatSwitchIndex]:
+                for face in self.packedFaces[pos:nextMatSwitchIndex]:
                     vertices.extend([x for y in face[0:1] for x in y])
                     normals.extend([x for y in face[1:2] for x in y])
                     texCoords.extend([x for y in face[2:3] for x in y])
                 size = (nextMatSwitchIndex - pos) * 3
                 data = [('v3f/static', vertices)]
-                if len(normals) > 0:
+                if len(self.normals) > 0:
                     data.append(('n3f/static', normals))
-                if len(texCoords) > 0:
+                if len(self.texCoords) > 0:
                     data.append(('t2f/static', texCoords))
                 self._batch.add(size, GL_TRIANGLES, group, *data)
                 pos = nextMatSwitchIndex
@@ -99,17 +97,6 @@ class RenderModel(Model):
                 mat = ResourceManager().require('/data/materials/%s.mtl' % material[0])
                 group = mat.stateGroup
  
-    @classmethod
-    def fromModel(cls, model):
-        """
-        Takes a given model and constructs a new RenderModel instance from it.
-        Returns the freshly created instance of RenderModel.
-        """
-        assert isinstance(model, Model)
-        renderModel = RenderModel()
-        renderModel._copyFromModel(model)
-        return renderModel
-
     def draw(self):
         """
         Draw the RenderModel using OpenGL.

@@ -53,27 +53,6 @@ class OBJModelLoader(ResourceLoader):
         self._defaultTargetClass = Model
         self._resourceTypes = ['obj']
 
-    def _packFaces(self, faces, vertices, normals, texcoords):
-        """
-        Pack all data into faces as expected by Model.
-        """
-        packed_faces = []
-        for face in faces:
-            fvertices, ftexcoords, fnormals = [], [], []
-            for elems in face:
-                vpos = elems[0]
-                fvertices.extend(vertices[vpos*3:vpos*3+3])
-                if elems[1] is not None:
-                    tpos = elems[1]
-                    ftexcoords.extend(texcoords[tpos*2:tpos*2+2])
-                if elems[2] is not None:
-                    npos = elems[2]
-                    fnormals.extend(normals[npos*3:npos*3+3])
-            if None in fnormals: fnormals = None
-            if None in ftexcoords: ftexcoords = None
-            packed_faces.append((fvertices, fnormals, ftexcoords))
-        return packed_faces
-
     def load(self, fileLike, targetClass=Model):
         """
         The actual geometry data loader.
@@ -110,13 +89,12 @@ class OBJModelLoader(ResourceLoader):
                 pass
         if len(faces) < 1:
             raise Exception('No faces found in geometric data!')
-        # pack data into desired format and return it
-        faces = self._packFaces(faces, vertices, normals, texcoords)
-        model = Model(faces, materials = materials)
+        model = Model(faces=faces, vertices=vertices, normals=normals,
+            texCoords=texcoords, materials=materials)
         if targetClass is Model:
             return model
         else:
-            return RenderModel.fromModel(model)
+            return RenderModel(model)
 
 class MaterialLoader(ResourceLoader):
     """

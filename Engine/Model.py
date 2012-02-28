@@ -34,28 +34,56 @@ class Model(object):
     calculating the model's bounding box for example.
     See the class GL.RenderModel on how to render Models using OpenGL.
     """
+    _dataTypes = ('faces', 'vertices', 'normals', 'texCoords', 'materials')
 
-    def __init__(self, faces=None, materials=None):
+    def __init__(self, **args):
         """
         Construct a new Model instance.
-        You may pass the parameters indices, vertices, normals and
-        texCoords to initialize the model data during construction.
-        Each argument has to pass an appropriate list (see the
-        corresponding setters below for details).
+        You may pass the parameters faces and materials in oder to initialize
+        the model data during construction.
+        Each argument has to pass an appropriate list (see the corresponding
+        setters below for details).
         """
         super(Model, self).__init__()
         self.clear()
-        if faces is not None:
-            self.faces = faces
-            if materials is not None:
-                self.materials = materials
+        self.setData(**args)
+
+    def _packFaces(self):
+        """
+        Pack faces into a convenient data structure.
+        See the faces property below for details.
+        """
+        self._packedFaces = []
+        for face in self.faces:
+            fvertices, ftexcoords, fnormals = [], [], []
+            for elems in face:
+                vpos = elems[0]
+                fvertices.extend(self.vertices[vpos*3:vpos*3+3])
+                if elems[1] is not None:
+                    tpos = elems[1]
+                    ftexcoords.extend(self.texCoords[tpos*2:tpos*2+2])
+                if elems[2] is not None:
+                    npos = elems[2]
+                    fnormals.extend(self.normals[npos*3:npos*3+3])
+            if None in fnormals: fnormals = None
+            if None in ftexcoords: ftexcoords = None
+            self._packedFaces.append((fvertices, fnormals, ftexcoords))
+        return self._packedFaces
 
     def clear(self):
         """
         Clear all model data.
         This resets all model data properties to None.
         """
-        self._faces = []
+        for dtype in self._dataTypes:
+            self.__setattr__(dtype, None)
+        self._packedFaces = None
+
+    def setData(self, **args):
+        arguments = dict(**args)
+        for dtype in self._dataTypes:
+            if dtype in arguments:
+                self.__setattr__(dtype, arguments[dtype])
 
     @property
     def vertices(self):
@@ -64,8 +92,12 @@ class Model(object):
         Every vertex consists of three components in 3D space.
         May be None if no vertices have been set.
         """
-        return [x for f in self._faces for x in f[0]]
+        return self._vertices
 
+    @vertices.setter
+    def vertices(self, value):
+        self._vertices = value
+ 
     @property
     def normals(self):
         """
@@ -73,8 +105,12 @@ class Model(object):
         Since normals are vectors, they consist of three components.
         May be None if no normals have been set.
         """
-        return [x for f in self._faces for x in f[1]]
+        return self._normals
 
+    @normals.setter
+    def normals(self, value):
+        self._normals = value
+ 
     @property
     def texCoords(self):
         """
@@ -82,28 +118,59 @@ class Model(object):
         Every texture coordinate consists of two components.
         May be None if no texture coords have been set.
         """
-        return [x for f in self._faces for x in f[2]]
+        return self._texCoords
 
+    @texCoords.setter
+    def texCoords(self, value):
+        self._texCoords = value
+ 
     @property
     def materials(self):
+        """
+        Return the list of materials.
+        See setter method for a description of the list format.
+        May be an empty list of no materials have been set.
+        """
         return self._materials
 
     @materials.setter
     def materials(self, value):
+        """
+        Set the list of materials.
+        Every entry consists of a list containing two elements. The name of
+        the material and the face index at which the material has to be
+        activated during rendering.
+        """
+        if value is None: value = []
         self._materials = value
 
     @property
     def faces(self):
         """
         Return a list of faces this model has.
-        The returned list contains a list for every face where each face
-        list contains lists for the three vertex components of every vertex
-        in the face.
-        This list is empty if no vertices or indices have been set.
+        See setter for a description of the list format.
+        This list may be empty if no vertices or indices have been set.
         """
         return self._faces
 
     @faces.setter
     def faces(self, value):
+        """
+        Set list of faces.
+        This data structure contains most information about a models geometry. A
+        face consists of a list of three elements. The list of vertices (3
+        elements per vertex), the list of normals (3 per vertex) and the list of
+        texture coordinates (2 per vertex).
+        """
+        if value is None: value = []
         self._faces = value
+
+    @property
+    def packedFaces(self):
+        """
+        Return a list of packed face data.
+        """
+        if self._packedFaces is None:
+            self._packFaces()
+        return self._packedFaces
 
