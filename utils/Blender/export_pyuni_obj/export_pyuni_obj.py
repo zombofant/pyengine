@@ -30,7 +30,7 @@ def name_compat(name):
     if name is None:
         return 'None'
     else:
-        return name.replace(' ', '_')
+        return name.replace(' ', '_').lower()
 
 
 def write_mtl(scene, filepath, path_mode, copy_set, mtl_dict):
