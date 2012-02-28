@@ -1,3 +1,5 @@
 .local/
 *.pyc
+*.pyo
+.*.swp
 *~
