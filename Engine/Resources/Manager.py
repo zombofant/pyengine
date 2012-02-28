@@ -131,8 +131,8 @@ class ResourceManager(object):
         loader = self._findResourceLoader(resourceType, requiredClass)
         if requiredClass is None:
             requiredClass = loader.defaultTargetClass
-        if uri[0] != '/':
-            uri = '%s%s' % (loader.relativePathPrefix, uri)
+        if not os.path.isabs(uri):
+            uri = os.path.join(loader.relativePathPrefix, uri)
         instance = self._resourceCacheRead(uri, requiredClass)
         if instance is None:
             resFile = self._open(uri, "r")
