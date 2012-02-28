@@ -1,4 +1,6 @@
 .local/
 *.pyc
+*.pyo
+.*.swp
 *~
 Engine/UI/CSS/GeneratedParser.py

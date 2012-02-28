@@ -27,10 +27,12 @@ from our_future import *
 
 from Base import BindableObject
 from pyglet.graphics import Group, OrderedGroup
+from OpenGL.GL import glActiveTexture
 
 class StateContext(object):
     def __init__(self, stateObj, **kwargs):
         super(StateContext, self).__init__(**kwargs)
+        self._stateObj = stateObj
         self._bindCall = self._stateObj.bind
         if isinstance(stateObj, BindableObject):
             self._unbindCall = type(self._stateObj).unbind
@@ -53,6 +55,11 @@ class StateContext(object):
         self._unbindCall()
 
 class ActiveTexture(StateContext):
+    """
+    Makes sure that the active texture unit is set to the value passed
+    in *textureUnit* before *stateObj* is bound/unbound.
+    """
+    
     def __init__(self, stateObj, textureUnit, **kwargs):
         super(ActiveTexture, self).__init__(stateObj, **kwargs)
         self._textureUnit = textureUnit
@@ -61,8 +68,29 @@ class ActiveTexture(StateContext):
         glActiveTexture(self._textureUnit)
 
 class StateObjectGroup(Group):
+    """
+    Combines an arbitary amount of Groups, BindableObjects or
+    StateContexts.
+
+    The arguments, which must be instances of Group (pyglet),
+    BindableObject (Engine.GL.Base) or StateContext
+    (Engine.GL.StateManagement) will be taken in order. Their respective
+    state setting and unsetting calls are merged together to be executed
+    more efficiently.
+
+    EXAMPLE:
+        Having two GL.Texture2D instances ``texture1``, ``texture2``
+        and some custom pyglet Group which implements lighting called
+        ``lighting``, one could build a StateObjectGroup which
+        enables and disables all of these togehter like this:
+
+        StateObjectGroup(lighting,
+            ActiveTexture(texture1, GL_TEXTURE0),
+            ActiveTexture(texture2, GL_TEXTURE1))
+    """
+    
     def __init__(self, *args, **kwargs):
-        parent = None
+        self.parent = None
         # 2to3: this can be made better in python3 using keyword-only
         # arguments
         if "parent" in kwargs:
