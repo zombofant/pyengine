@@ -87,4 +87,3 @@ class WidgetIteration(WidgetInstanceTest):
             list(self.instance.treeDepthFirst()),
             [self.instance, childA, childAA, childAB, childB, childBA]
         )
-

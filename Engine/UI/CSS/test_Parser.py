@@ -173,13 +173,6 @@ class ParseProperties(ParserInstanceTest):
             """{0}: 1 2 3 4;""".format(boxprop),
             [(boxkw, (1, 2, 3, 4))]
         )
-
-    @unittest.expectedFailure
-    def test_backgroundImage(self):
-        self._testRule(
-            """background: url("/data/images/test.png");""",
-            [("background", ("/data/images/test.png",))]
-        )
     
     def test_backgroundColour(self):
         self._testRule(

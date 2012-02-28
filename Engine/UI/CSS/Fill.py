@@ -28,6 +28,8 @@ from our_future import *
 __all__ = ["Repeat", "Tile", "Stretch", "Colour", "Transparent",
     "Gradient", "Image"]
 
+import Engine.Resources.Manager as Manager
+
 class RepeatMode(object):
     ValidModes = []
 
@@ -191,10 +193,11 @@ class Gradient(Fill):
 class Image(Fill):
     def __init__(self, resource, rect=None, **kwargs):
         super(Image, self).__init__(**kwargs)
-        # TODO: check for a valid image resource
-        self._resource = resource
-        # TODO: use the full image if no rect is given
-        self._rect = rect
+        self._resource = Manager.ResourceManager().require(resource)
+        if rect is None:
+            self._rect = Rect(0, 0, *self._resource.Dimensions)
+        else:
+            self._rect = rect
 
     def __eq__(self, other):
         if not isinstance(other, Fill):
