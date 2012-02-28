@@ -22,7 +22,7 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
-from Widget import Widget
+from Widget import Widget, ParentWidget
 from Root import RootWidget
 import unittest
 
@@ -74,3 +74,17 @@ class WidgetChildren(WidgetInstanceTest):
         child = Widget(parent=self.instance)
         self.assertEqual(len(self.instance), 1)
         self.assertEqual(self.instance[0], child)
+
+class WidgetIteration(WidgetInstanceTest):
+    def test_depthFirst(self):
+        childA = ParentWidget(self.instance)
+        childB = ParentWidget(self.instance)
+        childAA = Widget(childA)
+        childAB = Widget(childA)
+        childBA = Widget(childB)
+
+        self.assertSequenceEqual(
+            list(self.instance.treeDepthFirst()),
+            [self.instance, childA, childAA, childAB, childB, childBA]
+        )
+

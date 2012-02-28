@@ -29,6 +29,7 @@ __all__ = ["AbstractWidget", "ParentWidget", "Widget"]
 
 from CSS.Rect import Rect
 from CSS.Rules import Rule
+from Style import Style
 
 class AbstractWidget(object):
     """
@@ -48,9 +49,19 @@ class AbstractWidget(object):
         self.Rect = Rect(0, 0)
         self.Rect._onChange = self._absMetricsChanged
         self._styleRule = None
+        self._themeStyle = Style()
+        self._invalidatedAlignment = True
+        self._invalidatedComputedStyle = True
         
     def _absMetricsChanged(self):
         self.onResize()
+
+    def _invalidateComputedStyle(self):
+        self._invalidatedComputedStyle = True
+        self._invalidateAlignment()
+
+    def _invalidateAlignment(self):
+        self._invalidatedAlignment = True
 
     def _relMetricsChanged(self):
         pass
@@ -97,6 +108,27 @@ class AbstractWidget(object):
         if value is not None and not isinstance(value, Rule):
             raise TypeError("Widget StyleRules must be CSS Rules")
         self._styleRule = value
+        self._invalidateComputedStyle()
+
+    @property
+    def ThemeStyle(self):
+        return self._themeStyle
+
+    @ThemeStyle.setter
+    def ThemeStyle(self, value):
+        if self._themeStyle == value:
+            return
+        if not isinstance(value, Style):
+            raise TypeError("ThemeStyle must be a Style instance. Got {0} {1}".format(type(value), value))
+        self._themeStyle = value
+        self._invalidateComputedStyle()
+
+    @property
+    def ComputedStyle(self):
+        if self._invalidatedComputedStyle:
+            self._computedStyle = self._themeStyle + self._styleRule
+            self._invalidateComputedStyle = False
+        return self._computedStyle
 
 class Widget(AbstractWidget):
     """
@@ -216,6 +248,15 @@ class WidgetContainer(object):
 
     def index(self, child):
         return self._children.index(child)
+
+    def treeDepthFirst(self):
+        yield self
+        for child in self:
+            if isinstance(child, WidgetContainer):
+                for node in child.treeDepthFirst():
+                    yield node
+            else:
+                yield child
 
 
 class ParentWidget(Widget, WidgetContainer):

@@ -27,7 +27,8 @@ from our_future import *
 
 import unittest
 
-from Theme import Theme, Style
+from Style import Style
+from Theme import Theme
 from Widget import ParentWidget
 from Root import RootWidget
 from CSS.Parser import Parser
@@ -106,6 +107,26 @@ class ThemeCascading(ThemeTest):
         )
 
         self.assertEqual(self.theme.getWidgetStyle(child2),
+            Style(
+                background=Transparent,
+                padding=Padding(3),
+                margin=Margin(0),
+                border=self.referenceBorder
+            )
+        )
+
+    def test_applyStyles(self):
+        root = RootWidget()
+        child1 = ParentWidget(root)
+        child2 = ParentWidget(child1)
+        child2.StyleRule = Rule(
+            [],
+            [("margin", ("1",))]
+        )
+
+        self.theme.applyStyles(root)
+        
+        self.assertEqual(child2.ComputedStyle,
             Style(
                 background=Transparent,
                 padding=Padding(3),

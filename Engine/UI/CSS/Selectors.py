@@ -65,7 +65,10 @@ class Selector(object):
     def testWidget(self, other):
         if self._chained is not None:
             other = self._chained.testWidget(other)
-        return self._testWidget(other)
+        if other is not None:
+            return self._testWidget(other)
+        else:
+            return None
 
     def _testEq(self, other):
         return (self._chained == other._chained)
