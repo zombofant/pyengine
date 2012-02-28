@@ -31,6 +31,7 @@ from Manager import ResourceManager
 try:
     from pyglet import image
     from Engine.GL.Texture import Texture2D
+    from OpenGL.GL import GL_RGBA, GL_UNSIGNED_BYTE
 except ImportError:
     pass
 
@@ -48,9 +49,12 @@ class TextureLoader(ResourceLoader):
     def load(self, fileLike, targetClass=Texture2D):
         img = image.load(fileLike.name, fileLike)
         data = img.get_image_data()
-        tex = Texture2D(width=data.width,
-            height=data.height, format=4,
-            data=data.get_data(data.format, data.pitch))
+        tex = Texture2D(
+            width=data.width,
+            height=data.height,
+            format=GL_RGBA,
+            data=(GL_RGBA, GL_UNSIGNED_BYTE, data.get_data(data.format, data.pitch))
+        )
         return tex
 
 # register an instance of TextLoader with the resource manager
