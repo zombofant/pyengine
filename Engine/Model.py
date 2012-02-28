@@ -48,6 +48,14 @@ class Model(object):
         self.clear()
         self.setData(**args)
 
+    def _copy(self, other):
+        """
+        Copy variables from another Model object.
+        """
+        assert isinstance(other, Model)
+        for dtype in self._dataTypes:
+            setattr(self, dtype, getattr(other, dtype))
+
     def _packFaces(self):
         """
         Pack faces into a convenient data structure.
