@@ -71,6 +71,7 @@ RootWidget > ParentWidget {
         self.referenceBorder.Right = BorderEdge(1, Colour(0.1, 0.2, 0.3))
 
     def tearDown(self):
+        Minilanguage.elementNames.clear()
         del self.theme
 
 class ThemeCascading(ThemeTest):
