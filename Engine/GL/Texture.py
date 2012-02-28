@@ -71,7 +71,7 @@ class Texture2D(TextureBase, RenderbufferBase):
     def __init__(self, width=None, height=None, format=None, data=None, **kwargs):
         super(Texture2D, self).__init__(width=width, height=height, format=format, **kwargs)
         self.bind()
-        glTexImage2D(GL_TEXTURE_2D, 0, format, self._dimensions[0], self._dimensions[1], 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, 0)
+        glTexImage2D(GL_TEXTURE_2D, 0, format, self._dimensions[0], self._dimensions[1], 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, data)
         self[GL_TEXTURE_MAG_FILTER] = GL_NEAREST
         self[GL_TEXTURE_MIN_FILTER] = GL_NEAREST
         self[GL_TEXTURE_WRAP_S] = GL_CLAMP_TO_EDGE

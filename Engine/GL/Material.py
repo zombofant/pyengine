@@ -26,8 +26,9 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 import sys
 
-from StateManagement import StateObjectGroup
+from StateManagement import StateObjectGroup, ActiveTexture
 from Texture import Texture2D
+from Engine.Resources.Manager import ResourceManager
 from OpenGL.GL import GL_TEXTURE0, glEnable, glDisable, glBindTexture
 import pyglet
 
@@ -48,7 +49,9 @@ class Material(object):
     @property
     def stateGroup(self):
         if len(self._textures) == 0: return None
-        return TestGroup('data/textures/%s' % self._textures[0])
+        texpath = '/data/textures/%s' % self._textures[0]
+        texture = ResourceManager().require(texpath)
+        return StateObjectGroup(ActiveTexture(texture, GL_TEXTURE0))
 
     @property
     def textures(self):
@@ -59,9 +62,10 @@ class Material(object):
         self._textures = list(value)
 
 class TestGroup(pyglet.graphics.Group):
-    def __init__(self, texFilename):
+    def __init__(self, texture):
         super(TestGroup, self).__init__()
-        self._texture = pyglet.resource.texture(texFilename)
+        assert isinstance(texture, Texture2D)
+        self._texture = texture
 
     def set_state(self):
         glEnable(self._texture.target)

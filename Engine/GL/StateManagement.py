@@ -27,10 +27,12 @@ from our_future import *
 
 from Base import BindableObject
 from pyglet.graphics import Group, OrderedGroup
+from OpenGL.GL import glActiveTexture
 
 class StateContext(object):
     def __init__(self, stateObj, **kwargs):
         super(StateContext, self).__init__(**kwargs)
+        self._stateObj = stateObj
         self._bindCall = self._stateObj.bind
         if isinstance(stateObj, BindableObject):
             self._unbindCall = type(self._stateObj).unbind
@@ -88,7 +90,7 @@ class StateObjectGroup(Group):
     """
     
     def __init__(self, *args, **kwargs):
-        parent = None
+        self.parent = None
         # 2to3: this can be made better in python3 using keyword-only
         # arguments
         if "parent" in kwargs:

@@ -94,7 +94,8 @@ class RenderModel(Model):
             if material[0] == '(null)':
                 group = None
             else:
-                mat = ResourceManager().require('/data/materials/%s.mtl' % material[0])
+                matpath = '/data/materials/%s.mtl' % material[0]
+                mat = ResourceManager().require(matpath)
                 group = mat.stateGroup
  
     def draw(self):
