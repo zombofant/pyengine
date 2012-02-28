@@ -78,6 +78,9 @@ class Model(object):
             self._packedFaces.append((fvertices, fnormals, ftexcoords))
         return self._packedFaces
 
+    def _calcBoundingBox(self):
+        raise NotImplementedError()
+
     def clear(self):
         """
         Clear all model data.
@@ -105,6 +108,7 @@ class Model(object):
     @vertices.setter
     def vertices(self, value):
         self._vertices = value
+        #self._calcBoundingBox()
  
     @property
     def normals(self):

@@ -37,18 +37,14 @@ class RenderModel(Model):
     a convenient renderable representation of the model.
     """
 
-    def __init__(self, model=None):
+    def __init__(self, **args):
         """
         Initialize a RenderModel.
-        You may pass a Model or RenderModel instance. The constructor will
-        then copy all model data from the given instance.
-        You may also create an instance by using the class method fromModel().
         """
-        super(RenderModel, self).__init__()
+        super(RenderModel, self).__init__(**args)
         self._batch = pyglet.graphics.Batch()
-        if model is not None:
-            self._copy(model)
-
+        self.update()
+ 
     def __del__(self):
         """
         The destructor of the object.
@@ -63,8 +59,16 @@ class RenderModel(Model):
         super(RenderModel, self)._copy(other)
         self.update()
 
-    def _clear(self):
-        pass
+    @classmethod
+    def fromModel(cls, model):
+        """
+        Takes a Model instance and returns a RenderModel instance as a
+        renderable representation of the given model.
+        """
+        assert isinstance(model, Model)
+        rmodel = RenderModel()
+        rmodel._copy(model)
+        return rmodel
 
     def update(self):
         """
@@ -75,7 +79,6 @@ class RenderModel(Model):
         has been changed in order to make the changes known to the renderer.
         """
         if len(self.packedFaces) < 1: return
-        self._clear()
         pos, nextMatSwitchIndex, matCount = 0, 0, 0
         materials = self._materials
         group = None

@@ -90,12 +90,12 @@ class OBJModelLoader(ResourceLoader):
                 pass
         if len(faces) < 1:
             raise Exception('No faces found in geometric data!')
-        model = Model(faces=faces, vertices=vertices, normals=normals,
+        args = dict(faces=faces, vertices=vertices, normals=normals,
             texCoords=texcoords, materials=materials)
         if targetClass is Model:
-            return model
+            return Model(**args)
         else:
-            return RenderModel(model)
+            return RenderModel(**args)
 
 class MaterialLoader(ResourceLoader):
     """
