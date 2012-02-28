@@ -25,8 +25,9 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-from Properties import Background, BaseBox, Padding, Margin, Border
-from Values import RGBA
+from Fill import Fill, Transparent, Colour
+from Border import Border
+from Box import Padding, Margin, BaseBox
 import Literals
 
 class Rule(object):
@@ -41,7 +42,7 @@ class Rule(object):
         self._margin = Margin()
         super(Rule, self).__init__(**kwargs)
         self._selectors = selectors
-        self.Background = background
+        self.Background = background or Transparent
         self.Border = border or Border()
         self.Padding = padding or Padding()
         self.Margin = margin or Margin()
@@ -81,16 +82,22 @@ class Rule(object):
         raise KeyError("{0} is not a valid stylesheet property".format(key))
 
     def _setBackgroundRepeat(self, value):
-        pass
+        if len(value) == 1:
+            self.Background.RepeatX = value
+            self.Background.RepeatY = value
+        elif len(value) == 2:
+            self.Background.RepeatX, self.Background.RepeatY = value
+        else:
+            raise ValueError("Unsupported amount of axis: {0}".format(len(value)))
 
     def _setBackgroundImage(self, value):
-        pass
+        self.Background = value
 
     def _setBackgroundColour(self, value):
-        pass
+        self.Background = value
 
     def _setBorderEdge(self, edge, value):
-        pass
+        setattr(self.Border, edge, value)
 
     def _setBaseBoxEdge(self, box, edge, value):
         box = getattr(self, box)
@@ -104,8 +111,8 @@ class Rule(object):
 
     @Background.setter
     def Background(self, value):
-        if value is not None and not isinstance(value, Background):
-            raise TypeError("Background must be a Background instance or None. Got {0} {1}".format(type(value), value))
+        if value is not None and not isinstance(value, Fill):
+            raise TypeError("Background must be a Fill instance. Got {0} {1}".format(type(value), value))
         self._background = value
 
     @property

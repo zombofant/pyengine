@@ -25,21 +25,21 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-from Properties import *
-from Properties import BaseBox
+from Fill import Transparent, Colour, Gradient, Image, Stretch, Repeat
+from Box import BaseBox
+from Rules import Rule
+from Rect import Rect
 from Selectors import *
 from Selectors import AttributeClass, AttributeExists, AttributeValue
-from Values import *
-from Rules import Rule
 from Literals import *
 
 class StylesheetNamespace(object):
     image = Image
     gradient = Gradient
-    step = GradientStep
-    rgba = RGBA
-    hsva = HSVA
-    hsla = HSLA
+    step = Gradient.Step
+    rgba = Colour.rgba
+    hsva = Colour.hsva
+    hsla = Colour.hsla
     stretch = Stretch
     repeat = Repeat
     rect = Rect

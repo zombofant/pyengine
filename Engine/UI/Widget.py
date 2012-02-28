@@ -27,7 +27,7 @@ from our_future import *
 
 __all__ = ["AbstractWidget", "ParentWidget", "Widget"]
 
-from Rect import Rect
+from CSS.Rect import Rect
 
 class AbstractWidget(object):
     """

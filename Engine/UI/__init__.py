@@ -22,7 +22,7 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
-from Rect import *
+from CSS.Rect import *
 from Widget import *
 try:
     import pyglet

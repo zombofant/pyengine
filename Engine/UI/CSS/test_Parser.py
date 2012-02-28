@@ -30,8 +30,8 @@ import StringIO
 
 import Selectors
 import Rules
-import Values
-import Properties
+import Box
+from Fill import Image, Colour, Gradient
 import Parser as _Parser
 
 class ParserInstanceTest(unittest.TestCase):
@@ -185,17 +185,17 @@ class ParseProperties(ParserInstanceTest):
     def test_backgroundImage(self):
         self._testRule(
             """background: url("/data/images/test.png");""",
-            background=Properties.BackgroundImage(Values.Image("/data/images/test.png"))
+            background=Image("/data/images/test.png")
         )
     
     def test_backgroundColour(self):
         self._testRule(
             """background: rgba(0.1, 0.2, 0.3, 0.4);""",
-            background=Properties.BackgroundColour(Values.RGBA(0.1, 0.2, 0.3, 0.4))
+            background=Colour(0.1, 0.2, 0.3, 0.4)
         )
 
     def test_padding(self):
-        self._testBox("padding", "padding", Properties.Padding)
+        self._testBox("padding", "padding", Box.Padding)
 
     def test_margin(self):
-        self._testBox("margin", "margin", Properties.Margin)
+        self._testBox("margin", "margin", Box.Margin)

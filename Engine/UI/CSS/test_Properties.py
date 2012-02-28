@@ -28,7 +28,9 @@ from our_future import *
 import unittest
 from random import randint
 
-import Properties
+import Box
+import Border
+import Fill
 
 class BoxModelTest(unittest.TestCase):
     def checkValues(self, l, t, r, b):
@@ -39,12 +41,12 @@ class BoxModelTest(unittest.TestCase):
 
 class BoxModelInit(BoxModelTest):
     def test_init0(self):
-        self.instance = Properties.BaseBox()
+        self.instance = Box.BaseBox()
         self.checkValues(0, 0, 0, 0)
 
     def test_init1(self):
         r = randint(0, 100)
-        self.instance = Properties.BaseBox(r)
+        self.instance = Box.BaseBox(r)
         self.checkValues(r, r, r, r)
 
     def test_init4(self):
@@ -53,7 +55,7 @@ class BoxModelInit(BoxModelTest):
         r = randint(1, 100) + l
         t = randint(1, 100) + r
         b = randint(1, 100) + t
-        self.instance = Properties.BaseBox(l, t, r, b)
+        self.instance = Box.BaseBox(l, t, r, b)
         self.checkValues(l, t, r, b)
 
     def tearDown(self):
@@ -61,7 +63,7 @@ class BoxModelInit(BoxModelTest):
 
 class BoxModelInstanceTest(BoxModelTest):
     def setUp(self):
-        self.instance = Properties.BaseBox()
+        self.instance = Box.BaseBox()
 
     def tearDown(self):
         del self.instance
@@ -107,7 +109,7 @@ class BoxModelConstraints(BoxModelInstanceTest):
 
 class PropertyEq(BoxModelTest):
     def test_BaseBox(self):
-        a, b = Properties.BaseBox(), Properties.BaseBox()
+        a, b = Box.BaseBox(), Box.BaseBox()
         self.assertEqual(a, b)
         a.Left = 10
         b.Left = 10
@@ -116,7 +118,7 @@ class PropertyEq(BoxModelTest):
         self.assertNotEqual(a, b)
 
     def test_Border(self):
-        a, b = Properties.Border(), Properties.Border()
+        a, b = Border.Border(), Border.Border()
         self.assertEqual(a, b)
         a.Width = 10
         b.Width = 10
@@ -128,3 +130,17 @@ class PropertyEq(BoxModelTest):
         a.Top.Width = 10
         a.Bottom.Width = 10
         self.assertEqual(a, b)
+
+    def test_BackgroundColour(self):
+        a, b = Fill.Colour(), Fill.Colour()
+        self.assertEqual(a, b)
+        a.Colour = Fill.Colour(0.1, 0.2, 0.3, 0.4)
+        b.Colour = Fill.Colour(0.1, 0.2, 0.3, 0.4)
+        self.assertEqual(a, b)
+        a.Colour = Fill.Colour(0.1, 0.1, 0.1, 1.0)
+        self.assertNotEqual(a, b)
+
+class TypeConstraints(unittest.TestCase):
+    def test_Border(self):
+        self.assertRaises(TypeError, setattr, Border.Border(), "Fill", 10)
+        self.assertRaises(TypeError, setattr, Border.Border().Left, "Fill", 10)
