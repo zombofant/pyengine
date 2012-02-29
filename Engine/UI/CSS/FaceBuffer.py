@@ -1,4 +1,4 @@
-# File name: Geometry.py
+# File name: FaceBuffer.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -25,16 +25,19 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
+import itertools
+import iterutils
+
 class FaceBuffer(object):
     NullColours = (
-        (1., 1., 1., 1.),
-        (1., 1., 1., 1.),
-        (1., 1., 1., 1.)
+        1., 1., 1., 1.,
+        1., 1., 1., 1.,
+        1., 1., 1., 1.
     )
     NullTexCoords = (
-        (0., 0.),
-        (0., 0.),
-        (0., 0.)
+        0., 0.,
+        0., 0.,
+        0., 0.
     )
     
     def __init__(self):
@@ -59,10 +62,35 @@ class FaceBuffer(object):
 
         Data is expected to be passed in CCW order.
         """
-        lists = self._bothFaces.setdefault(texture[0] if texture is not None else None, (["v2f"],["c4f"],["t2f"]))
-        lists[0].extend(vertices)
-        lists[1].extend(colour if colour is not None else self.NullColours)
-        lists[2].extend(texture[1] if texture is not None else self.NullTexCoords)
+        lists = self._faces.setdefault(texture[0] if texture is not None else None, (["v2f"],["c4f"],["t2f"]))
+        lists[0].extend(map(float, itertools.chain.from_iterable(vertices)))
+        lists[1].extend(map(float, itertools.chain.from_iterable(colour)) if colour is not None else self.NullColours)
+        lists[2].extend(map(float, itertools.chain.from_iterable(texture[1])) if texture is not None else self.NullTexCoords)
+
+    def addFaces(self, texture, vertices, colour=None, texCoords=None):
+        """
+        Adds multiple faces to the FaceBuffer.
+
+        Expects *vertices* and *colour* to be iterables of their
+        respective *addFace* argument.
+
+        *texture* must be the Texture these faces are assigned to, while
+        *texCoords* must be the list of 3-tuples of 2-tuples where
+        the texture coordinates are stored in.
+
+        *texture* can be None if no texture is assigned and texCoords
+        is None.
+        """
+        lists = self._faces.setdefault(texture, (["v2f"],["c4f"],["t2f"]))
+        lists[0].extend(iterutils.yieldCount(map(float, iterutils.flattenTwoLevels(vertices)), self))
+        # len gets set by iterutils.yieldCount
+        vertexCount = self.len >> 1
+        lists[1].extend(
+            map(float, iterutils.flattenTwoLevels(colour)) if colour is not None else itertools.chain.from_iterable(itertools.repeat(self.NullColours[:4], vertexCount))
+        )
+        lists[2].extend(
+            map(float, iterutils.flattenTwoLevels(texCoords)) if texCoords is not None else itertools.chain.from_iterable(itertools.repeat(self.NullTexCoords[:2], vertexCount))
+        )
 
     def addQuad(self, vertices, colour=None, texture=None):
         """

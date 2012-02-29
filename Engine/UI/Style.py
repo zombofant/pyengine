@@ -193,16 +193,19 @@ class Style(object):
         "margin-bottom": lambda self, value: self._setBaseBoxEdge("Margin", "Bottom", value),
     }
 
-    def geometryForRect(self, rect):
+    def geometryForRect(self, rect, faceBuffer):
         """
         Takes a widget rect and creates ui geometry for it using
         the geometryForRect calls of the respective filler objects.
 
-        Returns a tuple ``(clientRect, geometry)`` where clientRect
-        is the rect shrinked about the size of padding and border.
+        Returns a Rect instance representing the client rect for the
+        passed rect, that is the rect shrinked by any Border and Padding
+        defined in this style.
 
         Does not take into account margin.
         """
         clientRect = copy.copy(rect)
-        borderBox = self.Border.getBox()
+        clientRect.shrink(self.Border.geometryForRect(rect, faceBuffer))
+        clientRect.shrink(self.Padding)
+        return clientRect
         

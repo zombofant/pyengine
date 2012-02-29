@@ -278,3 +278,21 @@ class RectBoxes(RectTest):
             rects,
             (Rect.NotARect, Rect.NotARect, Rect.NotARect, Rect.NotARect, Rect.NotARect, Rect.NotARect, Rect.NotARect, Rect.NotARect)
         )
+
+    def test_cutCombinable(self):
+        a = Rect.Rect(0, 0, 20, 20)
+        b = Box.BaseBox(5, 5, 5, 5)
+        left, topLeft, top, topRight, right, bottomRight, bottom, bottomLeft = a.cut(b)
+
+        c = copy.copy(a)
+        c.shrink(b)
+        self.assertIsNot(c, Rect.NotARect)
+        c |= left
+        self.assertIsNot(c, Rect.NotARect)
+        c |= right
+        self.assertIsNot(c, Rect.NotARect)
+        c |= topLeft | top | topRight
+        self.assertIsNot(c, Rect.NotARect)
+        c |= bottomLeft | bottom | bottomRight
+        self.assertIsNot(c, Rect.NotARect)
+        self.assertEqual(c, a)

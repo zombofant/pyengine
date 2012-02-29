@@ -214,14 +214,21 @@ class Border(BorderComponent):
         return BaseBox(self.Left.Width, self.Top.Width,
             self.Right.Width, self.Bottom.Width)
 
-    def geometryForRect(self, rect):
+    def geometryForRect(self, rect, faceBuffer):
         """
-        Creates geometry and returns a tuple
-        ``(shrinkedRect, geometry)`` where shrinked rect is the rect
-        shrinked by the border edge size.
+        Adds geometry for this border as inner border in *rect* in
+        *faceBuffer*.
+
+        Returns the BaseBox representing this border.
         """
+        box = self.getBox()
         rectsAndEdges = zip(
-            rect.cut(self.getBox()),
+            rect.cut(box),
             iterutils.interleave((edge.Fill for edge in self._edges), self._corners)
         )
-        return itertools.chain.from_iterable(fill.geometryForRect(rect) for rect, fill in rectsAndEdges if rect is not NotARect)
+        # return itertools.chain.from_iterable(fill.geometryForRect(rect) for rect, fill in rectsAndEdges if rect is not NotARect)
+        for rect, fill in rectsAndEdges:
+            if rect is NotARect:
+                continue
+            fill.geometryForRect(rect, faceBuffer)
+        return box
