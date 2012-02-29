@@ -8,5 +8,5 @@
 	branch = devel
 [submodule "utils/pyLR1"]
 	path = utils/pyLR1
-	url = https://github.com/horazont/pyLR1
+	url = https://github.com/pyuniverse/pyLR1
 	branch = master
