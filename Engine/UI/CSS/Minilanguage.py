@@ -49,6 +49,19 @@ class StylesheetNamespace(object):
 
     _tokenBlacklist = ["evaluateCall", "get"]
 
+    __singleton = None
+
+    def __new__(cls, *args, **kwargs):
+        if cls.__singleton is None:
+            return super(type(StylesheetNamespace), cls).__new__(cls, *args, **kwargs)
+        else:
+            return cls.__singleton
+
+    def __init__(self):
+        if not hasattr(self, "_initialized"):
+            super(StylesheetNamespace, self).__init__()
+            self._initialized = True
+
     def evaluateCall(self, call, *args):
         call = self.get(call)
         return call(*args)
@@ -59,5 +72,34 @@ class StylesheetNamespace(object):
             raise ValueError("Token {0!r} not defined in css".format(token))
         return getattr(self, token)
 
-elementNames = {}
+class ElementNames(dict):
+    __singleton = None
+    
+    def __new__(cls, *args, **kwargs):
+        if cls.__singleton is None:
+            cls.__singleton = dict.__new__(cls, *args, **kwargs)
+            return cls.__singleton
+        else:
+            return cls.__singleton
+
+    def __init__(self):
+        if not hasattr(self, "_initialized"):
+            super(ElementNames, self).__init__()
+            self._initialized = True
+
+    def __getitem__(self, key):
+        return super(ElementNames, self).__getitem__(key.lower())
+
+    def __setitem__(self, key, value):
+        return super(ElementNames, self).__setitem__(key.lower(), value)
+
+    def __delitem__(self, key):
+        return super(ElementNames, self).__delitem__(key.lower())
+
+    def update(self, otherdict):
+        for key, value in otherdict.iteritems():
+            self[key] = value
+
+elementNames = ElementNames()
 namespace = StylesheetNamespace()
+    

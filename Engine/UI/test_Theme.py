@@ -29,8 +29,8 @@ import unittest
 
 from Style import Style
 from Theme import Theme
-from Widget import ParentWidget
-from Root import RootWidget
+from WidgetBase import ParentWidget
+from RootWidget import RootWidget
 from CSS.Parser import Parser
 from CSS.Fill import Transparent, Colour
 from CSS.Box import Padding, Margin

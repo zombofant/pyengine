@@ -22,8 +22,8 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
-from Widget import Widget, ParentWidget
-from Root import RootWidget
+from WidgetBase import Widget, ParentWidget
+from RootWidget import RootWidget
 import unittest
 
 class WidgetInit(unittest.TestCase):

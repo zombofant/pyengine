@@ -65,7 +65,7 @@ class AbstractWidget(object):
         self._invalidateAlignment()
 
     def _invalidateGeometry(self):
-        self._invalidateGeometry = True
+        self._invalidatedGeometry = True
         self._geometry = None
 
     def _relMetricsChanged(self):

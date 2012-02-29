@@ -28,7 +28,7 @@ from our_future import *
 import itertools
 
 from Style import Style
-from Widget import WidgetContainer
+from WidgetBase import WidgetContainer
 
 class SelectorTuple(tuple):
     def __eq__(self, other):
