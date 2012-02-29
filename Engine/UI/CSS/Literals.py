@@ -91,3 +91,7 @@ def BorderLiteral(width, style, fill):
 
 def BoxLiteral(*args):
     return BaseBox(*args)
+
+
+def IntLiteral(value):
+    return int(value)

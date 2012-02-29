@@ -45,10 +45,10 @@ class AbstractWidget(object):
         super(AbstractWidget, self).__init__(**kwargs)
         self.Visible = True
         self.Enabled = True
-        self.RelativeRect = Rect(0, 0)
-        self.RelativeRect._onChange = self._relMetricsChanged
-        self.AbsoluteRect = Rect(0, 0)
-        self.AbsoluteRect._onChange = self._absMetricsChanged
+        self._relativeRect = Rect(0, 0)
+        self._relativeRect._onChange = self._relMetricsChanged
+        self._absoluteRect = Rect(0, 0)
+        self._absoluteRect._onChange = self._absMetricsChanged
         self._styleRule = None
         self._themeStyle = Style()
         self._invalidateComputedStyle()
@@ -69,9 +69,14 @@ class AbstractWidget(object):
         self._geometry = None
 
     def _relMetricsChanged(self):
-        pass
+        self._invaliateAlignment()
 
-    def align(self):
+    def realign(self):
+        if self._invalidatedAlignment:
+            self.doAlign()
+            self._invalidatedAlignment = False
+
+    def doAlign(self):
         pass
 
     def render(self):
@@ -137,6 +142,22 @@ class AbstractWidget(object):
             self._computedStyle = self._themeStyle + self._styleRule
             self._invalidateComputedStyle = False
         return self._computedStyle
+
+    @property
+    def RelativeRect(self):
+        return self._relativeRect
+
+    @RelativeRect.setter
+    def RelativeRect(self, value):
+        self._relativeRect.assign(value)
+
+    @property
+    def AbsoluteRect(self):
+        return self._absoluteRect
+
+    @AbsoluteRect.setter
+    def AbsoluteRect(self, value):
+        self._absoluteRect.assign(value)
 
 class Widget(AbstractWidget):
     """
@@ -277,7 +298,7 @@ class ParentWidget(Widget, WidgetContainer):
         super(ParentWidget, self).__init__(parent)
 
     def _newChild(self, widget):
-        self.align()
+        self._invalidateAlignment()
 
     def _parentChanged(self):
         super(ParentWidget, self)._parentChanged()
@@ -293,6 +314,7 @@ class ParentWidget(Widget, WidgetContainer):
         return self._rootWidget
 
     def hitTest(self, p):
+        self.realign()
         if not p in self.AbsoluteRect:
             return None
         return self._hitTest(p) or self

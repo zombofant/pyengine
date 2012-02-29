@@ -42,12 +42,17 @@ class Style(object):
         self._padding = Padding()
         self._margin = Margin()
         self._border = Border()
+        self._boxSpacing = (0, 0)
         if "padding" in kwargs:
             self.Padding = kwargs.pop("padding")
         if "margin" in kwargs:
             self.Margin = kwargs.pop("margin")
         if "border" in kwargs:
             self.Border = kwargs.pop("border")
+        if "boxSpacingX" in kwargs:
+            self.BoxSpacingX = kwargs.pop("boxSpacingX")
+        if "boxSpacingY" in kwargs:
+            self.BoxSpacingY = kwargs.pop("boxSpacingY")
         super(Style, self).__init__(**kwargs)
         for rule in rules:
             self._addRule(rule)
@@ -58,7 +63,9 @@ class Style(object):
             background=copy.deepcopy(self.Background, memo),
             padding=copy.deepcopy(self.Padding, memo),
             margin=copy.deepcopy(self.Margin, memo),
-            border=copy.deepcopy(self.Border, memo)
+            border=copy.deepcopy(self.Border, memo),
+            boxSpacingX=self.BoxSpacingX,
+            boxSpacingY=self.BoxSpacingY
         )
 
     def _addRule(self, rule):
@@ -82,7 +89,8 @@ class Style(object):
             self._background == other._background and
             self._padding == other._padding and
             self._margin == other._margin and
-            self._border == other._border
+            self._border == other._border and
+            self._boxSpacing == other._boxSpacing
         )
 
     def __repr__(self):
@@ -168,11 +176,48 @@ class Style(object):
             raise TypeError("Border must be a Border instance. Got {0} {1}".format(type(value), value))
         self._border.assign(value)
 
+    @property
+    def BoxSpacing(self):
+        return self._boxSpacing
+
+    @BoxSpacing.setter
+    def BoxSpacing(self, value):
+        x, y = value
+        x, y = int(x), int(x)
+        if x < 0 or y < 0:
+            raise ValueError("BoxSpacing must be non-negative.")
+        self._boxSpacing = x, y
+
+    @property
+    def BoxSpacingX(self):
+        return self._boxSpacing[0]
+
+    @BoxSpacingX.setter
+    def BoxSpacingX(self, value):
+        x = int(value)
+        if x < 0:
+            raise ValueError("BoxSpacing must be non-negative.")
+        self._boxSpacing = x, self._boxSpacing[1]
+
+    @property
+    def BoxSpacingY(self):
+        return self._boxSpacing[1]
+
+    @BoxSpacingY.setter
+    def BoxSpacingY(self, value):
+        y = int(value)
+        if y < 0:
+            raise ValueError("BoxSpacing must be non-negative.")
+        self._boxSpacing = self._boxSpacing[0], y
+
     _literalSetters = {
         "background": (Literals.BackgroundLiteral, "Background"),
         "padding": (Literals.BoxLiteral, "Padding"),
         "margin": (Literals.BoxLiteral, "Margin"),
         "border": (Literals.BorderLiteral, "Border"),
+        "box-spacing": (lambda x: x, "BoxSpacing"),
+        "box-spacing-x": (Literals.IntLiteral, "BoxSpacingX"),
+        "box-spacing-y": (Literals.IntLiteral, "BoxSpacingY")
     }
 
     _propertySetters = {

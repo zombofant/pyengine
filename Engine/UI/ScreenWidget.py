@@ -40,7 +40,7 @@ class ScreenWidget(ParentWidget):
         super(ScreenWidget, self).__init__(parent, **kwargs)
         self._window = window
 
-    def align(self):
+    def doAlign(self):
         for child in self:
             child.AbsoluteRect.assign(self.AbsoluteRect)
 
