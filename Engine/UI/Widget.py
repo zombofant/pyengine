@@ -29,6 +29,7 @@ __all__ = ["AbstractWidget", "ParentWidget", "Widget"]
 
 from CSS.Rect import Rect
 from CSS.Rules import Rule
+from CSS.FaceBuffer import FaceBuffer
 from Style import Style
 
 class AbstractWidget(object):
@@ -46,27 +47,34 @@ class AbstractWidget(object):
         self.Enabled = True
         self.RelativeRect = Rect(0, 0)
         self.RelativeRect._onChange = self._relMetricsChanged
-        self.Rect = Rect(0, 0)
-        self.Rect._onChange = self._absMetricsChanged
+        self.AbsoluteRect = Rect(0, 0)
+        self.AbsoluteRect._onChange = self._absMetricsChanged
         self._styleRule = None
         self._themeStyle = Style()
-        self._invalidatedAlignment = True
-        self._invalidatedComputedStyle = True
+        self._invalidateComputedStyle()
         
     def _absMetricsChanged(self):
         self.onResize()
 
-    def _invalidateComputedStyle(self):
-        self._invalidatedComputedStyle = True
-        self._invalidateAlignment()
-
     def _invalidateAlignment(self):
         self._invalidatedAlignment = True
+
+    def _invalidateComputedStyle(self):
+        self._invalidatedComputedStyle = True
+        self._invalidateGeometry()
+        self._invalidateAlignment()
+
+    def _invalidateGeometry(self):
+        self._invalidateGeometry = True
+        self._geometry = None
 
     def _relMetricsChanged(self):
         pass
 
     def align(self):
+        pass
+
+    def render(self):
         pass
 
     def onKeyDown(self, symbol, modifiers):
@@ -158,7 +166,7 @@ class Widget(AbstractWidget):
             self._rootWidget = None
 
     def hitTest(self, p):
-        return self if p in self.Rect else None
+        return self if p in self.AbsoluteRect else None
 
     def clientToAbsolute(self, p):
         return (p[0] + self.AbsoluteRect.X, p[1] + self.AbsoluteRect.Y)
@@ -285,7 +293,7 @@ class ParentWidget(Widget, WidgetContainer):
         return self._rootWidget
 
     def hitTest(self, p):
-        if not p in self.Rect:
+        if not p in self.AbsoluteRect:
             return None
         return self._hitTest(p) or self
 

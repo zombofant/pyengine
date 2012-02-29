@@ -42,7 +42,7 @@ class ScreenWidget(ParentWidget):
 
     def align(self):
         for child in self:
-            child.Rect.assign(self.Rect)
+            child.AbsoluteRect.assign(self.Rect)
 
     @property
     def Window(self):

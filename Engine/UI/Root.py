@@ -51,7 +51,7 @@ class RootWidget(AbstractWidget, WidgetContainer):
 
     def _mapMouseEvent(self, x, y):
         target = self._mouseCapture or self.hitTest((x, y))
-        return (target, x - target.Rect.Left, y - target.Rect.Top)
+        return (target, x - target.AbsoluteRect.Left, y - target.AbsoluteRect.Top)
     
     def dispatchKeyDown(self, *args):
         target = self._findKeyEventTarget()

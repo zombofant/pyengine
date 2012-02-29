@@ -42,7 +42,7 @@ class SceneWidget(Widget):
     def _setupProjection(self):
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
-        gluPerspective(self.FOV, self.Rect.Width / self.Rect.Height, self.ZNear, self.ZFar)
+        gluPerspective(self.FOV, self.AbsoluteRect.Width / self.AbsoluteRect.Height, self.ZNear, self.ZFar)
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity()
 
