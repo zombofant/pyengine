@@ -25,7 +25,10 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
+import iterutils
+
 from Fill import Fill, Colour, Transparent
+from Box import BaseBox
 
 class BorderComponent(object):
     def __init__(self, width=0, fill=Transparent, **kwargs):
@@ -80,7 +83,8 @@ class BorderEdge(BorderComponent):
 
 class Border(BorderComponent):
     def __init__(self, width=0, fill=Transparent, **kwargs):
-        self._edges = [BorderEdge() for i in xrange(4)]
+        self._edges = [BorderEdge() for i in range(4)]
+        self._corners = [Transparent for i in range(4)]
         super(Border, self).__init__(width, fill, **kwargs)
     
     def assign(self, other):
@@ -88,12 +92,13 @@ class Border(BorderComponent):
             for edgeA, edgeB in zip(self._edges, other._edges):
                 edgeA.Width = edgeB.Width
                 edgeA.Fill = edgeB.Fill
+            cornerA = list(other._corners)
         elif isinstance(other, BorderComponent): 
             for edgeA in self._edges:
                 edgeA.Width = other.Width
                 edgeA.Fill = other.Fill
         else:    
-            raise TypeError("Can only assign BorderComponents to BorderComponents")
+            raise TypeError("Can only assign BorderComponents to Border")
 
     @property
     def Width(self):
@@ -145,11 +150,47 @@ class Border(BorderComponent):
     def Bottom(self, value):
         self._edges[3].assign(value)
 
+
+    @property
+    def TopLeft(self):
+        return self._corners[0]
+
+    @TopLeft.setter
+    def TopLeft(self, value):
+        self._corners[0].assign(value)
+
+    @property
+    def TopRight(self):
+        return self._corners[1]
+
+    @TopRight.setter
+    def TopRight(self, value):
+        self._corners[1].assign(value)
+
+    @property
+    def BottomRight(self):
+        return self._corners[2]
+
+    @BottomRight.setter
+    def BottomRight(self, value):
+        self._corners[2].assign(value)
+
+    @property
+    def BottomLeft(self):
+        return self._corners[3]
+
+    @BottomLeft.setter
+    def BottomLeft(self, value):
+        self._corners[3].assign(value)
+
     def __eq__(self, other):
         if not isinstance(other, Border):
             return NotImplemented
         for edgeA, edgeB in zip(self._edges, other._edges):
             if not edgeA == edgeB:
+                return False
+        for cornerA, cornerB in zip(self._corners, other._corners):
+            if not cornerA == cornerB:
                 return False
         return True
 
@@ -159,3 +200,15 @@ class Border(BorderComponent):
     Top={1!r},
     Right={2!r},
     Bottom={3!r}>""".format(self.Left, self.Top, self.Right, self.Bottom)
+
+    def getBox(self):
+        return BaseBox(self.Left.Width, self.Top.Width,
+            self.Right.Width, self.Bottom.Width)
+
+    def geometryForRect(self, rect):
+        """
+        Creates geometry and returns a tuple
+        ``(shrinkedRect, geometry)`` where shrinked rect is the rect
+        shrinked by the border edge size.
+        """
+        

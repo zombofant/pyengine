@@ -104,19 +104,34 @@ Transparent = __Transparent()
 
 class Colour(Fill):
     def __init__(self, r=0., g=0., b=0., a=1., **kwargs):
+        r, g, b, a = float(r), float(g), float(b), float(a)
+        if a < 0 or a > 1:
+            raise ValueError("Alpha must be in [0.,1.]. Got {0}".format(a))
+        if r < 0:
+            raise ValueError("Red must be non-negative. Got {0}".format(r))
+        if g < 0:
+            raise ValueError("Green must be non-negative. Got {0}".format(g))
+        if b < 0:
+            raise ValueError("Blue must be non-negative. Got {0}".format(b))
         super(Colour, self).__init__(**kwargs)
-        self._r, self._g, self._b, self._a = float(r), float(g), float(b), float(a)
+        self._r, self._g, self._b, self._a = r, g, b, a
 
     @classmethod
     def rgba(cls, r, g, b, a=1.):
+        if a == 0:
+            return Transparent
         return cls(r, g, b, a)
 
     @classmethod
     def hsva(cls, h, s, v, a=1.):
+        if a == 0:
+            return Transparent
         raise NotImplementedError("# FIXME: implement hsva->rgba conversion")
 
     @classmethod
     def hsla(cls, h, s, l, a=1.):
+        if a == 0:
+            return Transparent
         raise NotImplementedError("# FIXME: implement hsla->rgba conversion")
     
     def __eq__(self, other):

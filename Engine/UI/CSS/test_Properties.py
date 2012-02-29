@@ -144,3 +144,10 @@ class TypeConstraints(unittest.TestCase):
     def test_Border(self):
         self.assertRaises(TypeError, setattr, Border.Border(), "Fill", 10)
         self.assertRaises(TypeError, setattr, Border.Border().Left, "Fill", 10)
+
+class BorderTests(unittest.TestCase):
+    def test_box(self):
+        a = Border.Border(3)
+        self.assertEqual(a.getBox(), Box.BaseBox(3))
+        a.Left.Width = 1
+        self.assertEqual(a.getBox(), Box.BaseBox(1, 3, 3, 3))
