@@ -58,6 +58,7 @@ class Application(RootWidget):
             self._buildFramebuffer()
             self.render = self._renderWithFBO
             self.renderWindow = self._renderWindowWithFBO
+        self.realign()
 
     def _constructWindowed(self, geometry):
         window, widget = self._newScreen((0, 0), geometry)
@@ -94,7 +95,7 @@ class Application(RootWidget):
     def _newScreen(self, ui_logical, geometry, fullscreen=False, primary=True, screen=None):        
         window = self.makeWin(ui_logical, None if fullscreen else geometry, screen)
         widget = ScreenWidget(self, window)
-        widget.AbsoluteRect.XYWH = (ui_logical[0], ui_logical[1], geometry[0], geometry[1])
+        widget.AbsoluteRect = Rect(ui_logical[0], ui_logical[1], ui_logical[0]+geometry[0], ui_logical[1]+geometry[1])
         t = (window, widget)
         self.windows.append(t)
         if primary:
@@ -237,12 +238,21 @@ class Application(RootWidget):
 
     def _renderWithFBO(self):
         self._fbo.bind()
+        x, y, w, h = self.AbsoluteRect.XYWH
+        glViewport(x, y, w, h)
+        glMatrixMode(GL_PROJECTION)
+        glLoadIdentity()
+        glOrtho(0, w, h, 0, -10.0, 10.0)
+        glMatrixMode(GL_MODELVIEW)
+        glLoadIdentity()
         # FIXME: Redraw only parts of the UI which need to
         # glEnable(GL_SCISSOR_TEST)
         # glScissor(
         glClearColor(0.0, 0.0, 1.0, 0.1)
         glClear(GL_COLOR_BUFFER_BIT)
-        # TODO: render UI here
+        glDisable(GL_DEPTH_TEST)
+        super(Application, self).render()
+        glEnable(GL_DEPTH_TEST)
         # glDisable(GL_SCISSOR_TEST)
         Framebuffer.unbind()
 

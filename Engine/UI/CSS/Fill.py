@@ -166,7 +166,7 @@ class Colour(Fill):
 
     def geometryForRect(self, rect, faceBuffer):
         x1, x2, y1, y2 = rect.Left, rect.Right, rect.Top, rect.Bottom
-        colour = (self._r, self._g, self._b, self._a) * 3
+        colour = ((self._r, self._g, self._b, self._a),) * 3
         faceBuffer.addFace(
             (
                 (x1, y1),

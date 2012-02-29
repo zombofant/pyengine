@@ -1,4 +1,4 @@
-# File name: SceneWidget.py
+# File name: test_BoxWidget.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -25,31 +25,30 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-__all__ = ["SceneWidget"]
+import unittest
+
+from CSS.Rect import Rect
 
 from WidgetBase import Widget
-from OpenGL.GL import *
-from OpenGL.GLU import *
+from RootWidget import RootWidget
+from BoxWidget import VBox, HBox
 
-class SceneWidget(Widget):
-    def __init__(self, parent, **kwargs):
-        # FIXME: pass scene graph and camera to use ;)
-        super(SceneWidget, self).__init__(parent, **kwargs)
-        self.FOV = 60.0
-        self.ZNear = 1.0
-        self.ZFar = 100.0
+from test_Widget import WidgetInstanceTest
 
-    def _setupProjection(self):
-        glMatrixMode(GL_PROJECTION)
-        glLoadIdentity()
-        gluPerspective(self.FOV, self.AbsoluteRect.Width / self.AbsoluteRect.Height, self.ZNear, self.ZFar)
-        glMatrixMode(GL_MODELVIEW)
-        glLoadIdentity()
+class VBoxAlignment(WidgetInstanceTest):
+    def setUp(self):
+        super(VBoxAlignment, self).setUp()
+        self.instance.AbsoluteRect = Rect(0, 0, 256, 256)
+        self.root = self.instance
+        self.instance = VBox(self.root)
+        self.instance.AbsoluteRect = Rect(0, 0, 256, 256)
 
-    def _resetProjection(self):
-        glMatrixMode(GL_PROJECTION)
-        glLoadIdentity()
-        glMatrixMode(GL_MODELVIEW)
-
-    def renderScene(self):
-        pass
+    def tearDown(self):
+        del self.instance
+        del self.root
+    
+    def test_basic(self):
+        self.widgetA, self.widgetB = Widget(self.instance), Widget(self.instance)
+        self.root.realign()
+        self.assertEqual(self.widgetA.AbsoluteRect, Rect(0, 0, 256, 128))
+        self.assertEqual(self.widgetB.AbsoluteRect, Rect(0, 128, 256, 256))

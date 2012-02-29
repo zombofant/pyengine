@@ -1,4 +1,4 @@
-# File name: Widget.py
+# File name: WidgetBase.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -32,6 +32,13 @@ from CSS.Rules import Rule
 from CSS.FaceBuffer import FaceBuffer
 from Style import Style
 
+try:
+    import pyglet
+    from OpenGL.GL import GL_TRIANGLES
+    from Engine.GL.Texture import Texture2D
+except ImportError:
+    pass
+
 class AbstractWidget(object):
     """
     Abstract base class for widgets. Do not derive from this if you are not
@@ -54,7 +61,7 @@ class AbstractWidget(object):
         self._invalidateComputedStyle()
         
     def _absMetricsChanged(self):
-        self.onResize()
+        self._invalidateAlignment()
 
     def _invalidateAlignment(self):
         self._invalidatedAlignment = True
@@ -80,7 +87,22 @@ class AbstractWidget(object):
         pass
 
     def render(self):
-        pass
+        if self._invalidatedGeometry:
+            self.realign()
+            faceBuffer = FaceBuffer()
+            self.ComputedStyle.geometryForRect(self.AbsoluteRect, faceBuffer)
+            self._geometry = dict(
+                ((tex, pyglet.graphics.vertex_list((len(geometry[0][1]))//2, *geometry)) for tex, geometry in faceBuffer.getGeometry().iteritems())
+            )
+            del faceBuffer
+            self._invalidateGeometry = False
+        for tex, vertexList in self._geometry.iteritems():
+            Texture2D.unbind()
+            if tex is not None:
+                tex.bind()
+            vertexList.draw(GL_TRIANGLES)
+            Texture2D.unbind()
+            
 
     def onKeyDown(self, symbol, modifiers):
         return False
@@ -98,7 +120,7 @@ class AbstractWidget(object):
         return False
 
     def onResize(self):
-        self.align()
+        self._invalidateAlignment()
 
     def onScroll(self, scrollX, scrollY):
         return False
@@ -140,7 +162,7 @@ class AbstractWidget(object):
     def ComputedStyle(self):
         if self._invalidatedComputedStyle:
             self._computedStyle = self._themeStyle + self._styleRule
-            self._invalidateComputedStyle = False
+            self._invalidatedComputedStyle = False
         return self._computedStyle
 
     @property
@@ -305,6 +327,10 @@ class ParentWidget(Widget, WidgetContainer):
         for child in self:
             child._parentChanged()
 
+    def add(self, widget):
+        super(ParentWidget, self).add(widget)
+        self._invalidateAlignment()
+
     def bringToFront(self, key):
         child = self._children[key]
         del self._children[key]
@@ -318,6 +344,17 @@ class ParentWidget(Widget, WidgetContainer):
         if not p in self.AbsoluteRect:
             return None
         return self._hitTest(p) or self
+
+    def realign(self):
+        super(ParentWidget, self).realign()
+        for child in self:
+            child.realign()
+
+    def render(self):
+        super(ParentWidget, self).render()
+        for child in self:
+            if child.Visible:
+                child.render()
 
     def sendToBack(self, key):
         child = self._children[key]

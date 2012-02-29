@@ -1,4 +1,4 @@
-# File name: Screen.py
+# File name: ScreenWidget.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -27,6 +27,8 @@ from our_future import *
 
 __all__ = ["ScreenWidget"]
 
+import CSS.Minilanguage
+
 from WidgetBase import ParentWidget
 
 class ScreenWidget(ParentWidget):
@@ -41,9 +43,15 @@ class ScreenWidget(ParentWidget):
         self._window = window
 
     def doAlign(self):
+        print(self.ComputedStyle)
         for child in self:
-            child.AbsoluteRect.assign(self.AbsoluteRect)
+            child.AbsoluteRect = self.AbsoluteRect
+
+    def render(self):
+        super(ScreenWidget, self).render()
 
     @property
     def Window(self):
         return self._window
+
+CSS.Minilanguage.ElementNames().registerWidgetClass(ScreenWidget)

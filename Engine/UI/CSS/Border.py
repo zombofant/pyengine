@@ -35,7 +35,7 @@ class BorderComponent(object):
     def __init__(self, width=0, fill=Transparent, **kwargs):
         super(BorderComponent, self).__init__(**kwargs)
         self.Width = width
-        self.Fill = fill or Colour(0., 0., 0., 0.)
+        self.Fill = fill
     
     def assign(self, other):
         if not isinstance(other, BorderComponent):
@@ -87,6 +87,9 @@ class Border(BorderComponent):
         self._edges = [BorderEdge() for i in range(4)]
         self._corners = [Transparent for i in range(4)]
         super(Border, self).__init__(width, fill, **kwargs)
+        print(id(self))
+        print(fill)
+        print(self._corners)
     
     def assign(self, other):
         if isinstance(other, Border):            
@@ -98,6 +101,7 @@ class Border(BorderComponent):
             for edgeA in self._edges:
                 edgeA.Width = other.Width
                 edgeA.Fill = other.Fill
+            self._corners = [value] * 4
         else:    
             raise TypeError("Can only assign BorderComponents to Border")
 
@@ -116,8 +120,11 @@ class Border(BorderComponent):
 
     @Fill.setter
     def Fill(self, value):
+        print(id(self))
+        print(value)
         for edge in self._edges:
             edge.Fill = value
+        self._corners = [value] * 4
 
     @property
     def Left(self):
@@ -208,7 +215,12 @@ class Border(BorderComponent):
     Left={0!r},
     Top={1!r},
     Right={2!r},
-    Bottom={3!r}>""".format(self.Left, self.Top, self.Right, self.Bottom)
+    Bottom={3!r},
+    TopLeft={4!r},
+    TopRight={5!r},
+    BottomRight={6!r},
+    BottomLeft={7!r}>""".format(self.Left, self.Top, self.Right, self.Bottom,
+            self.TopLeft, self.TopRight, self.BottomRight, self.BottomLeft)
 
     def getBox(self):
         return BaseBox(self.Left.Width, self.Top.Width,
@@ -221,6 +233,7 @@ class Border(BorderComponent):
 
         Returns the BaseBox representing this border.
         """
+        print(id(self))
         box = self.getBox()
         rectsAndEdges = zip(
             rect.cut(box),

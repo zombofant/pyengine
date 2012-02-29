@@ -45,14 +45,16 @@ class BoxWidget(ParentWidget):
         myStyle = self.ComputedStyle
         widgets = list(self)
         leftSpaceIterator = itertools.chain(
-            (getterB(widget.ComputedStyle.Margin) for widget in widgets[1:]),
-            (getterA(myStyle.Padding),)
+            (getterA(myStyle.Padding),),
+            (getterA(widget.ComputedStyle.Margin) for widget in widgets[:-1])
         )
         widgetsLeftSpace = [(widget, max(getterA(widget.ComputedStyle.Margin), baseSpacing, leftSpace)) for widget, leftSpace in zip(widgets, leftSpaceIterator)]
-        widgetsLeftSpace.append((None, max(getterA(myStyle.Padding), baseSpacing, getterA(widgets[0].ComputedStyle.Margin))))
+        widgetsLeftSpace.append((None, max(getterB(myStyle.Padding), baseSpacing, getterB(widgets[-1].ComputedStyle.Margin))))
         return widgetsLeftSpace
 
-    def _doAlign(self, spacingList, sizeGetter, positionSetter, sizeSetter):
+    def _doAlign(self, spacingList, sizeGetter, positionSetter,
+            sizeSetter, otherSpacingA, otherSpacingB,
+            otherPositionASetter, otherPositionBSetter):
         totalSpace = sum(space for widget, space in spacingList)
         widgetWidth = (sizeGetter(self.AbsoluteRect) - totalSpace) / len(self)
         if int(widgetWidth) <= 0:
@@ -63,21 +65,31 @@ class BoxWidget(ParentWidget):
             return
         
         x = spacingList[0][1] + self.AbsoluteRect.X
-        for widget, space in itertools.dropwhile(lambda x: x[0] is None, spacingList):
-            positionSetter(AbsoluteRect.X, x)
-            sizeSetter(AbsoluteRect.Width, widgetWidth)
+        y = otherSpacingA + self.AbsoluteRect.Y
+        b = self.AbsoluteRect.Bottom - otherSpacingB
+        for widget, space in spacingList[:-1]:
+            positionSetter(widget.AbsoluteRect, x)
+            sizeSetter(widget.AbsoluteRect, widgetWidth)
+            otherPositionASetter(widget.AbsoluteRect, y)
+            otherPositionBSetter(widget.AbsoluteRect, b)
             widget.Visible = True
-            x += space
+            x += space + widgetWidth
 
 class VBox(BoxWidget):
     def doAlign(self):
+        myStyle = self.ComputedStyle
         spacingList = self._getSpacingList(self.ComputedStyle.BoxSpacingX, operator.attrgetter("Top"), operator.attrgetter("Bottom"))
-        self._doAlign(spacingList, operator.attrgetter("Height"), opSetattr("Y"), opSetattr("Height"))
+        self._doAlign(spacingList,
+            operator.attrgetter("Height"),
+            opSetattr("Y"),
+            opSetattr("Height"),
+            myStyle.Padding.Left, myStyle.Padding.Right, opSetattr("Left"), opSetattr("Right"))
 
 class HBox(BoxWidget):
     def doAlign(self):
         spacingList = self._getSpacingList(self.ComputedStyle.BoxSpacingX, operator.attrgetter("Left"), operator.attrgetter("Right"))
-        self._doAlign(spacingList, operator.attrgetter("Width"), opSetattr("X"), opSetattr("Width"))
+        self._doAlign(spacingList, operator.attrgetter("Width"), opSetattr("X"), opSetattr("Width"),
+            myStyle.Padding.Top, myStyle.Padding.Bottom, opSetattr("Top"), opSetattr("Bottom"))
 
 class Grid(ParentWidget):
     pass

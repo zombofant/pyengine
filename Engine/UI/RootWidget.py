@@ -1,4 +1,4 @@
-# File name: Root.py
+# File name: RootWidget.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -102,6 +102,16 @@ class RootWidget(AbstractWidget, WidgetContainer):
         
     def getRootWidget(self):
         return self
+
+    def realign(self):
+        super(RootWidget, self).realign()
+        for child in self:
+            child.realign()
+
+    def render(self):
+        self.realign()
+        for child in self:
+            child.render()
 
     def update(self, timeDelta):
         for child in self:

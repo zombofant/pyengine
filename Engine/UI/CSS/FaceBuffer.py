@@ -62,10 +62,10 @@ class FaceBuffer(object):
 
         Data is expected to be passed in CCW order.
         """
-        lists = self._faces.setdefault(texture[0] if texture is not None else None, (["v2f"],["c4f"],["t2f"]))
-        lists[0].extend(map(float, itertools.chain.from_iterable(vertices)))
-        lists[1].extend(map(float, itertools.chain.from_iterable(colour)) if colour is not None else self.NullColours)
-        lists[2].extend(map(float, itertools.chain.from_iterable(texture[1])) if texture is not None else self.NullTexCoords)
+        lists = self._faces.setdefault(texture[0] if texture is not None else None, (("v2f", []),("c4f", []),("t2f", [])))
+        lists[0][1].extend(map(float, itertools.chain.from_iterable(vertices)))
+        lists[1][1].extend(map(float, itertools.chain.from_iterable(colour)) if colour is not None else self.NullColours)
+        lists[2][1].extend(map(float, itertools.chain.from_iterable(texture[1])) if texture is not None else self.NullTexCoords)
 
     def addFaces(self, texture, vertices, colour=None, texCoords=None):
         """
@@ -81,14 +81,14 @@ class FaceBuffer(object):
         *texture* can be None if no texture is assigned and texCoords
         is None.
         """
-        lists = self._faces.setdefault(texture, (["v2f"],["c4f"],["t2f"]))
-        lists[0].extend(iterutils.yieldCount(map(float, iterutils.flattenTwoLevels(vertices)), self))
+        lists = self._faces.setdefault(texture, (("v2f", []),("c4f", []),("t2f", [])))
+        lists[0][1].extend(iterutils.yieldCount(map(float, iterutils.flattenTwoLevels(vertices)), self))
         # len gets set by iterutils.yieldCount
         vertexCount = self.len >> 1
-        lists[1].extend(
+        lists[1][1].extend(
             map(float, iterutils.flattenTwoLevels(colour)) if colour is not None else itertools.chain.from_iterable(itertools.repeat(self.NullColours[:4], vertexCount))
         )
-        lists[2].extend(
+        lists[2][1].extend(
             map(float, iterutils.flattenTwoLevels(texCoords)) if texCoords is not None else itertools.chain.from_iterable(itertools.repeat(self.NullTexCoords[:2], vertexCount))
         )
 

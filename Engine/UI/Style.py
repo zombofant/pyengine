@@ -78,6 +78,8 @@ class Style(object):
             new._addRule(rules)
         else:
             new = copy.deepcopy(self)
+            if rules is None:
+                return new
             for rule in rules:
                 new._addRule(rules)
         return new
@@ -122,10 +124,10 @@ class Style(object):
             raise ValueError("Unsupported amount of axis: {0}".format(len(value)))
 
     def _setBackgroundImage(self, value):
-        self.Background = value
+        self.Background = value[0]
 
     def _setBackgroundColour(self, value):
-        self.Background = value
+        self.Background = value[0]
 
     def _setBorderEdge(self, edge, value):
         setattr(self.Border, edge, BorderEdge(value[0], value[2]))
@@ -251,6 +253,7 @@ class Style(object):
         """
         clientRect = copy.copy(rect)
         clientRect.shrink(self.Border.geometryForRect(rect, faceBuffer))
+        self.Background.geometryForRect(clientRect, faceBuffer)
         clientRect.shrink(self.Padding)
         return clientRect
         
