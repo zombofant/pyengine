@@ -37,36 +37,48 @@ class RenderModel(Model):
     a convenient renderable representation of the model.
     """
 
-    def __init__(self, model=None):
+    def __init__(self, **args):
         """
         Initialize a RenderModel.
-        You may pass a Model or RenderModel instance. The constructor will
-        then copy all model data from the given instance.
-        You may also create an instance by using the class method fromModel().
         """
-        super(RenderModel, self).__init__()
+        super(RenderModel, self).__init__(**args)
         self._batch = pyglet.graphics.Batch()
-        if model is not None:
-            self._copyFromModel(model)
+        self.update()
+ 
+    def __del__(self):
+        """
+        The destructor of the object.
+        Make sure the object's batch gets deleted.
+        """
+        del self._batch
 
-    def _copyFromModel(self, model):
-        assert isinstance(model, Model)
-        for dtype in self._dataTypes:
-            self.__setattr__(dtype, getattr(model, dtype))
+    def _copy(self, other):
+        """
+        Copy data from another (Render)Model instance.
+        """
+        super(RenderModel, self)._copy(other)
         self.update()
 
-    def _clear(self):
-        pass
+    @classmethod
+    def fromModel(cls, model):
+        """
+        Takes a Model instance and returns a RenderModel instance as a
+        renderable representation of the given model.
+        """
+        assert isinstance(model, Model)
+        rmodel = RenderModel()
+        rmodel._copy(model)
+        return rmodel
 
     def update(self):
         """
-        Update the vertex list. At least indices and vertices have to be
-        available in order to construct a vertex list. Please not that a
-        complete new vertex list is created when calling this method. This
-        means all previous vertex data will be dropped.
+        Take the faces of this model and put the vertex data into vertex
+        lists in the object's batch. This prepares the data to be rendered
+        using OpenGL.
+        You have to call this method if the underlying vertex or face data
+        has been changed in order to make the changes known to the renderer.
         """
         if len(self.packedFaces) < 1: return
-        self._clear()
         pos, nextMatSwitchIndex, matCount = 0, 0, 0
         materials = self._materials
         group = None
