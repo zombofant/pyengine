@@ -90,12 +90,12 @@ class StateObjectGroup(Group):
     """
     
     def __init__(self, *args, **kwargs):
-        self.parent = None
+        parent = None
         # 2to3: this can be made better in python3 using keyword-only
         # arguments
         if "parent" in kwargs:
             parent = kwargs.pop("parent")
-        super(Group, self).__init__(parent=parent, **kwargs)
+        super(StateObjectGroup, self).__init__(parent=parent, **kwargs)
         setCalls = []
         unsetCalls = []
         for stateObj in args:

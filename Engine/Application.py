@@ -61,8 +61,8 @@ class Application(RootWidget):
 
     def _constructWindowed(self, geometry):
         window, widget = self._newScreen((0, 0), geometry)
-        self.Rect.Width = window.width
-        self.Rect.Height = window.height
+        self.AbsoluteRect.Width = window.width
+        self.AbsoluteRect.Height = window.height
 
     def _constructFullscreen(self):
         """
@@ -88,13 +88,13 @@ class Application(RootWidget):
             totalWidth = max(totalWidth, x + w)
             totalHeight = max(totalHeight, y + h)
 
-        self.Rect.Width = totalWidth
-        self.Rect.Height = totalHeight
+        self.AbsoluteRect.Width = totalWidth
+        self.AbsoluteRect.Height = totalHeight
 
     def _newScreen(self, ui_logical, geometry, fullscreen=False, primary=True, screen=None):        
         window = self.makeWin(ui_logical, None if fullscreen else geometry, screen)
         widget = ScreenWidget(self, window)
-        widget.Rect.XYWH = (ui_logical[0], ui_logical[1], geometry[0], geometry[1])
+        widget.AbsoluteRect.XYWH = (ui_logical[0], ui_logical[1], geometry[0], geometry[1])
         t = (window, widget)
         self.windows.append(t)
         if primary:
@@ -103,8 +103,8 @@ class Application(RootWidget):
         return t
 
     def _buildFramebuffer(self):
-        w = makePOT(self.Rect.Width)
-        h = makePOT(self.Rect.Height)
+        w = makePOT(self.AbsoluteRect.Width)
+        h = makePOT(self.AbsoluteRect.Height)
         fbo = Framebuffer(w, h)
         uiTex = Texture2D(w, h, GL_RGBA8)
         fbo[GL_COLOR_ATTACHMENT0] = uiTex
@@ -130,8 +130,8 @@ class Application(RootWidget):
         vertexLists = []
         for window, widget in self.windows:
             vl = domain.create(4)
-            xmin, xmax = widget.Rect.Left / w, widget.Rect.Right / h
-            ymin, ymax = widget.Rect.Top / h, widget.Rect.Bottom / h
+            xmin, xmax = widget.AbsoluteRect.Left / w, widget.AbsoluteRect.Right / h
+            ymin, ymax = widget.AbsoluteRect.Top / h, widget.AbsoluteRect.Bottom / h
             texCoords = [
                 xmin, ymax,
                 xmax, ymax,
@@ -156,7 +156,7 @@ class Application(RootWidget):
             raise ValueError("Scene widgets must derive from SceneWidget")
         screen = self._getWidgetScreen(widget)
         assert screen is not None
-        if screen.Rect & widget.Rect != widget.Rect:
+        if screen.AbsoluteRect & widget.AbsoluteRect != widget.AbsoluteRect:
             raise ValueError("Scene widget leaves screen boundaries")
         window = screen.Window
         assert window is not None
@@ -254,7 +254,7 @@ class Application(RootWidget):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         
         for sceneWidget in window._sceneWidgets:
-            x, y, w, h = sceneWidget.Rect.XYWH
+            x, y, w, h = sceneWidget.AbsoluteRect.XYWH
             xlog, ylog = window.UILogicalCoords
             x -= xlog
             y -= ylog

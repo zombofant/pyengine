@@ -1,4 +1,4 @@
-# File name: Scene.py
+# File name: Screen.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -25,31 +25,25 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-__all__ = ["SceneWidget"]
+__all__ = ["ScreenWidget"]
 
-from Widget import Widget
-from OpenGL.GL import *
-from OpenGL.GLU import *
+from WidgetBase import ParentWidget
 
-class SceneWidget(Widget):
-    def __init__(self, parent, **kwargs):
-        # FIXME: pass scene graph and camera to use ;)
-        super(SceneWidget, self).__init__(parent, **kwargs)
-        self.FOV = 60.0
-        self.ZNear = 1.0
-        self.ZFar = 100.0
+class ScreenWidget(ParentWidget):
+    """
+    Represents an operating system screen or window.
 
-    def _setupProjection(self):
-        glMatrixMode(GL_PROJECTION)
-        glLoadIdentity()
-        gluPerspective(self.FOV, self.AbsoluteRect.Width / self.AbsoluteRect.Height, self.ZNear, self.ZFar)
-        glMatrixMode(GL_MODELVIEW)
-        glLoadIdentity()
+    This is used by the RootWidget *Application* to manage windows.
+    """
+    
+    def __init__(self, parent, window, **kwargs):
+        super(ScreenWidget, self).__init__(parent, **kwargs)
+        self._window = window
 
-    def _resetProjection(self):
-        glMatrixMode(GL_PROJECTION)
-        glLoadIdentity()
-        glMatrixMode(GL_MODELVIEW)
+    def align(self):
+        for child in self:
+            child.AbsoluteRect.assign(self.AbsoluteRect)
 
-    def renderScene(self):
-        pass
+    @property
+    def Window(self):
+        return self._window
