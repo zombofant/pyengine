@@ -29,6 +29,7 @@ import iterutils
 
 from Fill import Fill, Colour, Transparent
 from Box import BaseBox
+from Rect import Rect, NotARect
 
 class BorderComponent(object):
     def __init__(self, width=0, fill=Transparent, **kwargs):
@@ -157,7 +158,9 @@ class Border(BorderComponent):
 
     @TopLeft.setter
     def TopLeft(self, value):
-        self._corners[0].assign(value)
+        if not isinstance(value, Fill):
+            raise TypeError("TopLeft must be a Fill instance. Got {0} {1}".format(type(value), value))
+        self._corners[0] = value
 
     @property
     def TopRight(self):
@@ -165,7 +168,9 @@ class Border(BorderComponent):
 
     @TopRight.setter
     def TopRight(self, value):
-        self._corners[1].assign(value)
+        if not isinstance(value, Fill):
+            raise TypeError("TopRight must be a Fill instance. Got {0} {1}".format(type(value), value))
+        self._corners[1] = value
 
     @property
     def BottomRight(self):
@@ -173,7 +178,9 @@ class Border(BorderComponent):
 
     @BottomRight.setter
     def BottomRight(self, value):
-        self._corners[2].assign(value)
+        if not isinstance(value, Fill):
+            raise TypeError("BottomRight must be a Fill instance. Got {0} {1}".format(type(value), value))
+        self._corners[2] = value
 
     @property
     def BottomLeft(self):
@@ -181,7 +188,9 @@ class Border(BorderComponent):
 
     @BottomLeft.setter
     def BottomLeft(self, value):
-        self._corners[3].assign(value)
+        if not isinstance(value, Fill):
+            raise TypeError("BottomLeft must be a Fill instance. Got {0} {1}".format(type(value), value))
+        self._corners[3] = value
 
     def __eq__(self, other):
         if not isinstance(other, Border):
@@ -211,4 +220,8 @@ class Border(BorderComponent):
         ``(shrinkedRect, geometry)`` where shrinked rect is the rect
         shrinked by the border edge size.
         """
-        
+        rectsAndEdges = zip(
+            rect.cut(self.getBox()),
+            iterutils.interleave((edge.Fill for edge in self._edges), self._corners)
+        )
+        return itertools.chain.from_iterable(fill.geometryForRect(rect) for rect, fill in rectsAndEdges if rect is not NotARect)

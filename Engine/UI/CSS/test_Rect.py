@@ -267,6 +267,7 @@ class RectBoxes(RectTest):
             bottomLeft,
             Rect.Rect(0, 15, 5, 20)
         )
+    
     def test_cut2(self):
         a = Rect.Rect(0, 0, 20, 20)
         b = Box.BaseBox(0, 0, 0, 0)

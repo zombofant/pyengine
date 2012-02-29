@@ -26,6 +26,7 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 import itertools
+import iterutils
 import copy
 
 import CSS.Literals as Literals
@@ -33,6 +34,7 @@ from CSS.Box import Padding, Margin, BaseBox
 from CSS.Border import Border, BorderEdge
 from CSS.Fill import Fill, Colour, Transparent, Image
 from CSS.Rules import Rule
+from CSS.Rect import Rect
 
 class Style(object):
     def __init__(self, *rules, **kwargs):
@@ -190,3 +192,17 @@ class Style(object):
         "margin-top": lambda self, value: self._setBaseBoxEdge("Margin", "Top", value),
         "margin-bottom": lambda self, value: self._setBaseBoxEdge("Margin", "Bottom", value),
     }
+
+    def geometryForRect(self, rect):
+        """
+        Takes a widget rect and creates ui geometry for it using
+        the geometryForRect calls of the respective filler objects.
+
+        Returns a tuple ``(clientRect, geometry)`` where clientRect
+        is the rect shrinked about the size of padding and border.
+
+        Does not take into account margin.
+        """
+        clientRect = copy.copy(rect)
+        borderBox = self.Border.getBox()
+        
