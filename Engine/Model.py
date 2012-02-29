@@ -48,6 +48,14 @@ class Model(object):
         self.clear()
         self.setData(**args)
 
+    def _copy(self, other):
+        """
+        Copy variables from another Model object.
+        """
+        assert isinstance(other, Model)
+        for dtype in self._dataTypes:
+            setattr(self, dtype, getattr(other, dtype))
+
     def _packFaces(self):
         """
         Pack faces into a convenient data structure.
@@ -68,7 +76,14 @@ class Model(object):
             if None in fnormals: fnormals = None
             if None in ftexcoords: ftexcoords = None
             self._packedFaces.append((fvertices, fnormals, ftexcoords))
+        self._facesNeedPacking = False
         return self._packedFaces
+
+    def _calcBoundingBox(self):
+        raise NotImplementedError()
+
+    def _calcCenterVertex(self):
+        raise NotImplementedError()
 
     def clear(self):
         """
@@ -77,7 +92,8 @@ class Model(object):
         """
         for dtype in self._dataTypes:
             self.__setattr__(dtype, None)
-        self._packedFaces = None
+        self._packedFaces = []
+        self._facesNeedPacking = False
 
     def setData(self, **args):
         arguments = dict(**args)
@@ -97,6 +113,8 @@ class Model(object):
     @vertices.setter
     def vertices(self, value):
         self._vertices = value
+        self._facesNeedPacking = True
+        #self._calcBoundingBox()
  
     @property
     def normals(self):
@@ -110,6 +128,7 @@ class Model(object):
     @normals.setter
     def normals(self, value):
         self._normals = value
+        self._facesNeedPacking = True
  
     @property
     def texCoords(self):
@@ -123,6 +142,7 @@ class Model(object):
     @texCoords.setter
     def texCoords(self, value):
         self._texCoords = value
+        self._facesNeedPacking = True
  
     @property
     def materials(self):
@@ -164,13 +184,14 @@ class Model(object):
         """
         if value is None: value = []
         self._faces = value
+        self._facesNeedPacking = True
 
     @property
     def packedFaces(self):
         """
         Return a list of packed face data.
         """
-        if self._packedFaces is None:
+        if self._facesNeedPacking:
             self._packFaces()
         return self._packedFaces
 
