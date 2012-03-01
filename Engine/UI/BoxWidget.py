@@ -41,17 +41,32 @@ def opSetattr(attr):
     return _setattr
 
 class BoxWidget(ParentWidget):
+    @staticmethod
+    def getSpaceFlexWidth(iterable):
+        flexSum = 0
+        staticWidthSum = 0
+        spaceSum = 0
+        for widget, space, flex, staticWidth in iterable:
+            spaceSum += space
+            if staticWidth is None:
+                flexSum += flex
+            else:
+                staticWidthSum += staticWidth
+        return spaceSum, flexSum, staticWidthSum
+    
     def __init__(self, parent,
             aaPositionSetter,
             faPositionSetter,
             aaBoxEdges,
             faBoxEdges,
+            aaSizeGetter,
             **kwargs):
         super(BoxWidget, self).__init__(parent, **kwargs)
         self._aaPositionSetter = aaPositionSetter # e.g. opSetattr("LeftRight")
         self._faPositionSetter = faPositionSetter # e.g. opSetattr("TopBottom")
         self._aaBoxEdges = aaBoxEdges # e.g. attrgetter("Left"), attrgetter("Right")
         self._faBoxEdges = faBoxEdges # e.g. attrgetter("Top"), attrgetter("Bottom")
+        self._aaSizeGetter = aaSizeGetter # e.g. attrgetter("Width")
     
     def _getSpacingList(self, baseSpacing):
         getterA, getterB = self._aaBoxEdges
@@ -61,8 +76,8 @@ class BoxWidget(ParentWidget):
             (getterA(myStyle.Padding),),
             (getterA(widget.ComputedStyle.Margin) for widget in widgets[:-1])
         )
-        widgetsLeftSpace = [(widget, max(getterA(widget.ComputedStyle.Margin), baseSpacing, leftSpace)) for widget, leftSpace in zip(widgets, leftSpaceIterator)]
-        widgetsLeftSpace.append((None, max(getterB(myStyle.Padding), baseSpacing, getterB(widgets[-1].ComputedStyle.Margin))))
+        widgetsLeftSpace = [(widget, max(getterA(widget.ComputedStyle.Margin), baseSpacing, leftSpace), widget.ComputedStyle.Flex, self._aaSizeGetter(widget.ComputedStyle)) for widget, leftSpace in zip(widgets, leftSpaceIterator)]
+        widgetsLeftSpace.append((None, max(getterB(myStyle.Padding), baseSpacing, getterB(widgets[-1].ComputedStyle.Margin)), 0, None))
         return widgetsLeftSpace
 
     def _doAlign(self, spacingList,
@@ -77,38 +92,40 @@ class BoxWidget(ParentWidget):
         faPositionSetter = self._faPositionSetter
         faBoxEdgeA, faBoxEdgeB = self._faBoxEdges
         
-        totalSpace = sum(space for widget, space in spacingList)
-        widgetAAWidth = (myAASize - totalSpace) / len(self)
+        totalSpace, totalFlex, totalStaticWidth = BoxWidget.getSpaceFlexWidth(spacingList)
+        widgetWidthPerFlex = (myAASize - (totalSpace+totalStaticWidth)) / totalFlex
         
-        if int(widgetAAWidth) <= 0:
+        if int(widgetWidthPerFlex) <= 0:
             for widget in self:
                 widget.Visible = False
             # TODO: Print this warning to a log
-            print("Warning: {0} has not enough space for {1} widgets (totalSpace={2},size={3}).".format(self, len(self), totalSpace, myAASize))
+            print("Warning: {0} has not enough space for {1} flexes (totalSpace={2},size={3},staticSize={4}).".format(self, totalFlex, totalSpace, myAASize, totalStaticWidth))
             return
         
         aaPosA = spacingList[0][1] + myAAFAPos[0]
-        aaPosB = aaPosA + widgetAAWidth
         faPosA = myAAFAPos[1]
         faPosB = faPosA + myFASize
         
-        for widget, space in spacingList[:-1]:
+        for widget, space, flex, width in spacingList[:-1]:
             #print("{0} aligning {1}:".format(self, widget))
             #print("  aaRange = ({0}, {1})".format(aaPosA, aaPosB))
             #print("  faRange = ({0}, {1})".format(faPosA, faPosB))
             #print("  aaWidgetSize = {0}".format(widgetAAWidth))
 
+            if width is None:
+                widgetWidth = flex * widgetWidthPerFlex
+            else:
+                widgetWidth = width
             widgetMargin = widget.ComputedStyle.Margin
-            aaPositionSetter(widget.AbsoluteRect, (round(aaPosA), round(aaPosB)))
+            aaPositionSetter(widget.AbsoluteRect, (round(aaPosA), round(aaPosA+widgetWidth)))
             
             faSpacingA = max(myFAPadding[0], faBoxEdgeA(widgetMargin))
             faSpacingB = max(myFAPadding[1], faBoxEdgeB(widgetMargin))
             faPositionSetter(widget.AbsoluteRect, (faPosA + faSpacingA, faPosB - faSpacingB))
             
             widget.Visible = True
-            offset = space + widgetAAWidth
+            offset = space + widgetWidth
             aaPosA += offset
-            aaPosB += offset
 
 class VBox(BoxWidget):
     def __init__(self, parent, **kwargs):
@@ -117,6 +134,7 @@ class VBox(BoxWidget):
             opSetattr("LeftRight"),
             (attrgetter("Top"), attrgetter("Bottom")),
             (attrgetter("Left"), attrgetter("Right")),
+            attrgetter("Height"),
             **kwargs)
     
     def doAlign(self):
@@ -135,6 +153,7 @@ class HBox(BoxWidget):
             opSetattr("TopBottom"),
             (attrgetter("Left"), attrgetter("Right")),
             (attrgetter("Top"), attrgetter("Bottom")),
+            attrgetter("Width"),
             **kwargs)
     
     def doAlign(self):
