@@ -1,4 +1,4 @@
-# File name: LayerWidget.py
+# File name: WindowWidget.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -25,28 +25,16 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-__all__ = ["DesktopLayer", "WindowLayer", "PopupLayer"]
+__all__ = ["WindowWidget"]
 
 import CSS.Minilanguage
 
 from WidgetBase import ParentWidget
-from ScreenWidget import ScreenWidget
-from WindowWidget import WindowWidget
 
-class LayerWidget(ParentWidget):
-    pass
-
-class DesktopLayer(LayerWidget):
-    pass
-
-class WindowLayer(LayerWidget):
+class WindowWidget(ParentWidget):
     def __init__(self, parent, **kwargs):
-        super(WindowLayer, self).__init__(parent)
-        self._childClasses = WindowWidget
+        super(WindowWidget, self).__init__(parent, **kwargs)
+        self.AbsoluteRect.Width = 256
+        self.AbsoluteRect.Height = 128
 
-class PopupLayer(LayerWidget):
-    pass
-
-CSS.Minilanguage.ElementNames().registerWidgetClass(DesktopLayer)
-CSS.Minilanguage.ElementNames().registerWidgetClass(WindowLayer)
-CSS.Minilanguage.ElementNames().registerWidgetClass(PopupLayer)
+CSS.Minilanguage.ElementNames().registerWidgetClass(WindowWidget)
