@@ -1,4 +1,4 @@
-# File name: ScreenWidget.py
+# File name: CSSLoader.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -25,32 +25,28 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-__all__ = ["ScreenWidget"]
+from Base import ResourceLoader
+from Manager import ResourceManager
 
-import CSS.Minilanguage
+from Engine.UI.CSS.Parser import Parser
 
-from WidgetBase import ParentWidget
-
-class ScreenWidget(ParentWidget):
+class CSSLoader(ResourceLoader):
     """
-    Represents an operating system screen or window.
-
-    This is used by the RootWidget *Application* to manage windows.
+    Implements a loader for CSS (cascading style sheet) files.
     """
-    
-    def __init__(self, parent, window, **kwargs):
-        super(ScreenWidget, self).__init__(parent, **kwargs)
-        self._window = window
 
-    def doAlign(self):
-        for child in self:
-            child.AbsoluteRect = self.AbsoluteRect
+    def __init__(self, **kwargs):
+        super(CSSLoader, self).__init__(**kwargs)
+        self._supportedTargetClasses = [list]
+        self._defaultTargetClass = list
+        self._resourceTypes = ['css']
+        self._parser = Parser()
+        self._relativePathPrefix = "/data/css/"
 
-    def render(self):
-        super(ScreenWidget, self).render()
+    def load(self, fileLike, targetClass=list):
+        assert targetClass is list
+        return self._parser.parse(fileLike)
 
-    @property
-    def Window(self):
-        return self._window
+# register an instance of TextLoader with the resource manager
+ResourceManager().registerResourceLoader(CSSLoader())
 
-CSS.Minilanguage.ElementNames().registerWidgetClass(ScreenWidget)

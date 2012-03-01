@@ -97,11 +97,7 @@ class Border(BorderComponent):
         super(Border, self).__init__(**kwargs)
         self.Width = width
         if fill is not None:
-            self.Fill = fill
-        # print(id(self))
-        # print(fill)
-        # print(self._corners)
-    
+            self.Fill = fill    
     def assign(self, other):
         if isinstance(other, Border):
             for edgeA, edgeB in zip(self._edges, other._edges):
@@ -139,8 +135,6 @@ class Border(BorderComponent):
 
     @Fill.setter
     def Fill(self, value):
-        # print(id(self))
-        # print(value)
         for edge in self._edges:
             edge.Fill = value
         self._corners = [value] * 4
@@ -259,13 +253,11 @@ class Border(BorderComponent):
 
         Returns the BaseBox representing this border.
         """
-        # print(id(self))
         box = self.getBox()
         rectsAndEdges = zip(
             rect.cut(box),
             iterutils.interleave((edge.Fill for edge in self._edges), self._corners)
         )
-        # return itertools.chain.from_iterable(fill.geometryForRect(rect) for rect, fill in rectsAndEdges if rect is not NotARect)
         prevFill = None
         for rect, fill in rectsAndEdges:
             if rect is NotARect:

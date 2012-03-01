@@ -1,4 +1,4 @@
-# File name: ScreenWidget.py
+# File name: test_CSSLoader.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -25,32 +25,28 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-__all__ = ["ScreenWidget"]
+import unittest
 
-import CSS.Minilanguage
+import Engine.UI.CSS.Minilanguage
+from Engine.UI.CSS.Fill import Colour
+from Engine.UI.CSS.Selectors import Is
+from Engine.UI.CSS.Rules import Rule
 
-from WidgetBase import ParentWidget
+from test_ResourceVFS import *
+import CSSLoader
+import Manager
 
-class ScreenWidget(ParentWidget):
-    """
-    Represents an operating system screen or window.
+class CSSLoaderTest(unittest.TestCase):
+    def test_loadCSS(self):
+        Engine.UI.CSS.Minilanguage.ElementNames().registerWidgetClass(int)
+        TestMount["/test.css"] = """
+int {
+    background-color: rgba(1., 0., 0., 1.);
+}
+""".encode("utf8")
+        rules = Manager.ResourceManager().require('/data/test.css')
+        self.assertEqual(rules,
+            [Rule([Is(int)], [("background-color", (Colour(1., 0., 0., 1.),))])]
+        )
+        del Engine.UI.CSS.Minilanguage.ElementNames()["int"]
 
-    This is used by the RootWidget *Application* to manage windows.
-    """
-    
-    def __init__(self, parent, window, **kwargs):
-        super(ScreenWidget, self).__init__(parent, **kwargs)
-        self._window = window
-
-    def doAlign(self):
-        for child in self:
-            child.AbsoluteRect = self.AbsoluteRect
-
-    def render(self):
-        super(ScreenWidget, self).render()
-
-    @property
-    def Window(self):
-        return self._window
-
-CSS.Minilanguage.ElementNames().registerWidgetClass(ScreenWidget)
