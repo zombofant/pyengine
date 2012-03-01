@@ -41,9 +41,9 @@ class FillTest(unittest.TestCase):
             texCoords = FaceBuffer.NullTexCoords[:4]*vertexCount
         self.assertIn(textureKey, geometry)
         bVertices, bColours, bTexCoords = geometry[textureKey]
-        self.assertSequenceEqual(vertices, bVertices[1:])
-        self.assertSequenceEqual(colours, bColours[1:])
-        self.assertSequenceEqual(texCoords, bTexCoords[1:])
+        self.assertSequenceEqual(vertices, bVertices[1])
+        self.assertSequenceEqual(colours, bColours[1])
+        self.assertSequenceEqual(texCoords, bTexCoords[1])
 
     def setUp(self):
         self.buffer = FaceBuffer()
