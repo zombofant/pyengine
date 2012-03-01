@@ -25,7 +25,7 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 import sys
-import numpy as np
+import scipy as sp
 
 """
 The core classes of the SceneGraph management system.
@@ -86,18 +86,18 @@ class Transformation(object):
 
     @property
     def isIdentity(self):
-        return self._isIdentity()
+        return self._isIdentity
 
     @property
     def isDefaultScale(self):
-        return self._isDefaultScale()
+        return self._isDefaultScale
 
     @property
     def rotate(self):
         return self._mRotate
 
     @rotate.setter
-    def rorate(self, value):
+    def rotate(self, value):
         self._mRotate = value
         self._mIsIdentity = False
 
@@ -135,7 +135,7 @@ class Spatial(object):
     def updateBounds(self, initiator=True):
         raise NotImplementedError()
 
-    def updateWorldData(self, deltaT):
+    def updateWorldData(self, deltaT, initiator=True):
         if self.parent is not None:
             self.transWorld.product(self.parent.transWorld, self.transLocal)
 
@@ -168,20 +168,22 @@ class Spatial(object):
 class Node(Spatial):
 
     def __init__(self):
+        super(Node, self).__init__()
         self._children = []
         self._numOfChildren = 0
 
-    def addChildren(self, child):
+    def addChild(self, child):
         if child not in self._children:
             self._children.append(child)
             self._numOfChildren += 1
+            child.updateWorldData(0)
 
-    def removeChildren(self, child):
+    def removeChild(self, child):
         self._children.remove(child)
         self._numOfChildren -= 1
 
-    def updateWorldData(self, deltaT):
-        Spacial.updateWorldData(deltaT)
+    def updateWorldData(self, deltaT, initiator=True):
+        super(Node, self).updateWorldData(deltaT, initiator)
         for child in self.children:
             child.updateGeometry(deltaT, False)
 
@@ -193,6 +195,16 @@ class Node(Spatial):
     def numberOfChildren(self):
         return self._numOfChildren
 
-class Render(object):
-    pass
+class SceneGraph(object):
+
+    def __init__(self):
+        super(SceneGraph, self).__init__()
+        self._rootNode = Node()
+
+    def render(self, deltaT):
+        self._rootNode.updateGeometry(deltaT)
+
+    @property
+    def rootNode(self):
+        return self._rootNode
 

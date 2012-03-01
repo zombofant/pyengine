@@ -28,10 +28,11 @@ from our_future import *
 from Engine.Model import Model
 from OpenGL.GL import GL_TRIANGLES
 from Engine.Resources.Manager import ResourceManager
+from SceneGraph.Core import Spatial
 
 import pyglet
 
-class RenderModel(Model):
+class RenderModel(Model, Spatial):
     """
     This class extends the model class with GL methods in order to provide
     a convenient renderable representation of the model.
