@@ -148,6 +148,14 @@ class Style(object):
             raise ValueError("Setting a box edge requires exactly one number.")
         setattr(box, edge, value[0])
 
+    def _setBoxSpacing(self, value):
+        if len(value) == 1:
+            self.BoxSpacingX, self.BoxSpacingY = value[0], value[0]
+        elif len(value) == 2:
+            self.BoxSpacingX, self.BoxSpacingY = value
+        else:
+            raise ValueError("Box spacing requires one or two integer numbers.")
+
     @property
     def Background(self):
         return self._background
@@ -227,12 +235,12 @@ class Style(object):
         "padding": (Literals.BoxLiteral, "Padding"),
         "margin": (Literals.BoxLiteral, "Margin"),
         "border": (Literals.BorderLiteral, "Border"),
-        "box-spacing": (lambda x: x, "BoxSpacing"),
         "box-spacing-x": (Literals.IntLiteral, "BoxSpacingX"),
-        "box-spacing-y": (Literals.IntLiteral, "BoxSpacingY")
+        "box-spacing-y": (Literals.IntLiteral, "BoxSpacingY"),
     }
 
     _propertySetters = {
+        "box-spacing": lambda self, value: self._setBoxSpacing(value),
         "background-image": lambda self, value: self._setBackgroundImage(value),
         "background-repeat": lambda self, value: self._setBackgroundRepeat(value),
         "background-color": lambda self, value: self._setBackgroundColour(value),

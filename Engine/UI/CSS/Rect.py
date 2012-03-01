@@ -258,6 +258,36 @@ class Rect(object):
         if self._onChange is not None:
             self._onChange()
 
+    @property
+    def LeftRight(self):
+        return self._left, self._right
+
+    @LeftRight.setter
+    def LeftRight(self, value):
+        l, r = value
+        if l > r:
+            raise ValueError("Right must be larger than or equal to Left.")
+        self._x = l
+        self._right = r
+        self._recalcWH()
+        if self._onChange is not None:
+            self._onChange()
+
+    @property
+    def TopBottom(self):
+        return self._left, self._right
+
+    @TopBottom.setter
+    def TopBottom(self, value):
+        t, b = value
+        if t > b:
+            raise ValueError("Bottom must be larger than or equal to Top.")
+        self._y = t
+        self._bottom = b
+        self._recalcWH()
+        if self._onChange is not None:
+            self._onChange()
+
     def __eq__(self, other):
         if isinstance(other, _NotARect):
             return False

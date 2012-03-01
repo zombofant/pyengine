@@ -28,7 +28,7 @@ from our_future import *
 __all__ = ["VBox", "HBox", "Grid"]
 
 import itertools
-import operator
+from operator import attrgetter
 import functools
 
 import CSS.Minilanguage
@@ -41,7 +41,20 @@ def opSetattr(attr):
     return _setattr
 
 class BoxWidget(ParentWidget):
-    def _getSpacingList(self, baseSpacing, getterA, getterB):
+    def __init__(self, parent,
+            aaPositionSetter,
+            faPositionSetter,
+            aaBoxEdges,
+            faBoxEdges,
+            **kwargs):
+        super(BoxWidget, self).__init__(parent, **kwargs)
+        self._aaPositionSetter = aaPositionSetter # e.g. opSetattr("LeftRight")
+        self._faPositionSetter = faPositionSetter # e.g. opSetattr("TopBottom")
+        self._aaBoxEdges = aaBoxEdges # e.g. attrgetter("Left"), attrgetter("Right")
+        self._faBoxEdges = faBoxEdges # e.g. attrgetter("Top"), attrgetter("Bottom")
+    
+    def _getSpacingList(self, baseSpacing):
+        getterA, getterB = self._aaBoxEdges
         myStyle = self.ComputedStyle
         widgets = list(self)
         leftSpaceIterator = itertools.chain(
@@ -52,44 +65,86 @@ class BoxWidget(ParentWidget):
         widgetsLeftSpace.append((None, max(getterB(myStyle.Padding), baseSpacing, getterB(widgets[-1].ComputedStyle.Margin))))
         return widgetsLeftSpace
 
-    def _doAlign(self, spacingList, sizeGetter, positionSetter,
-            sizeSetter, otherSpacingA, otherSpacingB,
-            otherPositionASetter, otherPositionBSetter):
+    def _doAlign(self, spacingList,
+            myAAFAPos,
+            myAASize, myFASize,
+            myFAPadding):
+        """
+            AA => Alignment Axis
+            FA => Free Axis
+        """
+        aaPositionSetter = self._aaPositionSetter
+        faPositionSetter = self._faPositionSetter
+        faBoxEdgeA, faBoxEdgeB = self._faBoxEdges
+        
         totalSpace = sum(space for widget, space in spacingList)
-        widgetWidth = (sizeGetter(self.AbsoluteRect) - totalSpace) / len(self)
-        if int(widgetWidth) <= 0:
+        widgetAAWidth = (myAASize - totalSpace) / len(self)
+        
+        if int(widgetAAWidth) <= 0:
             for widget in self:
                 widget.Visible = False
             # TODO: Print this warning to a log
-            print("Warning: {0} has not enough space for {1} widgets (totalSpace={2},size={3}).".format(self, len(self), totalSpace, sizeGetter(self.AbsoluteRect)))
+            print("Warning: {0} has not enough space for {1} widgets (totalSpace={2},size={3}).".format(self, len(self), totalSpace, myAASize))
             return
         
-        x = spacingList[0][1] + self.AbsoluteRect.X
-        y = otherSpacingA + self.AbsoluteRect.Y
-        b = self.AbsoluteRect.Bottom - otherSpacingB
+        aaPosA = spacingList[0][1] + myAAFAPos[0]
+        aaPosB = aaPosA + widgetAAWidth
+        faPosA = myAAFAPos[1]
+        faPosB = faPosA + myFASize
+        
         for widget, space in spacingList[:-1]:
-            positionSetter(widget.AbsoluteRect, x)
-            sizeSetter(widget.AbsoluteRect, widgetWidth)
-            otherPositionASetter(widget.AbsoluteRect, y)
-            otherPositionBSetter(widget.AbsoluteRect, b)
+            #print("{0} aligning {1}:".format(self, widget))
+            #print("  aaRange = ({0}, {1})".format(aaPosA, aaPosB))
+            #print("  faRange = ({0}, {1})".format(faPosA, faPosB))
+            #print("  aaWidgetSize = {0}".format(widgetAAWidth))
+
+            widgetMargin = widget.ComputedStyle.Margin
+            aaPositionSetter(widget.AbsoluteRect, (round(aaPosA), round(aaPosB)))
+            
+            faSpacingA = max(myFAPadding[0], faBoxEdgeA(widgetMargin))
+            faSpacingB = max(myFAPadding[1], faBoxEdgeB(widgetMargin))
+            faPositionSetter(widget.AbsoluteRect, (faPosA + faSpacingA, faPosB - faSpacingB))
+            
             widget.Visible = True
-            x += space + widgetWidth
+            offset = space + widgetAAWidth
+            aaPosA += offset
+            aaPosB += offset
 
 class VBox(BoxWidget):
+    def __init__(self, parent, **kwargs):
+        super(VBox, self).__init__(parent,
+            opSetattr("TopBottom"),
+            opSetattr("LeftRight"),
+            (attrgetter("Top"), attrgetter("Bottom")),
+            (attrgetter("Left"), attrgetter("Right")),
+            **kwargs)
+    
     def doAlign(self):
+        # print("{0} {1}".format(self, self.AbsoluteRect))
+        if len(self) == 0:
+            return
         myStyle = self.ComputedStyle
-        spacingList = self._getSpacingList(self.ComputedStyle.BoxSpacingX, operator.attrgetter("Top"), operator.attrgetter("Bottom"))
-        self._doAlign(spacingList,
-            operator.attrgetter("Height"),
-            opSetattr("Y"),
-            opSetattr("Height"),
-            myStyle.Padding.Left, myStyle.Padding.Right, opSetattr("Left"), opSetattr("Right"))
+        spacingList = self._getSpacingList(self.ComputedStyle.BoxSpacingY)
+        x, y, w, h = self.AbsoluteRect.XYWH
+        self._doAlign(spacingList, (y, x), h, w, (myStyle.Padding.Left, myStyle.Padding.Right))
 
 class HBox(BoxWidget):
+    def __init__(self, parent, **kwargs):
+        super(HBox, self).__init__(parent,
+            opSetattr("LeftRight"),
+            opSetattr("TopBottom"),
+            (attrgetter("Left"), attrgetter("Right")),
+            (attrgetter("Top"), attrgetter("Bottom")),
+            **kwargs)
+    
     def doAlign(self):
-        spacingList = self._getSpacingList(self.ComputedStyle.BoxSpacingX, operator.attrgetter("Left"), operator.attrgetter("Right"))
-        self._doAlign(spacingList, operator.attrgetter("Width"), opSetattr("X"), opSetattr("Width"),
-            myStyle.Padding.Top, myStyle.Padding.Bottom, opSetattr("Top"), opSetattr("Bottom"))
+        # print("{0} {1}".format(self, self.AbsoluteRect))
+        if len(self) == 0:
+            return
+        myStyle = self.ComputedStyle
+        spacingList = self._getSpacingList(self.ComputedStyle.BoxSpacingX)
+        x, y, w, h = self.AbsoluteRect.XYWH
+        self._doAlign(spacingList, (x, y), w, h, (myStyle.Padding.Top, myStyle.Padding.Bottom))
 
 class Grid(ParentWidget):
     pass
