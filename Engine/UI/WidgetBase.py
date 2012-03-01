@@ -35,7 +35,7 @@ from Style import Style
 
 try:
     import pyglet
-    from OpenGL.GL import GL_TRIANGLES
+    from OpenGL.GL import GL_TRIANGLES, glEnable, GL_TEXTURE_2D
     from Engine.GL.Texture import Texture2D
 except ImportError:
     pass
@@ -98,9 +98,10 @@ class AbstractWidget(object):
             )
             del faceBuffer
             self._invalidateGeometry = False
+        Texture2D.unbind()
         for tex, vertexList in self._geometry.iteritems():
-            Texture2D.unbind()
             if tex is not None:
+                glEnable(GL_TEXTURE_2D)
                 tex.bind()
             vertexList.draw(GL_TRIANGLES)
             Texture2D.unbind()

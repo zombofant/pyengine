@@ -150,10 +150,12 @@ class Style(object):
             raise ValueError("Unsupported amount of axis: {0}".format(len(value)))
 
     def _setBackgroundImage(self, value):
-        self.Background = value[0]
+        img, = value
+        self.Background = img
 
     def _setBackgroundColour(self, value):
-        self.Background = value[0]
+        colour, = value
+        self.Background = colour
 
     def _setBorderEdge(self, edge, value):
         setattr(self.Border, edge, BorderEdge(value[0], value[2]))

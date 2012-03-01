@@ -31,8 +31,11 @@ __all__ = ["Repeat", "Tile", "Stretch", "Colour", "Transparent",
 import math
 import itertools
 import iterutils
+import copy
 
 import Engine.Resources.Manager as Manager
+
+from Rect import Rect
 
 class RepeatMode(object):
     ValidModes = []
@@ -379,8 +382,11 @@ class FakeImage(Fill):
 
 class Image(FakeImage):
     def __init__(self, resource, rect=None, **kwargs):
-        self._resource = Manager.ResourceManager().require(resource)
-        super(Image, self).__init__(self._resource.Dimensions, **kwargs)
+        if isinstance(resource, unicode):
+            self._resource = Manager.ResourceManager().require(resource)
+        else:
+            self._resource = resource
+        super(Image, self).__init__(self._resource.Dimensions, rect, **kwargs)
 
     def __eq__(self, other):
         if not isinstance(other, Fill):

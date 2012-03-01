@@ -90,7 +90,7 @@ value:
     TOKEN:
         $$.sem = namespace.get($1.sem)
     STRLITERAL:
-        $$.sem = $1.sem
+        $$.sem = $1.sem[1:-1]
 
 complexliteral:
     value:

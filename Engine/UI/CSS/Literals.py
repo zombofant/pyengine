@@ -30,9 +30,7 @@ from Border import Border
 from Box import BaseBox
 
 def URLLiteral(self, url):
-    # URLs in stylesheets are always image references. So resource
-    # loading should happen here.
-    return Image(url)
+    return unicode(url)
 
 
 def BackgroundLiteral(*args):
