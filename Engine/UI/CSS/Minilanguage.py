@@ -46,6 +46,7 @@ class StylesheetNamespace(object):
     url = URLLiteral
     transparent = Transparent
     solid = "solid"
+    auto = None
 
     _tokenBlacklist = ["evaluateCall", "get"]
 

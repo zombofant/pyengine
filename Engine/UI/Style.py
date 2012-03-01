@@ -45,6 +45,7 @@ class Style(object):
         self._boxSpacing = (0, 0)
         self._flex = 1
         self._textColour = Colour(0., 0., 0., 1.)
+        self._width, self._height = None, None
         if "padding" in kwargs:
             self.Padding = kwargs.pop("padding")
         if "margin" in kwargs:
@@ -59,6 +60,10 @@ class Style(object):
             self.Flex = kwargs.pop("flex")
         if "textColour" in kwargs:
             self.TextColour = kwargs.pop("textColour")
+        if "height" in kwargs:
+            self.Height = kwargs.pop("height")
+        if "width" in kwargs:
+            self.Width = kwargs.pop("width")
         super(Style, self).__init__(**kwargs)
         for rule in rules:
             self._addRule(rule)
@@ -73,7 +78,9 @@ class Style(object):
             boxSpacingX=self.BoxSpacingX,
             boxSpacingY=self.BoxSpacingY,
             flex=self.Flex,
-            textColour=copy.deepcopy(self.TextColour, memo)
+            textColour=copy.deepcopy(self.TextColour, memo),
+            width=self.Width,
+            height=self.Height
         )
 
     def _addRule(self, rule):
@@ -102,7 +109,9 @@ class Style(object):
             self._border == other._border and
             self._boxSpacing == other._boxSpacing and
             self._flex == other._flex and
-            self._textColour == other._textColour
+            self._textColour == other._textColour and
+            self._width == other._width and
+            self._height == other._height
         )
 
     def __ne__(self, other):
@@ -174,6 +183,10 @@ class Style(object):
     def _setTextColour(self, value):
         color, = value
         self.TextColour = color
+
+    def _setDimension(self, axis, value):
+        dim, = value
+        setattr(self, axis, dim)
 
     @property
     def Background(self):
@@ -269,6 +282,30 @@ class Style(object):
             raise TypeError("TextColour must be a Colour instance. Got {0} {1}".format(type(value), value))
         self._textColour = value
 
+    @property
+    def Width(self):
+        return self._width
+
+    @Width.setter
+    def Width(self, value):
+        if value is not None:
+            value = float(value)
+            if value <= 0:
+                raise ValueError("Width must be positive. Got {0} {1}".format(type(value), value))
+        self._width = value
+
+    @property
+    def Height(self):
+        return self._height
+
+    @Height.setter
+    def Height(self, value):
+        if value is not None:
+            value = float(value)
+            if value <= 0:
+                raise ValueError("Height must be positive. Got {0} {1}".format(type(value), value))
+        self._height = value
+
     _literalSetters = {
         "background": (Literals.BackgroundLiteral, "Background"),
         "padding": (Literals.BoxLiteral, "Padding"),
@@ -300,7 +337,9 @@ class Style(object):
         "margin-right": lambda self, value: self._setBaseBoxEdge("Margin", "Right", value),
         "margin-top": lambda self, value: self._setBaseBoxEdge("Margin", "Top", value),
         "margin-bottom": lambda self, value: self._setBaseBoxEdge("Margin", "Bottom", value),
-        "color": lambda self, value: self._setTextColour(value)
+        "color": lambda self, value: self._setTextColour(value),
+        "width": lambda self, value: self._setDimension("Width", value),
+        "height": lambda self, value: self._setDimension("Height", value),
     }
 
     def geometryForRect(self, rect, faceBuffer):

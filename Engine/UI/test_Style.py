@@ -147,3 +147,13 @@ class StyleRules(unittest.TestCase):
         ])
         self.style._addRule(rule)
         self.assertEqual(self.style.Background, Colour(1, 0, 1, 1))
+        
+    def test_dimensions(self):
+        self.assertEqual(self.style.Width, None)
+        self.assertEqual(self.style.Height, None)
+        
+        rule = Rule([], [
+            ("width", ("100",)),
+        ])
+        self.style._addRule(rule)
+        self.assertEqual(self.style.Width, 100)
