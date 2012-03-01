@@ -32,11 +32,6 @@ from Box import BaseBox
 from Rect import Rect, NotARect
 
 class BorderComponent(object):
-    def __init__(self, width=0, fill=Transparent, **kwargs):
-        super(BorderComponent, self).__init__(**kwargs)
-        self.Width = width
-        self.Fill = fill
-    
     def assign(self, other):
         if not isinstance(other, BorderComponent):
             raise TypeError("Can only assign BorderComponents to BorderComponents. Got {0} {1}".format(type(other), other))
@@ -47,7 +42,9 @@ class BorderEdge(BorderComponent):
     def __init__(self, width=0, fill=Transparent, **kwargs):
         self._width = None
         self._fill = None
-        super(BorderEdge, self).__init__(width, fill, **kwargs)
+        super(BorderEdge, self).__init__(**kwargs)
+        self.Width = width
+        self.Fill = fill
 
     @property
     def Width(self):
@@ -90,13 +87,16 @@ class BorderEdge(BorderComponent):
         return "BorderEdge(width={0!r}, fill={1!r})".format(self._width, self._fill)
 
 class Border(BorderComponent):
-    def __init__(self, width=0, fill=Transparent, **kwargs):
+    def __init__(self, width=0, fill=None, **kwargs):
         self._edges = [BorderEdge() for i in range(4)]
-        self._corners = [Transparent for i in range(4)]
-        super(Border, self).__init__(width, fill, **kwargs)
-        print(id(self))
-        print(fill)
-        print(self._corners)
+        self._corners = [None for i in range(4)]
+        super(Border, self).__init__(**kwargs)
+        self.Width = width
+        if fill is not None:
+            self.Fill = fill
+        # print(id(self))
+        # print(fill)
+        # print(self._corners)
     
     def assign(self, other):
         if isinstance(other, Border):            
@@ -108,7 +108,7 @@ class Border(BorderComponent):
             for edgeA in self._edges:
                 edgeA.Width = other.Width
                 edgeA.Fill = other.Fill
-            self._corners = [value] * 4
+            self._corners = [None] * 4
         else:    
             raise TypeError("Can only assign BorderComponents to Border")
 
@@ -127,8 +127,8 @@ class Border(BorderComponent):
 
     @Fill.setter
     def Fill(self, value):
-        print(id(self))
-        print(value)
+        # print(id(self))
+        # print(value)
         for edge in self._edges:
             edge.Fill = value
         self._corners = [value] * 4
@@ -247,15 +247,20 @@ class Border(BorderComponent):
 
         Returns the BaseBox representing this border.
         """
-        print(id(self))
+        # print(id(self))
         box = self.getBox()
         rectsAndEdges = zip(
             rect.cut(box),
             iterutils.interleave((edge.Fill for edge in self._edges), self._corners)
         )
         # return itertools.chain.from_iterable(fill.geometryForRect(rect) for rect, fill in rectsAndEdges if rect is not NotARect)
+        prevFill = None
         for rect, fill in rectsAndEdges:
             if rect is NotARect:
                 continue
+            if fill is None:
+                fill = prevFill
+            else:
+                prevFill = fill
             fill.geometryForRect(rect, faceBuffer)
         return box
