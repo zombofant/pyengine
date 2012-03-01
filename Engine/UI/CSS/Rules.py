@@ -42,6 +42,13 @@ class Rule(object):
         return (self._selectors == other._selectors and
                 self._properties == other._properties)
 
+    def __ne__(self, other):
+        r = self.__eq__(other)
+        if r is NotImplemented:
+            return r
+        else:
+            return not r
+
     def __unicode__(self):
         return """{0} {{
     {1}

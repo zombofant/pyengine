@@ -80,6 +80,13 @@ class Selector(object):
             return False
         return self._testEq(other)
 
+    def __ne__(self, other):
+        if not isinstance(other, Selector):
+            return NotImplemented
+        if not isinstance(other, self.__class__):
+            return True
+        return not self._testEq(other)
+
     def specifity(self):
         if self._chained is not None:
             return self._chained.specifity()
@@ -157,6 +164,16 @@ class Attribute(object):
     def __init__(self, **kwargs):
         super(Attribute, self).__init__(**kwargs)
 
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return self._testEq(other)
+
+    def __ne__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return not self._testEq(other)
+
 class AttributeClass(Attribute):
     def __init__(self, className, **kwargs):
         super(AttributeClass, self).__init__(**kwargs)
@@ -168,9 +185,7 @@ class AttributeClass(Attribute):
     def __hash__(self):
         return hash((AttributeClass, self._className))
 
-    def __eq__(self, other):
-        if not isinstance(other, AttributeClass):
-            return NotImplemented
+    def _testEq(self, other):
         return self._className == other._className
 
     def __unicode__(self):
@@ -187,9 +202,7 @@ class AttributeExists(Attribute):
     def __hash__(self):
         return hash(self._attrName)
 
-    def __eq__(self, other):
-        if not isinstance(other, AttributeExists):
-            return NotImplemented
+    def _testEq(self, other):
         return self._attrName == other._attrName
 
     def __unicode__(self):
@@ -206,9 +219,7 @@ class AttributeValue(AttributeExists):
     def __hash__(self):
         return hash((self._attrName, self._attrValue))
 
-    def __eq__(self, other):
-        if not isinstance(other, AttributeValue):
-            return NotImplemented
+    def _testEq(self, other):
         return self._attrName == other._attrName and self._attrValue == other._attrValue
 
     def __unicode__(self):

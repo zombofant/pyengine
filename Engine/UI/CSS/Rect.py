@@ -38,6 +38,13 @@ class _NotARect(object):
         else:
             return NotImplemented
 
+    def __ne__(self, other):
+        r = self.__eq__(other)
+        if r is NotImplemented:
+            return r
+        else:
+            return not r
+
     def __contains__(self, other):
         if isinstance(other, (_NotARect, Rect)):
             return False
@@ -260,12 +267,11 @@ class Rect(object):
             return NotImplemented
 
     def __ne__(self, other):
-        if isinstance(other, _NotARect):
-            return True
-        elif isinstance(other, Rect):
-            return self._x != other._x or self._y != other._y or self._width != other._width or self._height != other._height
+        r = self.__eq__(other)
+        if r is NotImplemented:
+            return r
         else:
-            return NotImplemented
+            return not r
 
     def __iand__(self, other):
         if isinstance(other, _NotARect):

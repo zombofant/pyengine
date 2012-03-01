@@ -95,6 +95,13 @@ class Style(object):
             self._boxSpacing == other._boxSpacing
         )
 
+    def __ne__(self, other):
+        r = self.__eq__(other)
+        if r is NotImplemented:
+            return r
+        else:
+            return not r
+
     def __repr__(self):
         return """<Style
     Padding={0!r},

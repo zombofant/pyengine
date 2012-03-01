@@ -79,6 +79,13 @@ class BorderEdge(BorderComponent):
         return (self._width == other._width and
                 self._fill == other._fill)
 
+    def __ne__(self, other):
+        r = self.__eq__(other)
+        if r is NotImplemented:
+            return r
+        else:
+            return not r
+
     def __repr__(self):
         return "BorderEdge(width={0!r}, fill={1!r})".format(self._width, self._fill)
 
@@ -209,6 +216,13 @@ class Border(BorderComponent):
             if not cornerA == cornerB:
                 return False
         return True
+
+    def __ne__(self, other):
+        r = self.__eq__(other)
+        if r is NotImplemented:
+            return r
+        else:
+            return not r
 
     def __repr__(self):
         return """<Border

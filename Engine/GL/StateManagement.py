@@ -145,5 +145,12 @@ class OrderedStateObjectGroup(StateObjectGroup):
             (self.order == other.order) and
             (self.parent == other.parent))
 
+    def __ne__(self, other):
+        r = self.__eq__(other)
+        if r is NotImplemented:
+            return r
+        else:
+            return not r
+
     def __hash__(self):
         return hash((self.order, self.parent, self._setCalls, self._unsetCalls))

@@ -41,6 +41,13 @@ class SelectorTuple(tuple):
                 return False
         return True
 
+    def __ne__(self, other):
+        r = self.__eq__(other)
+        if r is NotImplemented:
+            return r
+        else:
+            return not r
+
 
 class Theme(object):
     def __init__(self, **kwargs):

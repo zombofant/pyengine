@@ -74,6 +74,13 @@ class Fill(object):
         """
         raise NotImplementedError()
 
+    def __ne__(self, other):
+        r = self.__eq__(other)
+        if r is NotImplemented:
+            return r
+        else:
+            return not r
+
     @property
     def RepeatX(self):
         return self._repeatX

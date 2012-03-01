@@ -104,6 +104,13 @@ class BaseBox(object):
             self._right == other._right and
             self._bottom == other._bottom)
 
+    def __ne__(self, other):
+        r = self.__eq__(other)
+        if r is NotImplemented:
+            return r
+        else:
+            return not r
+
     def __repr__(self):
         return "{0}({1!r}, {2!r}, {3!r}, {4!r})".format(self.__class__.__name__, self._left, self._top, self._right, self._bottom)
 
