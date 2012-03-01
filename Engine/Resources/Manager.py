@@ -135,7 +135,8 @@ class ResourceManager(object):
         if uri[0] != '/':
             if loader.RelativePathPrefix is None:
                 raise ValueError("An absolute URI is required to load a {0} resource.".format(loader))
-            uri = Utils.join(loader.RelativePathPrefix, uri)
+            else:
+                uri = Utils.join(loader.RelativePathPrefix, uri)
         
         cacheToken, instance = self._resourceCacheRead(loader, uri, requiredClass, loaderArgs)
         if instance is None:
@@ -161,3 +162,5 @@ class ResourceManager(object):
                 raise Exception("Already registered a loader for type '{0}'".format(resourceType))
             self._resourceLoaders[resourceType] = loader
 
+    def clearCache(self):
+        self._resourceCache = {}

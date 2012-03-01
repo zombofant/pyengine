@@ -31,7 +31,7 @@ from Engine.VFS.FileSystem import FileSystem, MountPriority
 from Engine.VFS.Mounts import MountVirtual
 import Manager
 
-__all__ = ["TestVFS", "TestMountPoint", "TestMount", "TestTestVFS"]
+__all__ = ["TestVFS", "TestMountPoint", "TestMount", "TestTestVFS", "TestResourceLoader"]
 
 """
 This module does not implement any tests by itself. It rather sets the
@@ -67,3 +67,7 @@ class TestTestVFS(unittest.TestCase):
         TestMount[testFile] = "data"
         self.assertTrue(TestVFS.fileReadable(TestMountPoint + testFile))
         del TestMount[testFile]
+
+class TestResourceLoader(unittest.TestCase):
+    def tearDown(self):
+        Manager.ResourceManager().clearCache()
