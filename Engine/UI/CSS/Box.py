@@ -26,6 +26,8 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 class BaseBox(object):
+    __hash__ = None
+    
     def __init__(self, *args):
         if len(args) == 0:
             self._left, self._right, self._top, self._bottom = 0, 0, 0, 0

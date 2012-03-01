@@ -30,6 +30,8 @@ __all__ = ["NotARect", "Rect"]
 from Box import BaseBox
 
 class _NotARect(object):
+    __hash__ = None
+    
     def __eq__(self, other):
         if isinstance(other, _NotARect):
             return True
@@ -62,6 +64,8 @@ class _NotARect(object):
 NotARect = _NotARect()
 
 class Rect(object):
+    __hash__ = None
+    
     @staticmethod
     def _checkDimension(value):
         if value < 0:

@@ -121,6 +121,8 @@ class __Transparent(Fill):
 Transparent = __Transparent()
 
 class Colour(Fill):
+    __hash__ = None
+    
     def __init__(self, r=0., g=0., b=0., a=1., **kwargs):
         r, g, b, a = float(r), float(g), float(b), float(a)
         if a < 0 or a > 1:
@@ -197,6 +199,8 @@ class Colour(Fill):
         )
 
 class Gradient(Fill):
+    __hash__ = None
+    
     class Step(object):
         def __init__(self, position, colour):
             if not isinstance(colour, Colour):
@@ -246,6 +250,8 @@ class Gradient(Fill):
         )
 
 class FakeImage(Fill):
+    __hash__ = None
+    
     def __init__(self, resourceDimensions, rect=None, **kwargs):
         super(FakeImage, self).__init__(**kwargs)
         if not hasattr(self, "_resource"):

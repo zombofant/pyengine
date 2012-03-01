@@ -37,6 +37,8 @@ from CSS.Rules import Rule
 from CSS.Rect import Rect
 
 class Style(object):
+    __hash__ = None
+    
     def __init__(self, *rules, **kwargs):
         self._background = kwargs.pop("background") if "background" in kwargs else Transparent
         self._padding = Padding()
