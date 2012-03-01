@@ -26,7 +26,7 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 from Engine.Model import Model
-from OpenGL.GL import GL_TRIANGLES
+from OpenGL.GL import *
 from Engine.Resources.Manager import ResourceManager
 from SceneGraph.Core import Spatial
 
@@ -115,5 +115,9 @@ class RenderModel(Model, Spatial):
         Draw the RenderModel using OpenGL.
         Call this in your render-loop to render the underlying model.
         """
+        glPushMatrix()
+        glMatrixMode(GL_MODELVIEW)
+        glLoadMatrixf(self.transLocal.transformation)
         self._batch.draw()
+        glPopMatrix()
 

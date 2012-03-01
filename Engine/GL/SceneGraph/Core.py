@@ -25,6 +25,7 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 import sys
+import numpy as np
 import scipy as sp
 
 """
@@ -35,54 +36,58 @@ class Transformation(object):
 
     def __init__(self):
         super(Transformation, self).__init__()
+        self._mScale, self._mTranslate, self._mRotate = 0, 0, 0
         self.reset()
+
+    def _updateTransformation(self):
+        m = self._mRotate*(self._mScale*np.identity(4,dtype=np.float32))*self._mTranslate
+        self._mTransformation = m.T.copy(order='C_CONTIGUOUS')
 
     def reset(self):
         self.setIdentity()
         self.setDefaultScale()
-        self.setDefaultTransformation()
 
     def setIdentity(self):
-        self._mRotate = sp.mat([[1,0,0], [0,1,0], [0,0,1]])
+        self._mRotate = np.identity(4, dtype=np.float32)
+        self._mTranslate = np.identity(4, dtype=np.float32)
         self._isIdentity = True
 
     def setDefaultScale(self):
-        self._mScale = sp.mat([1., 1., 1.])
+        self._mScale = np.identity(4, dtype=np.float32)
         self._isDefaultScale = True
 
-    def setDefaultTransformation(self):
-        self._mTranslate = sp.mat([[1,0,0], [0,1,0], [0,0,1]])
-
     def applyForward(self, mInput):
-        if self.isIdentity:
-            return mInput
-        mOutput = mInput
-        for j in range(0,3):
-            mOutput[j] *= self._mScale[j]
-        mOutput = mRotate * mOutput
-        mOutput += mTranslate
-        return mOutput
+        pass
 
     def applyInverse(self, mInput):
-        if self.isIdentity:
-            return mInput
-        if self.isDefaultScale:
-            return ((mInput - self._mTranslate)*self._mRotate)/self._mScale
-        mOutput = (mInput - self._mTranslate)*self._mRotate
-        sXY = self._mScale[0]*self._mscale[1]
-        sXZ = self._mScale[0]*self._mscale[2]
-        sYZ = self._mScale[1]*self._mScale[2]
-        invDet = 1./(sXY*self._mScale[2])
-        mOutput[0] *= invDet*sYZ
-        mOutput[1] *= invDet*sXZ
-        mOutput[2] *= invDet*sXY
-        return mOutput
+        pass
 
-    def product(self, transformA, transformB):
-        raise NotImplementedError()
+    def product(self, matrixA, matrixB):
+        self._mTransformation = matrixA * matrixB
 
-    def inverse(self, transform):
-        raise NotImplementedError()
+    def scale(self, scaleX, scaleY, scaleZ):
+        self._mScale = np.matrix([[scaleX, 0., 0., 0.], [0., scaleY, 0., 0.],
+            [0., 0., scaleZ, 0.], [0., 0., 0., 1.]], dtype=np.float32)
+        self._updateTransformation()
+
+    def translate(self, x, y, z):
+        self._mTranslate = np.matrix([[1., 0., 0., x], [0., 1., 0., y],
+            [0., 0., 1., z], [0., 0., 0., 1.]], dtype=np.float32)
+        self._updateTransformation()
+
+    def rotate(self, angle, axisX, axisY, axisZ):
+        c = np.cos(angle)
+        s = np.sin(angle)
+        self._mRotate = np.matrix([
+            [c+axisX*axisX*(1.-c),axisX*axisY*(1-c)-axisZ*s, axisX*axisZ*(1-c)+axisY*s, 0.],
+            [axisY*axisX*(1-c)+axisZ*s, c+axisY*axisY*(1-c), axisY*axisZ*(1-c)-axisX*s, 0.],
+            [axisZ*axisX*(1-c)-axisY*s, axisZ*axisY*(1-c)+axisX*s, c+axisZ*axisZ*(1-c), 0.],
+            [0., 0., 0., 1.]], dtype=np.float32)
+        self._updateTransformation()
+
+    @property
+    def transformation(self):
+        return self._mTransformation
 
     @property
     def isIdentity(self):
@@ -91,32 +96,6 @@ class Transformation(object):
     @property
     def isDefaultScale(self):
         return self._isDefaultScale
-
-    @property
-    def rotate(self):
-        return self._mRotate
-
-    @rotate.setter
-    def rotate(self, value):
-        self._mRotate = value
-        self._mIsIdentity = False
-
-    @property
-    def translate(self):
-        return self._mTranslate
-
-    @translate.setter
-    def translate(self, value):
-        self._mTranslate = value
-
-    @property
-    def scale(self):
-        return self._mScale
-
-    @rotate.setter
-    def scale(self, value):
-        self._mScale = value
-        self._isDefaultScale = False
 
 class Spatial(object):
 
@@ -139,6 +118,21 @@ class Spatial(object):
         if self.parent is not None:
             self.transWorld.product(self.parent.transWorld, self.transLocal)
 
+    def onDraw(self):
+        pass
+
+    def draw(self):
+        pass
+
+    def scale(self, x, y, z):
+        self.transLocal.scale(x, y, z)
+
+    def translate(self, x, y, z):
+        self.transLocal.translate(x, y, z)
+
+    def rotate(self, angle, axisX, axisY, axisZ):
+        self.transLocal.rotate(angle, axisX, axisY, axisZ)
+
     @property
     def parent(self):
         return self._parent
@@ -159,7 +153,7 @@ class Spatial(object):
 
     @property
     def transWorld(self):
-        return self._transWord
+        return self._transWorld
 
     @transWorld.setter
     def transWorld(self, value):
@@ -187,6 +181,14 @@ class Node(Spatial):
         for child in self.children:
             child.updateGeometry(deltaT, False)
 
+    def onDraw(self):
+        for child in self.children:
+            child.onDraw()
+
+    def draw(self):
+        for child in self.children:
+            child.draw()
+
     @property
     def children(self):
         return self._children
@@ -201,8 +203,13 @@ class SceneGraph(object):
         super(SceneGraph, self).__init__()
         self._rootNode = Node()
 
-    def render(self, deltaT):
+    def update(self, deltaT):
         self._rootNode.updateGeometry(deltaT)
+
+    def renderScene(self, node=None):
+        if node is None: node = self.rootNode
+        node.onDraw()
+        node.draw()
 
     @property
     def rootNode(self):
