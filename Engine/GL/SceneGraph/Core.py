@@ -40,7 +40,7 @@ class Transformation(object):
         self.reset()
 
     def _updateTransformation(self):
-        m = self._mRotate*(self._mScale*np.identity(4,dtype=np.float32))*self._mTranslate
+        m = self._mScale*np.identity(4,dtype=np.float32)*self._mTranslate*self._mRotate
         self._mTransformation = m.T.copy(order='C_CONTIGUOUS')
 
     def reset(self):
