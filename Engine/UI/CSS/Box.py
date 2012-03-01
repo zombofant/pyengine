@@ -51,8 +51,10 @@ class BaseBox(object):
             self._left, self._right, self._top, self._bottom = value
 
     def _checkValue(self, v):
-        if int(v) < 0:
+        v = int(v)
+        if v < 0:
             raise ValueError("Box value must be non negative.")
+        return v
     
     @property
     def Left(self):
@@ -62,8 +64,7 @@ class BaseBox(object):
     def Left(self, value):
         if self._left == value:
             return
-        self._checkValue(value)
-        self._left = value
+        self._left = self._checkValue(value)
 
     @property
     def Right(self):
@@ -73,8 +74,7 @@ class BaseBox(object):
     def Right(self, value):
         if self._right == value:
             return
-        self._checkValue(value)
-        self._right = value
+        self._right = self._checkValue(value)
 
     @property
     def Top(self):
@@ -84,8 +84,7 @@ class BaseBox(object):
     def Top(self, value):
         if self._top == value:
             return
-        self._checkValue(value)
-        self._top = value
+        self._top = self._checkValue(value)
 
     @property
     def Bottom(self):
@@ -95,8 +94,7 @@ class BaseBox(object):
     def Bottom(self, value):
         if self._bottom == value:
             return
-        self._checkValue(value)
-        self._bottom = value
+        self._bottom = self._checkValue(value)
 
     def __eq__(self, other):
         if not isinstance(other, BaseBox):
@@ -107,7 +105,7 @@ class BaseBox(object):
             self._bottom == other._bottom)
 
     def __repr__(self):
-        return "{0}({1}, {2}, {3}, {4})".format(self.__class__.__name__, self._left, self._top, self._right, self._bottom)
+        return "{0}({1!r}, {2!r}, {3!r}, {4!r})".format(self.__class__.__name__, self._left, self._top, self._right, self._bottom)
 
 class Margin(BaseBox):
     pass
