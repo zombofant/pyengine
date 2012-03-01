@@ -179,8 +179,8 @@ class AttributeClass(Attribute):
         super(AttributeClass, self).__init__(**kwargs)
         self._className = className
 
-    def _testWidget(self, widget):
-        return self._className in widget._cssClasses
+    def testWidget(self, widget):
+        return self._className in widget.StyleClasses
 
     def __hash__(self):
         return hash((AttributeClass, self._className))
@@ -196,7 +196,7 @@ class AttributeExists(Attribute):
         super(AttributeExists, self).__init__(**kwargs)
         self._attrName = attrName
 
-    def _testWidget(self, widget):
+    def testWidget(self, widget):
         return hasattr(widget, self._attrName)
 
     def __hash__(self):
@@ -213,7 +213,7 @@ class AttributeValue(AttributeExists):
         super(AttributeValue, self).__init__(attrName, **kwargs)
         self._attrValue = attrValue
 
-    def _testWidget(self, widget):
+    def testWidget(self, widget):
         return super(AttributeValue, self).testWidget(widget) and getattr(widget, self._attrName) == self._attrValue
 
     def __hash__(self):

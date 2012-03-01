@@ -30,6 +30,7 @@ __all__ = ["AbstractWidget", "ParentWidget", "Widget"]
 from CSS.Rect import Rect
 from CSS.Rules import Rule
 from CSS.FaceBuffer import FaceBuffer
+from CSS.ClassSet import ClassSet
 from Style import Style
 
 try:
@@ -59,6 +60,7 @@ class AbstractWidget(object):
         self._styleRule = None
         self._themeStyle = Style()
         self._invalidateComputedStyle()
+        self._styleClasses = ClassSet()
         
     def _absMetricsChanged(self):
         self._invalidateAlignment()
@@ -180,6 +182,10 @@ class AbstractWidget(object):
     @AbsoluteRect.setter
     def AbsoluteRect(self, value):
         self._absoluteRect.assign(value)
+
+    @property
+    def StyleClasses(self):
+        return self._styleClasses
 
 class Widget(AbstractWidget):
     """
