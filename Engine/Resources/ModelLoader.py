@@ -29,6 +29,8 @@ from Base import ResourceLoader
 from Manager import ResourceManager
 from Engine.Model import Model
 
+import MaterialLoader
+
 # At server side we probably cannot import GL classes. Therefore we
 # provide a fallback for this case:
 try:

@@ -28,6 +28,12 @@ from our_future import *
 from Base import ResourceLoader
 from Manager import ResourceManager
 
+try:
+    from Engine.GL.RenderModel import RenderModel
+    from Engine.GL.Material import Material
+except ImportError:
+    pass
+
 class MaterialLoader(ResourceLoader):
     """
     The MaterialLoader loads model material data.
@@ -36,16 +42,14 @@ class MaterialLoader(ResourceLoader):
     """
 
     def __init__(self, **kwargs):
-        super(MaterialLoader, self).__init__(**kwargs)
-        # if the Material class is missing, the loader does nothing 
         try:
-            self._supportedTargetClasses = [Material]
-            self._defaultTargetClass = Material
-            self._resourceTypes = ['mtl']
+            super(MaterialLoader, self).__init__(
+                [Material],
+                ['mtl'],
+                relativePathPrefix='/data/materials',
+                **kwargs)
         except NameError:
-            self._supportedTargetClasses, self._resourceTypes = [], []
-            self._defaultTargetClass = None
-        self._relativePathPrefix = '/data/materials/'
+            self._loaderNotAvailable()
 
     def load(self, fileLike, targetClass=None):
         """

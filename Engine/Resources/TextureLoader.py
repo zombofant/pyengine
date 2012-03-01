@@ -45,7 +45,7 @@ class TextureLoader(ResourceLoader):
             super(TextureLoader, self).__init__(
                 [Texture2D],
                 ['png', 'jpg'],
-                relativePathPrefix="/data/textures"
+                relativePathPrefix="/data/textures",
                 **kwargs)
         except NameError:
             self._loaderNotAvailable()

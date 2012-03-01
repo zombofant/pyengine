@@ -92,22 +92,21 @@ class ResourceManager(object):
         else:
             raise NotImplementedError("No loader for type '{0}'".format(resourceType))
 
-    def _resourceCacheStore(self, uri, instance):
-        cacheId = (uri, type(instance))
-        if cacheId in self._resourceCache: # maybe this is more worth a exception?
-            del self._resourceCache[cacheId]
-        self._resourceCache[cacheId] = instance
+    def _resourceCacheStore(self, cacheToken, instance):
+        if cacheToken in self._resourceCache: # maybe this is more worth a exception?
+            del self._resourceCache[cacheToken]
+        self._resourceCache[cacheToken] = instance
 
-    def _resourceCacheRead(self, uri, requiredClass):
-        cacheId = (uri, requiredClass)
-        if cacheId in self._resourceCache:
-            instance = self._resourceCache[cacheId]
+    def _resourceCacheRead(self, loaderClass, uri, requiredClass, loaderArgs):
+        cacheToken = loaderClass.getCacheToken(uri, requiredClass, **loaderArgs)
+        if cacheToken is not None and cacheToken in self._resourceCache:
+            instance = self._resourceCache[cacheToken]
             if not isinstance(instance, requiredClass):
                 raise TypeError(
                     "Cached resource for {0} is of wrong class {1} ({2} requested)"
                     .format(uri, type(instance), requiredClass))
-            return self._resourceCache[cacheId]
-        return None
+            return cacheToken, self._resourceCache[cacheToken]
+        return cacheToken, None
 
     def _resourceTypeFromURI(self, uri):
         ext = os.path.splitext(uri)[1]
@@ -129,6 +128,7 @@ class ResourceManager(object):
             raise ValueError('uri must not be empty!')
         if resourceType is None:
             resourceType = self._resourceTypeFromURI(uri)
+        
         loader = self._findResourceLoader(resourceType, requiredClass)
         if requiredClass is None:
             requiredClass = loader.DefaultTargetClass
@@ -136,13 +136,15 @@ class ResourceManager(object):
             if loader.RelativePathPrefix is None:
                 raise ValueError("An absolute URI is required to load a {0} resource.".format(loader))
             uri = Utils.join(loader.RelativePathPrefix, uri)
-        instance = self._resourceCacheRead(uri, requiredClass)
+        
+        cacheToken, instance = self._resourceCacheRead(loader, uri, requiredClass, loaderArgs)
         if instance is None:
             resFile = self._open(uri, "r")
             instance = loader.load(resFile, requiredClass, **loaderArgs)
             resFile.close()
             assert isinstance(instance, requiredClass) # sanity check
-            self._resourceCacheStore(uri, instance)
+            if cacheToken is not None:
+                self._resourceCacheStore(cacheToken, instance)
         return instance
 
     def registerResourceLoader(self, loaderClass, **kwargs):

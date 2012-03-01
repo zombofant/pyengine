@@ -86,6 +86,15 @@ class ResourceLoader(object):
         """
         raise NotImplemented()
 
+    def getCacheToken(self, vfspath, targetClass=None, **loaderArgs):
+        """
+        Must return a valid dict key which depends on any cache relevant
+        loader arguments.
+
+        By default, this returns ``(vfspath,)``.
+        """
+        return (vfspath,)
+
     @property
     def SupportedTargetClasses(self):
         """
