@@ -43,6 +43,8 @@ class Style(object):
         self._margin = Margin()
         self._border = Border()
         self._boxSpacing = (0, 0)
+        self._flex = 1
+        self._textColour = Colour(0., 0., 0., 1.)
         if "padding" in kwargs:
             self.Padding = kwargs.pop("padding")
         if "margin" in kwargs:
@@ -53,6 +55,10 @@ class Style(object):
             self.BoxSpacingX = kwargs.pop("boxSpacingX")
         if "boxSpacingY" in kwargs:
             self.BoxSpacingY = kwargs.pop("boxSpacingY")
+        if "flex" in kwargs:
+            self.Flex = kwargs.pop("flex")
+        if "textColour" in kwargs:
+            self.TextColour = kwargs.pop("textColour")
         super(Style, self).__init__(**kwargs)
         for rule in rules:
             self._addRule(rule)
@@ -65,7 +71,9 @@ class Style(object):
             margin=copy.deepcopy(self.Margin, memo),
             border=copy.deepcopy(self.Border, memo),
             boxSpacingX=self.BoxSpacingX,
-            boxSpacingY=self.BoxSpacingY
+            boxSpacingY=self.BoxSpacingY,
+            flex=self.Flex,
+            textColour=copy.deepcopy(self.TextColour, memo)
         )
 
     def _addRule(self, rule):
@@ -92,7 +100,9 @@ class Style(object):
             self._padding == other._padding and
             self._margin == other._margin and
             self._border == other._border and
-            self._boxSpacing == other._boxSpacing
+            self._boxSpacing == other._boxSpacing and
+            self._flex == other._flex and
+            self._textColour == other._textColour
         )
 
     def __ne__(self, other):
@@ -155,6 +165,15 @@ class Style(object):
             self.BoxSpacingX, self.BoxSpacingY = value
         else:
             raise ValueError("Box spacing requires one or two integer numbers.")
+
+    def _setFlex(self, value):
+        if len(value) != 1:
+            raise ValueError("Flex requires one integer number.")
+        self.Flex = int(value[0])
+
+    def _setTextColour(self, value):
+        color, = value
+        self.TextColour = color
 
     @property
     def Background(self):
@@ -230,6 +249,26 @@ class Style(object):
             raise ValueError("BoxSpacing must be non-negative.")
         self._boxSpacing = self._boxSpacing[0], y
 
+    @property
+    def Flex(self):
+        return self._flex
+
+    @Flex.setter
+    def Flex(self, value):
+        if value < 1:
+            raise ValueError("Flex must be at least one or undefined.")
+        self._flex = value
+
+    @property
+    def TextColour(self):
+        return self._textColour
+
+    @TextColour.setter
+    def TextColour(self, value):
+        if not isinstance(value, Colour):
+            raise TypeError("TextColour must be a Colour instance. Got {0} {1}".format(type(value), value))
+        self._textColour = value
+
     _literalSetters = {
         "background": (Literals.BackgroundLiteral, "Background"),
         "padding": (Literals.BoxLiteral, "Padding"),
@@ -240,6 +279,7 @@ class Style(object):
     }
 
     _propertySetters = {
+        "flex": lambda self, value: self._setFlex(value),
         "box-spacing": lambda self, value: self._setBoxSpacing(value),
         "background-image": lambda self, value: self._setBackgroundImage(value),
         "background-repeat": lambda self, value: self._setBackgroundRepeat(value),
@@ -260,6 +300,7 @@ class Style(object):
         "margin-right": lambda self, value: self._setBaseBoxEdge("Margin", "Right", value),
         "margin-top": lambda self, value: self._setBaseBoxEdge("Margin", "Top", value),
         "margin-bottom": lambda self, value: self._setBaseBoxEdge("Margin", "Bottom", value),
+        "color": lambda self, value: self._setTextColour(value)
     }
 
     def geometryForRect(self, rect, faceBuffer):

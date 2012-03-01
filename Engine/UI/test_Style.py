@@ -47,16 +47,6 @@ class StyleIdentity(unittest.TestCase):
         ])
         self.style._addRule(rule)
         self.assertIs(self.border, self.style.Border)
-        self.assertEqual(self.border.Left.Width, 1)
-
-    def test_borderCorner(self):
-        rule = Rule([], [
-            ("border-left", ("1", "solid", Colour())),
-            ("border-top-left", (Colour(1., 0., 0., 1.),))
-        ])
-        self.style._addRule(rule)
-        self.assertEqual(self.border.TopLeft, Colour(1., 0., 0., 1.))
-        self.assertEqual(copy.deepcopy(self.style).Border.TopLeft, Colour(1., 0., 0., 1.))
 
     def test_padding(self):
         rule = Rule([], [
@@ -65,7 +55,95 @@ class StyleIdentity(unittest.TestCase):
         ])
         self.style._addRule(rule)
         self.assertIs(self.padding, self.style.Padding)
-        self.assertEqual(self.style.Padding, Padding(2, 1, 1, 1))
+
+
+    def test_deepcopy(self):
+        rule = Rule([], [
+            ("padding", ("1",)),
+            ("padding-left", ("2",)),
+            ("border", ("1", "solid", Colour())),
+            ("background", (Colour(),)),
+            ("color", (Colour(1., 0., 0., 1.),)),
+            ("margin", ("1",)),
+            ("flex", ("2",)),
+            ("box-spacing", ("4",))
+        ])
+        self.style._addRule(rule)
+        self.assertEqual(self.style, copy.deepcopy(self.style))
 
     def tearDown(self):
         del self.style
+
+
+class StyleRules(unittest.TestCase):
+    def setUp(self):
+        self.style = Style()
+
+    def tearDown(self):
+        del self.style
+
+    def test_boxSpacing(self):
+        self.assertEqual(self.style.BoxSpacingX, 0)
+        self.assertEqual(self.style.BoxSpacingY, 0)
+        
+        rule = Rule([], [
+            ("box-spacing", ("1",))
+        ])
+        self.style._addRule(rule)
+        self.assertEqual(self.style.BoxSpacingX, 1)
+        self.assertEqual(self.style.BoxSpacingY, 1)
+        
+        rule = Rule([], [
+            ("box-spacing-y", ("2",))
+        ])
+        self.style._addRule(rule)
+        self.assertEqual(self.style.BoxSpacingX, 1)
+        self.assertEqual(self.style.BoxSpacingY, 2)
+        
+        rule = Rule([], [
+            ("box-spacing-x", ("2",))
+        ])
+        self.style._addRule(rule)
+        self.assertEqual(self.style.BoxSpacingX, 2)
+        self.assertEqual(self.style.BoxSpacingY, 2)
+
+    def test_flex(self):
+        self.assertEqual(self.style.Flex, 1)
+
+        rule = Rule([], [
+            ("flex", ("2",))
+        ])
+        self.style._addRule(rule)
+        self.assertEqual(self.style.Flex, 2)
+
+
+    def test_border(self):
+        rule = Rule([], [
+            ("border", ("1", "solid", Colour()))
+        ])
+        self.style._addRule(rule)
+        self.assertEqual(self.style.Border.Left.Width, 1)
+
+    def test_borderCorner(self):
+        rule = Rule([], [
+            ("border-left", ("1", "solid", Colour())),
+            ("border-top-left", (Colour(1., 0., 0., 1.),))
+        ])
+        self.style._addRule(rule)
+        self.assertEqual(self.style.Border.TopLeft, Colour(1., 0., 0., 1.))
+        self.assertEqual(copy.deepcopy(self.style).Border.TopLeft, Colour(1., 0., 0., 1.))
+        
+    def test_padding(self):
+        rule = Rule([], [
+            ("padding", ("1",)),
+            ("padding-left", ("2",))
+        ])
+        self.style._addRule(rule)
+        self.assertEqual(self.style.Padding, Padding(2, 1, 1, 1))
+        
+    def test_background(self):
+        rule = Rule([], [
+            ("background", (Colour(1., 0., 1., 1.),)),
+        ])
+        self.style._addRule(rule)
+        self.assertEqual(self.style.Background, Colour(1, 0, 1, 1))

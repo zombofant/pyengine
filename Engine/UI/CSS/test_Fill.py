@@ -51,6 +51,18 @@ class FillTest(unittest.TestCase):
     def tearDown(self):
         del self.buffer
 
+class ColourTest(unittest.TestCase):
+    def test_init(self):
+        colour = Colour()
+        self.assertEqual(colour, Colour(0., 0., 0., 1.))
+
+    def test_initInvalid(self):
+        self.assertRaises(ValueError, Colour, -1., 0., 0., 1.)
+        self.assertRaises(ValueError, Colour, 0., -1., 0., 1.)
+        self.assertRaises(ValueError, Colour, 0., 0., -1., 1.)
+        self.assertRaises(ValueError, Colour, 0., 0., 0., -1.)
+        self.assertRaises(ValueError, Colour, 0., 0., 0., 2.)
+
 class FakeImageFill(FillTest):
     def setUp(self):
         super(FakeImageFill, self).setUp()
