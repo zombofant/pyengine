@@ -41,16 +41,17 @@ class TextureLoader(ResourceLoader):
     """
 
     def __init__(self, **kwargs):
-        super(TextureLoader, self).__init__(**kwargs)
         try:
-            self._supportedTargetClasses = [Texture2D]
-            self._defaultTargetClass = Texture2D
-            self._resourceTypes = ['png', 'jpg']
+            super(TextureLoader, self).__init__(
+                [Texture2D],
+                ['png', 'jpg'],
+                relativePathPrefix="/data/textures"
+                **kwargs)
+            supported = [Texture2D]
+            resources = 
         except NameError:
-            self._supportedTargetClasses = []
-            self._defaultTargetClass = None
-            self._resourceTypes = []
-        self._relativePathPrefix = '/data/textures/'
+            self._loaderNotAvailable()
+        
  
     def load(self, fileLike, targetClass=None):
         """
@@ -67,5 +68,5 @@ class TextureLoader(ResourceLoader):
         return texture
 
 # register an instance of TextLoader with the resource manager
-ResourceManager().registerResourceLoader(TextureLoader())
+ResourceManager().registerResourceLoader(TextureLoader)
 

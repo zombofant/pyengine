@@ -36,35 +36,58 @@ class ResourceLoader(object):
     be of any use.
     """
 
-    def __init__(self, **kwargs):
+    @classmethod
+    def _loaderNotAvailable(cls):
+        raise NotImplementedError("{0!s} is not implemented on this platform.".format(cls))
+
+    def __init__(self,
+            supportedTargetClasses,
+            resourceTypes,
+            relativePathPrefix=None,
+            defaultTargetClass=None,
+            **kwargs):
         """
-        Constructs a ResourceLoader class. ResourceLoader should never be
-        instantiated directly. All subclasses have to set the following
-        attributes to their apropriate values:
-            _supportedTargetClasses
-            _defaultTargetClass
-            _resourceTypes
-        The following attributes are optional:
-            _relativePathPrefix
-        See the property definitions below for more information on this
-        attributes and how they should look like.
+        Creates a ResourceLoader class.
+
+        ResourceLoaders should never be instanciated directly. The
+        ResourceManager takes care about that already.
+
+        *supportedTargetClasses* must be an iterable (``frozenset`` is
+        preferred) which yields the python classes the loader can
+        construct.
+        
+        *resourceTypes* must be a iterable (``frozenset`` is preferred)
+        which yields the file extensions (without leading ``"."``) which
+        are supported by the loader.
+
+        *relativePathPrefix* can be a string which is prepended to the
+        path if a relative path is given upon loading. Defaults to None,
+        which marks a need for absolute paths.
+
+        *defaultTargetClass* can be a class which must also be in
+        *supportedTargetClasses* which is passed to the load method if
+        the client does not specify a class on its own. If it is None,
+        the first class from the *supportedTargetClasses* iterable is
+        taken (for this, *supportedTargetClasses* must be subscriptable
+        obviously).
         """
+        if len(supportedTargetClasses) == 0 and defaultTargetClass is None:
+            self._loaderNotAvailable()
         super(ResourceLoader, self).__init__(**kwargs)
-        self._supportedTargetClasses = []
-        self._defaultTargetClass = None
-        self._resourceTypes = []
-        self._relativePathPrefix = '/'
+        self._supportedTargetClasses = frozenset(supportedTargetClasses)
+        self._defaultTargetClass = defaultTargetClass or supportedTargetClasses[0]
+        self._resourceTypes = frozenset(resourceTypes)
+        self._relativePathPrefix = unicode(relativePathPrefix)
 
     def load(self, fileLike, targetClass=None, **loaderArgs):
         """
         The actual loader that returns the loaded instance.
         This has to be overwritten by all subclasses.
         """
-        raise NotImplemented('You forgot to overwrite the load() method!')
-        return None
+        raise NotImplemented()
 
     @property
-    def supportedTargetClasses(self):
+    def SupportedTargetClasses(self):
         """
         The list of supported target classes.
         This property to be set by all subclasses.
@@ -72,7 +95,7 @@ class ResourceLoader(object):
         return self._supportedTargetClasses
 
     @property
-    def defaultTargetClass(self):
+    def DefaultTargetClass(self):
         """
         The default target class this loader creates when loading.
         This property may be set by subclasses if necessary.
@@ -80,7 +103,7 @@ class ResourceLoader(object):
         return self._defaultTargetClass
 
     @property
-    def resourceTypes(self):
+    def ResourceTypes(self):
         """
         The resource type this loader is able to load.
         This property has to be set by all subclasses.
@@ -88,7 +111,7 @@ class ResourceLoader(object):
         return self._resourceTypes
 
     @property
-    def relativePathPrefix(self):
+    def RelativePathPrefix(self):
         """
         The prefix to be prepended in relative paths.
         If there is a request for 'somefile.ext', the loaders

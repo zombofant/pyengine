@@ -34,10 +34,10 @@ class TextLoader(ResourceLoader):
     """
 
     def __init__(self, **kwargs):
-        super(TextLoader, self).__init__(**kwargs)
-        self._supportedTargetClasses = [unicode, str]
-        self._defaultTargetClass = unicode
-        self._resourceTypes = ['txt']
+        super(TextLoader, self).__init__(
+            [unicode, str],
+            ['txt'],
+            **kwargs)
 
     def load(self, fileLike, targetClass=unicode, encoding="utf8"):
         text = "\n" . join((line.decode(encoding) for line in fileLike))
@@ -47,5 +47,5 @@ class TextLoader(ResourceLoader):
             return unicode(text)
 
 # register an instance of TextLoader with the resource manager
-ResourceManager().registerResourceLoader(TextLoader())
+ResourceManager().registerResourceLoader(TextLoader)
 

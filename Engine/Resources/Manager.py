@@ -81,8 +81,8 @@ class ResourceManager(object):
         if resourceType in self._resourceLoaders:
             loader = self._resourceLoaders[resourceType]
             if requiredClass is None:
-                requiredClass = loader.defaultTargetClass
-            if requiredClass in loader.supportedTargetClasses:
+                requiredClass = loader.DefaultTargetClass
+            if requiredClass in loader.SupportedTargetClasses:
                 return loader
             else:
                 raise NotImplementedError(
@@ -130,9 +130,9 @@ class ResourceManager(object):
             resourceType = self._resourceTypeFromURI(uri)
         loader = self._findResourceLoader(resourceType, requiredClass)
         if requiredClass is None:
-            requiredClass = loader.defaultTargetClass
+            requiredClass = loader.DefaultTargetClass
         if not os.path.isabs(uri):
-            uri = os.path.join(loader.relativePathPrefix, uri)
+            uri = os.path.join(loader.RelativePathPrefix, uri)
         instance = self._resourceCacheRead(uri, requiredClass)
         if instance is None:
             resFile = self._open(uri, "r")
@@ -142,13 +142,16 @@ class ResourceManager(object):
             self._resourceCacheStore(uri, instance)
         return instance
 
-    def registerResourceLoader(self, loader):
+    def registerResourceLoader(self, loaderClass, **kwargs):
         """
         Register a resource loader.
         The loader has to be a subclass of ResourceLoader.
         """
-        assert isinstance(loader, ResourceLoader)
-        for resourceType in loader.resourceTypes:
+        try:
+            loader = loaderClass(**kwargs)
+        except NotImplementedError:
+            return
+        for resourceType in loader.ResourceTypes:
             if resourceType in self._resourceLoaders:
                 raise Exception("Already registered a loader for type '{0}'".format(resourceType))
             self._resourceLoaders[resourceType] = loader

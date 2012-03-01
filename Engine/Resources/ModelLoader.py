@@ -43,16 +43,17 @@ class OBJModelLoader(ResourceLoader):
     wavefront obj formatted 3D model data.
     """
 
-    def __init__(self):
-        super(OBJModelLoader, self).__init__()
-        self._supportedTargetClasses = [Model]
+    def __init__(self, **kwargs):
+        supported = [Model]
         try: # add support for RenderModel if available
-            self._supportedTargetClasses.append(RenderModel)
+            supported.insert(0, RenderModel)
         except NameError:
             pass
-        self._defaultTargetClass = Model
-        self._resourceTypes = ['obj']
-        self._relativePathPrefix = '/data/models/'
+        super(OBJModelLoader, self).__init__(
+            supported,
+            ['obj'],
+            relativePathPrefix="/data/models",
+            **kwargs)
 
     def load(self, fileLike, targetClass=Model):
         """
@@ -97,46 +98,6 @@ class OBJModelLoader(ResourceLoader):
         else:
             return RenderModel(**args)
 
-class MaterialLoader(ResourceLoader):
-    """
-    The MaterialLoader loads model material data.
-    It loads exactly one material from the given fileLike and returns
-    a Material instance constructed from the data.
-    """
-
-    def __init__(self, **kwargs):
-        super(MaterialLoader, self).__init__(**kwargs)
-        # if the Material class is missing, the loader does nothing 
-        try:
-            self._supportedTargetClasses = [Material]
-            self._defaultTargetClass = Material
-            self._resourceTypes = ['mtl']
-        except NameError:
-            self._supportedTargetClasses, self._resourceTypes = [], []
-            self._defaultTargetClass = None
-        self._relativePathPrefix = '/data/materials/'
-
-    def load(self, fileLike, targetClass=None):
-        """
-        The mtl loader.
-        Load the material with name materialName from 
-        """
-        # FIXME: only parses face texture at the moment
-        inMaterial = False
-        textures = []
-        for line in fileLike:
-            if len(line) < 1 :
-                if inMaterial: break
-                continue
-            if line[0] == '#' : continue
-            parts = line.strip().split(' ')
-            if parts[0] == 'newmtl':
-                inMaterial = True
-            if parts[0] == 'map_Kd':
-                textures.append(parts[1])
-        return Material(textures=textures)
-
 # register loader with resource manager
-ResourceManager().registerResourceLoader(OBJModelLoader())
-ResourceManager().registerResourceLoader(MaterialLoader())
+ResourceManager().registerResourceLoader(OBJModelLoader)
 
