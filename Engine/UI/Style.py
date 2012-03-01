@@ -139,6 +139,9 @@ class Style(object):
     def _setBorderEdge(self, edge, value):
         setattr(self.Border, edge, BorderEdge(value[0], value[2]))
 
+    def _setBorderCorner(self, corner, value):
+        setattr(self.Border, corner, Literals.BackgroundLiteral(value[0]))
+
     def _setBaseBoxEdge(self, box, edge, value):
         box = getattr(self, box)
         if len(value) != 1:
@@ -237,6 +240,10 @@ class Style(object):
         "border-right": lambda self, value: self._setBorderEdge("Right", value),
         "border-top": lambda self, value: self._setBorderEdge("Top", value),
         "border-bottom": lambda self, value: self._setBorderEdge("Bottom", value),
+        "border-top-left": lambda self, value: self._setBorderCorner("TopLeft", value),
+        "border-top-right": lambda self, value: self._setBorderCorner("TopRight", value),
+        "border-bottom-left": lambda self, value: self._setBorderCorner("BottomLeft", value),
+        "border-bottom-right": lambda self, value: self._setBorderCorner("BottomRight", value),
         "padding-left": lambda self, value: self._setBaseBoxEdge("Padding", "Left", value),
         "padding-right": lambda self, value: self._setBaseBoxEdge("Padding", "Right", value),
         "padding-top": lambda self, value: self._setBaseBoxEdge("Padding", "Top", value),

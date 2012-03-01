@@ -26,6 +26,7 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 import unittest
+import copy
 
 from CSS.Box import Padding
 from CSS.Fill import Colour
@@ -47,6 +48,15 @@ class StyleIdentity(unittest.TestCase):
         self.style._addRule(rule)
         self.assertIs(self.border, self.style.Border)
         self.assertEqual(self.border.Left.Width, 1)
+
+    def test_borderCorner(self):
+        rule = Rule([], [
+            ("border-left", ("1", "solid", Colour())),
+            ("border-top-left", (Colour(1., 0., 0., 1.),))
+        ])
+        self.style._addRule(rule)
+        self.assertEqual(self.border.TopLeft, Colour(1., 0., 0., 1.))
+        self.assertEqual(copy.deepcopy(self.style).Border.TopLeft, Colour(1., 0., 0., 1.))
 
     def test_padding(self):
         rule = Rule([], [

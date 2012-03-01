@@ -135,10 +135,10 @@ class PropertyEq(BoxModelTest):
     def test_BackgroundColour(self):
         a, b = Fill.Colour(), Fill.Colour()
         self.assertEqual(a, b)
-        a.Colour = Fill.Colour(0.1, 0.2, 0.3, 0.4)
-        b.Colour = Fill.Colour(0.1, 0.2, 0.3, 0.4)
+        a = Fill.Colour(0.1, 0.2, 0.3, 0.4)
+        b = Fill.Colour(0.1, 0.2, 0.3, 0.4)
         self.assertEqual(a, b)
-        a.Colour = Fill.Colour(0.1, 0.1, 0.1, 1.0)
+        a = Fill.Colour(0.1, 0.1, 0.1, 1.0)
         self.assertNotEqual(a, b)
 
 class TypeConstraints(unittest.TestCase):

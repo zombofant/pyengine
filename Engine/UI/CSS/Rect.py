@@ -412,6 +412,8 @@ class Rect(object):
                 topRight = Rect(right._x, top._y, right._right, top._bottom)
         else:
             top = NotARect
+            topLeft = NotARect
+            topRight = NotARect
         
         if box.Bottom > 0:
             bottom = Rect(self._x + box.Left, self._bottom - box.Bottom, self._right - box.Right, self._bottom)
@@ -421,5 +423,7 @@ class Rect(object):
                 bottomLeft = Rect(left._x, bottom._y, left._right, bottom._bottom)
         else:
             bottom = NotARect
+            bottomLeft = NotARect
+            bottomRight = NotARect
 
         return (left, topLeft, top, topRight, right, bottomRight, bottom, bottomLeft)

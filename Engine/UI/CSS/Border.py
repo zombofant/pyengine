@@ -26,6 +26,7 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 import iterutils
+import copy
 
 from Fill import Fill, Colour, Transparent
 from Box import BaseBox
@@ -45,6 +46,9 @@ class BorderEdge(BorderComponent):
         super(BorderEdge, self).__init__(**kwargs)
         self.Width = width
         self.Fill = fill
+
+    def __deepcopy__(self, memo):
+        return BorderEdge(self._width, copy.deepcopy(self._fill, memo)) 
 
     @property
     def Width(self):
@@ -99,11 +103,11 @@ class Border(BorderComponent):
         # print(self._corners)
     
     def assign(self, other):
-        if isinstance(other, Border):            
+        if isinstance(other, Border):
             for edgeA, edgeB in zip(self._edges, other._edges):
                 edgeA.Width = edgeB.Width
                 edgeA.Fill = edgeB.Fill
-            cornerA = list(other._corners)
+            self._corners = list(other._corners)
         elif isinstance(other, BorderComponent): 
             for edgeA in self._edges:
                 edgeA.Width = other.Width
@@ -111,6 +115,14 @@ class Border(BorderComponent):
             self._corners = [None] * 4
         else:    
             raise TypeError("Can only assign BorderComponents to Border")
+
+    def __deepcopy__(self, memo):
+        new = Border()
+        for i, edge in enumerate(self._edges):
+            new._edges[i] = copy.deepcopy(edge, memo)
+        for i, corner in enumerate(self._corners):
+            new._corners[i] = copy.deepcopy(corner, memo)
+        return new
 
     @property
     def Width(self):

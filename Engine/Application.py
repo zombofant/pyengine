@@ -248,7 +248,7 @@ class Application(RootWidget):
         # FIXME: Redraw only parts of the UI which need to
         # glEnable(GL_SCISSOR_TEST)
         # glScissor(
-        glClearColor(0.0, 0.0, 1.0, 0.1)
+        glClearColor(0.0, 0.0, 1.0, 0.0)
         glClear(GL_COLOR_BUFFER_BIT)
         glDisable(GL_DEPTH_TEST)
         super(Application, self).render()
