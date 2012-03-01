@@ -35,7 +35,8 @@ def absolutify(path):
     If the path somehow leaves its own scope (like /../ does) a
     ValueError is raised.
 
-    If the path misses a leading slash, it is added.
+    If the path misses a leading slash, it is added. A trailing slash
+    is not added.
     """
     segments = path.split('/')
     if len(segments[0]) == 0:
@@ -43,6 +44,8 @@ def absolutify(path):
     i = 0
     while i < len(segments):
         segment = segments[i]
+        if len(segment) == 0:
+            continue
         if segment == '.':
             del segments[i]
             continue
@@ -95,4 +98,39 @@ def isWriteFlag(flag):
     # FIXME: Verify that this is sufficient
     return flag.startswith("w") or flag.startswith("a") or "+" in flag
     
-    
+def join(*segments):
+    """
+    Works like os.path.join, except that it does not use the platforms
+    directory separator but always a /.
+    """
+    fullPath = ""
+    for segment in segments:
+        if len(segment) == 0:
+            continue
+        if segment[0] == "/":
+            fullPath = absolutify(segment)
+        else:
+            segment = absolutify(segment)
+            if len(fullPath) == 0:
+                fullPath += segment[1:]
+            else:
+                fullPath += segment
+    return fullPath
+
+def splitext(path):
+    """
+    Splits off the file extension from the given *path*.
+
+    Returns a tuple ``(path, ext)`` where path is everything before the
+    last dot in the filename segment and ext is everything behind.
+
+    This function is aware of directories.
+    """
+    path, filename = path.rsplit('/', 1)
+    items = filename.rsplit('.', 1)
+    if len(items) == 1:
+        basename, = items
+        ext = ""
+    else:
+        basename, ext = items
+    return path+"/"+basename, ext

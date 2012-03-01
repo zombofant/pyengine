@@ -47,8 +47,6 @@ class TextureLoader(ResourceLoader):
                 ['png', 'jpg'],
                 relativePathPrefix="/data/textures"
                 **kwargs)
-            supported = [Texture2D]
-            resources = 
         except NameError:
             self._loaderNotAvailable()
         

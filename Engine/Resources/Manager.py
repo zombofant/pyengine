@@ -29,6 +29,7 @@ import os
 
 from Base import ResourceLoader
 from Engine.VFS.FileSystem import FileSystem
+import Engine.VFS.Utils as Utils
 
 class ResourceManager(object):
     """
@@ -131,8 +132,10 @@ class ResourceManager(object):
         loader = self._findResourceLoader(resourceType, requiredClass)
         if requiredClass is None:
             requiredClass = loader.DefaultTargetClass
-        if not os.path.isabs(uri):
-            uri = os.path.join(loader.RelativePathPrefix, uri)
+        if uri[0] != '/':
+            if loader.RelativePathPrefix is None:
+                raise ValueError("An absolute URI is required to load a {0} resource.".format(loader))
+            uri = Utils.join(loader.RelativePathPrefix, uri)
         instance = self._resourceCacheRead(uri, requiredClass)
         if instance is None:
             resFile = self._open(uri, "r")
