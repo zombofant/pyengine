@@ -43,7 +43,6 @@ class Application(RootWidget):
         super(Application, self).__init__(**kwargs)
         self.fullscreen = fullscreen
         self.windows = []
-        self._childClasses = ScreenWidget
         self._primaryWidget = None
         self.SyncedFrameLength = 0.01
         self.SyncedSpeedFactor = 1.
@@ -94,7 +93,7 @@ class Application(RootWidget):
 
     def _newScreen(self, ui_logical, geometry, fullscreen=False, primary=True, screen=None):        
         window = self.makeWin(ui_logical, None if fullscreen else geometry, screen)
-        widget = ScreenWidget(self, window)
+        widget = ScreenWidget(self._desktopLayer, window)
         widget.AbsoluteRect = Rect(ui_logical[0], ui_logical[1], ui_logical[0]+geometry[0], ui_logical[1]+geometry[1])
         t = (window, widget)
         self.windows.append(t)
