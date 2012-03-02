@@ -76,7 +76,8 @@ class ConditionalNode(CodeNode):
                 return node(varDict)
         if self._else is not None:
             return self._else()
-        
+        else:
+            return ()
 
     def newCondition(self, expression):
         if self._else is not None:

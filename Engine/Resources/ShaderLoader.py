@@ -33,7 +33,7 @@ from ShaderParser import ShaderParser
 import TextLoader
 
 try:
-    import Engine.GL.Shader as Shader
+    import Engine.GL.ShaderLibrary as ShaderLibrary
 except ImportError:
     pass
 
@@ -42,17 +42,15 @@ class ShaderLoader(ResourceLoader):
     def __init__(self, **kwargs):
         try:
             super(ShaderLoader, self).__init__(
-                [Shader],
+                [ShaderLibrary.ShaderLibrary],
                 ['shader'],
                 relativePathPrefix="/data/shader",
                 **kwargs)
         except NameError:
             self._loaderNotAvailable()
 
-    def load(self, filelike, targetClass, uniforms=None, encoding="utf8"):
-        vpSource, fpSource = ShaderParser((line.decode(encoding) for line in filelike)).parse()
-        shader = Shader()
-        shader.loadShader(vpSource, fpSource, uniforms or {})
-        return shader
+    def load(self, filelike, targetClass, encoding="utf8"):
+        variables, vpSource, fpSource = ShaderParser((line.decode(encoding) for line in filelike)).parse()
+        return ShaderLibrary.ShaderLibrary(variables, vpSource, fpSource)
 
 ResourceManager().registerResourceLoader(ShaderLoader)

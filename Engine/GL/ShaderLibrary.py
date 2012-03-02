@@ -40,15 +40,24 @@ class ShaderLibrary(object):
         shader.loadShader(self._vertexProgramTree(variables), self._fragmentProgramTree(variables))
         return shader
 
-    def bind(self, **variables):
-        realVarDict = dict(self._variables)
-        realVarDict.update(variables)
-        cacheToken = tuple(realVarDict.iteritems())
+    def requireShader(self, variables):
+        cacheToken = tuple(variables.iteritems())
         if cacheToken in self._cache:
             shader = self._cache[cacheToken]
         else:
-            shader = self._buildShader(realVarDict)
+            shader = self._buildShader(variables)
             self._cache[cacheToken] = shader
+        return shader
+
+    def cacheShaders(self, variableDicts):
+        for d in variableDicts:
+            actualVars = dict(self._variables)
+            actualVars.update(d)
+            self.requireShader(actualVars)
+
+    def bind(self, **variables):
+        self._variables.update(variables)
+        shader = self.requireShader(self._variables)
         shader.bind()
         return shader
         
