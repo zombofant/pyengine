@@ -277,7 +277,7 @@ class Application(RootWidget):
         glViewport(0, 0, window.width, window.height)
         glClear(GL_DEPTH_BUFFER_BIT)
         glEnable(GL_BLEND)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA)
         self._uiTexture.bind()
         glEnable(GL_TEXTURE_2D)
         window.FBOVertexList.draw(GL_TRIANGLE_STRIP)
