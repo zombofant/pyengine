@@ -25,6 +25,7 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 import sys
+import OpenGL.GL as GL
 import numpy as np
 import scipy as sp
 
@@ -32,29 +33,57 @@ import scipy as sp
 The core classes of the SceneGraph management system.
 """
 
+class Geometry(object):
+
+    def __init__(self, **kwargs):
+        super(Geometry, self).__init__(**kwargs)
+
+    @property
+    def Indices(self):
+        return self._indices
+
+    @Indices.setter
+    def Indices(self, value):
+        if value == []: value = None
+        self._indices = value
+
+    @property
+    def Vertices(self):
+        return self._vertices
+
+    @Vertices.setter
+    def Vertices(self, value):
+        if value == []: value = None
+        self._vertices = value
+
+    @property
+    def Normals(self):
+        return self._normals
+
+    @Normals.setter
+    def Normals(self, value):
+        if value == []: value = None
+        self._normals = value
+
+    @property
+    def BoundingVolume(self):
+        return self._boundingVolume
+
+
 class Transformation(object):
 
     def __init__(self):
         super(Transformation, self).__init__()
-        self._mScale, self._mTranslate, self._mRotate = 0, 0, 0
         self.reset()
-
-    def _updateTransformation(self):
-        m = self._mScale*np.identity(4,dtype=np.float32)*self._mTranslate*self._mRotate
-        self._mTransformation = m.T.copy(order='C_CONTIGUOUS')
 
     def reset(self):
         self.setIdentity()
-        self.setDefaultScale()
 
     def setIdentity(self):
-        self._mRotate = np.identity(4, dtype=np.float32)
-        self._mTranslate = np.identity(4, dtype=np.float32)
+        self._mTransformation = np.identity(4, dtype=np.float32)
+        self._mTransposed = self._mTransformation
         self._isIdentity = True
-
-    def setDefaultScale(self):
-        self._mScale = np.identity(4, dtype=np.float32)
-        self._isDefaultScale = True
+        self._isUnitScale = True
 
     def applyForward(self, mInput):
         pass
@@ -62,48 +91,65 @@ class Transformation(object):
     def applyInverse(self, mInput):
         pass
 
-    def product(self, matrixA, matrixB):
-        self._mTransformation = matrixA * matrixB
+    def product(self, transA, transB):
+        self._mTransformation = transA.Transformation * transB.Transformation
+        self._mTransposed = self._mTransformation.T.copy(order='C')
 
     def scale(self, scaleX, scaleY, scaleZ):
-        self._mScale = np.matrix([[scaleX, 0., 0., 0.], [0., scaleY, 0., 0.],
+        self._mTransformation = self._mTransformation * np.matrix(
+            [[scaleX, 0., 0., 0.], [0., scaleY, 0., 0.],
             [0., 0., scaleZ, 0.], [0., 0., 0., 1.]], dtype=np.float32)
-        self._updateTransformation()
+        self._mTransposed = self._mTransformation.T.copy(order='C')
 
     def translate(self, x, y, z):
-        self._mTranslate = np.matrix([[1., 0., 0., x], [0., 1., 0., y],
+        self._mTransformation = self._mTransformation * np.matrix(
+            [[1., 0., 0., x], [0., 1., 0., y],
             [0., 0., 1., z], [0., 0., 0., 1.]], dtype=np.float32)
-        self._updateTransformation()
+        self._mTransposed = self._mTransformation.T.copy(order='C')
 
-    def rotate(self, angle, axisX, axisY, axisZ):
+    def rotate(self, angle, axisX, axisY, axisZ, degrees=True):
+        if degrees:
+            angle = angle*np.pi/180.
+        absol = np.sqrt(axisX*axisX+axisY*axisY+axisZ*axisZ)
+        if absol > 0:
+            axisX /= absol
+            axisY /= absol
+            axisZ /= absol
+        else:
+            return
         c = np.cos(angle)
         s = np.sin(angle)
-        self._mRotate = np.matrix([
-            [c+axisX*axisX*(1.-c),axisX*axisY*(1-c)-axisZ*s, axisX*axisZ*(1-c)+axisY*s, 0.],
-            [axisY*axisX*(1-c)+axisZ*s, c+axisY*axisY*(1-c), axisY*axisZ*(1-c)-axisX*s, 0.],
-            [axisZ*axisX*(1-c)-axisY*s, axisZ*axisY*(1-c)+axisX*s, c+axisZ*axisZ*(1-c), 0.],
+        o = 1. - c
+        self._mTransformation = self._mTransformation * np.matrix([
+            [c+axisX*axisX*o, axisX*axisY*o-axisZ*s, axisX*axisZ*o+axisY*s, 0.],
+            [axisY*axisX*o+axisZ*s, c+axisY*axisY*o, axisY*axisZ*o-axisX*s, 0.],
+            [axisZ*axisX*o-axisY*s, axisZ*axisY*o+axisX*s, c+axisZ*axisZ*o, 0.],
             [0., 0., 0., 1.]], dtype=np.float32)
-        self._updateTransformation()
+        self._mTransposed = self._mTransformation.T.copy(order='C')
 
     @property
-    def transformation(self):
+    def Transformation(self):
         return self._mTransformation
 
     @property
-    def isIdentity(self):
+    def Transposed(self):
+        return self._mTransposed
+
+    @property
+    def IsIdentity(self):
         return self._isIdentity
 
     @property
-    def isDefaultScale(self):
-        return self._isDefaultScale
+    def IsUnitScale(self):
+        return self._isUnitScale
 
 class Spatial(object):
 
     def __init__(self):
         super(Spatial, self).__init__()
         self.parent = None
-        self.transLocal = Transformation()
-        self.transWorld = Transformation()
+        self._localTransformation = Transformation()
+        self._worldTransformation = Transformation()
 
     def updateGeometry(self, deltaT, initiator=True):
         self.updateWorldData(deltaT, False)
@@ -116,22 +162,14 @@ class Spatial(object):
 
     def updateWorldData(self, deltaT, initiator=True):
         if self.parent is not None:
-            self.transWorld.product(self.parent.transWorld, self.transLocal)
+            self.WorldTransformation.product(self.parent.WorldTransformation,
+                self.LocalTransformation)
 
     def onDraw(self):
         pass
 
     def draw(self):
         pass
-
-    def scale(self, x, y, z):
-        self.transLocal.scale(x, y, z)
-
-    def translate(self, x, y, z):
-        self.transLocal.translate(x, y, z)
-
-    def rotate(self, angle, axisX, axisY, axisZ):
-        self.transLocal.rotate(angle, axisX, axisY, axisZ)
 
     @property
     def parent(self):
@@ -144,20 +182,16 @@ class Spatial(object):
         self._parent = value
 
     @property
-    def transLocal(self):
-        return self._transLocal
+    def LocalTransformation(self):
+        return self._localTransformation
 
-    @transLocal.setter
-    def transLocal(self, value):
-        self._transLocal = value
+    @LocalTransformation.setter
+    def LocalTransformation(self, value):
+        self._localTransformation = value
 
     @property
-    def transWorld(self):
-        return self._transWorld
-
-    @transWorld.setter
-    def transWorld(self, value):
-        self._transWorld = value
+    def WorldTransformation(self):
+        return self._worldTransformation
 
 class Node(Spatial):
 
@@ -168,6 +202,7 @@ class Node(Spatial):
 
     def addChild(self, child):
         if child not in self._children:
+            child.parent = self
             self._children.append(child)
             self._numOfChildren += 1
             child.updateWorldData(0)
@@ -186,6 +221,8 @@ class Node(Spatial):
             child.onDraw()
 
     def draw(self):
+        super(Node, self).draw()
+        GL.glLoadMatrixf(self.WorldTransformation.Transposed)
         for child in self.children:
             child.draw()
 
