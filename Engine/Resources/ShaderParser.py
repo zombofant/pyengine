@@ -112,7 +112,7 @@ class DefaultState(State):
         raise ValueError("{0!r} not allowed outside any block.".format(line))
 
 class VariablesState(State):
-    _variableMatch = re.compile("^(\w+)\s*=\s*(\S+)\s*$", re.I)
+    _variableMatch = re.compile("^([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*(\S+)\s*$", re.I)
 
     def line(self, line):
         if self._transitionTest(line):
