@@ -145,15 +145,17 @@ class ShaderLoader(ResourceLoader):
     def __init__(self, **kwargs):
         try:
             super(ShaderLoader, self).__init__(
-                [Shader.Shader],
+                [Shader],
                 ['shader'],
-                relativePathPrefix="/data/shader"
+                relativePathPrefix="/data/shader",
                 **kwargs)
         except NameError:
             self._loaderNotAvailable()
 
     def load(self, filelike, targetClass, uniforms=None, encoding="utf8"):
         vpSource, fpSource = ShaderParser((line.decode(encoding) for line in filelike)).parse()
-        shader = Shader.Shader()
+        shader = Shader()
         shader.loadShader(vpSource, fpSource, uniforms or {})
         return shader
+
+ResourceManager().registerResourceLoader(ShaderLoader)

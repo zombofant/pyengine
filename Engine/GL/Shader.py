@@ -25,6 +25,8 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
+import Engine.Utils as Utils
+
 from Base import *
 
 class Shader(BindableObject):
@@ -41,7 +43,7 @@ class Shader(BindableObject):
         if length > 1:
             log = glGetShaderInfoLog(shader)
             glDeleteShader(shader)
-            raise Exception(log)
+            raise ValueError("Failed to compile {0}.\nCompiler log: \n{2}\nSource: \n{1}".format(kind, Utils.lineNumbering(source), log))
         return shader
             
     def _loadUniforms(self, uniforms):
@@ -49,7 +51,7 @@ class Shader(BindableObject):
         for name, type in uniforms.iteritems():
             location = glGetUniformLocation(self.id, str(name))
             if location < 0:
-                raise Exception("Unknown uniform in program object: {0}".format(name))
+                raise KeyError("Unknown uniform in program object: {0}".format(name))
             self.uniformMap[name] = (location, type)
         
     def loadShader(self, vs, fs, uniforms):
@@ -94,6 +96,9 @@ class Shader(BindableObject):
     def unloadShader(self):
         glDeleteProgram(program)
         self.id = None
+
+    def __getitem__(self, name):
+        return self.uniformMap[name][0]
         
     def __setitem__(self, name, value):
         t = self.uniformMap[name]

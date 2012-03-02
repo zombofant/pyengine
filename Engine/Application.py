@@ -56,8 +56,10 @@ class Application(RootWidget):
 
         if useFramebuffer:
             self._buildFramebuffer()
-            self.render = self._renderWithFBO
+            self._render = self._renderWithFBO
             self.renderWindow = self._renderWindowWithFBO
+        else:
+            self._render = self._renderWithoutFBO
         self.realign()
 
     def _constructWindowed(self, geometry):
@@ -227,6 +229,9 @@ class Application(RootWidget):
         """
 
     def render(self):
+        self._render()
+
+    def _renderWithoutFBO(self):
         """
         Renders the UI. Note that after initalization, this function
         will have been replaced with *_renderWithFBO* if useFramebuffer
