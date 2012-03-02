@@ -29,6 +29,7 @@ import re
 
 from Base import ResourceLoader
 from Manager import ResourceManager
+from ShaderParser import ShaderParser
 import TextLoader
 
 try:

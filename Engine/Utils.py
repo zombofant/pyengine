@@ -34,7 +34,10 @@ def indent(text, indent):
     return "\n".join((indent+line for line in text.split("\n")))
 
 def lineNumbering(text):
-    lines = list(text.split("\n"))
+    if isinstance(text, (unicode, str)):
+        lines = list(text.split("\n"))
+    else:
+        lines = text
     amount = int(math.ceil(math.log(len(lines), 10)))
     format = "{{1:{0}d}}: {{0}}".format(amount)
     return "\n".join(format.format(line, number+1) for number, line in enumerate(lines))
