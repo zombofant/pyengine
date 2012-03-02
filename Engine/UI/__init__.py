@@ -26,6 +26,7 @@ from CSS.Rect import *
 from WidgetBase import *
 from LabelWidget import *
 from BoxWidget import *
+from WindowWidget import *
 try:
     import pyglet
     from ScreenWidget import *

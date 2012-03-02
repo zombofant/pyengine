@@ -42,7 +42,7 @@ from WidgetBase import Widget
 
 class LabelWidget(Widget):
     def __init__(self, parent, text="", **kwargs):
-        # font = Manager.ResourceManager().require('/data/fonts/Cantarell-Regular.otf', fontFamily="Cantarell", size=10, bold=True)
+        font = Manager.ResourceManager().require('/data/fonts/Cantarell-Regular.otf', fontFamily="Cantarell", size=10)
         self._text = pyglet.text.Label(text, font_name="Cantarell", font_size=10, bold=True, italic=False, anchor_y='top')
         super(LabelWidget, self).__init__(parent, **kwargs)
         self.Text = text
