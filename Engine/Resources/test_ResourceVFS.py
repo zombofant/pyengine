@@ -31,7 +31,7 @@ from Engine.VFS.FileSystem import FileSystem, MountPriority
 from Engine.VFS.Mounts import MountVirtual
 import Manager
 
-__all__ = ["TestVFS", "TestMountPoint", "TestMount", "TestTestVFS", "TestResourceLoader"]
+__all__ = ["TestVFS", "TestMountPoint", "TestMount", "TestResourceLoader"]
 
 """
 This module does not implement any tests by itself. It rather sets the
