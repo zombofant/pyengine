@@ -1,4 +1,4 @@
-# File name: __init__.py
+# File name: test_Utils.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -22,14 +22,30 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
-from CSS.Rect import *
-from WidgetBase import *
-from LabelWidget import *
-from BoxWidget import *
-try:
-    import pyglet
-    from ScreenWidget import *
-    from RootWidget import *
-    from SceneWidget import *
-except ImportError:
-    pass
+from __future__ import unicode_literals, print_function, division
+from our_future import *
+
+import unittest
+
+from Utils import lineNumbering, indent
+
+class LineNumbering(unittest.TestCase):
+    def test_string(self):
+        self.assertMultiLineEqual(lineNumbering("""test
+test2
+test3"""), """1: test
+2: test2
+3: test3""")
+
+    def test_lines(self):
+        self.assertMultiLineEqual(lineNumbering(["test", "test2", "test3"]), """1: test
+2: test2
+3: test3""")
+
+class Indent(unittest.TestCase):
+    def test_string(self):
+        self.assertMultiLineEqual("""  test
+  test2
+  test3""", indent("""test
+test2
+test3""", "  "))

@@ -1,4 +1,4 @@
-# File name: FontLoader.py
+# File name: ShaderLoader.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -25,46 +25,32 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
+import re
+
 from Base import ResourceLoader
 from Manager import ResourceManager
+from ShaderParser import ShaderParser
+import TextLoader
 
 try:
-    import pyglet.font as font
+    import Engine.GL.ShaderLibrary as ShaderLibrary
 except ImportError:
     pass
 
-class FontLoader(ResourceLoader):
-    """
-    Implement a loader for fonts resources.
-
-    This uses pyglet as a backend and is not available if pyglet
-    ImportErrors.
-
-    This tries to do its best to serve the fontFamily requested, even
-    if pyglet does this not. Pyglet returns a surrogate font by default,
-    this is circumvented by checking for the availability beforehand
-    and ValueError'ing if not available.
-    """
-
+class ShaderLoader(ResourceLoader):
+    
     def __init__(self, **kwargs):
         try:
-            super(FontLoader, self).__init__(
-                [font.base.Font],
-                ['ttf', 'otf'],
+            super(ShaderLoader, self).__init__(
+                [ShaderLibrary.ShaderLibrary],
+                ['shader'],
+                relativePathPrefix="/data/shader",
                 **kwargs)
         except NameError:
             self._loaderNotAvailable()
 
-    def getCacheToken(self, vfspath, targetClass, fontFamily=None, size=10, italic=False, bold=False):
-        if fontFamily is None:
-            raise ValueError("Cannot request a font without specifying fontFamily keyword argument.")
-        return (fontFamily, size, italic, bold)
+    def load(self, filelike, targetClass, encoding="utf8"):
+        variables, vpSource, fpSource = ShaderParser((line.decode(encoding) for line in filelike)).parse()
+        return ShaderLibrary.ShaderLibrary(variables, vpSource, fpSource)
 
-    def load(self, fileLike, targetClass, fontFamily=None, size=10, italic=False, bold=False):
-        font.add_file(fileLike)
-        if not font.base.Font.have_font(fontFamily):
-            raise ResourceNotFoundError("Cannot find font family {0}".format(fontFamily))
-        return font.load(fontFamily, size, bold, italic)
-
-ResourceManager().registerResourceLoader(FontLoader)
-
+ResourceManager().registerResourceLoader(ShaderLoader)

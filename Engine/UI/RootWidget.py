@@ -41,6 +41,7 @@ wants to recieve the focus.
 class RootWidget(AbstractWidget, WidgetContainer):
     def __init__(self, **kwargs):
         super(RootWidget, self).__init__(**kwargs)
+        self._rootWidget = self
         self._mouseCapture = None
         self._mouseCaptureButton = 0
         self._focused = None
