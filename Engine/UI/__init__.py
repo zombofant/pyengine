@@ -22,12 +22,13 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
-from Rect import *
-from Widget import *
+from CSS.Rect import *
+from WidgetBase import *
+from BoxWidget import *
 try:
     import pyglet
-    from Screen import *
-    from Root import *
-    from Scene import *
+    from ScreenWidget import *
+    from RootWidget import *
+    from SceneWidget import *
 except ImportError:
     pass

@@ -22,9 +22,15 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
-import Rect
-import unittest
+from __future__ import unicode_literals, print_function, division
+from our_future import *
+
 from random import randint
+import unittest
+import copy
+
+import Rect
+import Box
 
 class RectTest(unittest.TestCase):
     def checkValuesXYWH(self, x, y, w, h):
@@ -135,15 +141,24 @@ class RectConstraints(RectInstanceTest):
         self.assertRaises(ValueError, self.setattrWrapper("Bottom", y-1))
 
 class RectOperators(RectTest):
+    def test_copy(self):
+        a = Rect.Rect(0, 0, 10, 10)
+        b = copy.copy(a)
+        self.assertIsNot(a, b)
+        self.assertEqual(a, b)
+        
     def test_and(self):
         a = Rect.Rect(10, 10, 20, 20)
+        backup = copy.copy(a)
         b = Rect.Rect(-5, -5, 30, 30)
         self.assertEqual(a & b, a)
+        self.assertEqual(a, backup)
 
         b = Rect.Rect(15, 15, 30, 30)
         self.assertEqual(a & b, Rect.Rect(15, 15, 20, 20))
+        self.assertEqual(a, backup)
 
-    def test_and_invalid(self):
+    def test_andInvalid(self):
         a = Rect.Rect(0, 0, 10, 10)
         b = Rect.Rect(10, 10, 20, 20)
         self.assertEqual(a & b, Rect.Rect(10, 10, 10, 10))
@@ -165,7 +180,119 @@ class RectOperators(RectTest):
         a = Rect.Rect(x, y, r, b)
         self.assertIn(a, a)
 
-    def test_contains_tuple(self):
+    def test_containsTuple(self):
         a = Rect.Rect(0, 0, 10, 10)
         self.assertIn((5, 5), a)
         self.assertNotIn((13, 13), a)
+
+class RectOr(RectTest):
+    def test_onX(self):
+        a = Rect.Rect( 0, 10, 10, 20)
+        b = Rect.Rect(10, 10, 20, 20)
+        backup = copy.copy(a)
+        self.assertEqual(a | b, Rect.Rect(0, 10, 20, 20))
+        self.assertEqual(a, backup)
+        self.assertEqual(b | a, Rect.Rect(0, 10, 20, 20))
+
+    def test_onY(self):
+        a = Rect.Rect(10,  0, 20, 10)
+        backup = copy.copy(a)
+        b = Rect.Rect(10, 10, 20, 20)
+        self.assertEqual(a | b, Rect.Rect(10, 0, 20, 20))
+        self.assertEqual(a, backup)
+        self.assertEqual(b | a, Rect.Rect(10, 0, 20, 20))
+
+    def test_disjunct(self):
+        a = Rect.Rect(10,  0, 20,  9)
+        b = Rect.Rect(10, 10, 20, 20)
+        self.assertIs(a | b, Rect.NotARect)
+        self.assertIs(b | a, Rect.NotARect)
+
+        a = Rect.Rect( 0, 10,  9, 20)
+        b = Rect.Rect(10, 10, 20, 20)
+        self.assertIs(a | b, Rect.NotARect)
+        self.assertIs(b | a, Rect.NotARect)
+
+    def test_invalid(self):
+        a = Rect.Rect(0, 0, 10, 10)
+        b = Rect.Rect(5, 5, 15, 15)
+        self.assertIs(a | b, Rect.NotARect)
+        self.assertIs(b | a, Rect.NotARect)
+
+class RectBoxes(RectTest):
+    def test_shrink(self):
+        a = Rect.Rect(5, 5, 15, 15)
+        a.shrink(Box.BaseBox(1, 1, 1, 1))
+        self.assertEqual(a, Rect.Rect(6, 6, 14, 14))
+
+    def test_expand(self):
+        a = Rect.Rect(5, 5, 15, 15)
+        a.expand(Box.BaseBox(5, 5, 5, 5))
+        self.assertEqual(a, Rect.Rect(0, 0, 20, 20))
+
+    def test_cut(self):
+        a = Rect.Rect(0, 0, 20, 20)
+        b = Box.BaseBox(5, 5, 5, 5)
+
+        left, topLeft, top, topRight, right, bottomRight, bottom, bottomLeft = a.cut(b)
+        self.assertEqual(
+            left,
+            Rect.Rect(0, 5, 5, 15)
+        )
+        self.assertEqual(
+            topLeft,
+            Rect.Rect(0, 0, 5, 5)
+        )
+        self.assertEqual(
+            top,
+            Rect.Rect(5, 0, 15, 5)
+        )
+        self.assertEqual(
+            topRight,
+            Rect.Rect(15, 0, 20, 5)
+        )
+        self.assertEqual(
+            right,
+            Rect.Rect(15, 5, 20, 15)
+        )
+        self.assertEqual(
+            bottomRight,
+            Rect.Rect(15, 15, 20, 20)
+        )
+        self.assertEqual(
+            bottom,
+            Rect.Rect(5, 15, 15, 20)
+        )
+        self.assertEqual(
+            bottomLeft,
+            Rect.Rect(0, 15, 5, 20)
+        )
+    
+    def test_cut2(self):
+        a = Rect.Rect(0, 0, 20, 20)
+        b = Box.BaseBox(0, 0, 0, 0)
+
+        rects = a.cut(b)
+
+        self.assertEqual(
+            rects,
+            (Rect.NotARect, Rect.NotARect, Rect.NotARect, Rect.NotARect, Rect.NotARect, Rect.NotARect, Rect.NotARect, Rect.NotARect)
+        )
+
+    def test_cutCombinable(self):
+        a = Rect.Rect(0, 0, 20, 20)
+        b = Box.BaseBox(5, 5, 5, 5)
+        left, topLeft, top, topRight, right, bottomRight, bottom, bottomLeft = a.cut(b)
+
+        c = copy.copy(a)
+        c.shrink(b)
+        self.assertIsNot(c, Rect.NotARect)
+        c |= left
+        self.assertIsNot(c, Rect.NotARect)
+        c |= right
+        self.assertIsNot(c, Rect.NotARect)
+        c |= topLeft | top | topRight
+        self.assertIsNot(c, Rect.NotARect)
+        c |= bottomLeft | bottom | bottomRight
+        self.assertIsNot(c, Rect.NotARect)
+        self.assertEqual(c, a)

@@ -1,4 +1,4 @@
-# File name: Parser.py
+# File name: SceneWidget.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -25,21 +25,31 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-import itertools
+__all__ = ["SceneWidget"]
 
-__all__ = ["Parser"]
+from WidgetBase import Widget
+from OpenGL.GL import *
+from OpenGL.GLU import *
 
-from Rules import Rule
-import GeneratedParser
-genLexer = GeneratedParser.Lexer
-genParser = GeneratedParser.Parser
-        
-class Parser(object):
-    def __init__(self, **kwargs):
-        super(Parser, self).__init__(**kwargs)
+class SceneWidget(Widget):
+    def __init__(self, parent, **kwargs):
+        # FIXME: pass scene graph and camera to use ;)
+        super(SceneWidget, self).__init__(parent, **kwargs)
+        self.FOV = 60.0
+        self.ZNear = 1.0
+        self.ZFar = 100.0
 
-    def parse(self, filelike):
-        lexer = genLexer(filelike)
-        parser = genParser(lexer)
-        return parser.Parse()
-        
+    def _setupProjection(self):
+        glMatrixMode(GL_PROJECTION)
+        glLoadIdentity()
+        gluPerspective(self.FOV, self.AbsoluteRect.Width / self.AbsoluteRect.Height, self.ZNear, self.ZFar)
+        glMatrixMode(GL_MODELVIEW)
+        glLoadIdentity()
+
+    def _resetProjection(self):
+        glMatrixMode(GL_PROJECTION)
+        glLoadIdentity()
+        glMatrixMode(GL_MODELVIEW)
+
+    def renderScene(self):
+        pass

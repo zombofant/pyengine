@@ -49,7 +49,7 @@ class Framebuffer(BindableObject):
             
     def __del__(self):
         glDeleteFramebuffers(np.array((self.id,)))
-        super(Framebuffer, self).__del__()
+        # super(Framebuffer, self).__del__()
     
     def __setitem__(self, key, value):
         if not isinstance(value, RenderbufferBase):

@@ -1,4 +1,4 @@
-# File name: Parser.py
+# File name: test_BoxWidget.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -25,21 +25,30 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-import itertools
+import unittest
 
-__all__ = ["Parser"]
+from CSS.Rect import Rect
 
-from Rules import Rule
-import GeneratedParser
-genLexer = GeneratedParser.Lexer
-genParser = GeneratedParser.Parser
-        
-class Parser(object):
-    def __init__(self, **kwargs):
-        super(Parser, self).__init__(**kwargs)
+from WidgetBase import Widget
+from RootWidget import RootWidget
+from BoxWidget import VBox, HBox
 
-    def parse(self, filelike):
-        lexer = genLexer(filelike)
-        parser = genParser(lexer)
-        return parser.Parse()
-        
+from test_Widget import WidgetInstanceTest
+
+class VBoxAlignment(WidgetInstanceTest):
+    def setUp(self):
+        super(VBoxAlignment, self).setUp()
+        self.instance.AbsoluteRect = Rect(0, 0, 256, 256)
+        self.root = self.instance
+        self.instance = VBox(self.root)
+        self.instance.AbsoluteRect = Rect(0, 0, 256, 256)
+
+    def tearDown(self):
+        del self.instance
+        del self.root
+    
+    def test_basic(self):
+        self.widgetA, self.widgetB = Widget(self.instance), Widget(self.instance)
+        self.root.realign()
+        self.assertEqual(self.widgetA.AbsoluteRect, Rect(0, 0, 256, 128))
+        self.assertEqual(self.widgetB.AbsoluteRect, Rect(0, 128, 256, 256))

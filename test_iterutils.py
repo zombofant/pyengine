@@ -1,4 +1,4 @@
-# File name: Scene.py
+# File name: test_iterutils.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -25,31 +25,17 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-__all__ = ["SceneWidget"]
+import unittest
 
-from Widget import Widget
-from OpenGL.GL import *
-from OpenGL.GLU import *
+import iterutils
 
-class SceneWidget(Widget):
-    def __init__(self, parent, **kwargs):
-        # FIXME: pass scene graph and camera to use ;)
-        super(SceneWidget, self).__init__(parent, **kwargs)
-        self.FOV = 60.0
-        self.ZNear = 1.0
-        self.ZFar = 100.0
-
-    def _setupProjection(self):
-        glMatrixMode(GL_PROJECTION)
-        glLoadIdentity()
-        gluPerspective(self.FOV, self.Rect.Width / self.Rect.Height, self.ZNear, self.ZFar)
-        glMatrixMode(GL_MODELVIEW)
-        glLoadIdentity()
-
-    def _resetProjection(self):
-        glMatrixMode(GL_PROJECTION)
-        glLoadIdentity()
-        glMatrixMode(GL_MODELVIEW)
-
-    def renderScene(self):
-        pass
+class Iterutils(unittest.TestCase):
+    def test_interleaved(self):
+        l1 = [10, 20, 30]
+        l2 = [15, 25, 35, 45]
+        l3 = [17, 27, 37]
+        self.assertSequenceEqual(
+            list(iterutils.interleave(l1, l2, l3)),
+            [10, 15, 17, 20, 25, 27, 30, 35, 37]
+        )
+        

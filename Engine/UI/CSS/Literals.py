@@ -25,12 +25,12 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-from Values import Image, Colour, RepeatMode
-from Properties import Border, BaseBox, BackgroundImage, BackgroundColour, BackgroundGradient
+from Fill import Image, Colour, Transparent, Fill
+from Border import Border
+from Box import BaseBox
 
-class URLLiteral(object):
-    def __init__(self, url):
-        self._url = url
+def URLLiteral(self, url):
+    return unicode(url)
 
 
 def BackgroundLiteral(*args):
@@ -39,22 +39,24 @@ def BackgroundLiteral(*args):
     args = list(args)
     if len(args) >= 1:
         first = args.pop(0)
-        if isinstance(first, URLLiteral):
-            image = Image(first._url)
-        elif isinstance(first, Colour):
+        if isinstance(first, Colour):
             colour = first
         elif isinstance(first, Image):
             image = first
+        elif first is Transparent:
+            if len(args) > 1:
+                raise TypeError("Too many arguments for transparent BackgroundLiteral")
+            return first
         else:
             raise TypeError("Invalid first argument to BackgroundLiteral: {0} {1}".format(type(first), first))
         
     if len(args) >= 1:
         second = args.pop(0)
-        if isinstance(second, (URLLiteral, Colour, Image)):
+        if isinstance(second, Image):
             raise TypeError("Image or Colour reference as second argument to a BackgroundLiteral is not supported.")
         elif isinstance(second, RepeatMode):
             if image is not None:
-                image._repeatX = second
+                image.RepeatX = second
         else:
             raise TypeError("Invalid second argument to BackgroundLiteral: {0} {1}".format(type(first), first))
 
@@ -62,7 +64,7 @@ def BackgroundLiteral(*args):
         third = args.pop(0)
         if isinstance(third, RepeatMode) and isinstance(second, RepeatMode):
             if image is not None:
-                image._repeatY = third
+                image.RepeatY = third
         else:
             raise TypeError("Invalid third argument to BackgroundLiteral: {0} {1}".format(type(first), first))
     
@@ -71,22 +73,23 @@ def BackgroundLiteral(*args):
 
     assert (image or colour) is not None
     if image is not None:
-        return BackgroundImage(image)
+        return image
     else:
-        return BackgroundColour(colour)
+        return colour
 
 
-def BorderLiteral(width, style, colour):
-    self.width = width
+def BorderLiteral(width, style, fill):
     style = style.lower()
     if not style == "solid":
         raise ValueError("BorderLiteral only accepts solid")
-    self.style = style
-    if not isinstance(colour, Colour):
-        raise TypeError("BorderLiteral needs a colour as third argument")
-    self.colour = colour
-    return Border(width, style, colour)
+    if not isinstance(fill, Fill):
+        raise TypeError("BorderLiteral needs a Fill as third argument")
+    return Border(int(width), fill)
 
 
 def BoxLiteral(*args):
     return BaseBox(*args)
+
+
+def IntLiteral(value):
+    return int(value)

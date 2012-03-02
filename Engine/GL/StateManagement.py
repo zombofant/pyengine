@@ -90,13 +90,12 @@ class StateObjectGroup(Group):
     """
     
     def __init__(self, *args, **kwargs):
-        self.parent = None
+        parent = None
         # 2to3: this can be made better in python3 using keyword-only
         # arguments
         if "parent" in kwargs:
-            parent = kwargs["parent"]
-            del kwargs["parent"]
-        super(Group, self).__init__()
+            parent = kwargs.pop("parent")
+        super(StateObjectGroup, self).__init__(parent=parent, **kwargs)
         setCalls = []
         unsetCalls = []
         for stateObj in args:
@@ -129,8 +128,7 @@ class OrderedStateObjectGroup(StateObjectGroup):
         order = 0
         # 2to3: keyword-only argument
         if "order" in kwargs:
-            order = kwargs["order"]
-            del kwargs["order"]
+            order = kwargs.pop("order")
         super(OrderedStateObjectGroup, self).__init__(*args, **kwargs)
         self.order = order
 
@@ -146,6 +144,13 @@ class OrderedStateObjectGroup(StateObjectGroup):
             (self.__class__ == other.__class__ or OrderedGroup == other.__class__) and
             (self.order == other.order) and
             (self.parent == other.parent))
+
+    def __ne__(self, other):
+        r = self.__eq__(other)
+        if r is NotImplemented:
+            return r
+        else:
+            return not r
 
     def __hash__(self):
         return hash((self.order, self.parent, self._setCalls, self._unsetCalls))

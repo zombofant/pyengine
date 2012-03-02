@@ -30,9 +30,10 @@ import StringIO
 
 import Selectors
 import Rules
-import Values
-import Properties
+import Box
+from Fill import Image, Colour, Gradient
 import Parser as _Parser
+import Minilanguage
 
 class ParserInstanceTest(unittest.TestCase):
     def _parseCSS(self, src):
@@ -41,12 +42,20 @@ class ParserInstanceTest(unittest.TestCase):
 
     def _testRule(self, src, reference):
         parsedRule = self._parseCSS(src)[0]
-        self.assertEqual(parsedRule, reference)
+        try:
+            self.assertEqual(parsedRule, reference)
+        except:
+            raise
     
     def setUp(self):
         self._parser = _Parser.Parser()
+        Minilanguage.elementNames["test"] = "test"
+        Minilanguage.elementNames["test1"] = "test1"
+        Minilanguage.elementNames["test2"] = "test2"
+        Minilanguage.elementNames["test3"] = "test3"
 
     def tearDown(self):
+        Minilanguage.elementNames.clear()
         del self._parser
 
 class ParseSelectors(ParserInstanceTest):
@@ -153,49 +162,26 @@ class ParseSelectors(ParserInstanceTest):
         )
 
 class ParseProperties(ParserInstanceTest):
-    def _testRule(self, propsrc, **kwargs):
+    def _testRule(self, propsrc, props):
         super(ParseProperties, self)._testRule(
             """test {{ {0} }}""".format(propsrc),
-            Rules.Rule([Selectors.Is("test")], [], **kwargs)
+            Rules.Rule([Selectors.Is("test")], props)
         )
         
-    def _testBox(self, boxprop, boxkw, boxclass):
-        
-        kwargs = {boxkw: boxclass(1, 2, 3, 4)}
+    def _testBox(self, boxprop, boxkw):
         self._testRule(
             """{0}: 1 2 3 4;""".format(boxprop),
-            **kwargs
-        )
-        
-        kwargs = {boxkw: boxclass(3, 2, 3, 4)}
-        self._testRule(
-            """{0}: 1 2 3 4;
-            {0}-left: 3;""".format(boxprop),
-            **kwargs
-        )
-        
-        kwargs = {boxkw: boxclass(1, 2, 3, 4)}
-        self._testRule(
-            """{0}-left: 3;
-            {0}: 1 2 3 4;""".format(boxprop),
-            **kwargs
-        )
-
-    @unittest.expectedFailure
-    def test_backgroundImage(self):
-        self._testRule(
-            """background: url("/data/images/test.png");""",
-            background=Properties.BackgroundImage(Values.Image("/data/images/test.png"))
+            [(boxkw, (1, 2, 3, 4))]
         )
     
     def test_backgroundColour(self):
         self._testRule(
             """background: rgba(0.1, 0.2, 0.3, 0.4);""",
-            background=Properties.BackgroundColour(Values.RGBA(0.1, 0.2, 0.3, 0.4))
+            [("background", (Colour(0.1, 0.2, 0.3, 0.4),))]
         )
 
     def test_padding(self):
-        self._testBox("padding", "padding", Properties.Padding)
+        self._testBox("padding", "padding")
 
     def test_margin(self):
-        self._testBox("margin", "margin", Properties.Margin)
+        self._testBox("margin", "margin")

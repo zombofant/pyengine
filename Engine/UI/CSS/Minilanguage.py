@@ -25,27 +25,43 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-from Properties import *
-from Properties import BaseBox
+from Fill import Transparent, Colour, Gradient, Image, Stretch, Repeat
+from Box import BaseBox
+from Rules import Rule
+from Rect import Rect
 from Selectors import *
 from Selectors import AttributeClass, AttributeExists, AttributeValue
-from Values import *
-from Rules import Rule
 from Literals import *
 
 class StylesheetNamespace(object):
     image = Image
     gradient = Gradient
-    step = GradientStep
-    rgba = RGBA
-    hsva = HSVA
-    hsla = HSLA
+    step = Gradient.Step
+    rgba = Colour.rgba
+    hsva = Colour.hsva
+    hsla = Colour.hsla
     stretch = Stretch
     repeat = Repeat
     rect = Rect
     url = URLLiteral
+    transparent = Transparent
+    solid = "solid"
+    auto = None
 
     _tokenBlacklist = ["evaluateCall", "get"]
+
+    __singleton = None
+
+    def __new__(cls, *args, **kwargs):
+        if cls.__singleton is None:
+            return super(type(StylesheetNamespace), cls).__new__(cls, *args, **kwargs)
+        else:
+            return cls.__singleton
+
+    def __init__(self):
+        if not hasattr(self, "_initialized"):
+            super(StylesheetNamespace, self).__init__()
+            self._initialized = True
 
     def evaluateCall(self, call, *args):
         call = self.get(call)
@@ -54,7 +70,40 @@ class StylesheetNamespace(object):
     def get(self, token):
         token.lower()
         if token.startswith("_") or token in self._tokenBlacklist or not hasattr(self, token):
-            raise ValueError("Function {0} not defined in css".format(token))
+            raise ValueError("Token {0!r} not defined in css".format(token))
         return getattr(self, token)
 
+class ElementNames(dict):
+    __singleton = None
+    
+    def __new__(cls, *args, **kwargs):
+        if cls.__singleton is None:
+            cls.__singleton = dict.__new__(cls, *args, **kwargs)
+            return cls.__singleton
+        else:
+            return cls.__singleton
+
+    def __init__(self):
+        if not hasattr(self, "_initialized"):
+            super(ElementNames, self).__init__()
+            self._initialized = True
+
+    def __getitem__(self, key):
+        return super(ElementNames, self).__getitem__(key.lower())
+
+    def __setitem__(self, key, value):
+        return super(ElementNames, self).__setitem__(key.lower(), value)
+
+    def __delitem__(self, key):
+        return super(ElementNames, self).__delitem__(key.lower())
+
+    def update(self, otherdict):
+        for key, value in otherdict.iteritems():
+            self[key] = value
+
+    def registerWidgetClass(self, widgetClass):
+        self[widgetClass.__name__] = widgetClass
+
+elementNames = ElementNames()
 namespace = StylesheetNamespace()
+    

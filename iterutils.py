@@ -1,4 +1,4 @@
-# File name: Screen.py
+# File name: iterutils.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -25,25 +25,40 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-__all__ = ["ScreenWidget"]
+import itertools
 
-from Widget import ParentWidget
+__all__ = ["interleave"]
 
-class ScreenWidget(ParentWidget):
+def interleave(*iterators):
     """
-    Represents an operating system screen or window.
+    Takes an arbitary amount of iterators and yields a sequence like
+    it0[0], it1[0], ... itn[0], it0[1], it1[1], ...
 
-    This is used by the RootWidget *Application* to manage windows.
+    Terminates when the first input iterator cannot yield a further
+    element.
+    (here it differs from the *roundrobin* example in the
+    :mod:`itertools` documentation)
     """
+    iters = list(map(iter, iterators))
+    while True:
+        for iterator in iters:
+            yield next(iterator)
     
-    def __init__(self, parent, window, **kwargs):
-        super(ScreenWidget, self).__init__(parent, **kwargs)
-        self._window = window
+def flattenTwoLevels(iterable):
+    """
+    Flattens a two times nested iterable.
 
-    def align(self):
-        for child in self:
-            child.Rect.assign(self.Rect)
+    [[[0, 1], [2, 3]], [[4, 5], [6, 7]], ...] => [0, 1, 2, 3, 4, 5, 6, 7, ...]
+    """
+    return itertools.chain.from_iterable(map(itertools.chain.from_iterable, iterable))
 
-    @property
-    def Window(self):
-        return self._window
+def yieldCount(iterable, storeTo):
+    """
+    Iterates over the given iterable and stores the amount of iterations
+    made after all items are consumed in ``storeTo.len``.
+    """
+    count = 0
+    for item in iterable:
+        count += 1
+        yield item
+    storeTo.len = count

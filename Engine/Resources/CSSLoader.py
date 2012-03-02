@@ -1,4 +1,4 @@
-# File name: StylesheetMinilanguage.py
+# File name: CSSLoader.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -22,19 +22,31 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
+from __future__ import unicode_literals, print_function, division
+from our_future import *
 
+from Base import ResourceLoader
+from Manager import ResourceManager
 
-class Rule(object):
-    pass
+from Engine.UI.CSS.Parser import Parser
 
-class StylesheetNamespace(object):
-    image = Image
-    imagerect = ImageRect
-    gradient = Gradient
-    step = GradientStep
-    rgba = RGBA
-    hsva = HSVA
-    hsla = HSLA
-    stretch = Stretch
-    repeat = Repeat
-    rect = Rect
+class CSSLoader(ResourceLoader):
+    """
+    Implements a loader for CSS (cascading style sheet) files.
+    """
+
+    def __init__(self, **kwargs):
+        super(CSSLoader, self).__init__(**kwargs)
+        self._supportedTargetClasses = [list]
+        self._defaultTargetClass = list
+        self._resourceTypes = ['css']
+        self._parser = Parser()
+        self._relativePathPrefix = "/data/css/"
+
+    def load(self, fileLike, targetClass=list):
+        assert targetClass is list
+        return self._parser.parse(fileLike)
+
+# register an instance of TextLoader with the resource manager
+ResourceManager().registerResourceLoader(CSSLoader())
+

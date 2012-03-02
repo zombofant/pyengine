@@ -27,6 +27,7 @@ from our_future import *
 
 SYNTAX_FILE = "utils/CSSParser/Syntax.pyLRp"
 PARSER_FILE = "Engine/UI/CSS/GeneratedParser.py"
+LANGUAGE_FILE = "Engine/UI/CSS/Minilanguage.py"
 
 class TooOld(BaseException):
     pass
@@ -34,7 +35,12 @@ class TooOld(BaseException):
 # make sure the CSS parser exists.
 import os
 try:
-    mtime = os.stat(SYNTAX_FILE).st_mtime
+    def mktimestamp():
+        mtime = unicode(os.stat(SYNTAX_FILE).st_mtime)
+        mtime += unicode(os.stat(LANGUAGE_FILE).st_mtime)
+        return mtime
+
+    mtime = mktimestamp()
     try:
         import GeneratedParser
     except SyntaxError as err:
@@ -74,7 +80,7 @@ except (ImportError, TooOld) as err:
             lexingTable.ConstructEquivalenceClasses()
             
             parserFile = open(PARSER_FILE, "w")
-            writer = pyLRp.Writer(parserFile, True, False, True, sys.version_info[0] >= 3, version=unicode(mtime))
+            writer = pyLRp.Writer(parserFile, True, False, True, sys.version_info[0] >= 3, version=mtime)
             writer.Write(syntax, graph, lexingTable)
 
             del graph

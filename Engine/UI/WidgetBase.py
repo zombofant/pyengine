@@ -1,4 +1,4 @@
-# File name: Widget.py
+# File name: WidgetBase.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -27,7 +27,18 @@ from our_future import *
 
 __all__ = ["AbstractWidget", "ParentWidget", "Widget"]
 
-from Rect import Rect
+from CSS.Rect import Rect
+from CSS.Rules import Rule
+from CSS.FaceBuffer import FaceBuffer
+from CSS.ClassSet import ClassSet
+from Style import Style
+
+try:
+    import pyglet
+    from OpenGL.GL import GL_TRIANGLES, glEnable, GL_TEXTURE_2D
+    from Engine.GL.Texture import Texture2D
+except ImportError:
+    pass
 
 class AbstractWidget(object):
     """
@@ -42,19 +53,59 @@ class AbstractWidget(object):
         super(AbstractWidget, self).__init__(**kwargs)
         self.Visible = True
         self.Enabled = True
-        self.RelativeRect = Rect(0, 0)
-        self.RelativeRect._onChange = self._relMetricsChanged
-        self.Rect = Rect(0, 0)
-        self.Rect._onChange = self._absMetricsChanged
+        self._relativeRect = Rect(0, 0)
+        self._relativeRect._onChange = self._relMetricsChanged
+        self._absoluteRect = Rect(0, 0)
+        self._absoluteRect._onChange = self._absMetricsChanged
+        self._styleRule = None
+        self._themeStyle = Style()
+        self._invalidateComputedStyle()
+        self._styleClasses = ClassSet()
         
     def _absMetricsChanged(self):
-        self.onResize()
+        self._invalidateAlignment()
+
+    def _invalidateAlignment(self):
+        self._invalidatedAlignment = True
+
+    def _invalidateComputedStyle(self):
+        self._invalidatedComputedStyle = True
+        self._invalidateGeometry()
+        self._invalidateAlignment()
+
+    def _invalidateGeometry(self):
+        self._invalidatedGeometry = True
+        self._geometry = None
 
     def _relMetricsChanged(self):
+        self._invaliateAlignment()
+
+    def realign(self):
+        if self._invalidatedAlignment:
+            self.doAlign()
+            self._invalidatedAlignment = False
+
+    def doAlign(self):
         pass
 
-    def align(self):
-        pass
+    def render(self):
+        if self._invalidatedGeometry:
+            self.realign()
+            faceBuffer = FaceBuffer()
+            self.ComputedStyle.geometryForRect(self.AbsoluteRect, faceBuffer)
+            self._geometry = dict(
+                ((tex, pyglet.graphics.vertex_list((len(geometry[0][1]))//2, *geometry)) for tex, geometry in faceBuffer.getGeometry().iteritems())
+            )
+            del faceBuffer
+            self._invalidateGeometry = False
+        Texture2D.unbind()
+        for tex, vertexList in self._geometry.iteritems():
+            if tex is not None:
+                glEnable(GL_TEXTURE_2D)
+                tex.bind()
+            vertexList.draw(GL_TRIANGLES)
+            Texture2D.unbind()
+            
 
     def onKeyDown(self, symbol, modifiers):
         return False
@@ -72,7 +123,7 @@ class AbstractWidget(object):
         return False
 
     def onResize(self):
-        self.align()
+        self._invalidateAlignment()
 
     def onScroll(self, scrollX, scrollY):
         return False
@@ -86,6 +137,56 @@ class AbstractWidget(object):
     def onCaretMotionSelect(self, motion):
         return False
 
+    @property
+    def StyleRule(self):
+        return self._styleRule
+
+    @StyleRule.setter
+    def StyleRule(self, value):
+        if value is not None and not isinstance(value, Rule):
+            raise TypeError("Widget StyleRules must be CSS Rules")
+        self._styleRule = value
+        self._invalidateComputedStyle()
+
+    @property
+    def ThemeStyle(self):
+        return self._themeStyle
+
+    @ThemeStyle.setter
+    def ThemeStyle(self, value):
+        if self._themeStyle == value:
+            return
+        if not isinstance(value, Style):
+            raise TypeError("ThemeStyle must be a Style instance. Got {0} {1}".format(type(value), value))
+        self._themeStyle = value
+        self._invalidateComputedStyle()
+
+    @property
+    def ComputedStyle(self):
+        if self._invalidatedComputedStyle:
+            self._computedStyle = self._themeStyle + self._styleRule
+            self._invalidatedComputedStyle = False
+        return self._computedStyle
+
+    @property
+    def RelativeRect(self):
+        return self._relativeRect
+
+    @RelativeRect.setter
+    def RelativeRect(self, value):
+        self._relativeRect.assign(value)
+
+    @property
+    def AbsoluteRect(self):
+        return self._absoluteRect
+
+    @AbsoluteRect.setter
+    def AbsoluteRect(self, value):
+        self._absoluteRect.assign(value)
+
+    @property
+    def StyleClasses(self):
+        return self._styleClasses
 
 class Widget(AbstractWidget):
     """
@@ -115,7 +216,7 @@ class Widget(AbstractWidget):
             self._rootWidget = None
 
     def hitTest(self, p):
-        return self if p in self.Rect else None
+        return self if p in self.AbsoluteRect else None
 
     def clientToAbsolute(self, p):
         return (p[0] + self.AbsoluteRect.X, p[1] + self.AbsoluteRect.Y)
@@ -206,6 +307,15 @@ class WidgetContainer(object):
     def index(self, child):
         return self._children.index(child)
 
+    def treeDepthFirst(self):
+        yield self
+        for child in self:
+            if isinstance(child, WidgetContainer):
+                for node in child.treeDepthFirst():
+                    yield node
+            else:
+                yield child
+
 
 class ParentWidget(Widget, WidgetContainer):
     """
@@ -217,12 +327,16 @@ class ParentWidget(Widget, WidgetContainer):
         super(ParentWidget, self).__init__(parent)
 
     def _newChild(self, widget):
-        self.align()
+        self._invalidateAlignment()
 
     def _parentChanged(self):
         super(ParentWidget, self)._parentChanged()
         for child in self:
             child._parentChanged()
+
+    def add(self, widget):
+        super(ParentWidget, self).add(widget)
+        self._invalidateAlignment()
 
     def bringToFront(self, key):
         child = self._children[key]
@@ -233,9 +347,21 @@ class ParentWidget(Widget, WidgetContainer):
         return self._rootWidget
 
     def hitTest(self, p):
-        if not p in self.Rect:
+        self.realign()
+        if not p in self.AbsoluteRect:
             return None
         return self._hitTest(p) or self
+
+    def realign(self):
+        super(ParentWidget, self).realign()
+        for child in self:
+            child.realign()
+
+    def render(self):
+        super(ParentWidget, self).render()
+        for child in self:
+            if child.Visible:
+                child.render()
 
     def sendToBack(self, key):
         child = self._children[key]

@@ -57,7 +57,7 @@ selector:
 
 constrainedToken:
     TOKEN:
-        $$.sem = Is($1.sem)
+        $$.sem = Is(elementNames[$1.sem])
     constrainedToken "[" attributes "]":
         $$.sem = HasAttributes(*$3.sem, chained=$1.sem)
     constrainedToken "." TOKEN:
@@ -90,7 +90,7 @@ value:
     TOKEN:
         $$.sem = namespace.get($1.sem)
     STRLITERAL:
-        $$.sem = $1.sem
+        $$.sem = $1.sem[1:-1]
 
 complexliteral:
     value:

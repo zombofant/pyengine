@@ -27,6 +27,8 @@ from our_future import *
 
 __all__ = ["NotARect", "Rect"]
 
+from Box import BaseBox
+
 class _NotARect(object):
     def __eq__(self, other):
         if isinstance(other, _NotARect):
@@ -35,6 +37,13 @@ class _NotARect(object):
             return False
         else:
             return NotImplemented
+
+    def __ne__(self, other):
+        r = self.__eq__(other)
+        if r is NotImplemented:
+            return r
+        else:
+            return not r
 
     def __contains__(self, other):
         if isinstance(other, (_NotARect, Rect)):
@@ -86,6 +95,20 @@ class Rect(object):
             self.X, self.Y, self.Right, self.Bottom = args
         elif len(args) != 0:
             raise ValueError("Rect takes 0, 2 or 4 int arguments.")
+
+    def _recalcRB(self):
+        self._right = self._x + self._width
+        self._bottom = self._y + self._height
+
+    def _recalcWH(self):
+        self._width = self._right - self._x
+        self._height = self._bottom - self._y
+
+    def __copy__(self):
+        return Rect(self._x, self._y, self._right, self._bottom)
+
+    def __deepcopy__(self, memo):
+        return self.__copy__()
 
     @property
     def X(self):
@@ -235,6 +258,36 @@ class Rect(object):
         if self._onChange is not None:
             self._onChange()
 
+    @property
+    def LeftRight(self):
+        return self._left, self._right
+
+    @LeftRight.setter
+    def LeftRight(self, value):
+        l, r = value
+        if l > r:
+            raise ValueError("Right must be larger than or equal to Left.")
+        self._x = l
+        self._right = r
+        self._recalcWH()
+        if self._onChange is not None:
+            self._onChange()
+
+    @property
+    def TopBottom(self):
+        return self._left, self._right
+
+    @TopBottom.setter
+    def TopBottom(self, value):
+        t, b = value
+        if t > b:
+            raise ValueError("Bottom must be larger than or equal to Top.")
+        self._y = t
+        self._bottom = b
+        self._recalcWH()
+        if self._onChange is not None:
+            self._onChange()
+
     def __eq__(self, other):
         if isinstance(other, _NotARect):
             return False
@@ -244,14 +297,13 @@ class Rect(object):
             return NotImplemented
 
     def __ne__(self, other):
-        if isinstance(other, _NotARect):
-            return True
-        elif isinstance(other, Rect):
-            return self._x != other._x or self._y != other._y or self._width != other._width or self._height != other._height
+        r = self.__eq__(other)
+        if r is NotImplemented:
+            return r
         else:
-            return NotImplemented
+            return not r
 
-    def __and__(self, other):
+    def __iand__(self, other):
         if isinstance(other, _NotARect):
             return NotARect
         if not isinstance(other, Rect):
@@ -260,7 +312,46 @@ class Rect(object):
         r, b = min(self._right, other._right), min(self._bottom, other._bottom)
         if r < x or b < y:
             return NotARect
-        return Rect(x, y, r, b)
+        self._x = x
+        self._y = y
+        self._right = r
+        self._bottom = b
+        self._recalcWH()
+        return self
+
+    def __and__(self, other):
+        new = self.__copy__()
+        new &= other
+        return new
+
+    def __ior__(self, other):
+        if isinstance(other, _NotARect):
+            return self.__copy__()
+        if not isinstance(other, Rect):
+            return NotImplemented
+        if self._x == other._x and self._right == other._right:
+            if other._y <= self._bottom and self._y <= other._bottom:
+                self._y = min(other._y, self._y)
+                self._bottom = max(other._bottom, self._bottom)
+                self._recalcWH()
+                return self
+            else:
+                return NotARect
+        elif self._y == other._y and self._bottom == other._bottom:
+            if other._x <= self._right and self._x <= other._right:
+                self._x = min(other._x, self._x)
+                self._right = max(other._right, self._right)
+                self._recalcWH()
+                return self
+            else:
+                return NotARect
+        else:
+            return NotARect
+
+    def __or__(self, other):
+        new = self.__copy__()
+        new |= other
+        return new
 
     def __contains__(self, other):
         if isinstance(other, _NotARect):
@@ -275,3 +366,94 @@ class Rect(object):
 
     def __repr__(self):
         return "Rect({0}, {1}, {2}, {3})".format(self._x, self._y, self._right, self._bottom)
+
+    def expand(self, box):
+        """
+        Expands the rect by the measures given by box, which must be a
+        BaseBox instance.
+
+        The Left and Top values are decreased by their corresponding
+        box values, while Bottom and Right are increased in the same
+        manner.
+
+        This operation is carried out in-place.
+        """
+        if not isinstance(box, BaseBox):
+            raise TypeError("Rect.extend needs a Box as first argument. Got {0} {1}".format(type(box), box))
+        self._x -= box.Left
+        self._y -= box.Top
+        self._right += box.Right
+        self._bottom += box.Bottom
+        self._recalcWH()
+        if self._onChange is not None:
+            self._onChange()
+
+    def shrink(self, box):
+        """
+        Shrinks the rect by the measures given by box, which must be a
+        BaseBox instance.
+
+        The Left and Top values are increased by their corresponding
+        box values, while Bottom and Right are decreased in the same
+        manner.
+
+        This operation is carried out in-place.
+        """
+        if not isinstance(box, BaseBox):
+            raise TypeError("Rect.shrink needs a Box as first argument. Got {0} {1}".format(type(box), box))
+        self._x += box.Left
+        self._y += box.Top
+        self._right -= box.Right
+        self._bottom -= box.Bottom
+        self._recalcWH()
+        if self._onChange is not None:
+            self._onChange()
+
+    def cut(self, box):
+        """
+        Does not execute the :func:``Rect.shrink`` operation but
+        returns the rects which are cut-off during a shrink.
+        
+        Returns eight rects, corresponding to left edge, top-left
+        corner, top edge, top-right corner, right edge, bottom-right
+        corner, bottom edge, bottom-left corner.
+
+        Returns NotARect for non-existing edges or corners.
+        """
+        if box.Left > 0:
+            left = Rect(self._x, self._y + box.Top, self._x + box.Left, self._bottom - box.Bottom)
+        else:
+            left = NotARect
+            topLeft = NotARect
+            bottomLeft = NotARect
+        
+        if box.Right > 0:
+            right = Rect(self._right - box.Right, self._y + box.Top, self._right, self._bottom - box.Bottom)
+        else:
+            right = NotARect
+            topRight = NotARect
+            bottomRight = NotARect
+        
+        if box.Top > 0:
+            top = Rect(self._x + box.Left, self._y, self._right - box.Right, self._y + box.Top)
+            if left is not NotARect:
+                topLeft = Rect(left._x, top._y, left._right, top._bottom)
+            if right is not NotARect:
+                topRight = Rect(right._x, top._y, right._right, top._bottom)
+        else:
+            top = NotARect
+            topLeft = NotARect
+            topRight = NotARect
+        
+        if box.Bottom > 0:
+            bottom = Rect(self._x + box.Left, self._bottom - box.Bottom, self._right - box.Right, self._bottom)
+            if right is not NotARect:
+                bottomRight = Rect(right._x, bottom._y, right._right, bottom._bottom)
+            if left is not NotARect:
+                bottomLeft = Rect(left._x, bottom._y, left._right, bottom._bottom)
+        else:
+            bottom = NotARect
+            bottomLeft = NotARect
+            bottomRight = NotARect
+
+        return (left, topLeft, top, topRight, right, bottomRight, bottom, bottomLeft)

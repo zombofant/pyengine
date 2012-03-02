@@ -1,4 +1,4 @@
-# File name: Root.py
+# File name: RootWidget.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -28,7 +28,7 @@ from our_future import *
 __all__ = ["RootWidget"]
 
 from Engine.pygletHeadless import mouse
-from Widget import AbstractWidget, WidgetContainer
+from WidgetBase import AbstractWidget, WidgetContainer
 from Flags import *
 
 """
@@ -51,7 +51,7 @@ class RootWidget(AbstractWidget, WidgetContainer):
 
     def _mapMouseEvent(self, x, y):
         target = self._mouseCapture or self.hitTest((x, y))
-        return (target, x - target.Rect.Left, y - target.Rect.Top)
+        return (target, x - target.AbsoluteRect.Left, y - target.AbsoluteRect.Top)
     
     def dispatchKeyDown(self, *args):
         target = self._findKeyEventTarget()
@@ -102,6 +102,16 @@ class RootWidget(AbstractWidget, WidgetContainer):
         
     def getRootWidget(self):
         return self
+
+    def realign(self):
+        super(RootWidget, self).realign()
+        for child in self:
+            child.realign()
+
+    def render(self):
+        self.realign()
+        for child in self:
+            child.render()
 
     def update(self, timeDelta):
         for child in self:

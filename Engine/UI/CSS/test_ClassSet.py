@@ -1,4 +1,4 @@
-# File name: Parser.py
+# File name: test_ClassSet.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -25,21 +25,33 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-import itertools
+import unittest
 
-__all__ = ["Parser"]
+from ClassSet import ClassSet
 
-from Rules import Rule
-import GeneratedParser
-genLexer = GeneratedParser.Lexer
-genParser = GeneratedParser.Parser
-        
-class Parser(object):
-    def __init__(self, **kwargs):
-        super(Parser, self).__init__(**kwargs)
+class ClassSetInstanceTest(unittest.TestCase):
+    def setUp(self):
+        self.instance = ClassSet()
+    
+    def test_init(self):
+        self.assertEqual(len(self.instance), 0)
 
-    def parse(self, filelike):
-        lexer = genLexer(filelike)
-        parser = genParser(lexer)
-        return parser.Parse()
-        
+    def test_add(self):
+        toAdd = ["testclass"]
+        self.assertEqual(self.instance.__iadd__(10), NotImplemented)
+        self.instance += toAdd
+        self.assertIn(toAdd[0], self.instance)
+        self.assertEqual(list(self.instance), toAdd)
+
+    def test_sub(self):
+        classes = ["testclass", "moreclass", "anotherclass"]
+        self.instance += classes
+        self.instance -= classes[0]
+        self.assertEqual(list(self.instance), classes[1:])
+        self.instance -= classes[1:]
+        self.assertEqual(len(self.instance), 0)
+
+    def tearDown(self):
+        del self.instance
+    
+    

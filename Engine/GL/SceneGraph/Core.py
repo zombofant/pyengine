@@ -69,6 +69,7 @@ class Geometry(object):
     def BoundingVolume(self):
         return self._boundingVolume
 
+_IDENTITY = np.identity(4, dtype=np.float32)
 
 class Transformation(object):
 
@@ -76,12 +77,19 @@ class Transformation(object):
         super(Transformation, self).__init__()
         self.reset()
 
+    def updateMatrix(self):
+        self._matrix = self._mTranslate*self._mRotate*self._mScale
+        self._transposedMatrix = self._matrix.T.copy(order='C')
+
     def reset(self):
         self.setIdentity()
 
     def setIdentity(self):
-        self._mTransformation = np.identity(4, dtype=np.float32)
-        self._mTransposed = self._mTransformation
+        self._matrix = _IDENTITY
+        self._transposedMatrix = _IDENTITY
+        self._mTranslate = _IDENTITY
+        self._mRotate = _IDENTITY
+        self._mScale = _IDENTITY
         self._isIdentity = True
         self._isUnitScale = True
 
@@ -92,48 +100,57 @@ class Transformation(object):
         pass
 
     def product(self, transA, transB):
-        self._mTransformation = transA.Transformation * transB.Transformation
-        self._mTransposed = self._mTransformation.T.copy(order='C')
+        if transA.IsIdentity or transB.IsIdentity:
+            if transA.IsIdentity:
+                self._matrix = transB.Matrix
+                self._transposedMatrix = transB.TransposedMatrix
+            else:
+                self._matrix = transA.Matrix
+                self._transpedMatrix = transA.TransposedMatrix
+        else:
+            self._matrix = transA.Matrix * transB.Matrix
+            self._transposedMatrix = transA.TransposedMatrix * transB.TransposedMatrix
+        self._isIdentity = False
 
-    def scale(self, scaleX, scaleY, scaleZ):
-        self._mTransformation = self._mTransformation * np.matrix(
-            [[scaleX, 0., 0., 0.], [0., scaleY, 0., 0.],
-            [0., 0., scaleZ, 0.], [0., 0., 0., 1.]], dtype=np.float32)
-        self._mTransposed = self._mTransformation.T.copy(order='C')
+    def scale(self, scaleVectorL):
+        self._mScale = self._mScale * np.matrix([[scaleVectorL[0],0.,0.,0.],
+            [0.,scaleVectorL[1],0.,0.],[0.,0.,scaleVectorL[2],0.],[0.,0.,0.,1.]],
+            dtype=np.float32)
+        self._isIdentity = False
 
-    def translate(self, x, y, z):
-        self._mTransformation = self._mTransformation * np.matrix(
-            [[1., 0., 0., x], [0., 1., 0., y],
-            [0., 0., 1., z], [0., 0., 0., 1.]], dtype=np.float32)
-        self._mTransposed = self._mTransformation.T.copy(order='C')
+    def translate(self, vectorL):
+        self._mTranslate = self._mTranslate * np.matrix([[1.,0.,0.,vectorL[0]],
+            [0.,1.,0.,vectorL[1]], [0.,0.,1.,vectorL[2]], [0.,0.,0.,1.]],
+            dtype=np.float32)
+        self._isIdentity = False
 
-    def rotate(self, angle, axisX, axisY, axisZ, degrees=True):
+    def rotate(self, angle, vectorL, degrees=True):
         if degrees:
             angle = angle*np.pi/180.
+        axisX, axisY, axisZ = vectorL[0], vectorL[1], vectorL[2]
         absol = np.sqrt(axisX*axisX+axisY*axisY+axisZ*axisZ)
-        if absol > 0:
-            axisX /= absol
-            axisY /= absol
-            axisZ /= absol
-        else:
+        if absol == 0:
             return
+        axisX /= absol
+        axisY /= absol
+        axisZ /= absol
         c = np.cos(angle)
         s = np.sin(angle)
         o = 1. - c
-        self._mTransformation = self._mTransformation * np.matrix([
+        self._mRotate = self._mRotate * np.matrix([
             [c+axisX*axisX*o, axisX*axisY*o-axisZ*s, axisX*axisZ*o+axisY*s, 0.],
             [axisY*axisX*o+axisZ*s, c+axisY*axisY*o, axisY*axisZ*o-axisX*s, 0.],
             [axisZ*axisX*o-axisY*s, axisZ*axisY*o+axisX*s, c+axisZ*axisZ*o, 0.],
             [0., 0., 0., 1.]], dtype=np.float32)
-        self._mTransposed = self._mTransformation.T.copy(order='C')
+        self._isIdentity = False
 
     @property
-    def Transformation(self):
-        return self._mTransformation
+    def Matrix(self):
+        return self._matrix
 
     @property
-    def Transposed(self):
-        return self._mTransposed
+    def TransposedMatrix(self):
+        return self._transposedMatrix
 
     @property
     def IsIdentity(self):
@@ -148,8 +165,8 @@ class Spatial(object):
     def __init__(self):
         super(Spatial, self).__init__()
         self.parent = None
-        self._localTransformation = Transformation()
-        self._worldTransformation = Transformation()
+        self._localTrans = Transformation()
+        self._worldTrans = Transformation()
 
     def updateGeometry(self, deltaT, initiator=True):
         self.updateWorldData(deltaT, False)
@@ -162,8 +179,8 @@ class Spatial(object):
 
     def updateWorldData(self, deltaT, initiator=True):
         if self.parent is not None:
-            self.WorldTransformation.product(self.parent.WorldTransformation,
-                self.LocalTransformation)
+            self.LocalTrans.updateMatrix()
+            self.WorldTrans.product(self.parent.WorldTrans, self.LocalTrans)
 
     def onDraw(self):
         pass
@@ -182,16 +199,16 @@ class Spatial(object):
         self._parent = value
 
     @property
-    def LocalTransformation(self):
-        return self._localTransformation
+    def LocalTrans(self):
+        return self._localTrans
 
-    @LocalTransformation.setter
+    @LocalTrans.setter
     def LocalTransformation(self, value):
-        self._localTransformation = value
+        self._localTrans = value
 
     @property
-    def WorldTransformation(self):
-        return self._worldTransformation
+    def WorldTrans(self):
+        return self._worldTrans
 
 class Node(Spatial):
 
@@ -221,8 +238,8 @@ class Node(Spatial):
             child.onDraw()
 
     def draw(self):
+        GL.glLoadMatrixf(self.WorldTrans.TransposedMatrix)
         super(Node, self).draw()
-        GL.glLoadMatrixf(self.WorldTransformation.Transposed)
         for child in self.children:
             child.draw()
 

@@ -1,4 +1,4 @@
-# File name: Parser.py
+# File name: test_CSSLoader.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -25,21 +25,28 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-import itertools
+import unittest
 
-__all__ = ["Parser"]
+import Engine.UI.CSS.Minilanguage
+from Engine.UI.CSS.Fill import Colour
+from Engine.UI.CSS.Selectors import Is
+from Engine.UI.CSS.Rules import Rule
 
-from Rules import Rule
-import GeneratedParser
-genLexer = GeneratedParser.Lexer
-genParser = GeneratedParser.Parser
-        
-class Parser(object):
-    def __init__(self, **kwargs):
-        super(Parser, self).__init__(**kwargs)
+from test_ResourceVFS import *
+import CSSLoader
+import Manager
 
-    def parse(self, filelike):
-        lexer = genLexer(filelike)
-        parser = genParser(lexer)
-        return parser.Parse()
-        
+class CSSLoaderTest(unittest.TestCase):
+    def test_loadCSS(self):
+        Engine.UI.CSS.Minilanguage.ElementNames().registerWidgetClass(int)
+        TestMount["/test.css"] = """
+int {
+    background-color: rgba(1., 0., 0., 1.);
+}
+""".encode("utf8")
+        rules = Manager.ResourceManager().require('/data/test.css')
+        self.assertEqual(rules,
+            [Rule([Is(int)], [("background-color", (Colour(1., 0., 0., 1.),))])]
+        )
+        del Engine.UI.CSS.Minilanguage.ElementNames()["int"]
+
