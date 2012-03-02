@@ -50,7 +50,7 @@ class FontLoader(ResourceLoader):
         try:
             super(FontLoader, self).__init__(
                 [font.base.Font],
-                ['ttf'],
+                ['ttf', 'otf'],
                 **kwargs)
         except NameError:
             self._loaderNotAvailable()

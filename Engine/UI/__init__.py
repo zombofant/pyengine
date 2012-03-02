@@ -24,6 +24,7 @@
 ########################################################################
 from CSS.Rect import *
 from WidgetBase import *
+from LabelWidget import *
 from BoxWidget import *
 try:
     import pyglet

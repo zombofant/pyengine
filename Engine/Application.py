@@ -48,6 +48,7 @@ class Application(RootWidget):
         self.SyncedFrameLength = 0.01
         self.SyncedSpeedFactor = 1.
         self._aggregatedTime = 0.
+        self._test = pyglet.text.Label("Hello World!", font_name="Cantarell", font_size=10, bold=True, x=100, y=100)
 
         if fullscreen:
             self._constructFullscreen()
@@ -280,6 +281,10 @@ class Application(RootWidget):
             sceneWidget.renderScene()
         
         glViewport(0, 0, window.width, window.height)
+        glMatrixMode(GL_PROJECTION)
+        glLoadIdentity()
+        glMatrixMode(GL_MODELVIEW)
+        glLoadIdentity()
         glClear(GL_DEPTH_BUFFER_BIT)
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
