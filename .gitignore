@@ -6,6 +6,6 @@
 Engine/UI/CSS/GeneratedParser.py
 CMakeCache.txt
 CMakeFiles
-*.cmake
+cmake_install.cmake
 Makefile
 pyuni-client
