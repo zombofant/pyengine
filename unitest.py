@@ -67,6 +67,8 @@ import traceback
 import argparse
 import textwrap
 import itertools
+import platform
+import time
 
 STATE_PASS = 0
 STATE_SKIP = 1
@@ -155,11 +157,20 @@ group.add_argument(
     const="",
     help="Disable stripping of the module name."
 )
-parser.add_argument(
+group = parser.add_mutually_exclusive_group()
+group.add_argument(
     "--no-stats",
     dest="noStats",
     action="store_true",
+    default=False,
     help="Disable summarizing stats."
+)
+group.add_argument(
+    "--force-stats", "-f",
+    dest="forceStats",
+    action="store_true",
+    default=False,
+    help="Print stats even if quiet is enabled."
 )
 parser.add_argument(
     "--quiet", "-q",
@@ -369,10 +380,18 @@ if tests.countTestCases() == 0:
     sys.exit(7)
 if not args.quiet:
     print("Running {0} unittests (detected from auto-discovery)".format(tests.countTestCases()))
+startTime = time.time()
 tests.run(results)
+endTime = time.time()
 stats = results.getStats(tests)
-if not (args.quiet or args.noStats):
-    results.printStats(stats)
+if args.forceStats or not args.quiet:
+    if not args.noStats:
+        results.printStats(stats)
+    print("Ran {2} tests on {0} in {1} seconds".format(
+        Colors(platform.python_implementation(), Colors.Header),
+        Colors("{0:.6f}".format(endTime-startTime), Colors.Header),
+        Colors(results.testsRun, Colors.Header)
+    ))
 
 # determine the exit code
 passedCount, errorCount, failureCount, skippedCount, expectedFailureCount, unexpectedSuccessCount, testsTotal = stats
