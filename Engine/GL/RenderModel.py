@@ -86,6 +86,7 @@ class RenderModel(Model, Spatial):
             if pos < nextMatSwitchIndex:
                 vertices, normals, texCoords = [], [], []
                 for face in self.PackedFaces[pos:nextMatSwitchIndex]:
+                    before = len(vertices)
                     vertices.extend([x for y in face[0:1] for x in y])
                     normals.extend([x for y in face[1:2] for x in y])
                     texCoords.extend([x for y in face[2:3] for x in y])

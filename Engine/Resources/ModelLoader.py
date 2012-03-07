@@ -92,7 +92,7 @@ class OBJModelLoader(ResourceLoader):
                 if len(parts) == 2:
                     materials.append([parts[1],len(faces)])
             else:
-                #print("FIXME: Unhandled obj data: %s" % line, file=sys.stderr)
+                print("FIXME: Unhandled obj data: %s" % line)
                 pass
         if len(faces) < 1:
             raise Exception('No faces found in geometric data!')
