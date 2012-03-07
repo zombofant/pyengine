@@ -84,7 +84,10 @@ class OBJModelLoader(ResourceLoader):
                         else:
                             fcomp.append(int(fcomps[j])-1)
                     face.append(fcomp)
-                faces.append(face)
+                if len(face) == 3:
+                    faces.append(face)
+                else:
+                    print('FACE IS NOT A TRIANGLE!')
             elif parts[0] == 'usemtl':
                 if len(parts) == 2:
                     materials.append([parts[1],len(faces)])
