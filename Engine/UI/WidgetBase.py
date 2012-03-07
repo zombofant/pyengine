@@ -61,6 +61,7 @@ class AbstractWidget(object):
         self._themeStyle = Style()
         self._invalidateComputedStyle()
         self._styleClasses = ClassSet()
+        self._rootWidget = None
         
     def _absMetricsChanged(self):
         self._invalidateAlignment()
@@ -98,13 +99,13 @@ class AbstractWidget(object):
             )
             del faceBuffer
             self._invalidateGeometry = False
-        Texture2D.unbind()
         for tex, vertexList in self._geometry.iteritems():
             if tex is not None:
-                glEnable(GL_TEXTURE_2D)
+                self._rootWidget._shader.bind(texturing=True, upsideDown=False).id
                 tex.bind()
+            else:
+                self._rootWidget._shader.bind(texturing=False, upsideDown=False).id
             vertexList.draw(GL_TRIANGLES)
-            Texture2D.unbind()
             
 
     def onKeyDown(self, symbol, modifiers):
@@ -203,6 +204,7 @@ class Widget(AbstractWidget):
         self._parent = None
         self._flags = set()
         parent.add(self)
+        self._rootWidget = parent._rootWidget
 
     def _requireParent(self):
         if self._parent is None:

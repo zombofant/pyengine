@@ -28,7 +28,7 @@ from our_future import *
 import unittest
 import platform
 
-from Utils import absolutify, normalizeVFSPath, validateVFSPath, isWriteFlag
+from Utils import absolutify, normalizeVFSPath, validateVFSPath, isWriteFlag, join, splitext
 
 class Absolutify(unittest.TestCase):
     def test_keepsAbsolutePaths(self):
@@ -114,3 +114,21 @@ class IsWriteFlag(unittest.TestCase):
         self.assertTrue(isWriteFlag("ab"))
         self.assertTrue(isWriteFlag("abU"))
         self.assertTrue(isWriteFlag("aU"))
+
+class Join(unittest.TestCase):
+    def test_oneRoot(self):
+        self.assertEqual("/some/test/path", join("/some/test", "path"))
+        self.assertEqual("/some/longer/test/path", join("/some/longer", "test", "path"))
+        self.assertEqual("keeps/non/trailing/slashes", join("keeps", "non", "trailing", "slashes"))
+
+    def test_multipleRoots(self):
+        self.assertEqual("/some/test/path", join("garbage/path", "/some", "test", "path"))
+
+class SplitExt(unittest.TestCase):
+    def test_simple(self):
+        self.assertEqual(("/root/path/test", "txt"), splitext("/root/path/test.txt"))
+        self.assertEqual(("root/path/test", "txt"), splitext("root/path/test.txt"))
+
+    def test_dotInPath(self):
+        self.assertEqual(("/root/path.git/test", ""), splitext("/root/path.git/test"))
+        self.assertEqual(("root/path.git/test", ""), splitext("root/path.git/test"))

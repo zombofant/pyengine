@@ -1,4 +1,4 @@
-# File name: __init__.py
+# File name: WindowWidget.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -22,15 +22,22 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
-from CSS.Rect import *
-from WidgetBase import *
-from LabelWidget import *
-from BoxWidget import *
-from WindowWidget import *
-try:
-    import pyglet
-    from ScreenWidget import *
-    from RootWidget import *
-    from SceneWidget import *
-except ImportError:
-    pass
+from __future__ import unicode_literals, print_function, division
+from our_future import *
+
+__all__ = ["WindowWidget"]
+
+import CSS.Minilanguage
+
+from WidgetBase import ParentWidget
+from LabelWidget import LabelWidget
+from BoxWidget import VBox
+
+class WindowWidget(VBox):
+    def __init__(self, parent, **kwargs):
+        super(WindowWidget, self).__init__(parent, **kwargs)
+        self.AbsoluteRect.Width = 256
+        self.AbsoluteRect.Height = 128
+        self.Title = LabelWidget(self)
+
+CSS.Minilanguage.ElementNames().registerWidgetClass(WindowWidget)

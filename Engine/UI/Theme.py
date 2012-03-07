@@ -48,8 +48,16 @@ class SelectorTuple(tuple):
         else:
             return not r
 
+    def __hash__(self):
+        h = 0
+        for rule in self:
+            h ^= hash(rule)
+        return h
+
 
 class Theme(object):
+    __hash__ = None
+    
     def __init__(self, **kwargs):
         super(Theme, self).__init__(**kwargs)
         self._rules = []

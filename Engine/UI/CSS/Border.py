@@ -40,6 +40,8 @@ class BorderComponent(object):
         self.Fill = other.Fill
 
 class BorderEdge(BorderComponent):
+    __hash__ = None
+    
     def __init__(self, width=0, fill=Transparent, **kwargs):
         self._width = None
         self._fill = None
@@ -91,6 +93,8 @@ class BorderEdge(BorderComponent):
         return "BorderEdge(width={0!r}, fill={1!r})".format(self._width, self._fill)
 
 class Border(BorderComponent):
+    __hash__ = None
+    
     def __init__(self, width=0, fill=None, **kwargs):
         self._edges = [BorderEdge() for i in range(4)]
         self._corners = [None for i in range(4)]

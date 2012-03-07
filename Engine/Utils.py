@@ -1,4 +1,4 @@
-# File name: __init__.py
+# File name: Utils.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -22,15 +22,22 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
-from CSS.Rect import *
-from WidgetBase import *
-from LabelWidget import *
-from BoxWidget import *
-from WindowWidget import *
-try:
-    import pyglet
-    from ScreenWidget import *
-    from RootWidget import *
-    from SceneWidget import *
-except ImportError:
-    pass
+from __future__ import unicode_literals, print_function, division
+from our_future import *
+
+import math
+
+def indent(text, indent):
+    """
+    Prepends *indent* to each line from *text* and returns the result.
+    """
+    return "\n".join((indent+line for line in text.split("\n")))
+
+def lineNumbering(text):
+    if isinstance(text, (unicode, str)):
+        lines = list(text.split("\n"))
+    else:
+        lines = text
+    amount = int(math.ceil(math.log(len(lines), 10)))
+    format = "{{1:{0}d}}: {{0}}".format(amount)
+    return "\n".join(format.format(line, number+1) for number, line in enumerate(lines))

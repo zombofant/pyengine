@@ -80,6 +80,9 @@ class Selector(object):
             return False
         return self._testEq(other)
 
+    def __hash__(self):
+        return self._hash()
+
     def __ne__(self, other):
         if not isinstance(other, Selector):
             return NotImplemented
@@ -101,6 +104,9 @@ class ParentSelector(Selector):
 
     def _testEq(self, other):
         return super(ParentSelector, self)._testEq(other) and self._parentSelector == other._parentSelector
+
+    def _hash(self):
+        return hash(self.__class__) ^ hash(self._parentSelector) ^ hash(self._chained)
 
     def specifity(self):
         specifity = super(ParentSelector, self).specifity()
@@ -152,6 +158,9 @@ class Is(Selector):
     def _testEq(self, other):
         return super(Is, self)._testEq(other) and self._testClass == other._testClass
 
+    def _hash(self):
+        return hash(self.__class__) ^ hash(self._testClass) ^ hash(self._chained)
+
     def __unicode__(self):
         return "{0}".format(self._testClass)
 
@@ -169,6 +178,9 @@ class Attribute(object):
             return NotImplemented
         return self._testEq(other)
 
+    def __hash__(self):
+        return self._hash()
+
     def __ne__(self, other):
         if not isinstance(other, self.__class__):
             return NotImplemented
@@ -182,8 +194,8 @@ class AttributeClass(Attribute):
     def testWidget(self, widget):
         return self._className in widget.StyleClasses
 
-    def __hash__(self):
-        return hash((AttributeClass, self._className))
+    def _hash(self):
+        return hash(self.__class__) ^ hash(self._className)
 
     def _testEq(self, other):
         return self._className == other._className
@@ -199,8 +211,8 @@ class AttributeExists(Attribute):
     def testWidget(self, widget):
         return hasattr(widget, self._attrName)
 
-    def __hash__(self):
-        return hash(self._attrName)
+    def _hash(self):
+        return hash(self.__class__) ^ hash(self._attrName)
 
     def _testEq(self, other):
         return self._attrName == other._attrName
@@ -216,8 +228,8 @@ class AttributeValue(AttributeExists):
     def testWidget(self, widget):
         return super(AttributeValue, self).testWidget(widget) and getattr(widget, self._attrName) == self._attrValue
 
-    def __hash__(self):
-        return hash((self._attrName, self._attrValue))
+    def _hash(self):
+        return hash(self.__class__) ^ hash(self._attrName) ^ hash(self._attrValue)
 
     def _testEq(self, other):
         return self._attrName == other._attrName and self._attrValue == other._attrValue
@@ -245,6 +257,7 @@ class HasAttributes(Selector):
                 raise TypeError("HasAttributes only accepts Attribute instances.")
         if chainedAttrs is not None:
             self._attrs |= chainedAttrs
+        self._attrs = frozenset(self._attrs)
     
     def _testWidget(self, widget):
         for attr in self._attrs:
@@ -254,6 +267,9 @@ class HasAttributes(Selector):
 
     def _testEq(self, other):
         return super(HasAttributes, self)._testEq(other) and self._attrs == other._attrs
+
+    def _hash(self):
+        return hash(self.__class__) ^ hash(self._attrs)
 
     def __unicode__(self):
         return "{0}{1}".format(self._chained, "".join(map(unicode, self._attrs)))

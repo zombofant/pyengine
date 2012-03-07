@@ -1,4 +1,4 @@
-# File name: TextureLoader.py
+# File name: MaterialLoader.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -29,42 +29,46 @@ from Base import ResourceLoader
 from Manager import ResourceManager
 
 try:
-    from pyglet import image
-    from Engine.GL.Texture import Texture2D
-    from OpenGL.GL import GL_RGBA, GL_UNSIGNED_BYTE
+    from Engine.GL.RenderModel import RenderModel
+    from Engine.GL.Material import Material
 except ImportError:
     pass
 
-class TextureLoader(ResourceLoader):
+class MaterialLoader(ResourceLoader):
     """
-    Implement a loader for texture resources.
+    The MaterialLoader loads model material data.
+    It loads exactly one material from the given fileLike and returns
+    a Material instance constructed from the data.
     """
 
     def __init__(self, **kwargs):
         try:
-            super(TextureLoader, self).__init__(
-                [Texture2D],
-                ['png', 'jpg'],
-                relativePathPrefix="/data/textures",
+            super(MaterialLoader, self).__init__(
+                [Material],
+                ['mtl'],
+                relativePathPrefix='/data/materials',
                 **kwargs)
         except NameError:
             self._loaderNotAvailable()
-        
- 
+
     def load(self, fileLike, targetClass=None):
         """
-        Load the texture.
-        We simply use the pyglet image loading functionality at the moment.
+        The mtl loader.
+        Load the material with name materialName from 
         """
-        data = image.load(fileLike.name, fileLike).get_image_data()
-        texture = Texture2D(
-            width=data.width,
-            height=data.height,
-            format=GL_RGBA,
-            data=(GL_RGBA, GL_UNSIGNED_BYTE, data.get_data('RGBA', data.pitch)))
-        del data
-        return texture
+        # FIXME: only parses face texture at the moment
+        inMaterial = False
+        textures = []
+        for line in fileLike:
+            if len(line) < 1 :
+                if inMaterial: break
+                continue
+            if line[0] == '#' : continue
+            parts = line.strip().split(' ')
+            if parts[0] == 'newmtl':
+                inMaterial = True
+            if parts[0] == 'map_Kd':
+                textures.append(parts[1])
+        return Material(textures=textures)
 
-# register an instance of TextLoader with the resource manager
-ResourceManager().registerResourceLoader(TextureLoader)
-
+ResourceManager().registerResourceLoader(MaterialLoader)

@@ -1,4 +1,4 @@
-# File name: TextureLoader.py
+# File name: FontLoader.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -29,42 +29,42 @@ from Base import ResourceLoader
 from Manager import ResourceManager
 
 try:
-    from pyglet import image
-    from Engine.GL.Texture import Texture2D
-    from OpenGL.GL import GL_RGBA, GL_UNSIGNED_BYTE
+    import pyglet.font as font
 except ImportError:
     pass
 
-class TextureLoader(ResourceLoader):
+class FontLoader(ResourceLoader):
     """
-    Implement a loader for texture resources.
+    Implement a loader for fonts resources.
+
+    This uses pyglet as a backend and is not available if pyglet
+    ImportErrors.
+
+    This tries to do its best to serve the fontFamily requested, even
+    if pyglet does this not. Pyglet returns a surrogate font by default,
+    this is circumvented by checking for the availability beforehand
+    and ValueError'ing if not available.
     """
 
     def __init__(self, **kwargs):
         try:
-            super(TextureLoader, self).__init__(
-                [Texture2D],
-                ['png', 'jpg'],
-                relativePathPrefix="/data/textures",
+            super(FontLoader, self).__init__(
+                [font.base.Font],
+                ['ttf', 'otf'],
                 **kwargs)
         except NameError:
             self._loaderNotAvailable()
-        
- 
-    def load(self, fileLike, targetClass=None):
-        """
-        Load the texture.
-        We simply use the pyglet image loading functionality at the moment.
-        """
-        data = image.load(fileLike.name, fileLike).get_image_data()
-        texture = Texture2D(
-            width=data.width,
-            height=data.height,
-            format=GL_RGBA,
-            data=(GL_RGBA, GL_UNSIGNED_BYTE, data.get_data('RGBA', data.pitch)))
-        del data
-        return texture
 
-# register an instance of TextLoader with the resource manager
-ResourceManager().registerResourceLoader(TextureLoader)
+    def getCacheToken(self, vfspath, targetClass, fontFamily=None, size=10, italic=False, bold=False):
+        if fontFamily is None:
+            raise ValueError("Cannot request a font without specifying fontFamily keyword argument.")
+        return (fontFamily, size, italic, bold)
+
+    def load(self, fileLike, targetClass, fontFamily=None, size=10, italic=False, bold=False):
+        font.add_file(fileLike)
+        if not font.base.Font.have_font(fontFamily):
+            raise ResourceNotFoundError("Cannot find font family {0}".format(fontFamily))
+        return font.load(fontFamily, size, bold, italic)
+
+ResourceManager().registerResourceLoader(FontLoader)
 
