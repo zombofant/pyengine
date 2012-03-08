@@ -280,13 +280,13 @@ def write_file(filepath, objects, scene,
 
     # Write Header
     file.write('# Blender v%s pyuniOBJ File: %r\n' % (bpy.app.version_string, os.path.basename(bpy.data.filepath)))
-    file.write('# Written by PyUniverse exporter')
+    file.write('# Written by PyUniverse exporter\n')
     file.write('# www.blender.org\n')
 
     # Tell the obj file what material file to use.
     if EXPORT_MTL:
         mtlfilepath = os.path.splitext(filepath)[0] + ".mtl"
-        file.write('mtllib %s\n' % repr(os.path.basename(mtlfilepath))[1:-1])  # filepath can contain non utf8 chars, use repr
+        #file.write('mtllib %s\n' % repr(os.path.basename(mtlfilepath))[1:-1])  # filepath can contain non utf8 chars, use repr
 
     # Initialize totals, these are updated each object
     totverts = totuvco = totno = 1
