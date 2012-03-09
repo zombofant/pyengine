@@ -29,23 +29,27 @@ named in the AUTHORS file.
 
 #include <vector>
 #include <boost/smart_ptr>
-
+namespace PyUni {
 struct Screen {
     unsigned int index;
     bool primary;
+    int x, y;
     unsigned int width, height;
 
-    Screen(
-            unsigned int aWidth,
-            unsigned int aHeight,
-            unsigned int aIndex,
-            bool aPrimary):
+    Screen(int posx,
+           int posy,
+           unsigned int aWidth,
+           unsigned int aHeight,
+           unsigned int aIndex,
+           bool aPrimary):
+        x(posx),
+        y(posy),
         width(aWidth),
         height(aHeight),
         index(aIndex),
         primary(aPrimary)
     {
-        
+
     }
 }
 
@@ -54,6 +58,7 @@ struct DisplayMode {
     unsigned int depthBits;
     unsigned int stencilBits;
     bool doubleBuffered;
+    int index;
 
     DisplayMode(unsigned int aRedBits,
             unsigned int aGreenBits,
@@ -61,27 +66,37 @@ struct DisplayMode {
             unsigned int aAlphaBits,
             unsigned int aDepthBits,
             unsigned int aStencilBits,
-            bool aDoubleBuffered):
+            bool aDoubleBuffered,
+            int aIndex):
         redBits(aRedBits),
         greenBits(aGreenBits),
         blueBits(aBlueBits),
         alphaBits(aAlphaBits),
         depthBits(aDepthBits),
         stencilBits(aStencilBits),
-        doubleBuffered(aDoubleBuffered)
+        doubleBuffered(aDoubleBuffered),
+        index(aIndex)
     {
 
     }
 }
 
 class Display {
-    public:
-        Display();
-    private:
-        std::vector<Screen> screens;
-        std::vector<DisplayMode> displayModes;
-    public:
-        bool hasDisplayMode(const DisplayMode &displayMode);
-}
+public:
+    Display();
+    virtual ~Display();
+protected:
+    void normalizeScreenCoordinates();
 
+    std::vector<Screen> screens;
+    std::vector<DisplayMode> displayModes;
+public:
+    bool hasDisplayMode(const DisplayMode &displayMode);
+    virtual Window createWindow() = 0;
+}
+}
 #endif
+// Local Variables:
+// c-file-style: "k&r"
+// c-basic-offset: 4
+// End:

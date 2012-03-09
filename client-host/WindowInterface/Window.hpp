@@ -23,3 +23,16 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
+
+namespace PyUni {
+class Window {
+
+
+};
+
+}
+
+// Local Variables:
+// c-file-style: "k&r"
+// c-basic-offset: 4
+// End:
