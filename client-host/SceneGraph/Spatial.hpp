@@ -20,6 +20,9 @@ class Spatial
         inline Spatial* getParent() { return parent; }
         inline void setParent(Spatial *p) { parent = p; }
 
+        virtual void onDraw();
+        virtual void draw();
+
     protected:
         Spatial();
 

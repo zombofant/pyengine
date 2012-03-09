@@ -28,5 +28,13 @@ void Spatial::updateWorldData()
     }
 }
 
+void Spatial::onDraw()
+{
+}
+
+void Spatial::draw()
+{
+}
+
 }
 
