@@ -16,7 +16,9 @@ class Spatial
         Matrix4 worldTransformation;
 
         void updateGeometry(bool initiator=true);
+
         inline Spatial* getParent() { return parent; }
+        inline void setParent(Spatial *p) { parent = p; }
 
     protected:
         Spatial();
