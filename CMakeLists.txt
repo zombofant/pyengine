@@ -17,7 +17,8 @@ set(LIBS ${LIBS} ${OPENGL_gl_LIBRARY} ${Boost_THREAD_LIBRARY}
     ${PYTHON_LIBRARY})
 
 set(EXEC "pyuni-client")
-set(PYUNI_MODULES "pyuni_WindowInterface")
+#set(PYUNI_MODULES "pyuni_WindowInterface" "pyuni_Math" "pyuni_SceneGraph")
+set(PYUNI_MODULES "pyuni_Math" "pyuni_SceneGraph")
 set(CMAKE_CXX_FLAGS "-g -Wall -std=c++0x")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "CMakeModules")
 
