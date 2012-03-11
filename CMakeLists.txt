@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
 project(pyUniverse CXX C)
 
-#find_package(rt REQUIRED)
+find_package(rt REQUIRED)
 find_package(OpenGL REQUIRED)
 # probably here we should configure the WindowInterface component
 # to use, for now just X11 is supported
@@ -20,8 +20,7 @@ set(LIBS ${LIBS} ${OPENGL_gl_LIBRARY} ${Boost_THREAD_LIBRARY}
     ${PYTHON_LIBRARY} ${X11_LIBRARIES} ${X11_Xinerama_LIB})
 
 set(EXEC "pyuni-client")
-#set(PYUNI_MODULES "pyuni_WindowInterface" "pyuni_Math" "pyuni_SceneGraph")
-set(PYUNI_MODULES "pyuni_Math" "pyuni_SceneGraph")
+set(PYUNI_MODULES "pyuni_WindowInterface" "pyuni_Math" "pyuni_SceneGraph")
 set(CMAKE_CXX_FLAGS "-g -Wall -std=c++0x")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "CMakeModules")
 
