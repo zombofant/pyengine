@@ -24,10 +24,11 @@ For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
 
-#include <unistd.h>
+#include <stdlib.h>
 
-#include "X11Display.h"
-#include "../Display.h"
+#include "X11Display.hpp"
+#include "X11Window.hpp"
+#include "../Display.hpp"
 
 namespace PyUni {
 X11Display::X11Display(const char *display) {
@@ -51,8 +52,8 @@ X11Display::~X11Display() {
     XCloseDisplay(_display);
 }
 
-Window X11Display::createWindow(int w, int h, bool fullscreen) {
-    return new X11Window(_display, _x_visual, _glx_context, w, h);
+Window *X11Display::createWindow(int w, int h, bool fullscreen) {
+    return new X11Window(_display, _x_visual, _configs[_config], _glx_context, w, h);
 }
 
 void X11Display::selectConfig(int index) {
@@ -64,11 +65,11 @@ void X11Display::selectConfig(int index) {
 
 void X11Display::detectScreens() {
     int event_base_return, error_base_return;
-    screens.clear();
+    _screens.clear();
 
     // randr, twinview and real xinerama all implement the Xinerama
     // interface for clients so that should catch it all
-    if (XineramaQueryExtenison(_display,
+    if (XineramaQueryExtension(_display,
                                &event_base_return,
                                &error_base_return)
         && XineramaIsActive(_display)) {
@@ -78,7 +79,7 @@ void X11Display::detectScreens() {
         for (int i = 0; i < number; i++) {
             _screens.push_back(Screen(screens[i].x_org,
                                       screens[i].y_org,
-                                      screens[i].x_height,
+                                      screens[i].height,
                                       screens[i].width,
                                       i,
                                       i == 0));
@@ -119,7 +120,7 @@ void X11Display::detectDisplayModes() {
         glXGetFBConfigAttrib(_display, _configs[i], GLX_BLUE_SIZE, &blueBits);
         glXGetFBConfigAttrib(_display, _configs[i], GLX_ALPHA_SIZE, &alphaBits);
         glXGetFBConfigAttrib(_display, _configs[i], GLX_DEPTH_SIZE, &depthBits);
-        glXGetFBConfigAttrib(_display, _configs[i], GLX_STENCIL_SIZE, &stencillBits);
+        glXGetFBConfigAttrib(_display, _configs[i], GLX_STENCIL_SIZE, &stencilBits);
         glXGetFBConfigAttrib(_display, _configs[i], GLX_DOUBLEBUFFER, &doubleBuffered);
 
         _displayModes.push_back(DisplayMode(redBits,

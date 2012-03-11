@@ -1,7 +1,7 @@
 
 #include <stdint.h>
 
-#include "Display.h"
+#include "Display.hpp"
 namespace PyUni {
 Display::Display() {
 }
@@ -9,7 +9,7 @@ Display::Display() {
 void Display::normalizeScreenCoordinates() {
     int xmin = _screens[0].x, ymin = _screens[0].y;
 
-    for (int i = 1; i < _screens.size(); i++) {
+    for (unsigned int i = 1; i < _screens.size(); i++) {
         if (_screens[i].x < xmin)
             xmin = _screens[i].x;
 
@@ -18,14 +18,14 @@ void Display::normalizeScreenCoordinates() {
     }
 
     // normalize the coordinates, so that all origins will be positive
-    for (int i = 0; i < _screens.size(); i++) {
+    for (unsigned int i = 0; i < _screens.size(); i++) {
         _screens[i].x -= xmin;
         _screens[i].y -= ymin;
     }
 }
 
 bool Display::hasDisplayMode(const DisplayMode &displayMode) {
-    throw NotImplemented();
+    return false;
 }
 }
 

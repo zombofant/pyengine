@@ -5,6 +5,7 @@ namespace PyUni {
 
 X11Window::X11Window(::Display *disp,
                      XVisualInfo *vinfo,
+                     GLXFBConfig config,
                      GLXContext context,
                      int w,
                      int h) {
@@ -12,7 +13,7 @@ X11Window::X11Window(::Display *disp,
     _x_visual = vinfo;
     _glx_context = context;
 
-    _win = setupWindow();
+    _win = setupWindow(w, h);
     _glx_win = glXCreateWindow(_display, config, _win, NULL);
 }
 
@@ -21,7 +22,7 @@ X11Window::~X11Window() {
     XDestroyWindow(_display, _win);
 }
 
-::Window X11Window::setupWindow(int w, int h, bool fullscreen) {
+::Window X11Window::setupWindow(int w, int h) {
     XSetWindowAttributes attrs;
     int attr_mask = CWBorderPixel | CWColormap | CWEventMask;
 
@@ -29,6 +30,7 @@ X11Window::~X11Window() {
     attrs.event_mask = StructureNotifyMask;
     attrs.colormap = XCreateColormap(_display,
                                      RootWindow(_display, _x_visual->screen),
+                                     _x_visual->visual,
                                      AllocNone);
 
 
@@ -39,7 +41,7 @@ X11Window::~X11Window() {
                                  CopyFromParent,
                                  InputOutput,
                                  _x_visual->visual,
-                                 &attrs, attr_mask);
+                                 attr_mask, &attrs);
 
     // setup window manager interaction
     Atom protos[1];
