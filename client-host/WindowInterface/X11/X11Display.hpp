@@ -12,11 +12,16 @@ class X11Display : public Display {
 public:
     X11Display(const char *foo = 0);
     virtual ~X11Display();
+
+    virtual Window createWindow(int w, int h, bool fullscreen=false);
 private:
     void detectScreens();
     void detectDisplayModes();
 
+    int _config;
     GLXFBConfig *_configs;
+    GLXContext _glx_context;
+    XVisualInfo *_x_visual;
     ::Display *_display;
 };
 }

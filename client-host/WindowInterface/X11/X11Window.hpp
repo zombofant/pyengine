@@ -10,8 +10,16 @@ public:
     X11Window();
     virtual ~X11Window();
 
+    virtual flip();
+    virtual switchTo();
 private:
+    ::Window setupWindow(int w, int h);
 
+    ::Window _win;
+    GLXWindow _glx_win;
+    GCXContext _glx_context;
+    XVisualInfo *_x_visual;
+    // Colormap _x_colormap;
 };
 
 }

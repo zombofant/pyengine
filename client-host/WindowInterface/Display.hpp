@@ -51,7 +51,7 @@ struct Screen {
     {
 
     }
-}
+};
 
 struct DisplayMode {
     unsigned int redBits, greenBits, blueBits, alphaBits;
@@ -79,7 +79,7 @@ struct DisplayMode {
     {
 
     }
-}
+};
 
 class Display {
 public:
@@ -88,12 +88,14 @@ public:
 protected:
     void normalizeScreenCoordinates();
 
-    std::vector<Screen> screens;
-    std::vector<DisplayMode> displayModes;
+    std::vector<Screen> _screens;
+    std::vector<DisplayMode> _displayModes;
 public:
     bool hasDisplayMode(const DisplayMode &displayMode);
-    virtual Window createWindow() = 0;
-}
+    void selectMode(int index);
+
+    virtual Window createWindow(int w, int h, bool fullscreen=false) = 0;
+};
 }
 #endif
 // Local Variables:

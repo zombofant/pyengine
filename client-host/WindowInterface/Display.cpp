@@ -7,20 +7,20 @@ Display::Display() {
 }
 
 void Display::normalizeScreenCoordinates() {
-    int xmin = screens[0].x, ymin = screens[0].y;
+    int xmin = _screens[0].x, ymin = _screens[0].y;
 
-    for (int i = 1; i < screens.size(); i++) {
-        if (screens[i].x < xmin)
-            xmin = screens[i].x;
+    for (int i = 1; i < _screens.size(); i++) {
+        if (_screens[i].x < xmin)
+            xmin = _screens[i].x;
 
-        if (screens[i].y < ymin)
-            ymin = screens[i].y;
+        if (_screens[i].y < ymin)
+            ymin = _screens[i].y;
     }
 
     // normalize the coordinates, so that all origins will be positive
-    for (int i = 0; i < screens.size(); i++) {
-        screens[i].x -= xmin;
-        screens[i].y -= ymin;
+    for (int i = 0; i < _screens.size(); i++) {
+        _screens[i].x -= xmin;
+        _screens[i].y -= ymin;
     }
 }
 

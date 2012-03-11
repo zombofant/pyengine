@@ -31,15 +31,19 @@ named in the AUTHORS file.
 
 namespace PyUni {
 X11Display::X11Display(const char *display) {
-    if (display == 0) {
+    if (display == NULL) {
         display = getenv("DISPLAY");
     }
 
-    if (display == 0) {
+    if (display == NULL) {
         display = ":0";
     }
 
     _display = XOpenDisplay(display);
+
+    _config = -1;
+    _x_visual = NULL;
+    _configs = NULL;
 }
 
 X11Display::~X11Display() {
@@ -47,8 +51,15 @@ X11Display::~X11Display() {
     XCloseDisplay(_display);
 }
 
-Window X11Display::createWindow() {
-    return new X11Window(_display);
+Window X11Display::createWindow(int w, int h, bool fullscreen) {
+    return new X11Window(_display, _x_visual, _glx_context, w, h);
+}
+
+void X11Display::selectConfig(int index) {
+    // this should be done only once, and we should error check
+    _glx_context = glXCreateNewContext(_display, _configs[index], GLX_RGBA_TYPE, NULL, True);
+    _x_visual = glXGetVisualFromFBConfig(_display, _configs[index]);
+    _config = index;
 }
 
 void X11Display::detectScreens() {
@@ -65,12 +76,12 @@ void X11Display::detectScreens() {
         XineramaScreenInfo *screens = XineramaQueryScreens(_display,
                                                            &number);
         for (int i = 0; i < number; i++) {
-            screens.push_back(Screen(screens[i].x_org,
-                                     screens[i].y_org,
-                                     screens[i].x_height,
-                                     screens[i].width,
-                                     i,
-                                     i == 0));
+            _screens.push_back(Screen(screens[i].x_org,
+                                      screens[i].y_org,
+                                      screens[i].x_height,
+                                      screens[i].width,
+                                      i,
+                                      i == 0));
         }
         XFree(screens);
     } else {
@@ -80,12 +91,12 @@ void X11Display::detectScreens() {
         int defaultScreen = DefaultScreen(_display);
         for (int i = 0; i < numOfScreens; i++) {
             ::Screen *s = ScreenOfDisplay(_display, i);
-            screens.push_back(Screen(0,
-                                     0,
-                                     WidthOfScreen(s),
-                                     HeightOfScreen(s),
-                                     i,
-                                     i == defaultScreen));
+            _screens.push_back(Screen(0,
+                                      0,
+                                      WidthOfScreen(s),
+                                      HeightOfScreen(s),
+                                      i,
+                                      i == defaultScreen));
         }
     }
 }
@@ -97,7 +108,7 @@ void X11Display::detectDisplayModes() {
     // may lead to strange failure (but who has X withou GLX?)
     _configs = glXGetFBConfigs(_display, DefaultScreen(_display), &count);
 
-    displayModes.clear();
+    _displayModes.clear();
 
     for (int i = 0; i < count; i++) {
         int redBits, greenBits, blueBits, alphaBits, depthBits,
@@ -111,14 +122,14 @@ void X11Display::detectDisplayModes() {
         glXGetFBConfigAttrib(_display, _configs[i], GLX_STENCIL_SIZE, &stencillBits);
         glXGetFBConfigAttrib(_display, _configs[i], GLX_DOUBLEBUFFER, &doubleBuffered);
 
-        displayModes.push_back(DisplayMode(redBits,
-                                           greenBits,
-                                           blueBits,
-                                           alphaBits,
-                                           depthBits,
-                                           stencilBits,
-                                           doubleBuffered,
-                                           i));
+        _displayModes.push_back(DisplayMode(redBits,
+                                            greenBits,
+                                            blueBits,
+                                            alphaBits,
+                                            depthBits,
+                                            stencilBits,
+                                            doubleBuffered,
+                                            i));
     }
 }
 }
