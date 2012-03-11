@@ -79,6 +79,25 @@ struct DisplayMode {
     {
 
     }
+
+    DisplayMode(unsigned int aRedBits,
+            unsigned int aGreenBits,
+            unsigned int aBlueBits,
+            unsigned int aAlphaBits,
+            unsigned int aDepthBits,
+            unsigned int aStencilBits,
+            bool aDoubleBuffered):
+        redBits(aRedBits),
+        greenBits(aGreenBits),
+        blueBits(aBlueBits),
+        alphaBits(aAlphaBits),
+        depthBits(aDepthBits),
+        stencilBits(aStencilBits),
+        doubleBuffered(aDoubleBuffered),
+        index(-1)
+    {
+
+    }
 };
 
 // forward declaration of the Window class
@@ -99,6 +118,14 @@ public:
 
     virtual void selectMode(int index) = 0;
     virtual Window *createWindow(int w, int h, bool fullscreen=false) = 0;
+
+    const std::vector<Screen> &getScreens() const {
+        return _screens;
+    }
+
+    const std::vector<DisplayMode> &getDisplayModes() const {
+        return _displayModes;
+    }
 };
 }
 #endif
