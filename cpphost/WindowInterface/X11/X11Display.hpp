@@ -14,8 +14,9 @@ public:
     virtual ~X11Display();
 
     virtual Window *createWindow(int w, int h, bool fullscreen=false);
-    virtual void selectConfig(int index);
-    private:
+    virtual void selectMode(int index);
+
+private:
     void detectScreens();
     void detectDisplayModes();
 

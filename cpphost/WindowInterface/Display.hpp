@@ -95,8 +95,9 @@ protected:
     std::vector<DisplayMode> _displayModes;
 public:
     bool hasDisplayMode(const DisplayMode &displayMode);
-    void selectMode(int index);
+    void dumpScreens();
 
+    virtual void selectMode(int index) = 0;
     virtual Window *createWindow(int w, int h, bool fullscreen=false) = 0;
 };
 }

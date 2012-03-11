@@ -1,9 +1,19 @@
 
 #include <stdint.h>
+#include <stdio.h>
 
 #include "Display.hpp"
 namespace PyUni {
 Display::Display() {
+}
+
+Display::~Display() {
+}
+
+void Display::dumpScreens() {
+    for (unsigned int i = 0; i < _screens.size(); i++) {
+        printf("Screen %d rect(%d, %d, %d, %d)\n", i, _screens[i].x, _screens[i].y, _screens[i].width, _screens[i].height);
+    }
 }
 
 void Display::normalizeScreenCoordinates() {

@@ -30,6 +30,12 @@ named in the AUTHORS file.
 #include <iostream>
 //#include <boost/python.hpp>
 
+#include "WindowInterface/Display.hpp"
+#include "WindowInterface/Window.hpp"
+#include "WindowInterface/X11/X11Display.hpp"
+
+#include <GL/gl.h>
+#include <stdlib.h>
 using namespace std;
 /*using namespace boost::python;
 
@@ -49,8 +55,8 @@ BOOST_PYTHON_MODULE(hello)
 }*/
 
 int main() {
-    
-    
+
+
     /*PyImport_AppendInittab("hello", &inithello);
     Py_Initialize();
     object main = import("__main__");
@@ -66,5 +72,28 @@ print(test.greet());\
 ",
                           main_namespace);*/
 
-    
+    PyUni::Display *disp = new PyUni::X11Display();
+
+    disp->dumpScreens();
+
+    disp->selectMode(0);
+    PyUni::Window *win = disp->createWindow(640, 480);
+
+    win->switchTo();
+
+    glClearColor(1.0, 1.0, 0.0, 1.0);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glFlush();
+
+    win->flip();
+
+    sleep(10);
+
+    return 0;
 }
+
+// Local Variables:
+// c-file-style: "k&r"
+// c-basic-offset: 4
+// End:
+

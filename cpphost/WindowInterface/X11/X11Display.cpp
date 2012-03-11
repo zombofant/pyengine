@@ -45,6 +45,9 @@ X11Display::X11Display(const char *display) {
     _config = -1;
     _x_visual = NULL;
     _configs = NULL;
+
+    this->detectScreens();
+    this->detectDisplayModes();
 }
 
 X11Display::~X11Display() {
@@ -56,7 +59,7 @@ Window *X11Display::createWindow(int w, int h, bool fullscreen) {
     return new X11Window(_display, _x_visual, _configs[_config], _glx_context, w, h);
 }
 
-void X11Display::selectConfig(int index) {
+void X11Display::selectMode(int index) {
     // this should be done only once, and we should error check
     _glx_context = glXCreateNewContext(_display, _configs[index], GLX_RGBA_TYPE, NULL, True);
     _x_visual = glXGetVisualFromFBConfig(_display, _configs[index]);
@@ -79,8 +82,8 @@ void X11Display::detectScreens() {
         for (int i = 0; i < number; i++) {
             _screens.push_back(Screen(screens[i].x_org,
                                       screens[i].y_org,
-                                      screens[i].height,
                                       screens[i].width,
+                                      screens[i].height,
                                       i,
                                       i == 0));
         }
