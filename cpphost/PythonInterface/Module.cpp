@@ -22,7 +22,7 @@ PyObject *Display_screens_get(const Display &self)
 
 PyObject *Display_displayModes_get(const Display &self)
 {
-    const std::vector<Screen> &displayModes = self.getDisplayModes();
+    const std::vector<DisplayMode> &displayModes = self.getDisplayModes();
     PyObject *pyList = PyList_New(displayModes.size());
     list boostList = list(handle<>(pyList));
     for (unsigned int i = 0; i < displayModes.size(); i++)
@@ -53,8 +53,8 @@ BOOST_PYTHON_MODULE(cuni)
         .def_readonly("height", &Screen::height)
     ;
     class_<Display, boost::noncopyable>("Display", no_init)
-        .addProperty("Screens", &Display_screens_get)
-        .addProperty("DisplayModes", &Display_displayModes_get)
+        .add_property("Screens", &Display_screens_get)
+        .add_property("DisplayModes", &Display_displayModes_get);
 }
 
 void addToPython() {
