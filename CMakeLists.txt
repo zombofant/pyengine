@@ -10,7 +10,7 @@ find_package(Boost COMPONENTS thread regex program_options system signals python
 find_package(PythonInterp REQUIRED)
 find_package(PythonLibs REQUIRED)
 
-include_directories(${PROJECT_SOURCE_DIR} ${OpenGL_INCLUDE_DIRS}
+include_directories(${PROJECT_SOURCE_DIR}/cpphost ${OpenGL_INCLUDE_DIRS}
     ${Boost_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIR})
 
 set(LIBS ${LIBS} ${OPENGL_gl_LIBRARY} ${Boost_THREAD_LIBRARY}
@@ -20,7 +20,7 @@ set(LIBS ${LIBS} ${OPENGL_gl_LIBRARY} ${Boost_THREAD_LIBRARY}
     ${PYTHON_LIBRARY} ${X11_LIBRARIES} ${X11_Xinerama_LIB})
 
 set(EXEC "pyuni-client")
-set(PYUNI_MODULES "pyuni_WindowInterface")
+set(PYUNI_MODULES "pyuni_WindowInterface" "pyuni_PythonInterface")
 set(CMAKE_CXX_FLAGS "-g -Wall -std=c++0x")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "CMakeModules")
 
