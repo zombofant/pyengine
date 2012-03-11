@@ -1,31 +1,41 @@
 
 #include <stdint.h>
+#include <stdio.h>
 
-#include "Display.h"
+#include "Display.hpp"
 namespace PyUni {
 Display::Display() {
 }
 
+Display::~Display() {
+}
+
+void Display::dumpScreens() {
+    for (unsigned int i = 0; i < _screens.size(); i++) {
+        printf("Screen %d rect(%d, %d, %d, %d)\n", i, _screens[i].x, _screens[i].y, _screens[i].width, _screens[i].height);
+    }
+}
+
 void Display::normalizeScreenCoordinates() {
-    int xmin = screens[0].x, ymin = screens[0].y;
+    int xmin = _screens[0].x, ymin = _screens[0].y;
 
-    for (int i = 1; i < screens.size(); i++) {
-        if (screens[i].x < xmin)
-            xmin = screens[i].x;
+    for (unsigned int i = 1; i < _screens.size(); i++) {
+        if (_screens[i].x < xmin)
+            xmin = _screens[i].x;
 
-        if (screens[i].y < ymin)
-            ymin = screens[i].y;
+        if (_screens[i].y < ymin)
+            ymin = _screens[i].y;
     }
 
     // normalize the coordinates, so that all origins will be positive
-    for (int i = 0; i < screens.size(); i++) {
-        screens[i].x -= xmin;
-        screens[i].y -= ymin;
+    for (unsigned int i = 0; i < _screens.size(); i++) {
+        _screens[i].x -= xmin;
+        _screens[i].y -= ymin;
     }
 }
 
 bool Display::hasDisplayMode(const DisplayMode &displayMode) {
-    throw NotImplemented();
+    return false;
 }
 }
 

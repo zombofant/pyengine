@@ -5,18 +5,25 @@
 #include <GL/glx.h>
 #include <X11/extensions/Xinerama.h>
 
-#include "Display.hpp"
+#include "../Display.hpp"
 
 namespace PyUni {
 class X11Display : public Display {
 public:
     X11Display(const char *foo = 0);
     virtual ~X11Display();
+
+    virtual Window *createWindow(int w, int h, bool fullscreen=false);
+    virtual void selectMode(int index);
+
 private:
     void detectScreens();
     void detectDisplayModes();
 
+    int _config;
     GLXFBConfig *_configs;
+    GLXContext _glx_context;
+    XVisualInfo *_x_visual;
     ::Display *_display;
 };
 }

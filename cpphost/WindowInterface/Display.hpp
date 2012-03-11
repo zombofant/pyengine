@@ -28,7 +28,7 @@ named in the AUTHORS file.
 #define PYUNI_DISPLAY_H
 
 #include <vector>
-#include <boost/smart_ptr>
+
 namespace PyUni {
 struct Screen {
     unsigned int index;
@@ -42,16 +42,16 @@ struct Screen {
            unsigned int aHeight,
            unsigned int aIndex,
            bool aPrimary):
+        index(aIndex),
+        primary(aPrimary),
         x(posx),
         y(posy),
         width(aWidth),
-        height(aHeight),
-        index(aIndex),
-        primary(aPrimary)
+        height(aHeight)
     {
 
     }
-}
+};
 
 struct DisplayMode {
     unsigned int redBits, greenBits, blueBits, alphaBits;
@@ -79,7 +79,10 @@ struct DisplayMode {
     {
 
     }
-}
+};
+
+// forward declaration of the Window class
+class Window;
 
 class Display {
 public:
@@ -88,12 +91,15 @@ public:
 protected:
     void normalizeScreenCoordinates();
 
-    std::vector<Screen> screens;
-    std::vector<DisplayMode> displayModes;
+    std::vector<Screen> _screens;
+    std::vector<DisplayMode> _displayModes;
 public:
     bool hasDisplayMode(const DisplayMode &displayMode);
-    virtual Window createWindow() = 0;
-}
+    void dumpScreens();
+
+    virtual void selectMode(int index) = 0;
+    virtual Window *createWindow(int w, int h, bool fullscreen=false) = 0;
+};
 }
 #endif
 // Local Variables:

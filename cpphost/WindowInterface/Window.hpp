@@ -26,7 +26,12 @@ named in the AUTHORS file.
 
 namespace PyUni {
 class Window {
+public:
+    virtual ~Window() {}
 
+    virtual void flip() = 0;
+    virtual void switchTo() = 0;
+private:
 
 };
 
