@@ -75,8 +75,8 @@ print(test.greet());\
     PyUni::Display *disp = new PyUni::X11Display();
 
     disp->dumpScreens();
-
     disp->selectMode(0);
+
     PyUni::Window *win = disp->createWindow(640, 480);
 
     win->switchTo();

@@ -29,6 +29,8 @@ named in the AUTHORS file.
 
 #include <vector>
 
+#include "EventSink.hpp"
+
 namespace PyUni {
 struct Screen {
     unsigned int index;
@@ -99,6 +101,8 @@ public:
 
     virtual void selectMode(int index) = 0;
     virtual Window *createWindow(int w, int h, bool fullscreen=false) = 0;
+
+    virtual void handleEvents(EventSink *eventSink) = 0;
 };
 }
 #endif

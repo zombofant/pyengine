@@ -6,6 +6,7 @@
 #include <X11/extensions/Xinerama.h>
 
 #include "../Display.hpp"
+#include "../EventSink.h"
 
 namespace PyUni {
 class X11Display : public Display {
@@ -16,6 +17,7 @@ public:
     virtual Window *createWindow(int w, int h, bool fullscreen=false);
     virtual void selectMode(int index);
 
+    virtual void handleEvents(EventSink *eventSink);
 private:
     void detectScreens();
     void detectDisplayModes();

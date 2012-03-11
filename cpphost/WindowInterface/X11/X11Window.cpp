@@ -70,6 +70,8 @@ void X11Window::switchTo() {
 
 void X11Window::flip() {
     // vsync goes here?
+    // well better if all windows are flipped in parallel?
+    // using one vsync wait in the main loop?
 
     glXSwapBuffers(_display, _glx_win);
 }

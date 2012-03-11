@@ -136,6 +136,34 @@ void X11Display::detectDisplayModes() {
                                             i));
     }
 }
+
+void X11Display::handleEvents(EventSink *sink) {
+    while (XPending(_display)) {
+        XEvent event;
+        XNextEvent(_display, &event);
+
+        switch (event.type) {
+        case ButtonPress:
+            sink->onButtonDown(event.xbutton.x,
+                               event.xbutton.y,
+                               event.xbutton.button,
+                               event.xbutton.state);
+            break;
+        case ButtonRelease:
+            sink->onButtonUp(event.xbutton.x,
+                             event.xbutton.y,
+                             event.xbutton.button,
+                             event.xbutton.modifiers);
+            break;
+        case MouseMove:
+            sink->onMouseMove();
+        default:
+            // foo unknown event type
+            // what should we do .., just ignore for now
+        }
+    }
+}
+
 }
 
 // Local Variables:
