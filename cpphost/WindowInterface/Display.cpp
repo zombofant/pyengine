@@ -162,13 +162,13 @@ void Display::normalizeScreenCoordinates() {
     }
 }
 
-int Display::findDisplayMode(const DisplayMode &displayMode) {
+bool Display::hasDisplayMode(const DisplayMode &displayMode) {
     for (unsigned int i = 0; i < _displayModes.size(); i++)
     {
         if (displayMode == _displayModes[i])
-            return i;
+            return true;
     }
-    return -1;
+    return false;
 }
 
 

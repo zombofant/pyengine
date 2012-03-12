@@ -66,7 +66,6 @@ BOOST_PYTHON_MODULE(cuni)
     class_<DisplayWrap, boost::noncopyable>("Display", no_init)
         .add_property("Screens", &Display_screens_get)
         .add_property("DisplayModes", &Display_displayModes_get)
-        .def("selectMode", pure_virtual(&Display::selectMode))
         .def("createWindow", pure_virtual(&Display::createWindow), boost::python::return_value_policy<boost::python::manage_new_object>())
     ;
     class_<X11Display, bases<Display> >("X11Display", no_init);

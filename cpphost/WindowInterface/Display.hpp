@@ -122,11 +122,11 @@ protected:
     std::vector<Screen> _screens;
     std::vector<DisplayMode> _displayModes;
 public:
-    int findDisplayMode(const DisplayMode &displayMode);
+    bool hasDisplayMode(const DisplayMode &displayMode);
     void dumpScreens();
 
-    virtual void selectMode(int index) = 0;
-    virtual Window *createWindow(int w, int h, bool fullscreen=false) = 0;
+    virtual Window *createWindow(const DisplayMode &mode,
+        int w, int h, bool fullscreen=false) = 0;
 
     const std::vector<Screen> &getScreens() const {
         return _screens;

@@ -25,6 +25,7 @@ named in the AUTHORS file.
 **********************************************************************/
 
 #include <iostream>
+#include <cassert>
 #include <boost/python.hpp>
 
 #include "WindowInterface/Display.hpp"
