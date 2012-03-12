@@ -29,6 +29,7 @@ named in the AUTHORS file.
 #include "WindowInterface/Display.hpp"
 #include "WindowInterface/Window.hpp"
 #include "WindowInterface/EventSink.hpp"
+#include "WindowInterface/EventLoop.hpp"
 #include <boost/python.hpp>
 
 #include <string>
