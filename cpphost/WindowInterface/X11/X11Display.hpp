@@ -25,6 +25,7 @@ named in the AUTHORS file.
 **********************************************************************/
 
 #ifndef PYUNI_X11_DISPLAY_H
+#define PYUNI_X11_DISPLAY_H
 
 #include <X11/Xlib.h>
 #include <GL/glx.h>

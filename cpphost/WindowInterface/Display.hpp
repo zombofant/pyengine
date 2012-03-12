@@ -28,6 +28,7 @@ named in the AUTHORS file.
 #define PYUNI_DISPLAY_H
 
 #include <vector>
+#include <iostream>
 
 namespace PyUni {
 struct Screen {
@@ -98,6 +99,8 @@ struct DisplayMode {
     {
 
     }
+
+    bool operator== (const DisplayMode &other) const;
 };
 
 // forward declaration of the Window class
@@ -113,7 +116,7 @@ protected:
     std::vector<Screen> _screens;
     std::vector<DisplayMode> _displayModes;
 public:
-    bool hasDisplayMode(const DisplayMode &displayMode);
+    int findDisplayMode(const DisplayMode &displayMode);
     void dumpScreens();
 
     virtual void selectMode(int index) = 0;
@@ -127,6 +130,10 @@ public:
         return _displayModes;
     }
 };
+
+std::ostream& operator <<(std::ostream &stream, const Screen &screen);
+std::ostream& operator <<(std::ostream &stream, const DisplayMode &dm);
+
 }
 #endif
 // Local Variables:

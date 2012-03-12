@@ -24,57 +24,59 @@ For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
 
-
-
-
 #include <iostream>
-//#include <boost/python.hpp>
+#include <boost/python.hpp>
 
 #include "WindowInterface/Display.hpp"
 #include "WindowInterface/Window.hpp"
 #include "WindowInterface/X11/X11Display.hpp"
 
+#include "PythonInterface/Module.hpp"
+
 #include <GL/gl.h>
 #include <stdlib.h>
 using namespace std;
-/*using namespace boost::python;
 
-struct World
-{
-    void set(std::string msg) { this->msg = msg; }
-    std::string greet() { return msg; }
-    std::string msg;
-};
+PyUni::Display *disp = 0;
 
-BOOST_PYTHON_MODULE(hello)
-{
-    class_<World>("World")
-        .def("greet", &World::greet)
-        .def("set", &World::set)
-    ;
-}*/
+int main(int argc, char** argv) {
+    try
+    {
+        PyUni::addToPython();
+        Py_Initialize();
+        PySys_SetArgv(argc, argv);
 
-int main() {
+        
+        boost::python::object main = boost::python::import("__main__");
+        boost::python::object main_namespace = main.attr("__dict__");
+        boost::python::import("cuni");
+
+        PyUni::X11Display *x11 = new PyUni::X11Display();
+        disp = x11;
+        main_namespace["display"] = disp;
+        
+        exec("\
+import time\n\
+print(display)\n\
+print('Available screens:')\n\
+print('  '+'\\n  '.join(str(screen) for screen in display.Screens))\n\
+print('Available display modes:')\n\
+print('  '+'\\n  '.join(str(dm) for dm in display.DisplayModes))\n\
+display.selectMode(0)\n\
+win = display.createWindow(640, 480, False)\n\
+win.switchTo()\n\
+time.sleep(1)\n\
+", main_namespace);
+    }
+    catch (boost::python::error_already_set const&)
+    {
+        PyErr_Print();
+    }
 
 
-    /*PyImport_AppendInittab("hello", &inithello);
-    Py_Initialize();
-    object main = import("__main__");
-    object main_namespace = main.attr("__dict__");
+    
 
-    exec(
-"\
-import hello;\
-print(\"Hello World from inside-python print()!\");\
-test = hello.World();\
-test.set(\"Hello World from hello.World!\");\
-print(test.greet());\
-",
-                          main_namespace);*/
-
-    PyUni::Display *disp = new PyUni::X11Display();
-
-    disp->dumpScreens();
+    /*disp->dumpScreens();
 
     disp->selectMode(0);
     PyUni::Window *win = disp->createWindow(640, 480);
@@ -87,7 +89,7 @@ print(test.greet());\
 
     win->flip();
 
-    sleep(5);
+    sleep(5);*/
 
     return 0;
 }

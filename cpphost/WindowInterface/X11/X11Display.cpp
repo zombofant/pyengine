@@ -117,8 +117,7 @@ void X11Display::detectDisplayModes() {
         GLX_X_RENDERABLE    , True,
         GLX_DRAWABLE_TYPE   , GLX_WINDOW_BIT,
         GLX_RENDER_TYPE     , GLX_RGBA_BIT,
-        GLX_X_VISUAL_TYPE   , GLX_TRUE_COLOR,
-        GLX_DOUBLEBUFFER    , True,
+        GLX_DEPTH_SIZE      , 16,
         None
     };
     _configs = glXChooseFBConfig(_display, DefaultScreen(_display), reqAttribs, &count);
@@ -154,14 +153,16 @@ void X11Display::detectDisplayModes() {
         glXGetFBConfigAttrib(_display, _configs[i], GLX_STENCIL_SIZE, &stencilBits);
         glXGetFBConfigAttrib(_display, _configs[i], GLX_DOUBLEBUFFER, &doubleBuffered);
 
-        _displayModes.push_back(DisplayMode(redBits,
+        const DisplayMode instance = DisplayMode(redBits,
                                             greenBits,
                                             blueBits,
                                             alphaBits,
                                             depthBits,
                                             stencilBits,
                                             doubleBuffered,
-                                            i));
+                                            i);
+        //if (!hasDisplayMode(instance))
+        _displayModes.push_back(instance);
     }
 }
 }

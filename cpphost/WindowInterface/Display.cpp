@@ -29,6 +29,22 @@ named in the AUTHORS file.
 
 #include "Display.hpp"
 namespace PyUni {
+
+
+bool DisplayMode::operator==(const DisplayMode &other) const
+{
+    return (
+        redBits == other.redBits &&
+        greenBits == other.greenBits &&
+        blueBits == other.blueBits &&
+        alphaBits == other.alphaBits &&
+        depthBits == other.depthBits &&
+        stencilBits == other.stencilBits &&
+        doubleBuffered == other.doubleBuffered
+    );
+}
+    
+    
 Display::Display() {
 }
 
@@ -59,9 +75,42 @@ void Display::normalizeScreenCoordinates() {
     }
 }
 
-bool Display::hasDisplayMode(const DisplayMode &displayMode) {
-    return false;
+int Display::findDisplayMode(const DisplayMode &displayMode) {
+    for (unsigned int i = 0; i < _displayModes.size(); i++)
+    {
+        if (displayMode == _displayModes[i])
+            return i;
+    }
+    return -1;
 }
+
+
+std::ostream& operator <<(std::ostream &stream, const Screen &screen)
+{
+    return stream <<
+    "<Screen x=" << screen.x <<
+        " y=" << screen.y <<
+        " w=" << screen.width <<
+        " h=" << screen.height <<
+        " primary=" << screen.primary <<
+    ">";
+}
+
+std::ostream& operator <<(std::ostream &stream, const DisplayMode &dm)
+{
+    return stream <<
+    "<DisplayMode rgba=(" <<
+            dm.redBits << "," <<
+            dm.greenBits << "," <<
+            dm.blueBits << "," <<
+            dm.alphaBits <<
+        ")" <<
+        " depth=" << dm.depthBits <<
+        " stencil=" << dm.stencilBits <<
+        " doublebuf=" << dm.doubleBuffered <<
+    ">";
+}
+
 }
 
 // Local Variables:
