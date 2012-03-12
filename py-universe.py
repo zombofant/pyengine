@@ -36,6 +36,8 @@ import OpenGL
 OpenGL.ERROR_ON_COPY = True
 
 if __name__ == '__main__':
+    import cuni
+    print(cuni.__dict__)
     from Client.PythonicUniverse import PythonicUniverse
-    app = PythonicUniverse()
+    app = PythonicUniverse(cuni.display)
     app.run()

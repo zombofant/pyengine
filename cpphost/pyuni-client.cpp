@@ -47,13 +47,14 @@ int main(int argc, char** argv) {
         Py_Initialize();
         PySys_SetArgv(argc, argv);
 
+        boost::python::object cuni = boost::python::import("cuni");
+        boost::python::object cuni_namespace = cuni.attr("__dict__");
         boost::python::object main = boost::python::import("__main__");
         boost::python::object main_namespace = main.attr("__dict__");
-        boost::python::import("cuni");
 
         PyUni::X11Display *x11 = new PyUni::X11Display();
         disp = x11;
-        main_namespace["display"] = x11;
+        cuni_namespace["display"] = x11;
         
         std::string str;
         {

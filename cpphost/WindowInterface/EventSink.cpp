@@ -1,5 +1,5 @@
 /**********************************************************************
-File name: X11Display.hpp
+File name: EventSink.cpp
 This file is part of: Pythonic Universe
 
 LICENSE
@@ -23,37 +23,4 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-
-#ifndef PYUNI_X11_DISPLAY_H
-#define PYUNI_X11_DISPLAY_H
-
-#include <X11/Xlib.h>
-#include <GL/glx.h>
-#include <X11/extensions/Xinerama.h>
-
-#include "../Display.hpp"
-
-namespace PyUni {
-class X11Display : public Display {
-public:
-    X11Display(const char *foo = 0);
-    virtual ~X11Display();
-
-    virtual Window *createWindow(const DisplayMode &mode,
-        int w, int h, bool fullscreen=false);
-
-private:
-    void detectScreens();
-    void detectDisplayModes();
-
-    ::Display *_display;
-};
-
-}
-
-#endif
-
-// Local Variables:
-// c-file-style: "k&r"
-// c-basic-offset: 4
-// End:
+#include "EventSink.hpp"

@@ -33,6 +33,7 @@ named in the AUTHORS file.
 #include <iostream>
 
 namespace PyUni {
+
 X11Display::X11Display(const char *display) {
     if (display == NULL) {
         display = getenv("DISPLAY");
