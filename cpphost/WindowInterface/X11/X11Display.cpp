@@ -51,9 +51,7 @@ X11Display::X11Display(const char *display) {
 X11Display::~X11Display() {
     XCloseDisplay(_display);
 }
-/*    GLXContext _glx_context;
-    XVisualInfo *_x_visual;
-*/
+
 Window *X11Display::createWindow(const DisplayMode &mode, int w, int h, bool fullscreen) {
     XVisualInfo *xVisual;
     GLXContext glxContext;
@@ -143,23 +141,6 @@ void X11Display::detectDisplayModes() {
         None
     };
     GLXFBConfig *configs = glXChooseFBConfig(_display, DefaultScreen(_display), reqAttribs, &count);
-
-    /*// select best mode (mode with highest sample rate)
-    int bestMode = -1, samplesMax = -1;
-    for(int i = 0; i < count; ++i) {
-        XVisualInfo *vi = glXGetVisualFromFBConfig(_display, _configs[i]);
-        if(vi) {
-            int samples, sampleBuffers;
-            glXGetFBConfigAttrib(_display, _configs[i], GLX_SAMPLES, &samples);
-            glXGetFBConfigAttrib(_display, _configs[i], GLX_SAMPLE_BUFFERS, &sampleBuffers);
-            if(bestMode < 0 || sampleBuffers && samples > samplesMax) {
-                bestMode = i;
-                samplesMax = samples;
-            }
-        }
-        XFree(vi);
-    }
-    // best mode's index is not in bestMode */
 
     _displayModes.clear();
 
