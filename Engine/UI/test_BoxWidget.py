@@ -39,7 +39,7 @@ class VBoxAlignment(WidgetInstanceTest):
     def setUp(self):
         super(VBoxAlignment, self).setUp()
         self.instance.AbsoluteRect = Rect(0, 0, 256, 256)
-        self.root = self.instance
+        self.root = self.parent
         self.instance = VBox(self.root)
         self.instance.AbsoluteRect = Rect(0, 0, 256, 256)
 
