@@ -22,15 +22,3 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
-from CSS.Rect import *
-from WidgetBase import *
-from LabelWidget import *
-from BoxWidget import *
-from WindowWidget import *
-try:
-    import pyglet
-    from ScreenWidget import *
-    from RootWidget import *
-    from SceneWidget import *
-except ImportError:
-    pass

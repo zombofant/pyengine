@@ -39,11 +39,10 @@ This primarily provides for handling of multiple-head setups
 """
 
 class Application(RootWidget):
-    def __init__(self, geometry=(800, 600), fullscreen=False, useFramebuffer=True, **kwargs):
+    def __init__(self, geometry=(800, 600), fullscreen=False, useFramebuffer=False, **kwargs):
         super(Application, self).__init__(**kwargs)
         self.fullscreen = fullscreen
         self.windows = []
-        self._childClasses = ScreenWidget
         self._primaryWidget = None
         self.SyncedFrameLength = 0.01
         self.SyncedSpeedFactor = 1.
@@ -56,8 +55,12 @@ class Application(RootWidget):
 
         if useFramebuffer:
             self._buildFramebuffer()
-            self.render = self._renderWithFBO
+            self._render = self._renderWithFBO
             self.renderWindow = self._renderWindowWithFBO
+            self.updateRender = self.render
+        else:
+            self._render = super(Application, self).render
+            self.updateRender = None
         self.realign()
 
     def _constructWindowed(self, geometry):
@@ -94,10 +97,11 @@ class Application(RootWidget):
 
     def _newScreen(self, ui_logical, geometry, fullscreen=False, primary=True, screen=None):        
         window = self.makeWin(ui_logical, None if fullscreen else geometry, screen)
-        widget = ScreenWidget(self, window)
+        widget = ScreenWidget(self._desktopLayer, window)
         widget.AbsoluteRect = Rect(ui_logical[0], ui_logical[1], ui_logical[0]+geometry[0], ui_logical[1]+geometry[1])
         t = (window, widget)
         self.windows.append(t)
+        window.widget = widget
         if primary:
             assert self._primaryWidget is None
             self._primaryWidget = widget
@@ -157,6 +161,7 @@ class Application(RootWidget):
             raise ValueError("Scene widgets must derive from SceneWidget")
         screen = self._getWidgetScreen(widget)
         assert screen is not None
+        self.realign()
         if screen.AbsoluteRect & widget.AbsoluteRect != widget.AbsoluteRect:
             raise ValueError("Scene widget leaves screen boundaries")
         window = screen.Window
@@ -209,7 +214,8 @@ class Application(RootWidget):
         self._aggregatedTime = syncedTime
         self.updateUnsynced(timeDelta)
         super(Application, self).update(timeDelta)
-        self.render()
+        if self.updateRender is not None:
+            self.updateRender()
 
     def updateUnsynced(self, timeDelta):
         """
@@ -227,14 +233,15 @@ class Application(RootWidget):
         """
 
     def render(self):
+        self._render()
+
+    def _renderWithoutFBO(self):
         """
         Renders the UI. Note that after initalization, this function
         will have been replaced with *_renderWithFBO* if useFramebuffer
         has been passed to the constructor.
         """
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-        # FIXME: Rendering without FBO support
-        raise NotImplementedError("Cannot render without FBO support currently.")
+        super(Application, self).render()
 
     def _renderWithFBO(self):
         self._fbo.bind()
@@ -260,7 +267,31 @@ class Application(RootWidget):
         Framebuffer.unbind()
 
     def renderWindow(self, window):
-        raise NotImplementedError("Cannot render without FBO support currently.")
+        glClearColor(0.0, 0.0, 0.0, 1.0)
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+
+        wx, wy, ww, wh = window.widget.AbsoluteRect.XYWH
+        
+        for sceneWidget in window._sceneWidgets:
+            x, y, w, h = sceneWidget.AbsoluteRect.XYWH
+            xlog, ylog = window.UILogicalCoords
+            x -= xlog
+            y -= ylog
+            glViewport(x, y, w, h)
+            sceneWidget.renderScene()
+            
+        glViewport(0, 0, ww, wh)
+        self._setUIOffset(wx, wy)
+        glMatrixMode(GL_PROJECTION)
+        glLoadIdentity()
+        glOrtho(0, ww, wh, 0, -10., 10.)
+        glMatrixMode(GL_MODELVIEW)
+        glLoadIdentity()
+        glClear(GL_DEPTH_BUFFER_BIT)
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        self.render()
+        glDisable(GL_BLEND)
 
     def _renderWindowWithFBO(self, window):
         glClearColor(0.0, 0.0, 0.0, 1.0)
@@ -275,6 +306,10 @@ class Application(RootWidget):
             sceneWidget.renderScene()
         
         glViewport(0, 0, window.width, window.height)
+        glMatrixMode(GL_PROJECTION)
+        glLoadIdentity()
+        glMatrixMode(GL_MODELVIEW)
+        glLoadIdentity()
         glClear(GL_DEPTH_BUFFER_BIT)
         glEnable(GL_BLEND)
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA)
