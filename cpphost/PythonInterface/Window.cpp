@@ -1,5 +1,5 @@
 /**********************************************************************
-File name: Module.cpp
+File name: Window.cpp
 This file is part of: Pythonic Universe
 
 LICENSE
@@ -23,7 +23,7 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#include "Module.hpp"
+#include "Window.hpp"
 #include <vector>
 
 #include "WindowInterface/X11/X11Display.hpp"
@@ -55,7 +55,7 @@ list Display_displayModes_get(const Display &self)
     return boostList;
 }
 
-BOOST_PYTHON_MODULE(cuni)
+BOOST_PYTHON_MODULE(_cuni_window)
 {
     class_<DisplayMode>("DisplayMode", init<unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, bool>())
         .def_readwrite("redBits", &DisplayMode::redBits)
@@ -109,10 +109,12 @@ BOOST_PYTHON_MODULE(cuni)
         .def("handleResize", pure_virtual(&EventSink::handleResize))
         .def("handleTextInput", pure_virtual(&EventSink::handleTextInput))
     ;
+
+    // class_<EventLoop, boost::noncopyable>("EventLoop");
 }
 
-void addToPython() {
-    PyImport_AppendInittab("cuni", &initcuni);
+void addWindowToInittab() {
+    PyImport_AppendInittab("_cuni_window", &init_cuni_window);
 }
 
 }

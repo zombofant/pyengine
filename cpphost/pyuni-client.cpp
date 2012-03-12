@@ -33,7 +33,7 @@ named in the AUTHORS file.
 #include "WindowInterface/Window.hpp"
 #include "WindowInterface/X11/X11Display.hpp"
 
-#include "PythonInterface/Module.hpp"
+#include "PythonInterface/Package.hpp"
 
 #include <GL/gl.h>
 #include <stdlib.h>
@@ -43,18 +43,18 @@ PyUni::Display *disp = 0;
 int main(int argc, char** argv) {
     try
     {
-        PyUni::addToPython();
+        PyUni::addCUniToInittab();
         Py_Initialize();
         PySys_SetArgv(argc, argv);
 
-        boost::python::object cuni = boost::python::import("cuni");
-        boost::python::object cuni_namespace = cuni.attr("__dict__");
+        boost::python::object cuni_window = boost::python::import("_cuni_window");
+        boost::python::object cuni_window_namespace = cuni_window.attr("__dict__");
         boost::python::object main = boost::python::import("__main__");
         boost::python::object main_namespace = main.attr("__dict__");
 
         PyUni::X11Display *x11 = new PyUni::X11Display();
         disp = x11;
-        cuni_namespace["display"] = x11;
+        cuni_window_namespace["display"] = x11;
         
         std::string str;
         {

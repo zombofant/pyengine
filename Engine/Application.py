@@ -25,7 +25,8 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-import cuni
+import CUni
+import CUni.Window
 
 import time
 from OpenGL.GL import *
@@ -41,7 +42,7 @@ Application and Window base classes.
 This primarily provides for handling of multiple-head setups
 """
 
-class Application(RootWidget, cuni.EventSink):
+class Application(RootWidget, CUni.Window.EventSink):
     def __init__(self, display, geometry=(800, 600), fullscreen=False, **kwargs):
         super(Application, self).__init__(**kwargs)
         self.fullscreen = fullscreen
@@ -65,7 +66,7 @@ class Application(RootWidget, cuni.EventSink):
             self._newScreen(self._window, 0, 0, *geometry)
         
         self.realign()
-        self._eventLoop = cuni.EventLoop(self)
+        self._eventLoop = CUni.Window.EventLoop(self)
 
     def _getWidgetScreen(self, widget):
         p = widget

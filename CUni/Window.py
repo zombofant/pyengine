@@ -1,6 +1,4 @@
-#!/usr/bin/python2
-# encoding=utf8
-# File name: py-universe.py
+# File name: Window.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -24,19 +22,4 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
-"""
-Nothing yet.
-"""
-
-from __future__ import unicode_literals, print_function, division
-from our_future import *
-
-# global PyOpenGL flags MUST ONLY be set here.
-import OpenGL
-OpenGL.ERROR_ON_COPY = True
-
-if __name__ == '__main__':
-    import CUni.Window
-    from Client.PythonicUniverse import PythonicUniverse
-    app = PythonicUniverse(CUni.Window.display)
-    app.run()
+from _cuni_window import *

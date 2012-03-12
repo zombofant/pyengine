@@ -1,5 +1,5 @@
 /**********************************************************************
-File name: Module.hpp
+File name: Window.hpp
 This file is part of: Pythonic Universe
 
 LICENSE
@@ -114,7 +114,7 @@ class EventSinkWrap: public EventSink, public boost::python::wrapper<EventSink>
     }
 };
 
-void addToPython();
+void addWindowToInittab();
 
 }
 
