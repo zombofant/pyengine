@@ -87,7 +87,7 @@ print(test.greet());\
 
     win->flip();
 
-    sleep(10);
+    sleep(5);
 
     return 0;
 }

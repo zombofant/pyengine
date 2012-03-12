@@ -51,6 +51,7 @@ X11Display::X11Display(const char *display) {
 }
 
 X11Display::~X11Display() {
+    glXDestroyContext(_display, _glx_context);
     XFree(_configs);
     XCloseDisplay(_display);
 }
@@ -110,7 +111,34 @@ void X11Display::detectDisplayModes() {
     // perhaps we should query for the GLX extension first
     // but that is not that important right now, though it
     // may lead to strange failure (but who has X withou GLX?)
-    _configs = glXGetFBConfigs(_display, DefaultScreen(_display), &count);
+
+    // we ignore all configs not matching at least these required attribs:
+    static int reqAttribs[] = {
+        GLX_X_RENDERABLE    , True,
+        GLX_DRAWABLE_TYPE   , GLX_WINDOW_BIT,
+        GLX_RENDER_TYPE     , GLX_RGBA_BIT,
+        GLX_X_VISUAL_TYPE   , GLX_TRUE_COLOR,
+        GLX_DOUBLEBUFFER    , True,
+        None
+    };
+    _configs = glXChooseFBConfig(_display, DefaultScreen(_display), reqAttribs, &count);
+
+    /*// select best mode (mode with highest sample rate)
+    int bestMode = -1, samplesMax = -1;
+    for(int i = 0; i < count; ++i) {
+        XVisualInfo *vi = glXGetVisualFromFBConfig(_display, _configs[i]);
+        if(vi) {
+            int samples, sampleBuffers;
+            glXGetFBConfigAttrib(_display, _configs[i], GLX_SAMPLES, &samples);
+            glXGetFBConfigAttrib(_display, _configs[i], GLX_SAMPLE_BUFFERS, &sampleBuffers);
+            if(bestMode < 0 || sampleBuffers && samples > samplesMax) {
+                bestMode = i;
+                samplesMax = samples;
+            }
+        }
+        XFree(vi);
+    }
+    // best mode's index is not in bestMode */
 
     _displayModes.clear();
 
