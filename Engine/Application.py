@@ -42,113 +42,30 @@ This primarily provides for handling of multiple-head setups
 """
 
 class Application(RootWidget, cuni.EventSink):
-    def __init__(self, display, geometry=(800, 600), fullscreen=False, useFramebuffer=False, **kwargs):
+    def __init__(self, display, geometry=(800, 600), fullscreen=False, **kwargs):
         super(Application, self).__init__(**kwargs)
         self.fullscreen = fullscreen
-        self.windows = []
         self._primaryWidget = None
+        self._screens = []
         self.SyncedFrameLength = 0.01
         self.SyncedSpeedFactor = 1.
         self._aggregatedTime = 0.
+        
+        self._render = super(Application, self).render
 
         if fullscreen:
-            self._constructFullscreen()
+            raise NotImplementedError("FIXME: C++ interface does not support fullscreen yet.")
         else:
-            self._constructWindowed(geometry)
-
-        if useFramebuffer:
-            self._buildFramebuffer()
-            self._render = self._renderWithFBO
-            self.renderWindow = self._renderWindowWithFBO
-            self.updateRender = self.render
-        else:
-            self._render = super(Application, self).render
-            self.updateRender = None
+            modes = display.DisplayModes
+            modes.sort(reverse=True)
+            mode = modes[0]
+            print("Creating context with mode: {0}".format(mode))
+            self._window = display.createWindow(mode, geometry[0], geometry[1], fullscreen)
+            self._window.switchTo()
+            self._newScreen(self._window, 0, 0, *geometry)
+        
         self.realign()
-
-    def _constructWindowed(self, geometry):
-        window, widget = self._newScreen((0, 0), geometry)
-        self.AbsoluteRect.Width = window.width
-        self.AbsoluteRect.Height = window.height
-
-    def _constructFullscreen(self):
-        """
-        Detect screens and create screen widgets for each.
-        """
-        display = pyglet.window.get_platform().get_default_display()
-        screens = display.get_screens()
-        default = display.get_default_screen()
-        
-        # convert the screen list in a list we can use
-        screens = [[i, screen, screen.x, screen.y, screen.width, screen.height, screen is default] for i, screen in enumerate(screens)]
-        minX = min((screen[2] for screen in screens))
-        minY = min((screen[3] for screen in screens))
-        if minX != 0 or minY != 0:
-            for screen in screens:
-                screen[2] -= minX
-                screen[3] -= minY
-        totalWidth = 0
-        totalHeight = 0
-        
-        for i, screen, x, y, w, h, primary in screens:
-            self._newScreen((x, y), (w, h), True, primary, screen)
-            totalWidth = max(totalWidth, x + w)
-            totalHeight = max(totalHeight, y + h)
-
-        self.AbsoluteRect.Width = totalWidth
-        self.AbsoluteRect.Height = totalHeight
-
-    def _newScreen(self, ui_logical, geometry, fullscreen=False, primary=True, screen=None):        
-        window = self.makeWin(ui_logical, None if fullscreen else geometry, screen)
-        widget = ScreenWidget(self._desktopLayer, window)
-        widget.AbsoluteRect = Rect(ui_logical[0], ui_logical[1], ui_logical[0]+geometry[0], ui_logical[1]+geometry[1])
-        t = (window, widget)
-        self.windows.append(t)
-        window.widget = widget
-        if primary:
-            assert self._primaryWidget is None
-            self._primaryWidget = widget
-        return t
-
-    def _buildFramebuffer(self):
-        w = makePOT(self.AbsoluteRect.Width)
-        h = makePOT(self.AbsoluteRect.Height)
-        fbo = Framebuffer(w, h)
-        uiTex = Texture2D(w, h, GL_RGBA8)
-        fbo[GL_COLOR_ATTACHMENT0] = uiTex
-        try:
-            fbo.validate()
-        except Exception:
-            # we may have a problem with non-quadratic textures
-            w = max(w, h)
-            h = max(w, h)
-            fbo = Framebuffer(w, h)
-            uiTex = Texture2D(w, h, GL_RGBA8)
-            fbo[GL_COLOR_ATTACHMENT0] = uiTex
-            fbo.validate()
-        self._fbo = fbo
-        self._uiTexture = uiTex
-        domain = pyglet.graphics.vertexdomain.create_domain(b"v2f/static", b"t2f/static")
-        vertices = [
-            -1.0, 1.0,
-            1.0, 1.0,
-            -1.0, -1.0,
-            1.0, -1.0
-        ]
-        vertexLists = []
-        for window, widget in self.windows:
-            vl = domain.create(4)
-            xmin, xmax = widget.AbsoluteRect.Left / w, widget.AbsoluteRect.Right / h
-            ymin, ymax = widget.AbsoluteRect.Top / h, widget.AbsoluteRect.Bottom / h
-            texCoords = [
-                xmin, ymax,
-                xmax, ymax,
-                xmin, ymin,
-                xmax, ymin
-            ]
-            vl.vertices = vertices
-            vl.tex_coords = texCoords
-            window.FBOVertexList = vl
+        self._eventLoop = cuni.EventLoop(self)
 
     def _getWidgetScreen(self, widget):
         p = widget
@@ -158,6 +75,16 @@ class Application(RootWidget, cuni.EventSink):
             p = p._parent
         else:
             return None
+
+    def _newScreen(self, window, x, y, width, height, primary=True):
+        widget = ScreenWidget(self._desktopLayer, window)
+        widget.AbsoluteRect = Rect(x, y, x+width, y+height)
+        t = (window, widget)
+        self._screens.append(t)
+        if primary:
+            assert self._primaryWidget is None
+            self._primaryWidget = widget
+        return t
 
     def addSceneWidget(self, widget):
         if not isinstance(widget, SceneWidget):
@@ -175,33 +102,8 @@ class Application(RootWidget, cuni.EventSink):
     def hitTest(self, p):
         return self._hitTest(p) or self
 
-    def makeWin(self, ui_logical, geometry=None, screen=None):
-        """
-        Factory method to create Window objects, should return the
-        Window subclass used in the application.
-        
-        :Parameters:
-            `ui_logical` : (int, int)
-                UI logical coordinates. These may differ from the window 
-                coordinates.
-            `geometry` : (int, int) or *None*
-                This must be ``(width, height)`` for a non-fullscreen
-                window or None for a fullscreen window.
-            `screen` : pyglet.window.Screen or *None*
-                This parameter is mandatory if no geometry is given to
-                determine the screen to create the window on. Otherwise
-                it internally defaults to the default screen.
-        """
-        if geometry is None:
-            if screen is None:
-                raise ValueError("screen must be given if a fullscreen window is to be created.")
-            return Window(self, ui_logical, fullscreen=True, screen=screen)
-        else:
-            return Window(self, ui_logical, width=geometry[0], height=geometry[1], screen=screen)
-
     def run(self):
-        pyglet.clock.schedule(self.update)
-        pyglet.app.run()
+        self._eventLoop.run()
 
     def update(self, timeDelta):
         """
