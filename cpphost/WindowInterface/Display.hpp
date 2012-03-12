@@ -58,8 +58,8 @@ struct DisplayMode {
     unsigned int redBits, greenBits, blueBits, alphaBits;
     unsigned int depthBits;
     unsigned int stencilBits;
+    unsigned int samples;
     bool doubleBuffered;
-    int index;
 
     DisplayMode(unsigned int aRedBits,
             unsigned int aGreenBits,
@@ -67,26 +67,7 @@ struct DisplayMode {
             unsigned int aAlphaBits,
             unsigned int aDepthBits,
             unsigned int aStencilBits,
-            bool aDoubleBuffered,
-            int aIndex):
-        redBits(aRedBits),
-        greenBits(aGreenBits),
-        blueBits(aBlueBits),
-        alphaBits(aAlphaBits),
-        depthBits(aDepthBits),
-        stencilBits(aStencilBits),
-        doubleBuffered(aDoubleBuffered),
-        index(aIndex)
-    {
-
-    }
-
-    DisplayMode(unsigned int aRedBits,
-            unsigned int aGreenBits,
-            unsigned int aBlueBits,
-            unsigned int aAlphaBits,
-            unsigned int aDepthBits,
-            unsigned int aStencilBits,
+            unsigned int aSamples,
             bool aDoubleBuffered):
         redBits(aRedBits),
         greenBits(aGreenBits),
@@ -94,8 +75,8 @@ struct DisplayMode {
         alphaBits(aAlphaBits),
         depthBits(aDepthBits),
         stencilBits(aStencilBits),
-        doubleBuffered(aDoubleBuffered),
-        index(-1)
+        samples(aSamples),
+        doubleBuffered(aDoubleBuffered)
     {
 
     }

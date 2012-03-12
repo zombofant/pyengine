@@ -165,7 +165,7 @@ void X11Display::detectDisplayModes() {
 
     for (int i = 0; i < count; i++) {
         int redBits, greenBits, blueBits, alphaBits, depthBits,
-            stencilBits, doubleBuffered;
+            stencilBits, doubleBuffered, samples;
 
         glXGetFBConfigAttrib(_display, configs[i], GLX_RED_SIZE, &redBits);
         glXGetFBConfigAttrib(_display, configs[i], GLX_GREEN_SIZE, &greenBits);
@@ -174,6 +174,7 @@ void X11Display::detectDisplayModes() {
         glXGetFBConfigAttrib(_display, configs[i], GLX_DEPTH_SIZE, &depthBits);
         glXGetFBConfigAttrib(_display, configs[i], GLX_STENCIL_SIZE, &stencilBits);
         glXGetFBConfigAttrib(_display, configs[i], GLX_DOUBLEBUFFER, &doubleBuffered);
+        glXGetFBConfigAttrib(_display, configs[i], GLX_SAMPLES, &samples);
 
         const DisplayMode instance = DisplayMode(redBits,
                                             greenBits,
@@ -181,8 +182,8 @@ void X11Display::detectDisplayModes() {
                                             alphaBits,
                                             depthBits,
                                             stencilBits,
-                                            doubleBuffered,
-                                            i);
+                                            samples,
+                                            doubleBuffered);
         if (!hasDisplayMode(instance))
             _displayModes.push_back(instance);
     }

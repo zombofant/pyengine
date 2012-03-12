@@ -49,7 +49,8 @@ bool DisplayMode::operator==(const DisplayMode &other) const
         (alphaBits == other.alphaBits) &&
         (depthBits == other.depthBits) &&
         (stencilBits == other.stencilBits) &&
-        (doubleBuffered == other.doubleBuffered)
+        (doubleBuffered == other.doubleBuffered) &&
+        (samples == other.samples)
     );
 }
 
@@ -88,6 +89,17 @@ bool DisplayMode::operator<(const DisplayMode &other) const
     
 
     test = compare(doubleBuffered, other.doubleBuffered);
+    if (test == 1)
+    {
+        return false;
+    }
+    else if (test == -1)
+    {
+        return true;
+    }
+    
+
+    test = compare(samples, other.samples);
     if (test == 1)
     {
         return false;
@@ -194,6 +206,7 @@ std::ostream& operator <<(std::ostream &stream, const DisplayMode &dm)
         ")" <<
         " depth=" << dm.depthBits <<
         " doublebuf=" << dm.doubleBuffered <<
+        " antialias=" << dm.samples << "x" <<
         " stencil=" << dm.stencilBits <<
     ">";
 }
