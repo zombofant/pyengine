@@ -101,7 +101,13 @@ struct DisplayMode {
     }
 
     bool operator== (const DisplayMode &other) const;
+    bool operator> (const DisplayMode &other) const;
+    bool operator< (const DisplayMode &other) const;
+    bool operator>= (const DisplayMode &other) const;
+    bool operator<= (const DisplayMode &other) const;
+    bool operator!= (const DisplayMode &other) const;
 };
+
 
 // forward declaration of the Window class
 class Window;

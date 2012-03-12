@@ -28,22 +28,109 @@ named in the AUTHORS file.
 #include <stdio.h>
 
 #include "Display.hpp"
+
 namespace PyUni {
+
+template <typename T>
+int compare(const T& x, const T& y)
+{
+    if (x < y) return -1;
+    else if (y < x) return 1;
+    else return 0;
+}
 
 
 bool DisplayMode::operator==(const DisplayMode &other) const
 {
     return (
-        redBits == other.redBits &&
-        greenBits == other.greenBits &&
-        blueBits == other.blueBits &&
-        alphaBits == other.alphaBits &&
-        depthBits == other.depthBits &&
-        stencilBits == other.stencilBits &&
-        doubleBuffered == other.doubleBuffered
+        (redBits == other.redBits) &&
+        (greenBits == other.greenBits) &&
+        (blueBits == other.blueBits) &&
+        (alphaBits == other.alphaBits) &&
+        (depthBits == other.depthBits) &&
+        (stencilBits == other.stencilBits) &&
+        (doubleBuffered == other.doubleBuffered)
     );
 }
+
+bool DisplayMode::operator<(const DisplayMode &other) const
+{
+    int test = compare((redBits + greenBits + blueBits),
+        (other.redBits + other.greenBits + other.blueBits));
+    if (test == 1)
+    {
+        return false;
+    }
+    else if (test == -1)
+    {
+        return true;
+    }
+
+    test = compare(alphaBits, other.alphaBits);
+    if (test == 1)
+    {
+        return false;
+    }
+    else if (test == -1)
+    {
+        return true;
+    }
+
+    test = compare(depthBits, other.depthBits);
+    if (test == 1)
+    {
+        return false;
+    }
+    else if (test == -1)
+    {
+        return true;
+    }
     
+
+    test = compare(doubleBuffered, other.doubleBuffered);
+    if (test == 1)
+    {
+        return false;
+    }
+    else if (test == -1)
+    {
+        return true;
+    }
+    
+
+    test = compare(stencilBits, other.stencilBits);
+    if (test == 1)
+    {
+        return false;
+    }
+    else if (test == -1)
+    {
+        return true;
+    }
+    
+    return true;
+}
+
+bool DisplayMode::operator<=(const DisplayMode &other) const
+{
+    return (((*this)==other) || ((*this)<other));
+}
+
+bool DisplayMode::operator>(const DisplayMode &other) const
+{
+    return !((*this)<=other);
+}
+
+bool DisplayMode::operator>=(const DisplayMode &other) const
+{
+    return !((*this)<other);
+}
+
+bool DisplayMode::operator!=(const DisplayMode &other) const
+{
+    return !((*this)==other);
+}
+
     
 Display::Display() {
 }
@@ -106,8 +193,8 @@ std::ostream& operator <<(std::ostream &stream, const DisplayMode &dm)
             dm.alphaBits <<
         ")" <<
         " depth=" << dm.depthBits <<
-        " stencil=" << dm.stencilBits <<
         " doublebuf=" << dm.doubleBuffered <<
+        " stencil=" << dm.stencilBits <<
     ">";
 }
 

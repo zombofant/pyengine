@@ -49,21 +49,23 @@ int main(int argc, char** argv) {
         
         boost::python::object main = boost::python::import("__main__");
         boost::python::object main_namespace = main.attr("__dict__");
-        boost::python::import("cuni");
+        main_namespace["cuni"] = boost::python::import("cuni");
 
         PyUni::X11Display *x11 = new PyUni::X11Display();
         disp = x11;
-        main_namespace["display"] = disp;
+        main_namespace["display"] = x11;
         
         exec("\
 import time\n\
 print(display)\n\
 print('Available screens:')\n\
 print('  '+'\\n  '.join(str(screen) for screen in display.Screens))\n\
+displayModes = display.DisplayModes\n\
+displayModes.sort(reverse=True)\n\
 print('Available display modes:')\n\
-print('  '+'\\n  '.join(str(dm) for dm in display.DisplayModes))\n\
-display.selectMode(0)\n\
-win = display.createWindow(640, 480, False)\n\
+print('  '+'\\n  '.join(str(dm) for dm in displayModes))\n\
+print('Creating window with {0}'.format(displayModes[0]))\n\
+win = display.createWindow(displayModes[0], 640, 480, False)\n\
 win.switchTo()\n\
 time.sleep(1)\n\
 ", main_namespace);
