@@ -24,11 +24,12 @@
 ########################################################################
 from __future__ import unicode_literals, print_function, division
 from our_future import *
-import pyglet
+
 import time
-from UI import Rect, RootWidget, ScreenWidget, SceneWidget
 from OpenGL.GL import *
 from OpenGL.GL.framebufferobjects import *
+
+from UI import Rect, RootWidget, ScreenWidget, SceneWidget
 from GL import Framebuffer, Texture2D, Renderbuffer, makePOT
 
 __docformat__ = "restructuredtext"
@@ -38,8 +39,8 @@ Application and Window base classes.
 This primarily provides for handling of multiple-head setups
 """
 
-class Application(RootWidget):
-    def __init__(self, geometry=(800, 600), fullscreen=False, useFramebuffer=False, **kwargs):
+class Application(RootWidget, cuni.EventSink):
+    def __init__(self, display, geometry=(800, 600), fullscreen=False, useFramebuffer=False, **kwargs):
         super(Application, self).__init__(**kwargs)
         self.fullscreen = fullscreen
         self.windows = []
@@ -376,7 +377,7 @@ class Application(RootWidget):
     def _on_text_motion_select(self, win, motion):
         self.dispatchCaretMotionSelect(motion)
 
-class Window(pyglet.window.Window):
+"""class Window(pyglet.window.Window):
 
     def __init__(self, application, ui_logical,
             **kwargs):
@@ -441,3 +442,4 @@ class Window(pyglet.window.Window):
 
     def on_text_motion_select(self, motion):
         self._application._on_text_motion_select(self, motion)
+"""

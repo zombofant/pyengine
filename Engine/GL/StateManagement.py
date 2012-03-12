@@ -26,7 +26,6 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 from Base import BindableObject
-from pyglet.graphics import Group, OrderedGroup
 from OpenGL.GL import glActiveTexture
 
 class StateContext(object):
@@ -67,7 +66,9 @@ class ActiveTexture(StateContext):
     def setContext(self):
         glActiveTexture(self._textureUnit)
 
-class StateObjectGroup(Group):
+
+# FIXME/pyglet: Reimplement grouping
+class StateObjectGroup(object):
     """
     Combines an arbitary amount of Groups, BindableObjects or
     StateContexts.

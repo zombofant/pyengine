@@ -28,12 +28,8 @@ from our_future import *
 from Base import ResourceLoader
 from Manager import ResourceManager
 
-try:
-    from pyglet import image
-    from Engine.GL.Texture import Texture2D
-    from OpenGL.GL import GL_RGBA, GL_UNSIGNED_BYTE
-except ImportError:
-    pass
+from Engine.GL.Texture import Texture2D
+from OpenGL.GL import GL_RGBA, GL_UNSIGNED_BYTE
 
 class TextureLoader(ResourceLoader):
     """
@@ -56,7 +52,9 @@ class TextureLoader(ResourceLoader):
         Load the texture.
         We simply use the pyglet image loading functionality at the moment.
         """
-        data = image.load(fileLike.name, fileLike).get_image_data()
+        # data = image.load(fileLike.name, fileLike).get_image_data()
+        # FIXME/pyglet: load images
+        data = None
         texture = Texture2D(
             width=data.width,
             height=data.height,

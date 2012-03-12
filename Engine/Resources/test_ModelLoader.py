@@ -71,6 +71,7 @@ class OBJModelLoaderTest(unittest.TestCase):
 
     def test_loadRenderModel(self):
         try:
+            import cuni
             from Engine.GL.RenderModel import RenderModel
         except ImportError:
             self.skipTest('RenderModel class not available')

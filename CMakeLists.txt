@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 2.6)
 project(pyUniverse CXX C)
 
+set(EXEC "pyuni-client")
+set(PYUNI_MODULES "pyuni_WindowInterface" "pyuni_Math" "pyuni_SceneGraph" "pyuni_PythonInterface")
+set(CMAKE_CXX_FLAGS "-g -Wall -std=c++0x")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "CMakeModules")
+
 find_package(rt REQUIRED)
 find_package(OpenGL REQUIRED)
 # probably here we should configure the WindowInterface component
@@ -18,11 +23,6 @@ set(LIBS ${LIBS} ${OPENGL_gl_LIBRARY} ${Boost_THREAD_LIBRARY}
     ${Boost_SYSTEM_LIBRARY} ${Boost_SIGNALS_LIBRARY} ${Boost_PYTHON_LIBRARY}
     ${SDL_LIBRARY} ${OPENGL_glu_LIBRARY} ${GLEW_LIBRARY} ${rt_LIBRARY}
     ${PYTHON_LIBRARY} ${X11_LIBRARIES} ${X11_Xinerama_LIB})
-
-set(EXEC "pyuni-client")
-set(PYUNI_MODULES "pyuni_WindowInterface" "pyuni_Math" "pyuni_SceneGraph" "pyuni_PythonInterface")
-set(CMAKE_CXX_FLAGS "-g -Wall -std=c++0x")
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "CMakeModules")
 
 add_subdirectory(cpphost)
 

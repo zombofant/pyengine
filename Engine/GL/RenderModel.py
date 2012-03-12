@@ -30,8 +30,6 @@ from OpenGL.GL import *
 from Engine.Resources.Manager import ResourceManager
 from SceneGraph.Core import Spatial
 
-import pyglet
-
 class RenderModel(Model, Spatial):
     """
     This class extends the model class with GL methods in order to provide
@@ -43,7 +41,8 @@ class RenderModel(Model, Spatial):
         Initialize a RenderModel.
         """
         super(RenderModel, self).__init__(**args)
-        self._batch = pyglet.graphics.Batch()
+        # FIXME/pyglet
+        self._batch = None
         self.update()
  
     def _copy(self, other):

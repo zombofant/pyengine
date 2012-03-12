@@ -27,13 +27,8 @@ from our_future import *
 
 __all__ = ["LabelWidget"]
 
-try:
-    import pyglet.font
-    import pyglet.text
-    from OpenGL.GL import *
-    import Engine.GL.Shader as Shader
-except NameError:
-    pass
+from OpenGL.GL import *
+import Engine.GL.Shader as Shader
 
 import Engine.Resources.Manager as Manager
 import Engine.Resources.FontLoader
@@ -42,15 +37,16 @@ from WidgetBase import Widget
 
 class LabelWidget(Widget):
     def __init__(self, parent, text="", **kwargs):
-        font = Manager.ResourceManager().require('/data/fonts/Cantarell-Regular.otf', fontFamily="Cantarell", size=10)
-        self._text = pyglet.text.Label(text, font_name="Cantarell", font_size=10, bold=True, italic=False, anchor_y='top')
+        # FIXME: Font rendering
+        # font = Manager.ResourceManager().require('/data/fonts/Cantarell-Regular.otf', fontFamily="Cantarell", size=10)
+        # self._text = pyglet.text.Label(text, font_name="Cantarell", font_size=10, bold=True, italic=False, anchor_y='top')
         super(LabelWidget, self).__init__(parent, **kwargs)
         self.Text = text
 
     def doAlign(self):
-        self._text.x = self.AbsoluteRect.Left
-        self._text.y = self._rootWidget.AbsoluteRect.Height - self.AbsoluteRect.Top
-        # pass
+        # self._text.x = self.AbsoluteRect.Left
+        # self._text.y = self._rootWidget.AbsoluteRect.Height - self.AbsoluteRect.Top
+        pass
 
     def render(self):
         self._rootWidget._shader.bind(texturing=True, upsideDown=True)
@@ -59,9 +55,11 @@ class LabelWidget(Widget):
 
     @property
     def Text(self):
-        return self._text.text
+        # return self._text.text
+        pass
 
     @Text.setter
     def Text(self, value):
-        self._text.text = value
+        # self._text.text = value
+        pass
         

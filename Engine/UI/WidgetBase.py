@@ -33,12 +33,8 @@ from CSS.FaceBuffer import FaceBuffer
 from CSS.ClassSet import ClassSet
 from Style import Style
 
-try:
-    import pyglet
-    from OpenGL.GL import GL_TRIANGLES, glEnable, GL_TEXTURE_2D
-    from Engine.GL.Texture import Texture2D
-except ImportError:
-    pass
+from OpenGL.GL import GL_TRIANGLES, glEnable, GL_TEXTURE_2D
+from Engine.GL.Texture import Texture2D
 
 class AbstractWidget(object):
     """

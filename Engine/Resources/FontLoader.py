@@ -28,11 +28,6 @@ from our_future import *
 from Base import ResourceLoader
 from Manager import ResourceManager
 
-try:
-    import pyglet.font as font
-except ImportError:
-    pass
-
 class FontLoader(ResourceLoader):
     """
     Implement a loader for fonts resources.
@@ -61,10 +56,12 @@ class FontLoader(ResourceLoader):
         return (fontFamily, size, italic, bold)
 
     def load(self, fileLike, targetClass, fontFamily=None, size=10, italic=False, bold=False):
-        font.add_file(fileLike)
-        if not font.base.Font.have_font(fontFamily):
-            raise ResourceNotFoundError("Cannot find font family {0}".format(fontFamily))
-        return font.load(fontFamily, size, bold, italic)
+        # font.add_file(fileLike)
+        # if not font.base.Font.have_font(fontFamily):
+        #     raise ResourceNotFoundError("Cannot find font family {0}".format(fontFamily))
+        # return font.load(fontFamily, size, bold, italic)
+        # FIXME/pyglet: font loading
+        pass
 
 ResourceManager().registerResourceLoader(FontLoader)
 

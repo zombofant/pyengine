@@ -25,6 +25,7 @@ named in the AUTHORS file.
 **********************************************************************/
 
 #include <iostream>
+#include <fstream>
 #include <cassert>
 #include <boost/python.hpp>
 
@@ -36,7 +37,6 @@ named in the AUTHORS file.
 
 #include <GL/gl.h>
 #include <stdlib.h>
-using namespace std;
 
 PyUni::Display *disp = 0;
 
@@ -47,53 +47,29 @@ int main(int argc, char** argv) {
         Py_Initialize();
         PySys_SetArgv(argc, argv);
 
-        
         boost::python::object main = boost::python::import("__main__");
         boost::python::object main_namespace = main.attr("__dict__");
-        main_namespace["cuni"] = boost::python::import("cuni");
+        boost::python::import("cuni");
 
         PyUni::X11Display *x11 = new PyUni::X11Display();
         disp = x11;
         main_namespace["display"] = x11;
         
-        exec("\
-import time\n\
-print(display)\n\
-print('Available screens:')\n\
-print('  '+'\\n  '.join(str(screen) for screen in display.Screens))\n\
-displayModes = display.DisplayModes\n\
-displayModes.sort(reverse=True)\n\
-print('Available display modes:')\n\
-print('  '+'\\n  '.join(str(dm) for dm in displayModes))\n\
-print('Creating window with {0}'.format(displayModes[0]))\n\
-win = display.createWindow(displayModes[0], 640, 480, False)\n\
-win.switchTo()\n\
-time.sleep(1)\n\
-", main_namespace);
+        std::string str;
+        {
+            std::stringstream s;
+            std::ifstream main("py-universe.py");
+            s << main.rdbuf();
+            main.close();
+            str = std::string(s.str());
+        }
+        exec(str.c_str(), main_namespace);
     }
     catch (boost::python::error_already_set const&)
     {
         PyErr_Print();
+        return 1;
     }
-
-
-    
-
-    /*disp->dumpScreens();
-
-    disp->selectMode(0);
-    PyUni::Window *win = disp->createWindow(640, 480);
-
-    win->switchTo();
-
-    glClearColor(1.0, 1.0, 0.0, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT);
-    glFlush();
-
-    win->flip();
-
-    sleep(5);*/
-
     return 0;
 }
 
