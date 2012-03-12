@@ -29,7 +29,7 @@ import unittest
 class WidgetInit(unittest.TestCase):
     def test_init(self):
         instance = RootWidget()
-        self.assertEqual(len(instance), 0)
+        self.assertEqual(len(instance), 3)
         del instance
 
     def test_separate(self):
@@ -40,50 +40,51 @@ class WidgetInit(unittest.TestCase):
 class WidgetInstanceTest(unittest.TestCase):
     def setUp(self):
         self.instance = RootWidget()
+        self.parent = self.instance._desktopLayer
 
     def tearDown(self):
         del self.instance
 
 class WidgetChildren(WidgetInstanceTest):
     def test_add(self):
-        child = Widget(self.instance)
-        self.assertEqual(len(self.instance), 1)
-        self.assertIs(child.Parent, self.instance)
-        self.assertIn(child, self.instance)
-        self.assertIs(self.instance[0], child)
+        child = Widget(self.parent)
+        self.assertEqual(len(self.parent), 1)
+        self.assertIs(child.Parent, self.parent)
+        self.assertIn(child, self.parent)
+        self.assertIs(self.parent[0], child)
     
     def test_dupe(self):
-        child = Widget(self.instance)
-        self.assertRaises(ValueError, self.instance.add, child)
+        child = Widget(self.parent)
+        self.assertRaises(ValueError, self.parent.add, child)
 
     def test_multipleParents(self):
-        parentB = RootWidget()
-        child = Widget(self.instance)
+        parentB = RootWidget()._desktopLayer
+        child = Widget(self.parent)
         self.assertRaises(ValueError, parentB.add, child)
 
     def test_multipleChildren(self):
-        childA, childB, childC = Widget(self.instance), Widget(self.instance), Widget(self.instance)
-        self.assertEqual(list(self.instance), [childA, childB, childC])
-        del self.instance[0]
-        self.assertEqual(list(self.instance), [childB, childC])
+        childA, childB, childC = Widget(parent=self.parent), Widget(parent=self.parent), Widget(parent=self.parent)
+        self.assertEqual(list(self.parent), [childA, childB, childC])
+        del self.parent[0]
+        self.assertEqual(list(self.parent), [childB, childC])
 
     def test_typeEnforcement(self):
         self.assertRaises(TypeError, self.instance.add, 1)
 
     def test_init(self):
-        child = Widget(parent=self.instance)
-        self.assertEqual(len(self.instance), 1)
-        self.assertEqual(self.instance[0], child)
+        child = Widget(parent=self.parent)
+        self.assertEqual(len(self.parent), 1)
+        self.assertEqual(self.parent[0], child)
 
 class WidgetIteration(WidgetInstanceTest):
     def test_depthFirst(self):
-        childA = ParentWidget(self.instance)
-        childB = ParentWidget(self.instance)
+        childA = ParentWidget(self.parent)
+        childB = ParentWidget(self.parent)
         childAA = Widget(childA)
         childAB = Widget(childA)
         childBA = Widget(childB)
 
         self.assertSequenceEqual(
-            list(self.instance.treeDepthFirst()),
-            [self.instance, childA, childAA, childAB, childB, childBA]
+            list(self.parent.treeDepthFirst()),
+            [self.parent, childA, childAA, childAB, childB, childBA]
         )

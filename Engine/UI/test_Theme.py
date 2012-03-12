@@ -31,6 +31,7 @@ from Style import Style
 from Theme import Theme
 from WidgetBase import ParentWidget
 from RootWidget import RootWidget
+from LayerWidget import DesktopLayer
 from CSS.Parser import Parser
 from CSS.Fill import Transparent, Colour
 from CSS.Box import Padding, Margin
@@ -57,6 +58,7 @@ RootWidget ParentWidget {
 }
 
 RootWidget > ParentWidget {
+    background: rgba(1.0, 1.0, 1.0, 1.0);
     border: 1 solid rgba(0.1, 0.2, 0.3);
 }
 """
@@ -64,7 +66,7 @@ RootWidget > ParentWidget {
     def setUp(self):
         Minilanguage.elementNames.update({
             "ParentWidget": ParentWidget,
-            "RootWidget": RootWidget
+            "RootWidget": DesktopLayer
         })
         self.theme = Theme()
         self.theme.addRules(Parser().parse(StringIO.StringIO(self.css)))
@@ -77,7 +79,7 @@ RootWidget > ParentWidget {
 
 class ThemeCascading(ThemeTest):
     def test_cascade(self):
-        root = RootWidget()
+        root = RootWidget()._desktopLayer
         child1 = ParentWidget(root)
         child2 = ParentWidget(child1)
         
@@ -98,7 +100,7 @@ class ThemeCascading(ThemeTest):
         )
 
     def test_customStyle(self):
-        root = RootWidget()
+        root = RootWidget()._desktopLayer
         child1 = ParentWidget(root)
         child2 = ParentWidget(child1)
         child2.StyleRule = Rule(
@@ -116,7 +118,7 @@ class ThemeCascading(ThemeTest):
         )
 
     def test_applyStyles(self):
-        root = RootWidget()
+        root = RootWidget()._desktopLayer
         child1 = ParentWidget(root)
         child2 = ParentWidget(child1)
         child2.StyleRule = Rule(
