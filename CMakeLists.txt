@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 project(pyUniverse CXX C)
 
 set(EXEC "pyuni-client")
-set(PYUNI_MODULES "pyuni_WindowInterface" "pyuni_Math" "pyuni_SceneGraph" "pyuni_PythonInterface")
+set(PYUNI_MODULES "pyuni_PythonInterface" "pyuni_WindowInterface" "pyuni_Math" "pyuni_SceneGraph")
 set(CMAKE_CXX_FLAGS "-g -Wall -std=c++0x")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "CMakeModules")
 

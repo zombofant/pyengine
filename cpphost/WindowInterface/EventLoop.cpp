@@ -33,7 +33,7 @@ EventLoop::EventLoop(EventSink &eventSink):
     _eventSink(eventSink),
     _deltaT(0.01)
 {
-    std::cout << "meow" << std::endl;
+    
 }
 
 EventLoop::~EventLoop()
@@ -49,11 +49,6 @@ double EventLoop::getSyncedFrameLength()
 void EventLoop::setSyncedFrameLength(const double deltaT)
 {
     _deltaT = deltaT;
-}
-
-void EventLoop::run()
-{
-
 }
 
 }
