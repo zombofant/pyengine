@@ -1,5 +1,5 @@
 /**********************************************************************
-File name: Package.cpp
+File name: GL.hpp
 This file is part of: Pythonic Universe
 
 LICENSE
@@ -23,16 +23,32 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#include "Package.hpp"
-#include "Window.hpp"
-#include "GL.hpp"
+#ifndef _PYUNI_PYTHON_GL_H
+#define _PYUNI_PYTHON_GL_H
+
+#include <boost/python.hpp>
+#include <string>
+
+#include "GL/Base.hpp"
+#include "GL/StateManagement.hpp"
 
 namespace PyUni {
 
-void addCUniToInittab()
+class StructWrap: public GL::Struct, public boost::python::wrapper<GL::Struct>
 {
-    addWindowToInittab();
-    addGLToInittab();
-}
+    virtual void bind()
+    {
+        this->get_override("bind")();
+    }
+    
+    virtual void unbind()
+    {
+        this->get_override("unbind")();
+    }
+};
+
+void addGLToInittab();
 
 }
+
+#endif

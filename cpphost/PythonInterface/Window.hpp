@@ -23,16 +23,16 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_PYTHON_MODULE_H
-#define _PYUNI_PYTHON_MODULE_H
+#ifndef _PYUNI_PYTHON_WINDOW_H
+#define _PYUNI_PYTHON_WINDOW_H
+
+#include <boost/python.hpp>
+#include <string>
 
 #include "WindowInterface/Display.hpp"
 #include "WindowInterface/Window.hpp"
 #include "WindowInterface/EventSink.hpp"
 #include "WindowInterface/EventLoop.hpp"
-#include <boost/python.hpp>
-
-#include <string>
 
 namespace PyUni {
 

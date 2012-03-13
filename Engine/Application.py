@@ -139,10 +139,10 @@ class Application(RootWidget, CUni.Window.EventSink):
         """
 
     def frameSynced(self):
-        print("frameSynced")
+        pass
 
     def frameUnsynced(self, deltaT):
-        print("frameUnsynced {0}".format(deltaT))
+        pass
 
     def render(self):
         self._render()
