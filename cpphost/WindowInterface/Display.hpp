@@ -27,6 +27,8 @@ named in the AUTHORS file.
 #ifndef PYUNI_DISPLAY_H
 #define PYUNI_DISPLAY_H
 
+#include "EventSink.hpp"
+
 #include <vector>
 #include <iostream>
 
@@ -108,6 +110,7 @@ public:
 
     virtual Window *createWindow(const DisplayMode &mode,
         int w, int h, bool fullscreen=false) = 0;
+    virtual void pullEvents(const EventSink *sink) = 0;
 
     const std::vector<Screen> &getScreens() const {
         return _screens;

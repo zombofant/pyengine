@@ -110,7 +110,7 @@ BOOST_PYTHON_MODULE(_cuni_window)
         .def("handleTextInput", pure_virtual(&EventSink::handleTextInput))
     ;
 
-    class_<EventLoop, boost::noncopyable>("EventLoop", init<EventSink&>())
+    class_<EventLoop, boost::noncopyable>("EventLoop", init<Display&, EventSink&>())
         .def("run", &EventLoop::run)
         .add_property("SyncedFrameLength", &EventLoop::getSyncedFrameLength, &EventLoop::setSyncedFrameLength)
     ;

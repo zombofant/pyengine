@@ -28,9 +28,4 @@ named in the AUTHORS file.
 
 namespace PyUni {
 
-void EventLoop::run()
-{
-    
-}
-
 }

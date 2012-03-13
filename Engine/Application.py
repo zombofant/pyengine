@@ -66,7 +66,7 @@ class Application(RootWidget, CUni.Window.EventSink):
             self._newScreen(self._window, 0, 0, *geometry)
         
         self.realign()
-        self._eventLoop = CUni.Window.EventLoop(self)
+        self._eventLoop = CUni.Window.EventLoop(display, self)
 
     def _getWidgetScreen(self, widget):
         p = widget
@@ -137,6 +137,12 @@ class Application(RootWidget, CUni.Window.EventSink):
         took too long, but each call still represents the guaranteed
         amount of time specified.
         """
+
+    def frameSynced(self):
+        print("frameSynced")
+
+    def frameUnsynced(self, deltaT):
+        print("frameUnsynced {0}".format(deltaT))
 
     def render(self):
         self._render()

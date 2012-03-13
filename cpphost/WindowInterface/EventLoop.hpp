@@ -27,22 +27,37 @@ named in the AUTHORS file.
 #define PYUNI_WINDOW_EVENTLOOP_H
 
 #include "EventSink.hpp"
+#include "Display.hpp"
+#include <ctime>
 
 namespace PyUni {
 
+typedef double TimeFloat;
+
 class EventLoop {
     public:
-        EventLoop(EventSink &eventSink);
+        EventLoop(Display &display, EventSink &eventSink);
         virtual ~EventLoop();
     private:
+        Display &_display;
         EventSink &_eventSink;
-        double _deltaT;
+        TimeFloat _deltaT;
+        bool _terminated;
+        double _currentFPS;
     public:
+        void terminate();
         void run();
     public:
         double getSyncedFrameLength();
-        void setSyncedFrameLength(const double deltaT);
+        void setSyncedFrameLength(const TimeFloat deltaT);
 };
+
+/* free functions */
+
+timespec nanotime();
+TimeFloat timeToDouble(const timespec &time);
+TimeFloat timeIntervalToDouble(const timespec &prev, const timespec &curr);
+
 
 }
 

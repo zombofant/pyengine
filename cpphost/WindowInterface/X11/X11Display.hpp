@@ -32,6 +32,7 @@ named in the AUTHORS file.
 #include <X11/extensions/Xinerama.h>
 
 #include "../Display.hpp"
+#include "../EventSink.hpp"
 
 namespace PyUni {
 class X11Display : public Display {
@@ -41,6 +42,7 @@ public:
 
     virtual Window *createWindow(const DisplayMode &mode,
         int w, int h, bool fullscreen=false);
+    virtual void pullEvents(const EventSink *sink);
 
 private:
     void detectScreens();

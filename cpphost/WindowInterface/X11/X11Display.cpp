@@ -88,6 +88,11 @@ Window *X11Display::createWindow(const DisplayMode &mode, int w, int h, bool ful
     return win;
 }
 
+void X11Display::pullEvents(const EventSink *sink)
+{
+    // FIXME: handle X11 events
+}
+
 void X11Display::detectScreens() {
     int event_base_return, error_base_return;
     _screens.clear();
