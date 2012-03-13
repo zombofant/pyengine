@@ -23,8 +23,8 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef PYUNI_RENDERGRAPH_DEFERRED_SHADING_H
-#define PYUNI_RENDERGRAPH_DEFERRED_SHADING_H
+#ifndef _PYUNI_RENDERGRAPH_DEFERRED_SHADING_H
+#define _PYUNI_RENDERGRAPH_DEFERRED_SHADING_H
 
 #include <GL/glew.h>
 #include "Stage.hpp"

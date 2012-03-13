@@ -24,8 +24,8 @@ For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
 
-#ifndef PYUNI_X11_DISPLAY_H
-#define PYUNI_X11_DISPLAY_H
+#ifndef _PYUNI_X11_DISPLAY_H
+#define _PYUNI_X11_DISPLAY_H
 
 #include <X11/Xlib.h>
 #include <GL/glx.h>

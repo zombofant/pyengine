@@ -24,8 +24,8 @@ For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
 
-#ifndef PYUNI_DISPLAY_H
-#define PYUNI_DISPLAY_H
+#ifndef _PYUNI_DISPLAY_H
+#define _PYUNI_DISPLAY_H
 
 #include "EventSink.hpp"
 

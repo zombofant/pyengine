@@ -24,8 +24,8 @@ For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
 
-#ifndef PYUNI_MATH_MATRICES_H
-#define PYUNI_MATH_MATRICES_H
+#ifndef _PYUNI_MATH_MATRICES_H
+#define _PYUNI_MATH_MATRICES_H
 
 #include "Vectors.hpp"
 

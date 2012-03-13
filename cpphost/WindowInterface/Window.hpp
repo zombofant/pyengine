@@ -24,8 +24,8 @@ For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
 
-#ifndef PYUNI_WINDOW_H
-#define PYUNI_WINDOW_H
+#ifndef _PYUNI_WINDOW_H
+#define _PYUNI_WINDOW_H
 
 namespace PyUni {
 class Window {

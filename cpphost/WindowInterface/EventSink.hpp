@@ -23,8 +23,8 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef PYUNI_EVENTSINK_H
-#define PYUNI_EVENTSINK_H
+#ifndef _PYUNI_EVENTSINK_H
+#define _PYUNI_EVENTSINK_H
 
 #include <string>
 

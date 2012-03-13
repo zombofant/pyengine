@@ -23,8 +23,8 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef PYUNI_WINDOW_EVENTLOOP_H
-#define PYUNI_WINDOW_EVENTLOOP_H
+#ifndef _PYUNI_WINDOW_EVENTLOOP_H
+#define _PYUNI_WINDOW_EVENTLOOP_H
 
 #include "EventSink.hpp"
 #include "Display.hpp"

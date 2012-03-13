@@ -27,6 +27,7 @@ named in the AUTHORS file.
 #include "SceneGraph.hpp"
 
 namespace PyUni {
+namespace SceneGraph {
 
 SceneGraph::SceneGraph()
 {
@@ -50,4 +51,4 @@ void SceneGraph::draw()
 }
 
 }
-
+}

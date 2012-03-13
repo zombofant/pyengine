@@ -24,12 +24,13 @@ For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
 
-#ifndef PYUNI_SCENEGRAPH_SCENEGRAPH_H
-#define PYUNI_SCENEGRAPH_SCENEGRAPH_H
+#ifndef _PYUNI_SCENEGRAPH_SCENEGRAPH_H
+#define _PYUNI_SCENEGRAPH_SCENEGRAPH_H
 
 #include "Node.hpp"
 
 namespace PyUni {
+namespace SceneGraph {
 
 class SceneGraph
 {
@@ -47,6 +48,6 @@ class SceneGraph
 };
 
 }
-
+}
 #endif
 

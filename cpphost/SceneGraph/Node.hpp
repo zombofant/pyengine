@@ -24,14 +24,15 @@ For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
 
-#ifndef PYUNI_SCENEGRAPH_NODE_H
-#define PYUNI_SCENEGRAPH_NODE_H
+#ifndef _PYUNI_SCENEGRAPH_NODE_H
+#define _PYUNI_SCENEGRAPH_NODE_H
 
 #include <vector>
 
 #include "Spatial.hpp"
 
 namespace PyUni {
+namespace SceneGraph {
 
 class Node : public Spatial
 {
@@ -48,6 +49,7 @@ class Node : public Spatial
         std::vector<Spatial*> children; 
 };
 
+}
 }
 
 #endif

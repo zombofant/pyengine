@@ -29,6 +29,7 @@ named in the AUTHORS file.
 #include "Node.hpp"
 
 namespace PyUni {
+namespace SceneGraph {
 
 Node::Node()
 {
@@ -104,4 +105,4 @@ void Node::updateWorldData()
 }
 
 }
-
+}

@@ -27,6 +27,7 @@ named in the AUTHORS file.
 #include "Spatial.hpp"
 
 namespace PyUni {
+namespace SceneGraph {
 
 Spatial::Spatial() : parent(0)
 {
@@ -61,5 +62,6 @@ void Spatial::draw()
 {
 }
 
+}
 }
 

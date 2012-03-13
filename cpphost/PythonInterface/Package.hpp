@@ -23,8 +23,8 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef PYUNI_PYTHON_PACKAGE_H
-#define PYUNI_PYTHON_PACKAGE_H
+#ifndef _PYUNI_PYTHON_PACKAGE_H
+#define _PYUNI_PYTHON_PACKAGE_H
 
 namespace PyUni {
 

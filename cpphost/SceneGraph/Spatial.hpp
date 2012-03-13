@@ -24,12 +24,13 @@ For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
 
-#ifndef PYUNI_SCENEGRAPH_SPATIAL_H
-#define PYUNI_SCENEGRAPH_SPATIAL_H
+#ifndef _PYUNI_SCENEGRAPH_SPATIAL_H
+#define _PYUNI_SCENEGRAPH_SPATIAL_H
 
 #include "Matrices.hpp"
 
 namespace PyUni {
+namespace SceneGraph {
 
 class Spatial
 {
@@ -57,6 +58,6 @@ class Spatial
 };
 
 }
-
+}
 #endif
 

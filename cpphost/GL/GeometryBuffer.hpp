@@ -276,6 +276,31 @@ class GeometryBuffer: public GenericGeometryBuffer {
  * V3F driver.
  */
 class GeometryBufferDriver {
+    public:
+        class GeometryBufferDrivedView {
+            public:
+                GeometryBufferDrivedView(
+                    GeometryBufferDriver *driver,
+                    GLsizei vertexOffset,
+                    GLsizei vertexSize,
+                    GLsizei elementCount
+                );
+            private:
+                GeometryBufferDriver _driver;
+                GLsizei _vertexOffset;
+                GLsizei _vertexSize;
+                GLsizei _elementCount;
+            public:
+                void set(const GLsizei index, const VectorFloat &source);
+                void set(const GLsizei index, const Vector2f &source);
+                void set(const GLsizei index, const Vector3f &source);
+                void set(const GLsizei index, const Vector4f &source);
+
+                void get(const GLsizei index, const VectorFloat &dest);
+                void get(const GLsizei index, const Vector2f &dest);
+                void get(const GLsizei index, const Vector3f &dest);
+                void get(const GLsizei index, const Vector4f &dest);
+        }
     private:
         GeometryBufferDriver(const GenericGeometryBufferHandle bufferHandle):
             _handle(bufferHandle),
