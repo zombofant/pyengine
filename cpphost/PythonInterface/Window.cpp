@@ -23,11 +23,13 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#include "Window.hpp"
 #include <vector>
+#include <boost/shared_ptr.hpp>
 
 #include "WindowInterface/X11/X11Display.hpp"
 #include "WindowInterface/X11/X11Window.hpp"
+
+#include "Window.hpp"
 
 using namespace boost::python;
 
@@ -57,7 +59,7 @@ list Display_displayModes_get(const Display &self)
 
 BOOST_PYTHON_MODULE(_cuni_window)
 {
-    class_<DisplayMode>("DisplayMode", init<unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, bool>())
+    class_<DisplayMode, boost::shared_ptr<DisplayMode> >("DisplayMode", init<unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, bool>())
         .def_readwrite("redBits", &DisplayMode::redBits)
         .def_readwrite("greenBits", &DisplayMode::greenBits)
         .def_readwrite("blueBits", &DisplayMode::blueBits)
@@ -74,7 +76,7 @@ BOOST_PYTHON_MODULE(_cuni_window)
         .def(self_ns::repr(self))
     ;
 
-    class_<Screen>("Screen", no_init)
+    class_<Screen, boost::shared_ptr<Screen> >("Screen", no_init)
         .def_readonly("index", &Screen::index)
         .def_readonly("primary", &Screen::primary)
         .def_readonly("x", &Screen::x)
@@ -84,20 +86,29 @@ BOOST_PYTHON_MODULE(_cuni_window)
         .def(self_ns::repr(self))
     ;
 
-    class_<WindowWrap, boost::noncopyable>("Window", no_init)
+    /*class_<WindowWrap, WindowHandle, boost::noncopyable>("Window", no_init)
+        .def("flip", pure_virtual(&Window::flip))
+        .def("switchTo", pure_virtual(&Window::switchTo))
+    ;*/
+    class_<Window, WindowHandle, boost::noncopyable>("Window", no_init)
         .def("flip", pure_virtual(&Window::flip))
         .def("switchTo", pure_virtual(&Window::switchTo))
     ;
-    class_<X11Window, bases<Window> >("X11Window", no_init);
+    class_<X11Window, bases<Window> >("X11Window", no_init)
+        .def("flip", &X11Window::flip)
+        .def("switchTo", &X11Window::switchTo)
+    ;;
 
-    class_<DisplayWrap, boost::noncopyable>("Display", no_init)
+    class_<DisplayWrap, DisplayHandle, boost::noncopyable>("Display", no_init)
         .add_property("Screens", &Display_screens_get)
         .add_property("DisplayModes", &Display_displayModes_get)
-        .def("createWindow", pure_virtual(&Display::createWindow), boost::python::return_value_policy<boost::python::manage_new_object>())
+        .def("createWindow", pure_virtual(&Display::createWindow))
     ;
     class_<X11Display, bases<Display> >("X11Display", no_init);
+
+    implicitly_convertible<boost::shared_ptr<DisplayWrap>, DisplayHandle >();
     
-    class_<EventSinkWrap, boost::noncopyable>("EventSink")
+    class_<EventSinkWrap, boost::shared_ptr<EventSinkWrap>, boost::noncopyable>("EventSink")
         .def("frameSynced", pure_virtual(&EventSink::frameSynced))
         .def("frameUnsynced", pure_virtual(&EventSink::frameUnsynced))
         .def("handleKeyDown", pure_virtual(&EventSink::handleKeyDown))
@@ -109,8 +120,11 @@ BOOST_PYTHON_MODULE(_cuni_window)
         .def("handleResize", pure_virtual(&EventSink::handleResize))
         .def("handleTextInput", pure_virtual(&EventSink::handleTextInput))
     ;
-
-    class_<EventLoop, boost::noncopyable>("EventLoop", init<Display&, EventSink&>())
+    // class_<EventSinkWrap, bases<EventSink>, boost::shared_ptr<EventSinkWrap> >("EventSink");
+    
+    boost::python::implicitly_convertible<boost::shared_ptr<EventSinkWrap>, EventSinkHandle >();
+    
+    class_<EventLoop, boost::shared_ptr<EventLoop>, boost::noncopyable>("EventLoop", init<DisplayHandle, EventSinkHandle>())
         .def("run", &EventLoop::run)
         .add_property("SyncedFrameLength", &EventLoop::getSyncedFrameLength, &EventLoop::setSyncedFrameLength)
     ;

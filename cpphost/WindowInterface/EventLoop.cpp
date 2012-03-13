@@ -31,7 +31,7 @@ named in the AUTHORS file.
 
 namespace PyUni {
 
-EventLoop::EventLoop(Display &display, EventSink &eventSink):
+EventLoop::EventLoop(DisplayHandle display, EventSinkHandle eventSink):
     _display(display),
     _eventSink(eventSink),
     _deltaT(0.01),
@@ -64,8 +64,8 @@ void EventLoop::terminate()
 void EventLoop::run()
 {
     timespec lastUpdate, frameCounterStart;
-    Display *display = &_display;
-    EventSink *eventSink = &_eventSink;
+    Display *display = _display.get();
+    EventSink *eventSink = _eventSink.get();
     uint32_t frameCount = 0;
     TimeFloat accumulatedTime = 0.;
     try {

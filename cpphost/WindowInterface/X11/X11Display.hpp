@@ -40,7 +40,7 @@ public:
     X11Display(const char *foo = 0);
     virtual ~X11Display();
 
-    virtual Window *createWindow(const DisplayMode &mode,
+    virtual WindowHandle createWindow(const DisplayMode &mode,
         int w, int h, bool fullscreen=false);
     virtual void pullEvents(const EventSink *sink);
 

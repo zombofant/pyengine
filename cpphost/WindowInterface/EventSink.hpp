@@ -27,6 +27,7 @@ named in the AUTHORS file.
 #define _PYUNI_EVENTSINK_H
 
 #include <string>
+#include <boost/shared_ptr.hpp>
 
 namespace PyUni {
 
@@ -50,6 +51,8 @@ class EventSink {
         virtual void handleResize(unsigned int w, unsigned int h) = 0;
         virtual void handleTextInput(const std::string &text) = 0;
 };
+
+typedef boost::shared_ptr<EventSink> EventSinkHandle;
 
 }
 

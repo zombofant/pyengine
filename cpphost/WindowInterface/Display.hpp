@@ -31,8 +31,10 @@ named in the AUTHORS file.
 
 #include <vector>
 #include <iostream>
+#include <boost/shared_ptr.hpp>
 
 namespace PyUni {
+    
 struct Screen {
     unsigned int index;
     bool primary;
@@ -94,6 +96,7 @@ struct DisplayMode {
 
 // forward declaration of the Window class
 class Window;
+typedef boost::shared_ptr<Window> WindowHandle;
 
 class Display {
 public:
@@ -108,7 +111,7 @@ public:
     bool hasDisplayMode(const DisplayMode &displayMode);
     void dumpScreens();
 
-    virtual Window *createWindow(const DisplayMode &mode,
+    virtual WindowHandle createWindow(const DisplayMode &mode,
         int w, int h, bool fullscreen=false) = 0;
     virtual void pullEvents(const EventSink *sink) = 0;
 
@@ -120,6 +123,8 @@ public:
         return _displayModes;
     }
 };
+
+typedef boost::shared_ptr<Display> DisplayHandle;
 
 std::ostream& operator <<(std::ostream &stream, const Screen &screen);
 std::ostream& operator <<(std::ostream &stream, const DisplayMode &dm);

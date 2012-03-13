@@ -27,6 +27,8 @@ named in the AUTHORS file.
 #ifndef _PYUNI_WINDOW_H
 #define _PYUNI_WINDOW_H
 
+#include <boost/shared_ptr.hpp>
+
 namespace PyUni {
 class Window {
 public:
@@ -37,7 +39,6 @@ public:
 private:
 
 };
-
 }
 
 #endif

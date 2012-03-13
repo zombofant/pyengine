@@ -53,7 +53,7 @@ X11Display::~X11Display() {
     XCloseDisplay(_display);
 }
 
-Window *X11Display::createWindow(const DisplayMode &mode, int w, int h, bool fullscreen) {
+WindowHandle X11Display::createWindow(const DisplayMode &mode, int w, int h, bool fullscreen) {
     XVisualInfo *xVisual;
     GLXContext glxContext;
     
@@ -76,7 +76,7 @@ Window *X11Display::createWindow(const DisplayMode &mode, int w, int h, bool ful
     if (count == 0) {
         // TODO: Raise an error here
         std::cerr << "No config found for: " << mode << std::endl;
-        return 0;
+        return WindowHandle();
     }
     
     glxContext = glXCreateNewContext(_display, configs[0], GLX_RGBA_TYPE, NULL, True);
@@ -85,7 +85,7 @@ Window *X11Display::createWindow(const DisplayMode &mode, int w, int h, bool ful
 
     X11Window *win = new X11Window(_display, xVisual, configs[0], glxContext, w, h);
     XFree(configs);
-    return win;
+    return WindowHandle(win);
 }
 
 void X11Display::pullEvents(const EventSink *sink)

@@ -26,9 +26,10 @@ named in the AUTHORS file.
 #ifndef _PYUNI_WINDOW_EVENTLOOP_H
 #define _PYUNI_WINDOW_EVENTLOOP_H
 
+#include <ctime>
+
 #include "EventSink.hpp"
 #include "Display.hpp"
-#include <ctime>
 
 namespace PyUni {
 
@@ -36,11 +37,11 @@ typedef double TimeFloat;
 
 class EventLoop {
     public:
-        EventLoop(Display &display, EventSink &eventSink);
+        EventLoop(DisplayHandle display, EventSinkHandle eventSink);
         virtual ~EventLoop();
     private:
-        Display &_display;
-        EventSink &_eventSink;
+        DisplayHandle _display;
+        EventSinkHandle _eventSink;
         TimeFloat _deltaT;
         bool _terminated;
         double _currentFPS;
