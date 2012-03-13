@@ -55,6 +55,9 @@ typedef std::vector<VertexIndexListHandle> VertexIndexListHandleList;
 #define glType GL_FLOAT
 #define glTypeSize sizeof(GLVertexFloat)
 
+#define BUFFER_TEX_COORD_COUNT 4
+#define BUFFER_VERTEX_ATTRIB_COUNT 4
+
 struct VertexFormat {
     const unsigned int nPosition, nColour, nTexCoord0, 
         nTexCoord1, nTexCoord2, nTexCoord3, nVertexAttrib0,
@@ -64,7 +67,7 @@ struct VertexFormat {
         texCoord1Offset, texCoord2Offset, texCoord3Offset,
         normalOffset, vertexAttrib0Offset, vertexAttrib1Offset,
         vertexAttrib2Offset, vertexAttrib3Offset;
-    const GLsizei vertexSize;
+    const GLsizei vertexSize, vertexLength;
     
     
     VertexFormat(const unsigned int aNPosition = 0,
@@ -96,8 +99,6 @@ struct VertexFormat {
 };
 typedef boost::shared_ptr<VertexFormat> VertexFormatHandle;
 
-class GeometryBufferDriver;
-typedef boost::shared_ptr<GeometryBufferDriver> GeometryBufferDriverHandle;
 
 class GenericGeometryBuffer: public GenericBuffer {
     public:
@@ -123,11 +124,10 @@ class GenericGeometryBuffer: public GenericBuffer {
     public:
         // virtual GeometryBufferDriverHandle createDriver(const VertexFormat &format) = 0;
         // GeometryBufferDriverHandle createDriver(const VertexFormatHandle format);
+        GLVertexFloat *getData() { return (GLVertexFloat*)data; }
         const VertexFormatHandle getFormat() const { return _vertexFormat; }
         BufferMapHandle getMap();
         void setMap(BufferMapHandle aValue);
-        
-    friend class GeometryBufferDriver;
 };
 
 typedef boost::shared_ptr<GenericGeometryBuffer> GenericGeometryBufferHandle;
@@ -267,165 +267,6 @@ class GeometryBuffer: public GenericGeometryBuffer {
             }
             GenericBuffer::unbind();
         }
-};
-
-/** 
- * This class provides typesafe access to a generic geometry buffer.
- * It exposes the neccessary get* and set* methods to access a buffer
- * of the specified vertex format (or a larger vertex format). For
- * example it should be possible to access a V4F_T2F buffer with a 
- * V3F driver.
- */
-class GeometryBufferDriver {
-    /*public:
-        class GeometryBufferDrivedView {
-            public:
-                GeometryBufferDrivedView(
-                    GeometryBufferDriver *driver,
-                    GLsizei vertexOffset,
-                    GLsizei vertexSize,
-                    GLsizei elementCount
-                );
-            private:
-                GeometryBufferDriver _driver;
-                GLsizei _vertexOffset;
-                GLsizei _vertexSize;
-                GLsizei _elementCount;
-            public:
-                void set(const GLsizei index, const VectorFloat &source);
-                void set(const GLsizei index, const Vector2f &source);
-                void set(const GLsizei index, const Vector3f &source);
-                void set(const GLsizei index, const Vector4f &source);
-
-                void get(const GLsizei index, const VectorFloat &dest);
-                void get(const GLsizei index, const Vector2f &dest);
-                void get(const GLsizei index, const Vector3f &dest);
-                void get(const GLsizei index, const Vector4f &dest);
-        };*/
-    private:
-        GeometryBufferDriver(const GenericGeometryBufferHandle bufferHandle):
-            _handle(bufferHandle),
-            _vertexFormat(bufferHandle->getFormat())
-        {
-            
-        }
-    public:
-        static GeometryBufferDriverHandle create(const GenericGeometryBufferHandle bufferHandle, const VertexFormatHandle targetFormat) 
-        {
-            if (!targetFormat->isCompatible(*(bufferHandle->getFormat().get()))) {
-                return GeometryBufferDriverHandle();
-            }
-            GeometryBufferDriver *driver = new GeometryBufferDriver(bufferHandle);
-            return GeometryBufferDriverHandle(driver);
-        }
-    private:
-        GenericGeometryBufferHandle _handle;
-        VertexFormatHandle _vertexFormat;
-    public:
-        GenericGeometryBufferHandle getHandle() { return _handle; }
-    public:
-        void setPosition(const GLsizei index, const Vector2f &source);
-        void setPosition(const GLsizei index, const Vector3f &source);
-        void setPosition(const GLsizei index, const Vector4f &source);
-        
-        void setPosition(const GLsizei index, const Vector2 &source) { setPosition(index, source.toVector2f()); }
-        void setPosition(const GLsizei index, const Vector3 &source) { setPosition(index, source.toVector3f()); }
-        void setPosition(const GLsizei index, const Vector4 &source) { setPosition(index, source.toVector4f()); }
-        
-        
-        void setColour(const GLsizei index, const Vector3f &source);
-        void setColour(const GLsizei index, const Vector4f &source);
-        
-        void setColour(const GLsizei index, const Vector3 &source) { setColour(index, source.toVector3f()); }
-        void setColour(const GLsizei index, const Vector4 &source) { setColour(index, source.toVector4f()); }
-        
-        void setTexCoord0(const GLsizei index, const GLVertexFloat &source);
-        void setTexCoord0(const GLsizei index, const Vector2f &source);
-        void setTexCoord0(const GLsizei index, const Vector3f &source);
-        void setTexCoord0(const GLsizei index, const Vector4f &source);
-        
-        void setTexCoord0(const GLsizei index, const Vector2 &source) { setTexCoord0(index, source.toVector2f()); };
-        void setTexCoord0(const GLsizei index, const Vector3 &source) { setTexCoord0(index, source.toVector3f()); };
-        void setTexCoord0(const GLsizei index, const Vector4 &source) { setTexCoord0(index, source.toVector4f()); };
-        
-        
-        void setTexCoord1(const GLsizei index, const VectorFloat &source);
-        void setTexCoord1(const GLsizei index, const Vector2f &source);
-        void setTexCoord1(const GLsizei index, const Vector3f &source);
-        void setTexCoord1(const GLsizei index, const Vector4f &source);
-        
-        void setTexCoord1(const GLsizei index, const Vector2 &source) { setTexCoord1(index, source.toVector2f()); };
-        void setTexCoord1(const GLsizei index, const Vector3 &source) { setTexCoord1(index, source.toVector3f()); };
-        void setTexCoord1(const GLsizei index, const Vector4 &source) { setTexCoord1(index, source.toVector4f()); };
-        
-        
-        void setTexCoord2(const GLsizei index, const VectorFloat &source);
-        void setTexCoord2(const GLsizei index, const Vector2f &source);
-        void setTexCoord2(const GLsizei index, const Vector3f &source);
-        void setTexCoord2(const GLsizei index, const Vector4f &source);
-        
-        void setTexCoord2(const GLsizei index, const Vector2 &source) { setTexCoord2(index, source.toVector2f()); };
-        void setTexCoord2(const GLsizei index, const Vector3 &source) { setTexCoord2(index, source.toVector3f()); };
-        void setTexCoord2(const GLsizei index, const Vector4 &source) { setTexCoord2(index, source.toVector4f()); };
-        
-        
-        void setTexCoord3(const GLsizei index, const VectorFloat &source);
-        void setTexCoord3(const GLsizei index, const Vector2f &source);
-        void setTexCoord3(const GLsizei index, const Vector3f &source);
-        void setTexCoord3(const GLsizei index, const Vector4f &source);
-        
-        void setTexCoord3(const GLsizei index, const Vector2 &source) { setTexCoord3(index, source.toVector2f()); };
-        void setTexCoord3(const GLsizei index, const Vector3 &source) { setTexCoord3(index, source.toVector3f()); };
-        void setTexCoord3(const GLsizei index, const Vector4 &source) { setTexCoord3(index, source.toVector4f()); };
-        
-        void setNormal(const GLsizei index, const Vector3f &source);
-        void setNormal(const GLsizei index, const Vector3 &source) { setNormal(index, source.toVector3f()); };
-        
-        void setVertexAttrib0(const GLsizei index, const VectorFloat &source);
-        void setVertexAttrib0(const GLsizei index, const Vector2f &source);
-        void setVertexAttrib0(const GLsizei index, const Vector3f &source);
-        void setVertexAttrib0(const GLsizei index, const Vector4f &source);
-        
-        void setVertexAttrib0(const GLsizei index, const Vector2 &source) { setVertexAttrib0(index, source.toVector2f()); };
-        void setVertexAttrib0(const GLsizei index, const Vector3 &source) { setVertexAttrib0(index, source.toVector3f()); };
-        void setVertexAttrib0(const GLsizei index, const Vector4 &source) { setVertexAttrib0(index, source.toVector4f()); };
-        
-        
-        void setVertexAttrib1(const GLsizei index, const VectorFloat &source);
-        void setVertexAttrib1(const GLsizei index, const Vector2f &source);
-        void setVertexAttrib1(const GLsizei index, const Vector3f &source);
-        void setVertexAttrib1(const GLsizei index, const Vector4f &source);
-        
-        void setVertexAttrib1(const GLsizei index, const Vector2 &source) { setVertexAttrib1(index, source.toVector2f()); };
-        void setVertexAttrib1(const GLsizei index, const Vector3 &source) { setVertexAttrib1(index, source.toVector3f()); };
-        void setVertexAttrib1(const GLsizei index, const Vector4 &source) { setVertexAttrib1(index, source.toVector4f()); };
-        
-        
-        void setVertexAttrib2(const GLsizei index, const VectorFloat &source);
-        void setVertexAttrib2(const GLsizei index, const Vector2f &source);
-        void setVertexAttrib2(const GLsizei index, const Vector3f &source);
-        void setVertexAttrib2(const GLsizei index, const Vector4f &source);
-        
-        void setVertexAttrib2(const GLsizei index, const Vector2 &source) { setVertexAttrib2(index, source.toVector2f()); };
-        void setVertexAttrib2(const GLsizei index, const Vector3 &source) { setVertexAttrib2(index, source.toVector3f()); };
-        void setVertexAttrib2(const GLsizei index, const Vector4 &source) { setVertexAttrib2(index, source.toVector4f()); };
-        
-        
-        void setVertexAttrib3(const GLsizei index, const VectorFloat &source);
-        void setVertexAttrib3(const GLsizei index, const Vector2f &source);
-        void setVertexAttrib3(const GLsizei index, const Vector3f &source);
-        void setVertexAttrib3(const GLsizei index, const Vector4f &source);
-        
-        void setVertexAttrib3(const GLsizei index, const Vector2 &source) { setVertexAttrib3(index, source.toVector2f()); };
-        void setVertexAttrib3(const GLsizei index, const Vector3 &source) { setVertexAttrib3(index, source.toVector3f()); };
-        void setVertexAttrib3(const GLsizei index, const Vector4 &source) { setVertexAttrib3(index, source.toVector4f()); };
-        
-        
-        void getPosition(const GLsizei index, Vector2f &dest);
-        void getPosition(const GLsizei index, Vector3f &dest);
-        void getPosition(const GLsizei index, Vector4f &dest);
-        
-        void getNormal(const GLsizei index, Vector3f &dest);
 };
 
 }

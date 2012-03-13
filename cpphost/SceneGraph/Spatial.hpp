@@ -27,7 +27,7 @@ named in the AUTHORS file.
 #ifndef _PYUNI_SCENEGRAPH_SPATIAL_H
 #define _PYUNI_SCENEGRAPH_SPATIAL_H
 
-#include "Matrices.hpp"
+#include "Math/Matrices.hpp"
 
 namespace PyUni {
 namespace SceneGraph {
