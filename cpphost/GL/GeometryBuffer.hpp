@@ -276,7 +276,7 @@ class GeometryBuffer: public GenericGeometryBuffer {
  * V3F driver.
  */
 class GeometryBufferDriver {
-    public:
+    /*public:
         class GeometryBufferDrivedView {
             public:
                 GeometryBufferDrivedView(
@@ -300,7 +300,7 @@ class GeometryBufferDriver {
                 void get(const GLsizei index, const Vector2f &dest);
                 void get(const GLsizei index, const Vector3f &dest);
                 void get(const GLsizei index, const Vector4f &dest);
-        }
+        };*/
     private:
         GeometryBufferDriver(const GenericGeometryBufferHandle bufferHandle):
             _handle(bufferHandle),

@@ -23,4 +23,75 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#include "StateManagament.hpp"
+#include "StateManagement.hpp"
+
+namespace PyUni {
+namespace GL {
+
+/* PyUni::GL::Group */
+
+Group::Group(const GroupHandle parent, int order):
+    _parent(parent),
+    _order(order)
+{
+
+}
+
+int Group::compare(const Group &other) const
+{
+    if (_parent)
+    {
+        if (other._parent)
+        {
+            int test = _parent->compare(other._parent);
+            if (test != 0)
+                return test;
+        } else
+        {
+            return 1;
+        }
+    }
+    if (_order > other._order)
+    {
+        return 1;
+    } else if (_order < other._order)
+    {
+        return -1;
+    } else
+    {
+        return 0;
+    }
+}
+
+bool Group::operator == (const Group &other) const
+{
+    return compare(other) == 0;
+}
+
+bool Group::operator != (const Group &other) const
+{
+    return compare(other) != 0;
+}
+
+bool Group::operator <  (const Group &other) const
+{
+    return compare(other) < 0;
+}
+
+bool Group::operator <= (const Group &other) const
+{
+    return compare(other) <= 0;
+}
+
+bool Group::operator >  (const Group &other) const
+{
+    return compare(other) > 0;
+}
+
+bool Group::operator >= (const Group &other) const
+{
+    return compare(other) >= 0;
+}
+
+}
+}

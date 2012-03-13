@@ -26,4 +26,33 @@ named in the AUTHORS file.
 #ifndef _PYUNI_GL_STATE_MANAGEMENT_H
 #define _PYUNI_GL_STATE_MANAGEMENT_H
 
+#include <boost/shared_ptr.hpp>
+
+namespace PyUni {
+namespace GL {
+
+class Group;
+
+typedef boost::shared_ptr<Group> GroupHandle;
+
+class Group {
+    public:
+        Group(const GroupHandle parent, int order = 0);
+    protected:
+        const GroupHandle _parent;
+        const int _order;
+    protected:
+        int compare(const Group &other) const;
+    public:
+        bool operator == (const Group &other) const;
+        bool operator != (const Group &other) const;
+        bool operator <  (const Group &other) const;
+        bool operator <= (const Group &other) const;
+        bool operator >  (const Group &other) const;
+        bool operator >= (const Group &other) const;
+};
+
+}
+}
+
 #endif
