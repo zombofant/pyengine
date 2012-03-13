@@ -30,16 +30,22 @@ namespace GL {
 
 /* PyUni::GL::Group */
 
-Group::Group(const GroupHandle parent, int order):
-    _parent(parent),
-    _order(order)
+Group::Group(int order):
+    _order(order),
+    _indexBuffer(new StaticIndexBuffer()),
+    _ibHandle(_indexBuffer)
 {
 
 }
 
+void Group::drawGeometry() const
+{
+    _indexBuffer->draw(GL_TRIANGLES);
+}
+
 int Group::compare(const Group &other) const
 {
-    if (_parent)
+    /*if (_parent)
     {
         if (other._parent)
         {
@@ -50,7 +56,7 @@ int Group::compare(const Group &other) const
         {
             return 1;
         }
-    }
+    }*/
     if (_order > other._order)
     {
         return 1;
@@ -91,6 +97,88 @@ bool Group::operator >  (const Group &other) const
 bool Group::operator >= (const Group &other) const
 {
     return compare(other) >= 0;
+}
+
+void Group::execute()
+{
+    drawGeometry();
+}
+
+/* PyUni::GL::ParentGroup */
+
+ParentGroup::ParentGroup(int order):
+    Group::Group(order),
+    _children()
+{
+
+}
+
+void ParentGroup::executeChildren()
+{
+    for (auto it = _children.begin();
+        it != _children.end();
+        it++)
+    {
+        const GroupHandle handle = *it;
+        handle->execute();
+    }
+}
+
+void ParentGroup::execute()
+{
+    setUp();
+    this->Group::execute();
+    executeChildren();
+    tearDown();
+}
+
+void ParentGroup::setUp()
+{
+
+}
+
+void ParentGroup::tearDown()
+{
+
+}
+
+/* PyUni::GL::StateGroup */
+
+StateGroup::StateGroup(StructHandle glObject, int order):
+    ParentGroup::ParentGroup(order),
+    _glObjectHandle(glObject),
+    _glObject(_glObjectHandle.get())
+{
+    
+}
+
+void StateGroup::setUp()
+{
+    _glObject->bind();
+}
+
+void StateGroup::tearDown()
+{
+    _glObject->unbind();
+}   
+
+/* PyUni::GL::TransformGroup */
+
+TransformGroup::TransformGroup(const Matrix4f *matrix, int order):
+    ParentGroup::ParentGroup(order),
+    _matrix(matrix)
+{
+    
+}
+
+void TransformGroup::setUp()
+{
+    glLoadMatrixf(_matrix->coeff);
+}
+
+void TransformGroup::tearDown()
+{
+    glLoadIdentity();
 }
 
 }

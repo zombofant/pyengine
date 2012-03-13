@@ -49,6 +49,7 @@ typedef float GLVertexFloat;
 typedef GLsizei VertexIndex;
 typedef std::vector<VertexIndex> VertexIndexList;
 typedef boost::shared_ptr<VertexIndexList> VertexIndexListHandle;
+typedef boost::weak_ptr<VertexIndexList> WeakVertexIndexListHandle;
 typedef std::vector<VertexIndexListHandle> VertexIndexListHandleList;
 
 #define glType GL_FLOAT

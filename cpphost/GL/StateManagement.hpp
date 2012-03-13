@@ -28,6 +28,11 @@ named in the AUTHORS file.
 
 #include <boost/shared_ptr.hpp>
 
+#include "Math/Matrices.hpp"
+
+#include "Base.hpp"
+#include "IndexBuffer.hpp"
+
 namespace PyUni {
 namespace GL {
 
@@ -37,12 +42,16 @@ typedef boost::shared_ptr<Group> GroupHandle;
 
 class Group {
     public:
-        Group(const GroupHandle parent, int order = 0);
+        Group(int order = 0);
     protected:
-        const GroupHandle _parent;
         const int _order;
+        StaticIndexBuffer *_indexBuffer;
+        StaticIndexBufferHandle _ibHandle;
     protected:
+        void drawGeometry() const;
+    public:
         int compare(const Group &other) const;
+        StaticIndexBufferHandle getIndexBuffer() { return _ibHandle; };
     public:
         bool operator == (const Group &other) const;
         bool operator != (const Group &other) const;
@@ -50,6 +59,45 @@ class Group {
         bool operator <= (const Group &other) const;
         bool operator >  (const Group &other) const;
         bool operator >= (const Group &other) const;
+    public:
+        virtual void execute();
+};
+
+class ParentGroup: public Group {
+    public:
+        ParentGroup(int order = 0);
+    protected:
+        std::vector<GroupHandle> _children;
+    protected:
+        void executeChildren();
+    public:
+        void add(GroupHandle handle);
+        void remove(GroupHandle handle);
+    public:
+        virtual void execute();
+        virtual void setUp();
+        virtual void tearDown();
+};
+
+class StateGroup: public ParentGroup {
+    public:
+        StateGroup(StructHandle glObject, int order = 0);
+    private:
+        StructHandle _glObjectHandle;
+        Struct *_glObject;
+    public:
+        virtual void setUp();
+        virtual void tearDown();
+};
+
+class TransformGroup: public ParentGroup {
+    public:
+        TransformGroup(const Matrix4f *matrix, int order = 0);
+    private:
+        const Matrix4f *_matrix;
+    public:
+        virtual void setUp();
+        virtual void tearDown();
 };
 
 }

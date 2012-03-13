@@ -60,6 +60,7 @@ class Class: public Struct {
         GLuint getID() const { return glID; }
 };
 
+typedef boost::shared_ptr<Struct> StructHandle;
 typedef boost::shared_ptr<Class> ClassHandle;
 
 // void raiseLastGLError();
