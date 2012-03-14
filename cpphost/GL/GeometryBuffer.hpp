@@ -34,6 +34,7 @@ named in the AUTHORS file.
 #include <list>
 #include <set>
 #include <vector>
+#include <string>
 #include <boost/shared_ptr.hpp>
 #include "BufferMap.hpp"
 #include "GenericBuffer.hpp"
@@ -95,7 +96,6 @@ struct VertexFormat {
             (format.nVertexAttrib2 > nVertexAttrib2) ||
             (format.nVertexAttrib3 > nVertexAttrib3));
     }
-
 };
 typedef boost::shared_ptr<VertexFormat> VertexFormatHandle;
 
@@ -127,6 +127,7 @@ class GenericGeometryBuffer: public GenericBuffer {
         GLVertexFloat *getData() { return (GLVertexFloat*)data; }
         const VertexFormatHandle getFormat() const { return _vertexFormat; }
         BufferMapHandle getMap();
+        void invalidateRange(const GLsizei minIndex, const GLsizei maxIndex);
         void setMap(BufferMapHandle aValue);
 };
 

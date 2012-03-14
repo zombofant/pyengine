@@ -5,5 +5,6 @@ add_library(pyuni_GL
     "IndexBuffer.cpp"
     "StateManagement.cpp"
     "GeometryBufferView.cpp"
+    "GeometryObject.cpp"
 )
 add_dependencies(pyuni_GL pyuni_Math)

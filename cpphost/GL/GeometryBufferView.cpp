@@ -24,6 +24,7 @@ For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
 #include "GeometryBufferView.hpp"
+#include "GeometryObject.hpp"
 
 namespace PyUni {
 namespace GL {
@@ -32,10 +33,12 @@ namespace GL {
 
 GeometryBufferView::GeometryBufferView(
         const GenericGeometryBufferHandle buffer,
+        const VertexFormatHandle desiredFormat,
         const VertexIndexListHandle indicies):
     _buffer(buffer),
     _bufferFormat(buffer->getFormat()),
     _indicies(indicies),
+    _map(new VertexIndexListMap(indicies)),
     _position(newAttribView(_bufferFormat->posOffset, _bufferFormat->nPosition, _bufferFormat->vertexSize)),
     _colour(newAttribView(_bufferFormat->colourOffset, _bufferFormat->nColour, _bufferFormat->vertexSize)),
     _texCoord({
@@ -52,7 +55,9 @@ GeometryBufferView::GeometryBufferView(
         newAttribView(_bufferFormat->vertexAttrib3Offset, _bufferFormat->nVertexAttrib3, _bufferFormat->vertexSize)
     })
 {
-    
+    if (!desiredFormat->isCompatible(*(buffer->getFormat().get()))) {
+        throw std::exception();
+    }
 }
 
 GeometryBufferView::AttributeView *GeometryBufferView::newAttribView(
@@ -62,19 +67,7 @@ GeometryBufferView::AttributeView *GeometryBufferView::newAttribView(
 {
     if (attribLength == 0)
         return 0;
-    return new AttributeView(this, attribOffset, attribLength, vertexSize);
-}
-
-GeometryBufferViewHandle GeometryBufferView::create(
-    const GenericGeometryBufferHandle buffer,
-    const VertexFormatHandle desiredFormat,
-    const VertexIndexListHandle indicies)
-{
-    if (!desiredFormat->isCompatible(*(buffer->getFormat().get()))) {
-        return GeometryBufferViewHandle();
-    }
-    GeometryBufferView *view = new GeometryBufferView(buffer, indicies);
-    return GeometryBufferViewHandle(view);
+    return new AttributeView(this, attribOffset / sizeof(GLVertexFloat), attribLength, vertexSize);
 }
 
 GeometryBufferView::AttributeView *GeometryBufferView::getTexCoordView(const unsigned int texCoordIndex)
@@ -130,10 +123,11 @@ GLsizei GeometryBufferView::AttributeView::getSize()
 }
 
 GeometryBufferView::AttributeSlice *GeometryBufferView::AttributeView::slice(
-    const GLsizei start, const GLsizei stop, const GLsizei step)
+    const GLsizei start, const GLsizei stop, const GLsizei step,
+    const GLsizei attribOffset, const GLsizei attribLength)
 {
     GeometryBufferView::AttributeSlice *slice = _slice;
-    slice->setUp(start, stop, step);
+    slice->setUp(start, stop, step, _attribOffset + attribOffset, (attribLength>1?attribLength:_attribLength));
     return slice;
 }
 
@@ -148,42 +142,95 @@ GeometryBufferView::AttributeSlice::AttributeSlice(AttributeView *view):
     _view(view),
     _start(0),
     _stop(0),
-    _step(1)
+    _step(1),
+    _attribOffset(_view->_attribOffset),
+    _attribLength(_view->_attribLength)
 {
 
 }
 
 void GeometryBufferView::AttributeSlice::setUp(const GLsizei start,
-    const GLsizei stop, const GLsizei step)
+    const GLsizei stop, const GLsizei step, const GLsizei attribOffset,
+    const GLsizei attribLength)
 {
     assert(start >= 0);
     assert(start <= stop);
     assert(step >= 1);
     assert(stop <= _view->_vertexCount);
+    assert(attribOffset >= 0);
+    assert(attribLength <= (_view->_attribLength - attribOffset));
     _start = start;
     _stop = stop;
     _step = step;
+    _attribOffset = attribOffset;
+    _attribLength = attribLength;
 }
 
 void GeometryBufferView::AttributeSlice::get(GLVertexFloat *data)
 {
     GLsizei vertexLength = _view->_vertexLength;
-    
-    GLsizei step = _step * vertexLength;
-    GLsizei len = getLength();
-    GLsizei dstStep = _view->_attribLength;
-    GLsizei attribSize = dstStep * sizeof(GLVertexFloat);
+    GLsizei attribOffset = _attribOffset;
+    GLsizei dstStep = _attribLength;
 
-    GLVertexFloat *src = _view->_view->getHandle()->getData();
-    src += _start * vertexLength + _view->_attribOffset;
-    
-    for (GLsizei i = 0; i < len; i++)
+    const GLsizei copySize = _attribLength * sizeof(GLVertexFloat);
+
+    GLVertexFloat *src = _view->_view->_buffer->getData();
+    BufferMap *map = _view->_view->_map;
+
+    GLVertexFloat *dest = data;
+    for (GLsizei i = _start; i < _stop; i += _step)
     {
-        memcpy(data, src, attribSize);
-        src += step;
-        data += dstStep;
+        const GLsizei actualIndex = map->map(i);
+        const GLsizei floatIndex = actualIndex * vertexLength + attribOffset;
+        memcpy(dest, &src[floatIndex], copySize);
+        dest += dstStep;
     }
 }
+
+GLsizei GeometryBufferView::AttributeSlice::getAttributeLength()
+{
+    return _attribLength;
+}
+
+GLsizei GeometryBufferView::AttributeSlice::getLength()
+{
+    return (_stop - _start) / _step;
+}
+
+GLsizei GeometryBufferView::AttributeSlice::getSize()
+{
+    return sizeof(GLVertexFloat) * getLength() * getAttributeLength();
+}
+
+void GeometryBufferView::AttributeSlice::set(const GLVertexFloat *data)
+{
+    GLsizei vertexLength = _view->_vertexLength;
+    GLsizei attribOffset = _attribOffset;
+    GLsizei srcStep = _attribLength;
+
+    const GLsizei copySize = _attribLength * sizeof(GLVertexFloat);
+
+    GLVertexFloat *dest = _view->_view->_buffer->getData();
+    BufferMap *map = _view->_view->_map;
+
+    const GLVertexFloat *src = data;
+
+    GLsizei minIndex = -1, maxIndex = -1;
+
+    for (GLsizei i = _start; i < _stop; i += _step)
+    {
+        const GLsizei actualIndex = map->map(i);
+        minIndex = ((actualIndex<minIndex) || (minIndex == -1)?actualIndex:minIndex);
+        minIndex = ((actualIndex>maxIndex) || (maxIndex == -1)?actualIndex:maxIndex);
+        
+        const GLsizei floatIndex = actualIndex * vertexLength + attribOffset;
+        memcpy(&dest[floatIndex], src, copySize);
+        src += srcStep;
+    }
+
+    _view->_view->_buffer->invalidateRange(minIndex, maxIndex);
+}
+
 
 }
 }

@@ -15,6 +15,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "CMakeModules")
 
 find_package(rt REQUIRED)
 find_package(OpenGL REQUIRED)
+find_package(GLEW REQUIRED)
 # probably here we should configure the WindowInterface component
 # to use, for now just X11 is supported
 find_package(X11 COMPONENTS Xinerama REQUIRED)

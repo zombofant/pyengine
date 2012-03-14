@@ -1,5 +1,5 @@
 /**********************************************************************
-File name: GL.hpp
+File name: GeometryObject.hpp
 This file is part of: Pythonic Universe
 
 LICENSE
@@ -23,47 +23,27 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_PYTHON_GL_H
-#define _PYUNI_PYTHON_GL_H
+#ifndef _PYUNI_GL_GEOMETRY_OBJECT_H
+#define _PYUNI_GL_GEOMETRY_OBJECT_H
 
-#include <boost/python.hpp>
-#include <string>
-
-#include "GL/Base.hpp"
-#include "GL/StateManagement.hpp"
-#include "GL/GeometryBuffer.hpp"
-#include "GL/GeometryBufferView.hpp"
+#include "BufferMap.hpp"
+#include "GeometryBuffer.hpp"
 
 namespace PyUni {
+namespace GL {
 
-class StructWrap: public GL::Struct, public boost::python::wrapper<GL::Struct>
-{
-    virtual void bind()
-    {
-        this->get_override("bind")();
-    }
-    
-    virtual void unbind()
-    {
-        this->get_override("unbind")();
-    }
+class VertexIndexListMap: public BufferMap {
+    public:
+        VertexIndexListMap(const VertexIndexListHandle vertices);
+    private:
+        const VertexIndexListHandle _vertices;
+    protected:
+        void rangeCheck(const size_t index);
+    public:
+        virtual size_t map(const size_t index);
 };
 
-class ClassWrap: public GL::Class, public boost::python::wrapper<GL::Class>
-{
-    virtual void bind()
-    {
-        this->get_override("bind")();
-    }
-    
-    virtual void unbind()
-    {
-        this->get_override("unbind")();
-    }
-};
-
-void addGLToInittab();
-
+}
 }
 
 #endif

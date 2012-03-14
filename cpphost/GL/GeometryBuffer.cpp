@@ -201,6 +201,13 @@ void GenericGeometryBuffer::autoFlush() {
     _dirtyVertices.clear();
 }
 
+void GenericGeometryBuffer::invalidateRange(const GLsizei minIndex,
+    const GLsizei maxIndex)
+{
+    _dirtyVertices.insert(minIndex);
+    _dirtyVertices.insert(maxIndex);
+}
+
 void GenericGeometryBuffer::setMap(BufferMapHandle aValue) {
     bufferMap = aValue;
 }

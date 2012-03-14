@@ -57,7 +57,10 @@ class GeometryBufferView {
                 void get(GLVertexFloat *data);
                 GLsizei getLength();
                 GLsizei getSize();
-                AttributeSlice *slice(const GLsizei start, const GLsizei stop, const GLsizei step = 1);
+                AttributeSlice *slice(const GLsizei start,
+                    const GLsizei stop, const GLsizei step = 1,
+                    const GLsizei attribOffset = 0,
+                    const GLsizei attribLength = -1);
                 void set(const GLVertexFloat *data);
 
             friend class AttributeSlice;
@@ -67,32 +70,28 @@ class GeometryBufferView {
                 AttributeSlice(AttributeView *view);
             private:
                 AttributeView *_view;
-                GLsizei _start, _stop, _step;
+                GLsizei _start, _stop, _step, _attribOffset, _attribLength;
             protected:
-                void setUp(const GLsizei start, const GLsizei stop, const GLsizei step = 1);
+                void setUp(const GLsizei start, const GLsizei stop, const GLsizei step,
+                    const GLsizei attribOffset, const GLsizei attribLength);
             public:
                 void get(GLVertexFloat *data);
+                GLsizei getAttributeLength();
                 GLsizei getLength();
                 GLsizei getSize();
                 void set(const GLVertexFloat *data);
 
             friend class AttributeView;
         };
-    private:
-        GeometryBufferView(const GenericGeometryBufferHandle bufferHandle,
-            const VertexIndexListHandle indicies);
-        AttributeView *newAttribView(
-            const GLsizei attribOffset, const GLsizei attribLength,
-            const GLsizei vertexSize);
     public:
-        static GeometryBufferViewHandle create(
-            const GenericGeometryBufferHandle bufferHandle,
+        GeometryBufferView(const GenericGeometryBufferHandle bufferHandle,
             const VertexFormatHandle desiredFormat,
             const VertexIndexListHandle indicies);
     private:
         GenericGeometryBufferHandle _buffer;
         VertexFormatHandle _bufferFormat;
         VertexIndexListHandle _indicies;
+        BufferMap *_map;
     private:
         AttributeView
             *_position,
@@ -100,6 +99,10 @@ class GeometryBufferView {
             *_texCoord[BUFFER_TEX_COORD_COUNT],
             *_normal,
             *_vertexAttrib[BUFFER_VERTEX_ATTRIB_COUNT];
+    private:
+        AttributeView *newAttribView(
+            const GLsizei attribOffset, const GLsizei attribLength,
+            const GLsizei vertexSize);
     public:
         GenericGeometryBufferHandle getHandle() { return _buffer; }
         GLsizei getLength() const { return _indicies->size(); }
@@ -109,6 +112,9 @@ class GeometryBufferView {
         AttributeView *getTexCoordView(const unsigned int texCoordIndex);
         AttributeView *getNormalView() { return _normal; };
         AttributeView *getVertexAttribView(const unsigned int attribIndex);
+
+    friend class AttributeView;
+    friend class AttributeSlice;
 };
 
 }

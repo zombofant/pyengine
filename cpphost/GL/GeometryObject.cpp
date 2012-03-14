@@ -1,5 +1,5 @@
 /**********************************************************************
-File name: GL.hpp
+File name: GeometryObject.cpp
 This file is part of: Pythonic Universe
 
 LICENSE
@@ -23,47 +23,37 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_PYTHON_GL_H
-#define _PYUNI_PYTHON_GL_H
+#include "GeometryObject.hpp"
 
-#include <boost/python.hpp>
-#include <string>
-
-#include "GL/Base.hpp"
-#include "GL/StateManagement.hpp"
-#include "GL/GeometryBuffer.hpp"
-#include "GL/GeometryBufferView.hpp"
+#include <iostream>
 
 namespace PyUni {
+namespace GL {
 
-class StructWrap: public GL::Struct, public boost::python::wrapper<GL::Struct>
+/* PyUni::GL::VertexIndexListMap */
+
+VertexIndexListMap::VertexIndexListMap(const VertexIndexListHandle vertices):
+    BufferMap(),
+    _vertices(vertices)
 {
-    virtual void bind()
-    {
-        this->get_override("bind")();
-    }
     
-    virtual void unbind()
-    {
-        this->get_override("unbind")();
-    }
-};
-
-class ClassWrap: public GL::Class, public boost::python::wrapper<GL::Class>
-{
-    virtual void bind()
-    {
-        this->get_override("bind")();
-    }
-    
-    virtual void unbind()
-    {
-        this->get_override("unbind")();
-    }
-};
-
-void addGLToInittab();
-
 }
 
-#endif
+void VertexIndexListMap::rangeCheck(const size_t index) {
+    if ((index < 0) || (index >= _vertices->size())) {
+        // throw IndexError(index, 0, _vertices->size()-1);
+        std::cerr << "throw IndexError(" << index << ", " << 0 << ", " << _vertices->size()-1 << ");" << std::endl;
+        throw std::exception();
+    }
+}
+
+size_t VertexIndexListMap::map(const size_t index) {
+    const size_t mappedIndex = BufferMap::map(index);
+    rangeCheck(mappedIndex);
+    const VertexIndexList *list = _vertices.get();
+    return (*list)[mappedIndex];
+}
+
+
+}
+}
