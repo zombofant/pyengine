@@ -53,7 +53,7 @@ void Node::addChild(SpatialHandle child)
     assert(child);
     assert(!child->getParent());
 
-    child->setParent(getHandle()); // FIXME
+    child->setParent(_weak.lock());
 
     // try to find a free slot in the current vector
     std::vector<SpatialHandle>::iterator iter = children.begin();
@@ -74,7 +74,7 @@ void Node::removeChild(SpatialHandle child)
 {
     assert(child);
 
-    if(child->getParent() != this)
+    if(child->getParent().get() != this)
         return;
 
     std::vector<SpatialHandle>::iterator iter = children.begin();
@@ -103,6 +103,14 @@ void Node::updateWorldData()
         }
     }
 }
+
+NodeHandle Node::create()
+{
+    NodeHandle tmp(new Node());
+    tmp->_weak = tmp;
+    return tmp;
+}   
+    
 
 }
 }

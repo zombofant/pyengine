@@ -29,25 +29,21 @@ named in the AUTHORS file.
 namespace PyUni {
 namespace SceneGraph {
 
-SceneGraph::SceneGraph()
+SceneGraph::SceneGraph():
+    _root(Node::create())
 {
-    root = new Node();
-}
-
-SceneGraph::~SceneGraph()
-{
-    delete root;
+    
 }
 
 void SceneGraph::update()
 {
-    root->updateGeometry();
+    _root->updateGeometry();
 }
 
 void SceneGraph::draw()
 {
-    root->onDraw();
-    root->draw();
+    _root->onDraw();
+    _root->draw();
 }
 
 }

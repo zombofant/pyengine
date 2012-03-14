@@ -41,8 +41,9 @@ typedef boost::weak_ptr<Spatial> WeakSpatialHandle;
 
 class Spatial
 {
-    public:
+    protected:
         Spatial();
+    public:
         virtual ~Spatial();
 
         //Bound worldBound;
@@ -57,10 +58,13 @@ class Spatial
         virtual void onDraw();
         virtual void draw();
 
+        static SpatialHandle create();
     protected:
+        WeakSpatialHandle _parent;
+        WeakSpatialHandle _weak;
+        
         virtual void updateWorldData();
 
-        WeakSpatialHandle _parent;
 };
 
 }

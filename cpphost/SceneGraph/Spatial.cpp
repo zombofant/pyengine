@@ -29,7 +29,8 @@ named in the AUTHORS file.
 namespace PyUni {
 namespace SceneGraph {
 
-Spatial::Spatial() : _parent(WeakSpatialHandle())
+Spatial::Spatial():
+    _parent()
 {
 }
 
@@ -72,6 +73,13 @@ void Spatial::onDraw()
 
 void Spatial::draw()
 {
+}
+
+SpatialHandle Spatial::create()
+{
+    SpatialHandle tmp(new Spatial());
+    tmp->_weak = tmp;
+    return tmp;
 }
 
 }

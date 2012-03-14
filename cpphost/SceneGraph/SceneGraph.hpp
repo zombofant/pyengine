@@ -41,10 +41,10 @@ class SceneGraph
         void update();
         void draw();
 
-        inline Node* getRoodNode() const { return root; }
+        inline NodeHandle getRoodNode() const { return _root; }
 
     protected:
-        Node *root;
+        NodeHandle _root;
 };
 
 }

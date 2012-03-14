@@ -41,13 +41,15 @@ typedef boost::shared_ptr<Node> NodeHandle;
 
 class Node : public Spatial
 {
-    public:
+    protected:
         Node();
+    public:
         ~Node();
 
         void addChild(SpatialHandle child);
         void removeChild(SpatialHandle child);
 
+        static NodeHandle create();
     protected:
         virtual void updateWorldData();
 
