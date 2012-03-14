@@ -30,8 +30,8 @@ namespace RenderGraph {
 
 /* PyUni::RenderGraph::DeferredShadingStage */
 
-DeferredShadingStage::DeferredShadingStage(Stage *parent,
-    GLuint geometryFBO, GLuint resultFBO, NodeHandle geometryNode):
+DeferredShadingStage::DeferredShadingStage(StageHandle parent,
+        GLuint geometryFBO, GLuint resultFBO, NodeHandle geometryNode):
     Stage::Stage(parent),
     _geometryFBO(geometryFBO),
     _resultFBO(resultFBO),

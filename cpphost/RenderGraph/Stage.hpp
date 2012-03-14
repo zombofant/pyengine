@@ -27,18 +27,24 @@ named in the AUTHORS file.
 #define _PYUNI_RENDERGRAPH_STAGE_H
 
 #include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
 
 namespace PyUni {
 namespace RenderGraph {
 
 class Stage;
 
+typedef boost::shared_ptr<Stage> StageHandle;
+typedef boost::weak_ptr<Stage> WeakStageHandle;
+
 class Node {
     public:
-        Node(Stage *parent);
+        Node(StageHandle parent);
         virtual ~Node();
     protected:
-        Stage *_parent;
+        WeakStageHandle _parent;
+    public:
+        StageHandle getParent();
     public:
         virtual void execute() = 0;
 };
@@ -47,7 +53,7 @@ typedef boost::shared_ptr<Node> NodeHandle;
 
 class Stage: public Node {
     public:
-        Stage(Stage *parent);
+        Stage(StageHandle parent);
         virtual ~Stage();
     protected:
         std::vector<NodeHandle> _nodes;

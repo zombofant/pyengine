@@ -1,5 +1,5 @@
 /**********************************************************************
-File name: Package.cpp
+File name: RenderGraph.hpp
 This file is part of: Pythonic Universe
 
 LICENSE
@@ -23,18 +23,50 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#include "Package.hpp"
-#include "Window.hpp"
-#include "GL.hpp"
-#include "RenderGraph.hpp"
+#ifndef _PYUNI_PYTHON_RENDER_GRAPH_H
+#define _PYUNI_PYTHON_RENDER_GRAPH_H
+
+#include <boost/python.hpp>
+#include "RenderGraph/Stage.hpp"
 
 namespace PyUni {
 
-void addCUniToInittab()
+class NodeWrap: public RenderGraph::Node, public boost::python::wrapper<RenderGraph::Node>
 {
-    addWindowToInittab();
-    addGLToInittab();
-    addRenderGraphToInittab();
-}
+    public:
+        NodeWrap(RenderGraph::StageHandle parent);
+    public:
+        virtual void execute()
+        {
+            this->get_override("execute")();
+        }
+};
+
+class StageWrap: public RenderGraph::Stage, public boost::python::wrapper<RenderGraph::Stage>
+{
+    public:
+        StageWrap(RenderGraph::StageHandle parent);
+    public:
+        void __bp_execute()
+        {
+            Stage::execute();
+        }
+        
+        virtual void execute()
+        {
+            if (boost::python::override f = this->get_override("execute"))
+            {
+                f();
+            }
+            else
+            {
+                Stage::execute();
+            }
+        }
+};
+
+void addRenderGraphToInittab();
 
 }
+
+#endif

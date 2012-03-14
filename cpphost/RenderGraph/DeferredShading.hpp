@@ -35,13 +35,21 @@ namespace RenderGraph {
 class DeferredShadingStage: public Stage
 {
     public:
-        DeferredShadingStage(Stage *parent, GLuint geometryFBO,
+        DeferredShadingStage(StageHandle parent, GLuint geometryFBO,
             GLuint resultFBO, NodeHandle geometryNode);
     private:
         GLuint _geometryFBO, _resultFBO;
         NodeHandle _geometryNode;
     public:
         virtual void execute();
+    public:
+        GLuint getGeometryFBO() { return _geometryFBO; }
+        NodeHandle getGeometryNode() { return NodeHandle(_geometryNode); }
+        GLuint getResultFBO() { return _resultFBO; }
+
+        void setGeometryFBO(const GLuint value) { _geometryFBO = value; }
+        void setGeometryNode(NodeHandle value) { _geometryNode = value; }
+        void setResultFBO(const GLuint value) { _resultFBO = value; }
 };
 
 }

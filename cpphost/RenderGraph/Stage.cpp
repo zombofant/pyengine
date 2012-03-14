@@ -30,7 +30,7 @@ namespace RenderGraph {
 
 /* PyUni::RenderGraph::Node */
 
-Node::Node(Stage *parent):
+Node::Node(StageHandle parent):
     _parent(parent)
 {
     
@@ -41,9 +41,14 @@ Node::~Node()
 
 }
 
+StageHandle Node::getParent()
+{
+    return _parent.lock();
+}
+
 /* PyUni::RenderGraph::Stage */
 
-Stage::Stage(Stage *parent):
+Stage::Stage(StageHandle parent):
     Node::Node(parent),
     _nodes()
 {
