@@ -68,6 +68,7 @@ WindowHandle X11Display::createWindow(const DisplayMode &mode, int w, int h, boo
         GLX_ALPHA_SIZE      , mode.alphaBits,
         GLX_STENCIL_SIZE    , mode.stencilBits,
         GLX_DOUBLEBUFFER    , mode.doubleBuffered,
+        GLX_SAMPLES         , mode.samples,
         None
     };
 
