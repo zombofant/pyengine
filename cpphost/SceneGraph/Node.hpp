@@ -28,25 +28,32 @@ named in the AUTHORS file.
 #define _PYUNI_SCENEGRAPH_NODE_H
 
 #include <vector>
+#include <boost/shared_ptr.hpp>
 
 #include "Spatial.hpp"
 
 namespace PyUni {
 namespace SceneGraph {
 
+class Node;
+
+typedef boost::shared_ptr<Node> NodeHandle;
+
 class Node : public Spatial
 {
-    public:
+    protected:
         Node();
+    public:
         ~Node();
 
-        void addChild(Spatial *child);
-        void removeChild(Spatial *child);
+        void addChild(SpatialHandle child);
+        void removeChild(SpatialHandle child);
 
+        static NodeHandle create();
     protected:
         virtual void updateWorldData();
 
-        std::vector<Spatial*> children; 
+        std::vector<SpatialHandle> children; 
 };
 
 }

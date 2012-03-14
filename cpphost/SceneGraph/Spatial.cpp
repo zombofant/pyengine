@@ -29,12 +29,23 @@ named in the AUTHORS file.
 namespace PyUni {
 namespace SceneGraph {
 
-Spatial::Spatial() : parent(0)
+Spatial::Spatial():
+    _parent()
 {
 }
 
 Spatial::~Spatial()
 {
+}
+
+SpatialHandle Spatial::getParent()
+{
+    return _parent.lock();
+}
+
+void Spatial::setParent(SpatialHandle s)
+{
+    _parent = s;
 }
 
 void Spatial::updateGeometry(bool initiator)
@@ -44,9 +55,11 @@ void Spatial::updateGeometry(bool initiator)
 
 void Spatial::updateWorldData()
 {
-    if(parent)
+    SpatialHandle p = getParent();
+
+    if(p.get())
     {
-        worldTransformation = parent->worldTransformation*localTransformation;
+        worldTransformation = p->worldTransformation*localTransformation;
     }
     else
     {
@@ -60,6 +73,13 @@ void Spatial::onDraw()
 
 void Spatial::draw()
 {
+}
+
+SpatialHandle Spatial::create()
+{
+    SpatialHandle tmp(new Spatial());
+    tmp->_weak = tmp;
+    return tmp;
 }
 
 }
