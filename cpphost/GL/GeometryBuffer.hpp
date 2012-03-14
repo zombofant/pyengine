@@ -64,11 +64,11 @@ struct VertexFormat {
         nTexCoord1, nTexCoord2, nTexCoord3, nVertexAttrib0,
         nVertexAttrib1, nVertexAttrib2, nVertexAttrib3;
     const bool normal;
-    const GLsizei posOffset, colourOffset, texCoord0Offset, 
+    const size_t posOffset, colourOffset, texCoord0Offset, 
         texCoord1Offset, texCoord2Offset, texCoord3Offset,
         normalOffset, vertexAttrib0Offset, vertexAttrib1Offset,
         vertexAttrib2Offset, vertexAttrib3Offset;
-    const GLsizei vertexSize, vertexLength;
+    const size_t vertexSize, vertexLength;
     
     
     VertexFormat(const unsigned int aNPosition = 0,
@@ -96,6 +96,8 @@ struct VertexFormat {
             (format.nVertexAttrib2 > nVertexAttrib2) ||
             (format.nVertexAttrib3 > nVertexAttrib3));
     }
+
+    static VertexFormat *copy(const VertexFormat *vf);
 };
 typedef boost::shared_ptr<VertexFormat> VertexFormatHandle;
 
@@ -104,7 +106,7 @@ class GeometryBuffer: public GenericBuffer {
     public:
         GeometryBuffer(const VertexFormatHandle vertexFormat, const GLenum aPurpose);
     protected:
-        const VertexFormatHandle _vertexFormat;
+        const VertexFormat *_vertexFormat;
         VertexIndexListHandleList _handles;
         std::list<VertexIndex> _freeVertices;
         std::set<VertexIndex> _dirtyVertices;
@@ -125,10 +127,13 @@ class GeometryBuffer: public GenericBuffer {
         // virtual GeometryBufferDriverHandle createDriver(const VertexFormat &format) = 0;
         // GeometryBufferDriverHandle createDriver(const VertexFormatHandle format);
         GLVertexFloat *getData() { return (GLVertexFloat*)data; }
-        const VertexFormatHandle getFormat() const { return _vertexFormat; }
+        const VertexFormat *getFormat() const { return _vertexFormat; }
         BufferMapHandle getMap();
         void invalidateRange(const GLsizei minIndex, const GLsizei maxIndex);
         void setMap(BufferMapHandle aValue);
+    public:
+        virtual void bind();
+        virtual void unbind();
 };
 
 typedef boost::shared_ptr<GeometryBuffer> GeometryBufferHandle;

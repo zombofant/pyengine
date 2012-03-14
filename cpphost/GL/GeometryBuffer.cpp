@@ -82,11 +82,28 @@ VertexFormat::VertexFormat(const unsigned int aNPosition,
     assert(vertexSize > 0); // this is a true assertion; with the first assert, this should never throw.
 }
 
+VertexFormat *VertexFormat::copy(const VertexFormat *vf)
+{
+    return new VertexFormat(
+        vf->nPosition,
+        vf->nColour,
+        vf->nTexCoord0,
+        vf->nTexCoord1,
+        vf->nTexCoord2,
+        vf->nTexCoord3,
+        vf->normal,
+        vf->nVertexAttrib0,
+        vf->nVertexAttrib1,
+        vf->nVertexAttrib2,
+        vf->nVertexAttrib3
+    );
+}
+
 /* PyUni::GL::GeometryBuffer */
 
 GeometryBuffer::GeometryBuffer(const VertexFormatHandle vertexFormat, const GLenum aPurpose):
     GenericBuffer(vertexFormat->vertexSize, GL_ARRAY_BUFFER, aPurpose),
-    _vertexFormat(vertexFormat),
+    _vertexFormat(VertexFormat::copy(&*vertexFormat)),
     _handles(),
     _freeVertices(),
     _dirtyVertices()
@@ -210,6 +227,100 @@ void GeometryBuffer::invalidateRange(const GLsizei minIndex,
 
 void GeometryBuffer::setMap(BufferMapHandle aValue) {
     bufferMap = aValue;
+}
+
+void GeometryBuffer::bind()
+{
+    GenericBuffer::bind();
+    const VertexFormat *fmt = _vertexFormat;
+    const GLsizei vertexSize = fmt->vertexSize;
+    if (fmt->nPosition > 0) {
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glVertexPointer(fmt->nPosition, glType, vertexSize, (const void*)(fmt->posOffset));
+    }
+    if (fmt->nColour > 0) {
+        glEnableClientState(GL_COLOR_ARRAY);
+        glColorPointer(fmt->nColour, glType, vertexSize, (const void*)(fmt->colourOffset));
+    }
+    if (fmt->nTexCoord0 > 0) {
+        glClientActiveTexture(GL_TEXTURE0);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        glTexCoordPointer(fmt->nTexCoord0, glType, vertexSize, (const void*)fmt->texCoord0Offset);
+    }
+    if (fmt->nTexCoord1 > 0) {
+        glClientActiveTexture(GL_TEXTURE1);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        glTexCoordPointer(fmt->nTexCoord1, glType, vertexSize, (const void*)fmt->texCoord1Offset);
+    }
+    if (fmt->nTexCoord2 > 0) {
+        glClientActiveTexture(GL_TEXTURE2);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        glTexCoordPointer(fmt->nTexCoord2, glType, vertexSize, (const void*)fmt->texCoord2Offset);
+    }
+    if (fmt->nTexCoord3 > 0) {
+        glClientActiveTexture(GL_TEXTURE3);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        glTexCoordPointer(fmt->nTexCoord3, glType, vertexSize, (const void*)fmt->texCoord3Offset);
+    }
+    if (fmt->normal) {
+        glEnableClientState(GL_NORMAL_ARRAY);
+        glNormalPointer(glType, vertexSize, (const void*)fmt->normalOffset);
+    }
+    if (fmt->nVertexAttrib0 > 0) {
+        glVertexAttribPointer(0, fmt->nVertexAttrib0, glType, GL_FALSE, vertexSize, (const void*)fmt->vertexAttrib0Offset);
+    }
+    if (fmt->nVertexAttrib1 > 0) {
+        glVertexAttribPointer(1, fmt->nVertexAttrib1, glType, GL_FALSE, vertexSize, (const void*)fmt->vertexAttrib1Offset);
+    }
+    if (fmt->nVertexAttrib2 > 0) {
+        glVertexAttribPointer(2, fmt->nVertexAttrib2, glType, GL_FALSE, vertexSize, (const void*)fmt->vertexAttrib2Offset);
+    }
+    if (fmt->nVertexAttrib3 > 0) {
+        glVertexAttribPointer(3, fmt->nVertexAttrib3, glType, GL_FALSE, vertexSize, (const void*)fmt->vertexAttrib3Offset);
+    }
+}
+
+void GeometryBuffer::unbind()
+{
+    const VertexFormat *fmt = _vertexFormat;
+    if (fmt->nPosition > 0) {
+        glDisableClientState(GL_VERTEX_ARRAY);
+    }
+    if (fmt->nColour > 0) {
+        glDisableClientState(GL_COLOR_ARRAY);
+    }
+    if (fmt->nTexCoord0 > 0) {
+        glClientActiveTexture(GL_TEXTURE0);
+        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    }
+    if (fmt->nTexCoord1 > 0) {
+        glClientActiveTexture(GL_TEXTURE1);
+        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    }
+    if (fmt->nTexCoord2 > 0) {
+        glClientActiveTexture(GL_TEXTURE2);
+        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    }
+    if (fmt->nTexCoord3 > 0) {
+        glClientActiveTexture(GL_TEXTURE3);
+        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    }
+    if (fmt->normal) {
+        glDisableClientState(GL_NORMAL_ARRAY);
+    }
+    if (fmt->nVertexAttrib0 > 0) {
+        glVertexAttribPointer(0, 0, glType, GL_FALSE, 0, 0);
+    }
+    if (fmt->nVertexAttrib1 > 0) {
+        glVertexAttribPointer(1, 0, glType, GL_FALSE, 0, 0);
+    }
+    if (fmt->nVertexAttrib2 > 0) {
+        glVertexAttribPointer(2, 0, glType, GL_FALSE, 0, 0);
+    }
+    if (fmt->nVertexAttrib3 > 0) {
+        glVertexAttribPointer(3, 0, glType, GL_FALSE, 0, 0);
+    }
+    GenericBuffer::unbind();
 }
 
 }
