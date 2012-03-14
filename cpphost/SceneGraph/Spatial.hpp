@@ -28,13 +28,21 @@ named in the AUTHORS file.
 #define _PYUNI_SCENEGRAPH_SPATIAL_H
 
 #include "Math/Matrices.hpp"
+#include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
 
 namespace PyUni {
 namespace SceneGraph {
 
+class Spatial;
+
+typedef boost::shared_ptr<Spatial> SpatialHandle;
+typedef boost::weak_ptr<Spatial> WeakSpatialHandle;
+
 class Spatial
 {
     public:
+        Spatial();
         virtual ~Spatial();
 
         //Bound worldBound;
@@ -43,18 +51,16 @@ class Spatial
 
         void updateGeometry(bool initiator=true);
 
-        inline Spatial* getParent() { return parent; }
-        inline void setParent(Spatial *p) { parent = p; }
+        inline SpatialHandle getParent();
+        inline void setParent(SpatialHandle p);
 
         virtual void onDraw();
         virtual void draw();
 
     protected:
-        Spatial();
-
         virtual void updateWorldData();
 
-        Spatial *parent;
+        WeakSpatialHandle _parent;
 };
 
 }
