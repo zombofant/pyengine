@@ -117,7 +117,8 @@ GL::GeometryBufferView::AttributeSlice *AttributeView_slice(GL::GeometryBufferVi
     return view.slice(start, stop, step, attribOffset, attribLength);
 }
 
-PyObject *AttributeSlice_get(GL::GeometryBufferView::AttributeSlice *slice)
+template <class SliceT>
+PyObject *AttributeSlice_get(SliceT *slice)
 {
     const GLsizei len = slice->getLength() * slice->getAttributeLength();
     GL::GLVertexFloat *buffer = (GL::GLVertexFloat*)malloc(slice->getSize());
@@ -133,7 +134,8 @@ PyObject *AttributeSlice_get(GL::GeometryBufferView::AttributeSlice *slice)
     return pyList;
 }
 
-PyObject *AttributeSlice_set(GL::GeometryBufferView::AttributeSlice *slice, list bpList)
+template <class SliceT>
+PyObject *AttributeSlice_set(SliceT *slice, list bpList)
 {
     const GLsizei len = slice->getLength() * slice->getAttributeLength();
     PyObject *pyList = bpList.ptr();
@@ -190,37 +192,40 @@ BOOST_PYTHON_MODULE(_cuni_gl)
 
     class_<GL::GeometryBufferView::AttributeView, boost::noncopyable>("AttributeView", no_init)
         .def("__getitem__", &AttributeView_slice, return_value_policy<reference_existing_object>())
-        .def("getLength", &GL::GeometryBufferView::AttributeView::getLength)
-        .def("getSize", &GL::GeometryBufferView::AttributeView::getSize)
+        .def("__len__", &GL::GeometryBufferView::AttributeView::getLength)
+        .add_property("AttributeLength", &GL::GeometryBufferView::AttributeView::getAttributeLength)
+        .add_property("Size", &GL::GeometryBufferView::AttributeView::getSize)
+        .def("get", &AttributeSlice_get<GL::GeometryBufferView::AttributeView>)
+        .def("set", &AttributeSlice_set<GL::GeometryBufferView::AttributeView>)
     ;
 
     class_<GL::GeometryBufferView::AttributeSlice, boost::noncopyable>("AttributeSlice", no_init)
-        .def("getLength", &GL::GeometryBufferView::AttributeSlice::getLength)
-        .def("getSize", &GL::GeometryBufferView::AttributeSlice::getSize)
-        .def("get", &AttributeSlice_get)
-        .def("set", &AttributeSlice_set)
+        .def("__len__", &GL::GeometryBufferView::AttributeSlice::getLength)
+        .add_property("Size", &GL::GeometryBufferView::AttributeSlice::getSize)
+        .def("get", &AttributeSlice_get<GL::GeometryBufferView::AttributeSlice>)
+        .def("set", &AttributeSlice_set<GL::GeometryBufferView::AttributeSlice>)
     ;
 
     class_<GL::GeometryBufferView, GL::GeometryBufferViewHandle, boost::noncopyable>("GeometryBufferView",
             init<   const GL::GenericGeometryBufferHandle,
-                    const GL::VertexFormatHandle,
                     const GL::VertexIndexListHandle>())
-        .add_property("vertex",
+        .add_property("Vertex",
             make_function(&GL::GeometryBufferView::getPositionView,
                 return_value_policy<reference_existing_object>())
         )
-        .add_property("colour",
+        .add_property("Colour",
             make_function(&GL::GeometryBufferView::getColourView,
                 return_value_policy<reference_existing_object>())
         )
-        .def("texCoord", &GL::GeometryBufferView::getTexCoordView,
+        .def("TexCoord", &GL::GeometryBufferView::getTexCoordView,
                 return_value_policy<reference_existing_object>())
-        .add_property("normal",
+        .add_property("Normal",
             make_function(&GL::GeometryBufferView::getNormalView,
                 return_value_policy<reference_existing_object>())
         )
-        .def("attrib", &GL::GeometryBufferView::getPositionView,
+        .def("Attrib", &GL::GeometryBufferView::getPositionView,
                 return_value_policy<reference_existing_object>())
+        .def("__len__", &GL::GeometryBufferView::getLength)
         
     ;
 }

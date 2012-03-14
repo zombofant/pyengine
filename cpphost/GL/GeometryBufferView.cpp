@@ -33,7 +33,6 @@ namespace GL {
 
 GeometryBufferView::GeometryBufferView(
         const GenericGeometryBufferHandle buffer,
-        const VertexFormatHandle desiredFormat,
         const VertexIndexListHandle indicies):
     _buffer(buffer),
     _bufferFormat(buffer->getFormat()),
@@ -55,9 +54,7 @@ GeometryBufferView::GeometryBufferView(
         newAttribView(_bufferFormat->vertexAttrib3Offset, _bufferFormat->nVertexAttrib3, _bufferFormat->vertexSize)
     })
 {
-    if (!desiredFormat->isCompatible(*(buffer->getFormat().get()))) {
-        throw std::exception();
-    }
+    
 }
 
 GeometryBufferView::AttributeView *GeometryBufferView::newAttribView(
