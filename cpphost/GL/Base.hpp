@@ -54,10 +54,8 @@ class Struct {
 class Class: public Struct {
     public:
         Class();
-    protected:
-        GLuint glID;
     public:
-        GLuint getID() const { return glID; }
+        GLuint glID;
 };
 
 typedef boost::shared_ptr<Struct> StructHandle;

@@ -32,7 +32,6 @@ from Base import *
 class Shader(BindableObject):
     def __init__(self, **kwargs):
         super(Shader, self).__init__(**kwargs)
-        self.id = None
         self.uniformMap = {}
         
     def _compileShader(self, kind, source):
@@ -53,7 +52,7 @@ class Shader(BindableObject):
         return location
         
     def loadShader(self, vs, fs):
-        if self.id is not None:
+        if self.id != 0:
             self.unloadShader()
         vsObj = None
         fsObj = None
@@ -92,7 +91,7 @@ class Shader(BindableObject):
             
     def unloadShader(self):
         glDeleteProgram(program)
-        self.id = None
+        self.id = 0
 
     def __contains__(self, name):
         value = self.uniformMap.get(name, None)

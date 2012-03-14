@@ -179,7 +179,7 @@ BOOST_PYTHON_MODULE(_cuni_gl)
     implicitly_convertible<boost::shared_ptr<StructWrap>, GL::StructHandle>();
 
     class_<ClassWrap, bases<GL::Struct>, boost::shared_ptr<ClassWrap>, boost::noncopyable>("Class", init<>())
-        .add_property("ID", &GL::Class::getID)
+        .def_readwrite("id", &GL::Class::glID)
     ;
     implicitly_convertible<boost::shared_ptr<ClassWrap>, GL::ClassHandle>();
 

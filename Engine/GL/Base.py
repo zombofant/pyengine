@@ -25,20 +25,33 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
+try:
+    import CUni.GL as CGL
+    Struct = CGL.Struct
+    Class = CGL.Class
+except ImportError:
+    class CGL(object):        
+        Struct = object
+        Class = object
+
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GL.framebufferobjects import *
 
-class Object(object):
+class Struct(CGL.Struct):
     def __init__(self, **kwargs):
-        super(Object, self).__init__(**kwargs)
-        self.id = None
-
-class BindableObject(Object):
-    def bind(self):
-        self._bindCall(self._bindClass, self.id)
-
+        super(Struct, self).__init__(**kwargs)
+    
     @classmethod
     def unbind(cls):
         cls._bindCall(cls._bindClass, 0)
 
+class Object(Struct, CGL.Class):
+    def __init__(self, **kwargs):
+        super(Object, self).__init__(**kwargs)
+        self.id = 0
+
+class BindableObject(Object):
+    def bind(self):
+        self._bindCall(self._bindClass, self.id)
+    
