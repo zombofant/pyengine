@@ -32,7 +32,7 @@ namespace GL {
 /* PyUni::GL::GeometryBufferView */
 
 GeometryBufferView::GeometryBufferView(
-        const GenericGeometryBufferHandle buffer,
+        const GeometryBufferHandle buffer,
         const VertexIndexListHandle indicies):
     _buffer(buffer),
     _bufferFormat(buffer->getFormat()),

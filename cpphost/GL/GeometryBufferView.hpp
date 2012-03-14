@@ -85,10 +85,10 @@ class GeometryBufferView {
             friend class AttributeView;
         };
     public:
-        GeometryBufferView(const GenericGeometryBufferHandle bufferHandle,
+        GeometryBufferView(const GeometryBufferHandle bufferHandle,
             const VertexIndexListHandle indicies);
     private:
-        GenericGeometryBufferHandle _buffer;
+        GeometryBufferHandle _buffer;
         VertexFormatHandle _bufferFormat;
         VertexIndexListHandle _indicies;
         BufferMap *_map;
@@ -104,7 +104,7 @@ class GeometryBufferView {
             const GLsizei attribOffset, const GLsizei attribLength,
             const GLsizei vertexSize);
     public:
-        GenericGeometryBufferHandle getHandle() { return _buffer; }
+        GeometryBufferHandle getHandle() { return _buffer; }
         GLsizei getLength() const { return _indicies->size(); }
     public:
         AttributeView *getPositionView() { return _position; };

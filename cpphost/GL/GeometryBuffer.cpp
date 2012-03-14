@@ -82,9 +82,9 @@ VertexFormat::VertexFormat(const unsigned int aNPosition,
     assert(vertexSize > 0); // this is a true assertion; with the first assert, this should never throw.
 }
 
-/* PyUni::GL::GenericGeometryBuffer */
+/* PyUni::GL::GeometryBuffer */
 
-GenericGeometryBuffer::GenericGeometryBuffer(const VertexFormatHandle vertexFormat, const GLenum aPurpose):
+GeometryBuffer::GeometryBuffer(const VertexFormatHandle vertexFormat, const GLenum aPurpose):
     GenericBuffer(vertexFormat->vertexSize, GL_ARRAY_BUFFER, aPurpose),
     _vertexFormat(vertexFormat),
     _handles(),
@@ -94,7 +94,7 @@ GenericGeometryBuffer::GenericGeometryBuffer(const VertexFormatHandle vertexForm
     
 }
 
-void GenericGeometryBuffer::doExpand(const GLsizei oldCapacity, const GLsizei newCapacity)  
+void GeometryBuffer::doExpand(const GLsizei oldCapacity, const GLsizei newCapacity)  
 {
     GenericBuffer::doExpand(oldCapacity, newCapacity);
     for (VertexIndex i = oldCapacity; i < newCapacity; i++) {
@@ -102,7 +102,7 @@ void GenericGeometryBuffer::doExpand(const GLsizei oldCapacity, const GLsizei ne
     }
 }
 
-void GenericGeometryBuffer::gc_one(const VertexIndexListHandle handle) {
+void GeometryBuffer::gc_one(const VertexIndexListHandle handle) {
     VertexIndexList *list = handle.get();
     // freeVertices.splice(freeVertices.begin(), *list);
     for (VertexIndexList::iterator it = list->begin();
@@ -113,11 +113,11 @@ void GenericGeometryBuffer::gc_one(const VertexIndexListHandle handle) {
     }
 }
 
-void GenericGeometryBuffer::get(const GLsizei index, const GLsizei offset, GLVertexFloat *value, const GLsizei n) {
+void GeometryBuffer::get(const GLsizei index, const GLsizei offset, GLVertexFloat *value, const GLsizei n) {
     memcpy(value, data + (map(index) * itemSize) + offset, n * glTypeSize);    
 }
 
-GLsizei GenericGeometryBuffer::map(const GLsizei index) {
+GLsizei GeometryBuffer::map(const GLsizei index) {
     if (bufferMap.get()) {
         return bufferMap->map(index);
     } else {
@@ -125,13 +125,13 @@ GLsizei GenericGeometryBuffer::map(const GLsizei index) {
     }
 }
 
-void GenericGeometryBuffer::set(const GLsizei index, const GLsizei offset, const GLVertexFloat *value, const GLsizei n) {
+void GeometryBuffer::set(const GLsizei index, const GLsizei offset, const GLVertexFloat *value, const GLsizei n) {
     const GLsizei mappedIndex = map(index);
     memcpy(data + (mappedIndex * itemSize) + offset, value, n * glTypeSize);
     _dirtyVertices.insert(mappedIndex);
 }
 
-VertexIndexListHandle GenericGeometryBuffer::allocateVertices(const GLsizei count) {
+VertexIndexListHandle GeometryBuffer::allocateVertices(const GLsizei count) {
     if ((GLsizei)_freeVertices.size() < count) {
         gc();
         while ((GLsizei)_freeVertices.size() < count) {
@@ -150,7 +150,7 @@ VertexIndexListHandle GenericGeometryBuffer::allocateVertices(const GLsizei coun
     return handle;
 }
 
-void GenericGeometryBuffer::gc() {
+void GeometryBuffer::gc() {
     bool changed = true;
     while (changed) {
         changed = false;
@@ -169,17 +169,17 @@ void GenericGeometryBuffer::gc() {
     }
 }
 
-/*GeometryBufferDriverHandle GenericGeometryBuffer::createDriver(const VertexFormatHandle handle) 
+/*GeometryBufferDriverHandle GeometryBuffer::createDriver(const VertexFormatHandle handle) 
 {
     return createDriver(*handle);
 }*/
 
-BufferMapHandle GenericGeometryBuffer::getMap() 
+BufferMapHandle GeometryBuffer::getMap() 
 {
     return bufferMap;
 }
 
-void GenericGeometryBuffer::autoFlush() {
+void GeometryBuffer::autoFlush() {
     std::cout << "auto-flushing geometry buffer " << glID << std::endl;
     VertexIndex min, max;
     std::set<VertexIndex>::iterator it = _dirtyVertices.begin();
@@ -201,14 +201,14 @@ void GenericGeometryBuffer::autoFlush() {
     _dirtyVertices.clear();
 }
 
-void GenericGeometryBuffer::invalidateRange(const GLsizei minIndex,
+void GeometryBuffer::invalidateRange(const GLsizei minIndex,
     const GLsizei maxIndex)
 {
     _dirtyVertices.insert(minIndex);
     _dirtyVertices.insert(maxIndex);
 }
 
-void GenericGeometryBuffer::setMap(BufferMapHandle aValue) {
+void GeometryBuffer::setMap(BufferMapHandle aValue) {
     bufferMap = aValue;
 }
 

@@ -185,9 +185,9 @@ BOOST_PYTHON_MODULE(_cuni_gl)
 
     class_<GL::VertexIndexList, GL::VertexIndexListHandle, boost::noncopyable>("VertexIndexList", no_init);
 
-    class_<GL::GenericGeometryBuffer, bases<GL::Class>, boost::noncopyable>("GeometryBuffer",
+    class_<GL::GeometryBuffer, bases<GL::Class>, boost::noncopyable>("GeometryBuffer",
             init<const GL::VertexFormatHandle, GLenum>())
-        .def("allocateVertices", &GL::GenericGeometryBuffer::allocateVertices)
+        .def("allocateVertices", &GL::GeometryBuffer::allocateVertices)
     ;
 
     class_<GL::GeometryBufferView::AttributeView, boost::noncopyable>("AttributeView", no_init)
@@ -207,7 +207,7 @@ BOOST_PYTHON_MODULE(_cuni_gl)
     ;
 
     class_<GL::GeometryBufferView, GL::GeometryBufferViewHandle, boost::noncopyable>("GeometryBufferView",
-            init<   const GL::GenericGeometryBufferHandle,
+            init<   const GL::GeometryBufferHandle,
                     const GL::VertexIndexListHandle>())
         .add_property("Vertex",
             make_function(&GL::GeometryBufferView::getPositionView,
