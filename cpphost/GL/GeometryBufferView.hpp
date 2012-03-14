@@ -55,6 +55,7 @@ class GeometryBufferView {
                 GLVertexFloat *_data;
             public:
                 void get(GLVertexFloat *data);
+                GLsizei getAttributeLength();
                 GLsizei getLength();
                 GLsizei getSize();
                 AttributeSlice *slice(const GLsizei start,

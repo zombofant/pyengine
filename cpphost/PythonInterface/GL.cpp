@@ -34,38 +34,87 @@ namespace PyUni {
 
 using namespace boost::python;
 
-GL::GeometryBufferView::AttributeSlice *AttributeView_slice(GL::GeometryBufferView::AttributeView &view, object arg)
+void parseSlice(slice *slice, GLsizei *start, GLsizei *stop, GLsizei *step, const GLsizei len)
 {
-    extract<slice> getSlice(arg);
-    // for now, we do not check, as we do only support slices
-    slice val = getSlice();
-    object  pyStart = val.start(),
-            pyStop = val.stop(),
-            pyStep = val.step();
-
-    GLsizei len = view.getLength();
-    GLsizei start = 0, stop = len, step = 1;
+    object  pyStart = slice->start(),
+            pyStop = slice->stop(),
+            pyStep = slice->step();
     
     if (!pyStart.is_none())
     {
-        start = extract<GLsizei>(pyStart)();
-        if (start < 0)
-            start = len - start;
+        *start = extract<GLsizei>(pyStart)();
+        if (*start < 0)
+            *start = len - *start;
     }
     
     if (!pyStop.is_none())
     {
-        stop = extract<GLsizei>(pyStop)();
-        if (stop < 0)
-            stop = len - stop;
+        *stop = extract<GLsizei>(pyStop)();
+        if (*stop < 0)
+            *stop = len - *stop;
     }
     
     if (!pyStep.is_none())
     {
-        step = extract<GLsizei>(pyStep)();
+        if (!step)
+        {
+            std::cerr << "slice step not allowed here" << std::endl;
+            throw std::exception();
+        }
+        else
+        {
+            *step = extract<GLsizei>(pyStep)();
+        }
     }
+}
+
+GL::GeometryBufferView::AttributeSlice *AttributeView_slice(GL::GeometryBufferView::AttributeView &view, object arg)
+{
+    GLsizei len = view.getLength();
+    GLsizei start = 0, stop = len, step = 1;
+    GLsizei attribOffset = 0, attribLength = view.getAttributeLength();
     
-    return view.slice(start, stop, step);
+    extract<int> getInt(arg);
+    if (getInt.check())
+    {
+        start = getInt();
+        if (start < 0)
+            start = len - start;
+        stop = start + 1;
+    }
+    else
+    {
+        extract<slice> getSlice(arg);
+        if (getSlice.check())
+        {
+            slice tmp = getSlice();
+            parseSlice(&tmp, &start, &stop, &step, len);
+        }
+        else
+        {
+            tuple pyTuple = extract<tuple>(arg)();
+            if (boost::python::len(pyTuple) != 2)
+            {
+                std::cerr << "too many arguments" << std::endl;
+                throw std::exception();
+            }
+            slice tmp = extract<slice>(pyTuple[0])();
+            parseSlice(&tmp, &start, &stop, &step, len);
+
+            extract<slice> getAttribSlice(pyTuple[1]);
+            if (getAttribSlice.check())
+            {
+                slice tmp = getAttribSlice();
+                parseSlice(&tmp, &attribOffset, &attribLength, 0, view.getAttributeLength());
+            }
+            else
+            {
+                attribOffset = extract<int>(pyTuple[1])();
+                attribLength = 1;
+            }
+        }
+    }
+    return view.slice(start, stop, step, attribOffset, attribLength);
 }
 
 PyObject *AttributeSlice_get(GL::GeometryBufferView::AttributeSlice *slice)
@@ -90,6 +139,7 @@ PyObject *AttributeSlice_set(GL::GeometryBufferView::AttributeSlice *slice, list
     PyObject *pyList = bpList.ptr();
     if (PyList_Size(pyList) != len)
     {
+        std::cerr << "need exactly " << len << " items, got " << PyList_Size(pyList) << "." << std::endl;
         throw std::exception();
     }
     GL::GLVertexFloat *buffer = (GL::GLVertexFloat*)malloc(slice->getSize());

@@ -112,6 +112,11 @@ void GeometryBufferView::AttributeView::get(GLVertexFloat *data)
     slice(0, _vertexCount)->get(data);
 }
 
+GLsizei GeometryBufferView::AttributeView::getAttributeLength()
+{
+    return _attribLength;
+}
+
 GLsizei GeometryBufferView::AttributeView::getLength()
 {
     return slice(0, _vertexCount)->getLength();
@@ -127,7 +132,7 @@ GeometryBufferView::AttributeSlice *GeometryBufferView::AttributeView::slice(
     const GLsizei attribOffset, const GLsizei attribLength)
 {
     GeometryBufferView::AttributeSlice *slice = _slice;
-    slice->setUp(start, stop, step, _attribOffset + attribOffset, (attribLength>1?attribLength:_attribLength));
+    slice->setUp(start, stop, step, _attribOffset + attribOffset, (attribLength>=1?attribLength:_attribLength));
     return slice;
 }
 
@@ -194,7 +199,7 @@ GLsizei GeometryBufferView::AttributeSlice::getAttributeLength()
 
 GLsizei GeometryBufferView::AttributeSlice::getLength()
 {
-    return (_stop - _start) / _step;
+    return ceil(((double)(_stop - _start)) / ((double)_step));
 }
 
 GLsizei GeometryBufferView::AttributeSlice::getSize()
