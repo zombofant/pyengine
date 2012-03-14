@@ -155,8 +155,23 @@ BOOST_PYTHON_MODULE(_cuni_gl)
             init<   const GL::GenericGeometryBufferHandle,
                     const GL::VertexFormatHandle,
                     const GL::VertexIndexListHandle>())
-        .def("vertices", &GL::GeometryBufferView::getPositionView,
+        .add_property("vertex",
+            make_function(&GL::GeometryBufferView::getPositionView,
                 return_value_policy<reference_existing_object>())
+        )
+        .add_property("colour",
+            make_function(&GL::GeometryBufferView::getColourView,
+                return_value_policy<reference_existing_object>())
+        )
+        .def("texCoord", &GL::GeometryBufferView::getTexCoordView,
+                return_value_policy<reference_existing_object>())
+        .add_property("normal",
+            make_function(&GL::GeometryBufferView::getNormalView,
+                return_value_policy<reference_existing_object>())
+        )
+        .def("attrib", &GL::GeometryBufferView::getPositionView,
+                return_value_policy<reference_existing_object>())
+        
     ;
 }
 

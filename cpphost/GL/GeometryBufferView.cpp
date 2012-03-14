@@ -157,8 +157,8 @@ void GeometryBufferView::AttributeSlice::setUp(const GLsizei start,
     assert(start <= stop);
     assert(step >= 1);
     assert(stop <= _view->_vertexCount);
-    assert(attribOffset >= 0);
-    assert(attribLength <= (_view->_attribLength - attribOffset));
+    assert(attribOffset >= _view->_attribOffset);
+    assert(attribLength <= (_view->_attribLength - (attribOffset-_view->_attribOffset)));
     _start = start;
     _stop = stop;
     _step = step;
