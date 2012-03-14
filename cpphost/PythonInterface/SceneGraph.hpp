@@ -1,5 +1,5 @@
 /**********************************************************************
-File name: Leaf.hpp
+File name: SceneGraph.hpp
 This file is part of: Pythonic Universe
 
 LICENSE
@@ -23,30 +23,27 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_SCENEGRAPH_LEAF_H
-#define _PYUNI_SCENEGRAPH_LEAF_H
+#ifndef _PYUNI_PYTHON_SCENE_GRAPH_H
+#define _PYUNI_PYTHON_SCENE_GRAPH_H
 
-#include <unordered_map>
-#include "Spatial.hpp"
-#include "GL/GeometryBuffer.hpp"
-#include "GL/StateManagement.hpp"
+#include <boost/python.hpp>
+
+#include "SceneGraph/Node.hpp"
+#include "SceneGraph/Spatial.hpp"
+#include "SceneGraph/SceneGraph.hpp"
+#include "SceneGraph/Leaf.hpp"
 
 namespace PyUni {
-namespace SceneGraph {
 
-using namespace GL;
+using namespace SceneGraph;
 
-typedef std::unordered_map<StateGroupHandle, VertexIndexListHandle> VertexMap;
-
-class Leaf: public Spatial
+class LeafWrap: public Leaf, public boost::python::wrapper<Leaf>
 {
-    private:
-        Leaf();
-    public:
-        VertexMap vertexMap;
+    
 };
 
-}
+void addSceneGraphToInittab();
+
 }
 
 #endif

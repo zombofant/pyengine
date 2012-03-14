@@ -1,5 +1,5 @@
 /**********************************************************************
-File name: Leaf.hpp
+File name: SceneGraph.cpp
 This file is part of: Pythonic Universe
 
 LICENSE
@@ -23,30 +23,41 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_SCENEGRAPH_LEAF_H
-#define _PYUNI_SCENEGRAPH_LEAF_H
+#include "SceneGraph.hpp"
 
-#include <unordered_map>
-#include "Spatial.hpp"
-#include "GL/GeometryBuffer.hpp"
-#include "GL/StateManagement.hpp"
+#include "Helpers.hpp"
+
+#include <boost/python/manage_new_object.hpp>
 
 namespace PyUni {
-namespace SceneGraph {
 
-using namespace GL;
+using namespace boost::python;
+using namespace PyUni::SceneGraph;
 
-typedef std::unordered_map<StateGroupHandle, VertexIndexListHandle> VertexMap;
+typedef MapHelper<VertexMap> VertexMapHelper;
 
-class Leaf: public Spatial
+BOOST_PYTHON_MODULE(_cuni_scenegraph)
 {
-    private:
-        Leaf();
-    public:
-        VertexMap vertexMap;
-};
+    class_<VertexMap, boost::noncopyable>("VertexMap", no_init)
+        .def("__len__", &VertexMap::size)
+        .def("iteritems", &VertexMapHelper::iteritems,
+            return_value_policy<manage_new_object>())
+    ;
+
+    class_<Spatial, SpatialHandle, boost::noncopyable>("Spatial", no_init)
+    ;
+
+    class_<Node, bases<Spatial>, NodeHandle, boost::noncopyable>("Node", no_init)
+        .def("__init__", make_constructor(&Node::create))
+    ;
+
+    class_<LeafWrap, bases<Spatial>, boost::shared_ptr<LeafWrap>, boost::noncopyable>("Leaf", no_init)
+    ;
+}
+
+void addSceneGraphToInittab()
+{
+    PyImport_AppendInittab("_cuni_scenegraph", &init_cuni_scenegraph);
+}
 
 }
-}
-
-#endif

@@ -90,6 +90,8 @@ class StateGroup: public ParentGroup {
         virtual void tearDown();
 };
 
+typedef boost::shared_ptr<StateGroup> StateGroupHandle;
+
 class TransformGroup: public ParentGroup {
     public:
         TransformGroup(const Matrix4f *matrix, int order = 0);
