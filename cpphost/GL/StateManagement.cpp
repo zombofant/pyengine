@@ -124,6 +124,27 @@ void ParentGroup::executeChildren()
     }
 }
 
+void ParentGroup::add(GroupHandle handle)
+{
+    _children.push_back(handle);
+}
+
+void ParentGroup::remove(GroupHandle handle)
+{
+    Group *group = handle.get();
+    for (auto it = _children.begin();
+        it != _children.end();
+        it++)
+    {
+        const GroupHandle cmp = *it;
+        if (cmp.get() == group)
+        {
+            _children.erase(it);
+            return;
+        }
+    }
+}
+
 void ParentGroup::execute()
 {
     setUp();

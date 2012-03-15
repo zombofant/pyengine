@@ -45,7 +45,7 @@ class AbstractIteratorWrapper
         }
 };
 
-template<class Container, class Iterator>
+template<class Container, class Iterator, class ResultT>
 class ListIteratorWrapper: public AbstractIteratorWrapper<Container, Iterator>
 {
     public:
@@ -55,50 +55,53 @@ class ListIteratorWrapper: public AbstractIteratorWrapper<Container, Iterator>
     
         }
     public:
-        object next()
+        ResultT next()
         {
-            this->_it++;
             if (this->_it == this->_end)
                 this->StopIteration();
-            return *(this->_it);
+            ResultT result = *(this->_it);
+            this->_it++;
+            return result;
         }
 };
 
-template<class Container, class Iterator>
+template<class Container, class Iterator, class ResultT>
 class MapKeyIterator: public AbstractIteratorWrapper<Container, Iterator>
 {
     public:
-        MapKeyIterator(Iterator *it, Iterator *end):
+        MapKeyIterator(Iterator it, Iterator end):
             AbstractIteratorWrapper<Container, Iterator>::AbstractIteratorWrapper(it, end)
         {
     
         }
     public:
-        object next()
+        ResultT next()
         {
-            this->_it++;
             if (this->_it == this->_end)
                 this->StopIteration();
-            return this->_it->first;
+            ResultT result = this->_it->first;
+            this->_it++;
+            return result;
         }
 };
 
-template<class Container, class Iterator>
+template<class Container, class Iterator, class ResultT>
 class MapValueIterator: public AbstractIteratorWrapper<Container, Iterator>
 {
     public:
-        MapValueIterator(Iterator *it, Iterator *end):
+        MapValueIterator(Iterator it, Iterator end):
             AbstractIteratorWrapper<Container, Iterator>::AbstractIteratorWrapper(it, end)
         {
     
         }
     public:
-        object next()
+        ResultT next()
         {
-            this->_it++;
             if (this->_it == this->_end)
                 this->StopIteration();
-            return this->_it->second;
+            ResultT result = this->_it->second;
+            this->_it++;
+            return result;
         }
 };
 
@@ -112,12 +115,13 @@ class MapItemsIterator: public AbstractIteratorWrapper<Container, Iterator>
     
         }
     public:
-        object next()
+        tuple next()
         {
-            this->_it++;
             if (this->_it == this->_end)
                 this->StopIteration();
-            return make_tuple(this->_it->first, this->_it->second);
+            tuple result = make_tuple(object(this->_it->first), object(this->_it->second));
+            this->_it++;
+            return result;
         }
 };
 
@@ -151,33 +155,40 @@ struct IteratorRegister
     }
 };
 
-template<class MapT>
+template<class MapT, class MapWrapperT>
 struct MapHelper
 {
     typedef typename MapT::key_type KeyT;
-    typedef typename MapT::value_type ValueT;
+    typedef typename MapT::mapped_type ValueT;
     typedef typename MapT::const_iterator IteratorT;
-    typedef MapItemsIterator<MapT, IteratorT> IteratorWrapperT;
-    typedef IteratorRegister<IteratorWrapperT> ItemsIteratorRegT;
+    typedef MapItemsIterator<MapT, IteratorT> ItemsIteratorWrapperT;
+    typedef MapKeyIterator<MapT, IteratorT, KeyT> KeysIteratorWrapperT;
+    typedef MapValueIterator<MapT, IteratorT, ValueT> ValuesIteratorWrapperT;
+    typedef IteratorRegister<ItemsIteratorWrapperT> ItemsIteratorRegT;
+    typedef IteratorRegister<KeysIteratorWrapperT> KeysIteratorRegT;
+    typedef IteratorRegister<ValuesIteratorWrapperT> ValuesIteratorRegT;
 
     static bool __contains__(const MapT &map, const KeyT &key)
     {
         return (map.find(key) != map.end());
     }
 
-    static ValueT __getitem__(const MapT &map, const KeyT &key)
+    static ValueT __getitem__(MapT &map, const KeyT &key)
     {
         if (__contains__(map, key))
-            return map[key];
-        KeyError(*key);
+        {
+            return ValueT(map[key]);
+        }
+        KeyError(*key); // throws inconditionally
+        return ValueT();
     }
 
-    static void __setitem__(const MapT &map, const KeyT &key, const ValueT &value)
+    static void __setitem__(MapT &map, KeyT &key, ValueT value)
     {
         map[key] = value;
     }
 
-    static void __delitem__(const MapT &map, const KeyT &key)
+    static void __delitem__(MapT &map, const KeyT &key)
     {
         if (__contains__(map, key))
             map.erase(key);
@@ -185,9 +196,19 @@ struct MapHelper
             KeyError(key);
     }
 
-    static IteratorWrapperT *iteritems(const MapT &map)
+    static ItemsIteratorWrapperT *iteritems(const MapT &map)
     {
         return ItemsIteratorRegT::__iter__c(map);
+    }
+
+    static KeysIteratorWrapperT *iterkeys(const MapT &map)
+    {
+        return KeysIteratorRegT::__iter__c(map);
+    }
+
+    static ValuesIteratorWrapperT *itervalues(const MapT &map)
+    {
+        return ValuesIteratorRegT::__iter__c(map);
     }
 };
 

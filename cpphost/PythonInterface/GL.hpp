@@ -36,30 +36,116 @@ named in the AUTHORS file.
 
 namespace PyUni {
 
-class StructWrap: public GL::Struct, public boost::python::wrapper<GL::Struct>
+using namespace PyUni::GL;
+
+class StructWrap: public Struct, public boost::python::wrapper<Struct>
 {
-    virtual void bind()
-    {
-        this->get_override("bind")();
-    }
-    
-    virtual void unbind()
-    {
-        this->get_override("unbind")();
+    public:
+        virtual void bind()
+        {
+            this->get_override("bind")();
+        }
+        
+        virtual void unbind()
+        {
+            this->get_override("unbind")();
+        }
+};
+
+class ClassWrap: public Class, public boost::python::wrapper<Class>
+{
+    public:
+        virtual void bind()
+        {
+            this->get_override("bind")();
+        }
+        
+        virtual void unbind()
+        {
+            this->get_override("unbind")();
+        }
+};
+
+class GroupWrap: public Group, public boost::python::wrapper<Group>
+{
+    public:
+        GroupWrap(int order = 0):
+            Group::Group(order) {}
+    public:
+        virtual void execute()
+        {
+            if (boost::python::override f = this->get_override("execute"))
+            {
+                f();
+            }
+            else
+            {
+                this->Group::execute();
+            }
+        }
+
+        void __bp_execute()
+        {
+            this->Group::execute();
     }
 };
 
-class ClassWrap: public GL::Class, public boost::python::wrapper<GL::Class>
+class ParentGroupWrap: public ParentGroup, public boost::python::wrapper<ParentGroup>
 {
-    virtual void bind()
-    {
-        this->get_override("bind")();
-    }
-    
-    virtual void unbind()
-    {
-        this->get_override("unbind")();
-    }
+    public:
+        ParentGroupWrap(int order = 0):
+            ParentGroup::ParentGroup(order) {}
+    public:
+        virtual void execute()
+        {
+            if (boost::python::override f = this->get_override("execute"))
+            {
+                f();
+            }
+            else
+            {
+                this->ParentGroup::execute();
+            }
+        }
+
+        virtual void setUp()
+        {
+            if (boost::python::override f = this->get_override("setUp"))
+            {
+                f();
+            }
+            else
+            {
+                this->ParentGroup::setUp();
+            }
+        }
+
+        virtual void tearDown()
+        {
+            if (boost::python::override f = this->get_override("tearDown"))
+            {
+                f();
+            }
+            else
+            {
+                this->ParentGroup::tearDown();
+            }
+        }
+
+        void __bp_execute()
+        {
+            this->ParentGroup::execute();
+        }
+
+        void __bp_setUp()
+        {
+            this->ParentGroup::setUp();
+        }
+
+        void __bp_tearDown()
+        {
+            this->ParentGroup::tearDown();
+        }
 };
 
 void addGLToInittab();

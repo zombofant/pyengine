@@ -102,6 +102,8 @@ class TransformGroup: public ParentGroup {
         virtual void tearDown();
 };
 
+typedef boost::shared_ptr<TransformGroup> TransformGroupHandle;
+
 }
 }
 

@@ -33,6 +33,7 @@ named in the AUTHORS file.
 namespace PyUni {
 
 using namespace boost::python;
+using namespace PyUni::GL;
 
 void parseSlice(slice *slice, GLsizei *start, GLsizei *stop, GLsizei *step, const GLsizei len)
 {
@@ -68,7 +69,7 @@ void parseSlice(slice *slice, GLsizei *start, GLsizei *stop, GLsizei *step, cons
     }
 }
 
-GL::GeometryBufferView::AttributeSlice *AttributeView_slice(GL::GeometryBufferView::AttributeView &view, object arg)
+GeometryBufferView::AttributeSlice *AttributeView_slice(GeometryBufferView::AttributeView &view, object arg)
 {
     GLsizei len = view.getLength();
     GLsizei start = 0, stop = len, step = 1;
@@ -121,8 +122,8 @@ template <class SliceT>
 PyObject *AttributeSlice_get(SliceT *slice)
 {
     const GLsizei len = slice->getLength() * slice->getAttributeLength();
-    GL::GLVertexFloat *buffer = (GL::GLVertexFloat*)malloc(slice->getSize());
-    GL::GLVertexFloat *ptr = buffer;
+    GLVertexFloat *buffer = (GLVertexFloat*)malloc(slice->getSize());
+    GLVertexFloat *ptr = buffer;
     PyObject *pyList = PyList_New(len);
     slice->get(buffer);
     for (GLsizei i = 0; i < len; i++)
@@ -144,8 +145,8 @@ PyObject *AttributeSlice_set(SliceT *slice, list bpList)
         std::cerr << "need exactly " << len << " items, got " << PyList_Size(pyList) << "." << std::endl;
         throw std::exception();
     }
-    GL::GLVertexFloat *buffer = (GL::GLVertexFloat*)malloc(slice->getSize());
-    GL::GLVertexFloat *ptr = buffer;
+    GLVertexFloat *buffer = (GLVertexFloat*)malloc(slice->getSize());
+    GLVertexFloat *ptr = buffer;
     for (GLsizei i = 0; i < len; i++)
     {
         const PyObject *val = PyList_GET_ITEM(pyList, i);
@@ -165,68 +166,144 @@ PyObject *AttributeSlice_set(SliceT *slice, list bpList)
 
 BOOST_PYTHON_MODULE(_cuni_gl)
 {
-    class_<GL::VertexFormat, GL::VertexFormatHandle, boost::noncopyable>("VertexFormat",
+    /* Base.hpp */
+    
+    class_<StructWrap, boost::shared_ptr<StructWrap>, boost::noncopyable>("Struct")
+        .def("bind", pure_virtual(&Struct::bind))
+        .def("unbind", pure_virtual(&Struct::unbind))
+    ;
+    implicitly_convertible<boost::shared_ptr<StructWrap>, StructHandle>();
+
+    class_<ClassWrap, bases<Struct>, boost::shared_ptr<ClassWrap>, boost::noncopyable>("Class", init<>())
+        .def_readwrite("id", &Class::glID)
+    ;
+    implicitly_convertible<boost::shared_ptr<ClassWrap>, ClassHandle>();
+
+
+    /* GenericBuffer.hpp */
+
+    class_<GenericBuffer, bases<Class>, boost::shared_ptr<GenericBuffer>, boost::noncopyable>("GenericBuffer", no_init)
+        .def("bind", &GenericBuffer::bind)
+        .def("unbind", &GenericBuffer::unbind)
+    ;
+    
+
+    /* GeometryBuffer.hpp */
+    
+    class_<VertexFormat, VertexFormatHandle, boost::noncopyable>("VertexFormat",
         init<const unsigned int, const unsigned int, const unsigned int,
             const unsigned int, const unsigned int, const unsigned int,
             const bool, const unsigned int, const unsigned int,
             const unsigned int, const unsigned int>())
     ;
 
-    class_<StructWrap, boost::shared_ptr<StructWrap>, boost::noncopyable>("Struct")
-        .def("bind", pure_virtual(&GL::Struct::bind))
-        .def("unbind", pure_virtual(&GL::Struct::unbind))
-    ;
-    implicitly_convertible<boost::shared_ptr<StructWrap>, GL::StructHandle>();
-
-    class_<ClassWrap, bases<GL::Struct>, boost::shared_ptr<ClassWrap>, boost::noncopyable>("Class", init<>())
-        .def_readwrite("id", &GL::Class::glID)
-    ;
-    implicitly_convertible<boost::shared_ptr<ClassWrap>, GL::ClassHandle>();
-
-    class_<GL::VertexIndexList, GL::VertexIndexListHandle, boost::noncopyable>("VertexIndexList", no_init);
-
-    class_<GL::GeometryBuffer, bases<GL::Class>, boost::noncopyable>("GeometryBuffer",
-            init<const GL::VertexFormatHandle, GLenum>())
-        .def("allocateVertices", &GL::GeometryBuffer::allocateVertices)
+    class_<VertexIndexList, VertexIndexListHandle, boost::noncopyable>("VertexIndexList", no_init);
+    
+    class_<GeometryBuffer, bases<GenericBuffer>, boost::noncopyable>("GeometryBuffer",
+            init<const VertexFormatHandle, GLenum>())
+        .def("allocateVertices", &GeometryBuffer::allocateVertices)
     ;
 
-    class_<GL::GeometryBufferView::AttributeView, boost::noncopyable>("AttributeView", no_init)
+
+    /* GeomertyBufferView.hpp */
+    
+    class_<GeometryBufferView::AttributeView, boost::noncopyable>("AttributeView", no_init)
         .def("__getitem__", &AttributeView_slice, return_value_policy<reference_existing_object>())
-        .def("__len__", &GL::GeometryBufferView::AttributeView::getLength)
-        .add_property("AttributeLength", &GL::GeometryBufferView::AttributeView::getAttributeLength)
-        .add_property("Size", &GL::GeometryBufferView::AttributeView::getSize)
-        .def("get", &AttributeSlice_get<GL::GeometryBufferView::AttributeView>)
-        .def("set", &AttributeSlice_set<GL::GeometryBufferView::AttributeView>)
+        .def("__len__", &GeometryBufferView::AttributeView::getLength)
+        .add_property("AttributeLength", &GeometryBufferView::AttributeView::getAttributeLength)
+        .add_property("Size", &GeometryBufferView::AttributeView::getSize)
+        .def("get", &AttributeSlice_get<GeometryBufferView::AttributeView>)
+        .def("set", &AttributeSlice_set<GeometryBufferView::AttributeView>)
     ;
 
-    class_<GL::GeometryBufferView::AttributeSlice, boost::noncopyable>("AttributeSlice", no_init)
-        .def("__len__", &GL::GeometryBufferView::AttributeSlice::getLength)
-        .add_property("Size", &GL::GeometryBufferView::AttributeSlice::getSize)
-        .def("get", &AttributeSlice_get<GL::GeometryBufferView::AttributeSlice>)
-        .def("set", &AttributeSlice_set<GL::GeometryBufferView::AttributeSlice>)
+    class_<GeometryBufferView::AttributeSlice, boost::noncopyable>("AttributeSlice", no_init)
+        .def("__len__", &GeometryBufferView::AttributeSlice::getLength)
+        .add_property("Size", &GeometryBufferView::AttributeSlice::getSize)
+        .def("get", &AttributeSlice_get<GeometryBufferView::AttributeSlice>)
+        .def("set", &AttributeSlice_set<GeometryBufferView::AttributeSlice>)
     ;
 
-    class_<GL::GeometryBufferView, GL::GeometryBufferViewHandle, boost::noncopyable>("GeometryBufferView",
-            init<   const GL::GeometryBufferHandle,
-                    const GL::VertexIndexListHandle>())
+    class_<GeometryBufferView, GeometryBufferViewHandle, boost::noncopyable>("GeometryBufferView",
+            init<   const GeometryBufferHandle,
+                    const VertexIndexListHandle>())
         .add_property("Vertex",
-            make_function(&GL::GeometryBufferView::getPositionView,
+            make_function(&GeometryBufferView::getPositionView,
                 return_value_policy<reference_existing_object>())
         )
         .add_property("Colour",
-            make_function(&GL::GeometryBufferView::getColourView,
+            make_function(&GeometryBufferView::getColourView,
                 return_value_policy<reference_existing_object>())
         )
-        .def("TexCoord", &GL::GeometryBufferView::getTexCoordView,
+        .def("TexCoord", &GeometryBufferView::getTexCoordView,
                 return_value_policy<reference_existing_object>())
         .add_property("Normal",
-            make_function(&GL::GeometryBufferView::getNormalView,
+            make_function(&GeometryBufferView::getNormalView,
                 return_value_policy<reference_existing_object>())
         )
-        .def("Attrib", &GL::GeometryBufferView::getPositionView,
+        .def("Attrib", &GeometryBufferView::getPositionView,
                 return_value_policy<reference_existing_object>())
-        .def("__len__", &GL::GeometryBufferView::getLength)
-        
+        .def("__len__", &GeometryBufferView::getLength)
+    ;
+
+
+    /* IndexBuffer.hpp */
+
+    class_<IndexEntry, IndexEntryHandle, boost::noncopyable>("IndexEntry", no_init)
+        .def_readonly("Vertices", &IndexEntry::vertices)
+    ;
+
+    class_<GenericIndexBuffer, bases<GenericBuffer>, GenericIndexBufferHandle, boost::noncopyable>("IndexBuffer", no_init)
+        .def("__len__", &GenericIndexBuffer::getCount)
+        .def("clear", &GenericIndexBuffer::clear)
+        .def("draw", &GenericIndexBuffer::draw)
+        .def("drawUnbound", &GenericIndexBuffer::drawUnbound)
+        .def("dump", &GenericIndexBuffer::dump)
+    ;
+
+    class_<StreamIndexBuffer, bases<GenericIndexBuffer>, StreamIndexBufferHandle, boost::noncopyable>("StreamIndexBuffer", init<const GLenum>())
+        // .def("__init__", init<>())
+        .def("add", &StreamIndexBuffer::add)
+    ;
+
+    class_<StaticIndexBuffer, bases<GenericIndexBuffer>, StaticIndexBufferHandle, boost::noncopyable>("StaticIndexBuffer", init<const GLenum>())
+        // .def("__init__", init<>())
+        .def("getIndex", &StaticIndexBuffer::getIndex)
+        .def("add", &StaticIndexBuffer::add)
+        .def("clear", &StaticIndexBuffer::clear)
+        .def("drawHandle", &StaticIndexBuffer::drawHandle)
+        .def("gc", &StaticIndexBuffer::gc)
+        .def("remove", &StaticIndexBuffer::remove)
+        .def("resolveIndexEntry", &StaticIndexBuffer::resolveIndexEntry)
+    ;
+
+
+    /* StateManagement.hpp */
+    
+    class_<GroupWrap, boost::shared_ptr<GroupWrap>, boost::noncopyable>("Group", init<int>())
+        // .def("__init__", init<>())
+        .def("execute", &GroupWrap::__bp_execute)
+        .add_property("IndexBuffer", &Group::getIndexBuffer)
+        .def("__cmp__", &Group::compare)
+    ;
+
+    class_<ParentGroupWrap, bases<Group>, boost::shared_ptr<ParentGroupWrap>, boost::noncopyable>("ParentGroup", init<int>())
+        // .def("__init__", init<>())
+        .def("execute", &ParentGroupWrap::__bp_execute)
+        .def("setUp", &ParentGroupWrap::__bp_setUp)
+        .def("tearDown", &ParentGroupWrap::__bp_tearDown)
+        .def("add", &ParentGroup::add)
+        .def("remove", &ParentGroup::remove)
+    ;
+    
+    class_<StateGroup, bases<ParentGroup>, StateGroupHandle, boost::noncopyable>("StateGroup", init<StructHandle, int>())
+        // .def("__init__", init<StructHandle>())
+        .def("setUp", &StateGroup::setUp)
+        .def("tearDown", &StateGroup::tearDown)
+    ;
+
+    class_<TransformGroup, bases<ParentGroup>, TransformGroupHandle, boost::noncopyable>("TransformGroup", no_init)
+        .def("setUp", &TransformGroup::setUp)
+        .def("tearDown", &TransformGroup::tearDown)
     ;
 }
 

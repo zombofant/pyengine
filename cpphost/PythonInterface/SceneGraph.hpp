@@ -37,9 +37,22 @@ namespace PyUni {
 
 using namespace SceneGraph;
 
+class LeafWrap;
+typedef boost::shared_ptr<LeafWrap> LeafWrapHandle;
+
 class LeafWrap: public Leaf, public boost::python::wrapper<Leaf>
 {
+    protected:
+        LeafWrap():
+            Leaf::Leaf() {};
+    public:
     
+        static LeafWrapHandle create()
+        {
+            LeafWrapHandle tmp(new LeafWrap());
+            tmp->_weak = tmp;
+            return tmp;
+        }
 };
 
 void addSceneGraphToInittab();

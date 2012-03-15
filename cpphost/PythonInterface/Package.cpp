@@ -26,6 +26,7 @@ named in the AUTHORS file.
 #include "Package.hpp"
 #include "Window.hpp"
 #include "GL.hpp"
+#include "SceneGraph.hpp"
 #include "RenderGraph.hpp"
 
 namespace PyUni {
@@ -34,6 +35,7 @@ void addCUniToInittab()
 {
     addWindowToInittab();
     addGLToInittab();
+    addSceneGraphToInittab();
     addRenderGraphToInittab();
 }
 

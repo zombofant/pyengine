@@ -34,13 +34,23 @@ namespace PyUni {
 using namespace boost::python;
 using namespace PyUni::SceneGraph;
 
-typedef MapHelper<VertexMap> VertexMapHelper;
+typedef MapHelper<VertexMap, VertexMapHandle> VertexMapHelper;
 
 BOOST_PYTHON_MODULE(_cuni_scenegraph)
 {
-    class_<VertexMap, boost::noncopyable>("VertexMap", no_init)
+    VertexMapHelper::ItemsIteratorRegT::wrap("__VertexMap_IterItems");
+    VertexMapHelper::KeysIteratorRegT::wrap("__VertexMap_IterKeys");
+    VertexMapHelper::ValuesIteratorRegT::wrap("__VertexMap_IterValues");
+    
+    class_<VertexMap, VertexMapHandle, boost::noncopyable>("VertexMap", no_init)
         .def("__len__", &VertexMap::size)
+        .def("__getitem__", &VertexMapHelper::__getitem__)
+        .def("__setitem__", &VertexMapHelper::__setitem__)
         .def("iteritems", &VertexMapHelper::iteritems,
+            return_value_policy<manage_new_object>())
+        .def("iterkeys", &VertexMapHelper::iterkeys,
+            return_value_policy<manage_new_object>())
+        .def("itervalues", &VertexMapHelper::itervalues,
             return_value_policy<manage_new_object>())
     ;
 
@@ -52,6 +62,8 @@ BOOST_PYTHON_MODULE(_cuni_scenegraph)
     ;
 
     class_<LeafWrap, bases<Spatial>, boost::shared_ptr<LeafWrap>, boost::noncopyable>("Leaf", no_init)
+        .def("__init__", make_constructor(&LeafWrap::create))
+        .add_property("VertexMap", &Leaf::getVertexMap)
     ;
 }
 

@@ -24,3 +24,25 @@ For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
 #include "Leaf.hpp"
+
+namespace PyUni {
+namespace SceneGraph {
+
+/* PyUni::SceneGraph::Leaf */
+
+Leaf::Leaf():
+    Spatial::Spatial(),
+    _vertexMap(new VertexMap())
+{
+
+}
+
+LeafHandle Leaf::create()
+{
+    LeafHandle tmp(new Leaf());
+    tmp->_weak = tmp;
+    return tmp;
+}
+
+}
+}

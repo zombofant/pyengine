@@ -52,8 +52,8 @@ class Spatial
 
         void updateGeometry(bool initiator=true);
 
-        inline SpatialHandle getParent();
-        inline void setParent(SpatialHandle p);
+        SpatialHandle getParent();
+        void setParent(SpatialHandle p);
 
         virtual void onDraw();
         virtual void draw();

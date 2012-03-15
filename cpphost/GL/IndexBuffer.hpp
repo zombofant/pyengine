@@ -65,6 +65,7 @@ class GenericIndexBuffer: public GenericBuffer {
     public:
         GLsizei getCount() const { return count; };
 };
+typedef boost::shared_ptr<GenericIndexBuffer> GenericIndexBufferHandle;
 
 class StreamIndexBuffer: public GenericIndexBuffer {
     public:

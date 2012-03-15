@@ -37,16 +37,48 @@ namespace SceneGraph {
 using namespace GL;
 
 typedef std::unordered_map<StateGroupHandle, VertexIndexListHandle> VertexMap;
+typedef boost::shared_ptr<VertexMap> VertexMapHandle;
+
+class Leaf;
+
+typedef boost::shared_ptr<Leaf> LeafHandle;
 
 class Leaf: public Spatial
 {
-    private:
+    protected:
         Leaf();
+    protected:
+        VertexMapHandle _vertexMap;
     public:
-        VertexMap vertexMap;
+        VertexMapHandle getVertexMap() { return _vertexMap; };
+    public:
+        static LeafHandle create();
 };
 
 }
+}
+
+namespace std {
+
+template <>
+struct hash<PyUni::GL::StateGroupHandle>
+{
+    size_t operator() (const PyUni::GL::StateGroupHandle handle) const
+    {
+        return (size_t)handle.get();
+    }
+};
+
+
+template <>
+struct hash<PyUni::GL::VertexIndexListHandle>
+{
+    size_t operator() (const PyUni::GL::VertexIndexListHandle handle) const
+    {
+        return (size_t)handle.get();
+    }
+};
+
 }
 
 #endif
