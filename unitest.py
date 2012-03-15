@@ -24,7 +24,6 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
-
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
@@ -69,6 +68,9 @@ import textwrap
 import itertools
 import platform
 import time
+
+if platform.python_implementation() == "PyPy":
+    import numpypy
 
 STATE_PASS = 0
 STATE_SKIP = 1
