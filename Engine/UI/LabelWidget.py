@@ -32,7 +32,7 @@ try:
     import pyglet.text
     from OpenGL.GL import *
     import Engine.GL.Shader as Shader
-except NameError:
+except (ImportError, NameError):
     pass
 
 import Engine.Resources.Manager as Manager
