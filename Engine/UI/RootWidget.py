@@ -29,6 +29,7 @@ __all__ = ["RootWidget"]
 
 from Engine.pygletHeadless import mouse
 from WidgetBase import AbstractWidget, WidgetContainer
+from LayerWidget import LayerWidget, DesktopLayer, WindowLayer, PopupLayer
 from Flags import *
 
 """
@@ -40,10 +41,15 @@ wants to recieve the focus.
 class RootWidget(AbstractWidget, WidgetContainer):
     def __init__(self, **kwargs):
         super(RootWidget, self).__init__(**kwargs)
+        self._rootWidget = self
         self._mouseCapture = None
         self._mouseCaptureButton = 0
         self._focused = None
         self._flags = frozenset()
+        self._childClasses = LayerWidget
+        self._desktopLayer = DesktopLayer(self)
+        self._windowLayer = WindowLayer(self)
+        self._popupLayer = PopupLayer(self)
         self.ActiveButtonMask = mouse.LEFT | mouse.MIDDLE | mouse.RIGHT
     
     def _findKeyEventTarget(self):
@@ -52,6 +58,13 @@ class RootWidget(AbstractWidget, WidgetContainer):
     def _mapMouseEvent(self, x, y):
         target = self._mouseCapture or self.hitTest((x, y))
         return (target, x - target.AbsoluteRect.Left, y - target.AbsoluteRect.Top)
+
+    def doAlign(self):
+        assert len(self) == 3
+        myRect = self.AbsoluteRect
+        self._desktopLayer.AbsoluteRect = myRect
+        self._windowLayer.AbsoluteRect = myRect
+        self._popupLayer.AbsoluteRect = myRect
     
     def dispatchKeyDown(self, *args):
         target = self._findKeyEventTarget()

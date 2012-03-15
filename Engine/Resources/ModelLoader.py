@@ -84,12 +84,15 @@ class OBJModelLoader(ResourceLoader):
                         else:
                             fcomp.append(int(fcomps[j])-1)
                     face.append(fcomp)
-                faces.append(face)
+                if len(face) == 3:
+                    faces.append(face)
+                else:
+                    print('FACE IS NOT A TRIANGLE!')
             elif parts[0] == 'usemtl':
                 if len(parts) == 2:
                     materials.append([parts[1],len(faces)])
             else:
-                #print("FIXME: Unhandled obj data: %s" % line, file=sys.stderr)
+                print("FIXME: Unhandled obj data: %s" % line)
                 pass
         if len(faces) < 1:
             raise Exception('No faces found in geometric data!')

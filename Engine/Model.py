@@ -25,8 +25,9 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 import sys
+from GL.SceneGraph.Core import Geometry
 
-class Model(object):
+class Model(Geometry):
     """
     The Model class stores 3D model data like vertices, normals,
     faces and texture coordinates, rotation, position, scale and so on.
@@ -34,7 +35,7 @@ class Model(object):
     calculating the model's bounding box for example.
     See the class GL.RenderModel on how to render Models using OpenGL.
     """
-    _dataTypes = ('faces', 'vertices', 'normals', 'texCoords', 'materials')
+    _dataTypes = ('Faces', 'Vertices', 'Normals', 'TexCoords', 'Materials')
 
     def __init__(self, **args):
         """
@@ -62,28 +63,22 @@ class Model(object):
         See the faces property below for details.
         """
         self._packedFaces = []
-        for face in self.faces:
+        for face in self.Faces:
             fvertices, ftexcoords, fnormals = [], [], []
             for elems in face:
                 vpos = elems[0]
-                fvertices.extend(self.vertices[vpos*3:vpos*3+3])
+                fvertices.extend(self.Vertices[vpos*3:vpos*3+3])
                 if elems[1] is not None:
                     tpos = elems[1]
-                    ftexcoords.extend(self.texCoords[tpos*2:tpos*2+2])
+                    ftexcoords.extend(self.TexCoords[tpos*2:tpos*2+2])
                 if elems[2] is not None:
                     npos = elems[2]
-                    fnormals.extend(self.normals[npos*3:npos*3+3])
+                    fnormals.extend(self.Normals[npos*3:npos*3+3])
             if None in fnormals: fnormals = None
             if None in ftexcoords: ftexcoords = None
             self._packedFaces.append((fvertices, fnormals, ftexcoords))
         self._facesNeedPacking = False
         return self._packedFaces
-
-    def _calcBoundingBox(self):
-        raise NotImplementedError()
-
-    def _calcCenterVertex(self):
-        raise NotImplementedError()
 
     def clear(self):
         """
@@ -96,56 +91,22 @@ class Model(object):
         self._facesNeedPacking = False
 
     def setData(self, **args):
-        arguments = dict(**args)
+        arguments = dict((x[0].upper()+x[1:], y) for (x,y) in dict(**args).iteritems())
         for dtype in self._dataTypes:
             if dtype in arguments:
                 self.__setattr__(dtype, arguments[dtype])
 
     @property
-    def vertices(self):
-        """
-        The list of vertices.
-        Every vertex consists of three components in 3D space.
-        May be None if no vertices have been set.
-        """
-        return self._vertices
-
-    @vertices.setter
-    def vertices(self, value):
-        self._vertices = value
-        self._facesNeedPacking = True
-        #self._calcBoundingBox()
- 
-    @property
-    def normals(self):
-        """
-        The list of normals.
-        Since normals are vectors, they consist of three components.
-        May be None if no normals have been set.
-        """
-        return self._normals
-
-    @normals.setter
-    def normals(self, value):
-        self._normals = value
-        self._facesNeedPacking = True
- 
-    @property
-    def texCoords(self):
-        """
-        Return the list of texture coordinates.
-        Every texture coordinate consists of two components.
-        May be None if no texture coords have been set.
-        """
+    def TexCoords(self):
         return self._texCoords
 
-    @texCoords.setter
-    def texCoords(self, value):
+    @TexCoords.setter
+    def TexCoords(self, value):
         self._texCoords = value
         self._facesNeedPacking = True
  
     @property
-    def materials(self):
+    def Materials(self):
         """
         Return the list of materials.
         See setter method for a description of the list format.
@@ -153,8 +114,8 @@ class Model(object):
         """
         return self._materials
 
-    @materials.setter
-    def materials(self, value):
+    @Materials.setter
+    def Materials(self, value):
         """
         Set the list of materials.
         Every entry consists of a list containing two elements. The name of
@@ -165,7 +126,7 @@ class Model(object):
         self._materials = value
 
     @property
-    def faces(self):
+    def Faces(self):
         """
         Return a list of faces this model has.
         See setter for a description of the list format.
@@ -173,8 +134,8 @@ class Model(object):
         """
         return self._faces
 
-    @faces.setter
-    def faces(self, value):
+    @Faces.setter
+    def Faces(self, value):
         """
         Set list of faces.
         This data structure contains most information about a models geometry. A
@@ -187,7 +148,7 @@ class Model(object):
         self._facesNeedPacking = True
 
     @property
-    def packedFaces(self):
+    def PackedFaces(self):
         """
         Return a list of packed face data.
         """

@@ -26,12 +26,13 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 from Engine.Model import Model
-from OpenGL.GL import GL_TRIANGLES
+from OpenGL.GL import *
 from Engine.Resources.Manager import ResourceManager
+from SceneGraph.Core import Spatial
 
 import pyglet
 
-class RenderModel(Model):
+class RenderModel(Model, Spatial):
     """
     This class extends the model class with GL methods in order to provide
     a convenient renderable representation of the model.
@@ -45,13 +46,6 @@ class RenderModel(Model):
         self._batch = pyglet.graphics.Batch()
         self.update()
  
-    def __del__(self):
-        """
-        The destructor of the object.
-        Make sure the object's batch gets deleted.
-        """
-        del self._batch
-
     def _copy(self, other):
         """
         Copy data from another (Render)Model instance.
@@ -78,9 +72,9 @@ class RenderModel(Model):
         You have to call this method if the underlying vertex or face data
         has been changed in order to make the changes known to the renderer.
         """
-        if len(self.packedFaces) < 1: return
+        if len(self.PackedFaces) < 1: return
         pos, nextMatSwitchIndex, matCount = 0, 0, 0
-        materials = self._materials
+        materials = self.Materials
         group = None
         if materials is None: materials = []
         materials.append(['(null)',0])
@@ -88,18 +82,19 @@ class RenderModel(Model):
             matCount += 1
             nextMatSwitchIndex = material[1]
             if matCount >= len(materials):
-                nextMatSwitchIndex = len(self.packedFaces)
+                nextMatSwitchIndex = len(self.PackedFaces)
             if pos < nextMatSwitchIndex:
                 vertices, normals, texCoords = [], [], []
-                for face in self.packedFaces[pos:nextMatSwitchIndex]:
+                for face in self.PackedFaces[pos:nextMatSwitchIndex]:
+                    before = len(vertices)
                     vertices.extend([x for y in face[0:1] for x in y])
                     normals.extend([x for y in face[1:2] for x in y])
                     texCoords.extend([x for y in face[2:3] for x in y])
                 size = (nextMatSwitchIndex - pos) * 3
                 data = [('v3f/static', vertices)]
-                if len(self.normals) > 0:
+                if len(normals) > 0:
                     data.append(('n3f/static', normals))
-                if len(self.texCoords) > 0:
+                if len(texCoords) > 0:
                     data.append(('t2f/static', texCoords))
                 self._batch.add(size, GL_TRIANGLES, group, *data)
                 pos = nextMatSwitchIndex
@@ -114,5 +109,6 @@ class RenderModel(Model):
         Draw the RenderModel using OpenGL.
         Call this in your render-loop to render the underlying model.
         """
+        super(RenderModel, self).draw()
         self._batch.draw()
 

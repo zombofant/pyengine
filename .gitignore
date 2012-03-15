@@ -4,3 +4,8 @@
 .*.swp
 *~
 Engine/UI/CSS/GeneratedParser.py
+CMakeCache.txt
+CMakeFiles
+cmake_install.cmake
+Makefile
+pyuni-client

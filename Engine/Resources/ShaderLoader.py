@@ -1,4 +1,4 @@
-# File name: TextLoader.py
+# File name: ShaderLoader.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -25,39 +25,32 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
+import re
+
 from Base import ResourceLoader
 from Manager import ResourceManager
+from ShaderParser import ShaderParser
+import TextLoader
 
-class TextLoader(ResourceLoader):
-    """
-    Implement a loader for text resources.
-    """
+try:
+    import Engine.GL.ShaderLibrary as ShaderLibrary
+except ImportError:
+    pass
 
+class ShaderLoader(ResourceLoader):
+    
     def __init__(self, **kwargs):
-        super(TextLoader, self).__init__(
-            [unicode, str],
-            ['txt'],
-            **kwargs)
+        try:
+            super(ShaderLoader, self).__init__(
+                [ShaderLibrary.ShaderLibrary],
+                ['shader'],
+                relativePathPrefix="/data/shader",
+                **kwargs)
+        except NameError:
+            self._loaderNotAvailable()
 
-    def _decodeAndStripLineEndings(self, iterable, encoding):
-        for line in iterable:
-            line = line.decode(encoding)
-            if line[-2:] == "\r\n":
-                yield line[:-2]
-            else:
-                le = line[-1:]
-                if le == "\n" or le == "\r":
-                    yield line[:-1]
-                else:
-                    yield line
+    def load(self, filelike, targetClass, encoding="utf8"):
+        variables, vpSource, fpSource = ShaderParser((line.decode(encoding) for line in filelike)).parse()
+        return ShaderLibrary.ShaderLibrary(variables, vpSource, fpSource)
 
-    def load(self, fileLike, targetClass=unicode, encoding="utf8"):
-        text = "\n" . join(self._decodeAndStripLineEndings(fileLike, encoding))
-        if targetClass is str:
-            return str(text)
-        else:
-            return unicode(text)
-
-# register an instance of TextLoader with the resource manager
-ResourceManager().registerResourceLoader(TextLoader)
-
+ResourceManager().registerResourceLoader(ShaderLoader)
