@@ -1,5 +1,5 @@
 /**********************************************************************
-File name: Image.hpp
+File name: Resources.hpp
 This file is part of: Pythonic Universe
 
 LICENSE
@@ -23,41 +23,14 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#include <glew.h>
-#include <png.h>
 
-#include <boost/shared_ptr.hpp>
+#include <boost/python.hpp>
+#include "Resources/Image.hpp"
 
 namespace PyUni {
-namespace Resources {
 
-struct Image;
-typedef boost::shared_ptr<Image> ImageHandle;
+using namespace PyUni::Resources;
 
-struct Image
-{
-    public:
-        Image(GLvoid *pixelData,
-            const GLsizei aWidth, const GLsizei aHeight,
-            const GLenum aFormat, const GLenum aType);
-        virtual ~Image();
-    protected:
-        GLvoid *_pixelData;
-    public:
-        const GLenum format, type;
-        const GLsizei width, height;
-    public:
-        bool getIsValid() const;
-        void dropData();
-    public:
-        void texImage2D(const GLenum target, const GLint level,
-            const GLint internalFormat) const;
-        void texSubImage2D(const GLenum target, const GLint level,
-            const GLint internalFormat,
-            const GLint x, const GLint y) const;
-    public:
-        static ImageHandle PNGImage(FILE *infile);
-};
+void addResourcesToInittab();
 
-}
 }

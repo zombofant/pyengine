@@ -1,5 +1,5 @@
 /**********************************************************************
-File name: Image.hpp
+File name: Resources.cpp
 This file is part of: Pythonic Universe
 
 LICENSE
@@ -23,41 +23,32 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#include <glew.h>
-#include <png.h>
-
-#include <boost/shared_ptr.hpp>
+#include "Resources.hpp"
 
 namespace PyUni {
-namespace Resources {
 
-struct Image;
-typedef boost::shared_ptr<Image> ImageHandle;
+using namespace boost::python;
+using namespace PyUni::Resources;
 
-struct Image
+BOOST_PYTHON_MODULE(_cuni_resources)
 {
-    public:
-        Image(GLvoid *pixelData,
-            const GLsizei aWidth, const GLsizei aHeight,
-            const GLenum aFormat, const GLenum aType);
-        virtual ~Image();
-    protected:
-        GLvoid *_pixelData;
-    public:
-        const GLenum format, type;
-        const GLsizei width, height;
-    public:
-        bool getIsValid() const;
-        void dropData();
-    public:
-        void texImage2D(const GLenum target, const GLint level,
-            const GLint internalFormat) const;
-        void texSubImage2D(const GLenum target, const GLint level,
-            const GLint internalFormat,
-            const GLint x, const GLint y) const;
-    public:
-        static ImageHandle PNGImage(FILE *infile);
-};
+    class_<Image, ImageHandle, boost::noncopyable>("Image", no_init)
+        .def("dropData", &Image::dropData)
+        .def("texImage2D", &Image::texImage2D)
+        .def("texSubImage2D", &Image::texSubImage2D)
+        .add_property("IsValid", &Image::getIsValid)
+        .def_readonly("Width", &Image::width)
+        .def_readonly("Height", &Image::height)
+        .def_readonly("Format", &Image::format)
+        .def_readonly("Type", &Image::type)
+    ;
 
+    def("PNGImage", &Image::PNGImage);
 }
+
+void addResourcesToInittab()
+{
+    PyImport_AppendInittab("_cuni_resources", &init_cuni_resources);
+}
+
 }
