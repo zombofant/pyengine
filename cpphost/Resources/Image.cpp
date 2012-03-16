@@ -21,12 +21,26 @@ Image::Image(GLvoid *pixelData,
 
 Image::~Image()
 {
+    if (_pixelData)
+        free(_pixelData);
+}
+
+void Image::dropData()
+{
+    if (!_pixelData)
+        return;
     free(_pixelData);
+}
+
+bool Image::getIsValid() const
+{
+    return (_pixelData != 0);
 }
 
 void Image::texImage2D(const GLenum target, const GLint level,
     const GLint internalFormat) const
 {
+    assert(_pixelData != 0);
     glTexImage2D(target, level, internalFormat, width, height,
         0, format, type, _pixelData);
 }
@@ -34,6 +48,7 @@ void Image::texImage2D(const GLenum target, const GLint level,
 void Image::texSubImage2D(const GLenum target, const GLint level,
     const GLint internalFormat, const GLint x, const GLint y) const
 {
+    assert(_pixelData != 0);
     glTexSubImage2D(target, level, x, y, width, height, format, type,
         _pixelData);
 }
@@ -134,6 +149,11 @@ ImageHandle Image::PNGImage(FILE *infile)
         channels += 1;
     }
 
+    // screw network-byte-order
+    if (bit_depth > 8)
+        png_set_swap(data);
+
+    // detect opengl format and type
     switch (color)
     {
         case true:
@@ -184,19 +204,18 @@ ImageHandle Image::PNGImage(FILE *infile)
     assert(type != 0);
     
     const GLsizei rowbytes = (channels * channelBytes * width);
+    
+    // at least we should not be below what libpng expects
     {
-        // at least we should not be below what libpng expects
+        
         const GLsizei pngRowbytes = png_get_rowbytes(data, info);
         assert(rowbytes >= pngRowbytes);
     }
 
-    // screw network-byte-order
-    if (bit_depth > 8)
-        png_set_swap(data);
-
     // now lets get some memory
     GLvoid *pixelData = malloc(height * rowbytes);
 
+    // setup row array for libpng
     png_bytep rowPointers[height];
     unsigned char *pngPixelData = (unsigned char *)pixelData;
     for (GLsizei i = 0; i < height; i++)

@@ -22,6 +22,9 @@ struct Image
         const GLenum format, type;
         const GLsizei width, height;
     public:
+        bool getIsValid() const;
+        void dropData();
+    public:
         void texImage2D(const GLenum target, const GLint level,
             const GLint internalFormat) const;
         void texSubImage2D(const GLenum target, const GLint level,
