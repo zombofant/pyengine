@@ -26,6 +26,7 @@ named in the AUTHORS file.
 #include "Package.hpp"
 #include "Window.hpp"
 #include "GL.hpp"
+#include "Resources.hpp"
 #include "SceneGraph.hpp"
 #include "RenderGraph.hpp"
 
@@ -35,6 +36,7 @@ void addCUniToInittab()
 {
     addWindowToInittab();
     addGLToInittab();
+    addResourcesToInittab();
     addSceneGraphToInittab();
     addRenderGraphToInittab();
 }

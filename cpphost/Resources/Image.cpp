@@ -24,11 +24,14 @@ For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
 #include "Image.hpp"
+#include "PNGIOWrapper.hpp"
 
 #include <cassert>
 
 namespace PyUni {
 namespace Resources {
+
+using namespace std;
 
 /* PyUni::Resources::Image */
 
@@ -59,6 +62,7 @@ void Image::dropData()
 
 bool Image::getIsValid() const
 {
+    cerr << "is valid = " << (_pixelData != 0) << endl;
     return (_pixelData != 0);
 }
 
@@ -78,14 +82,19 @@ void Image::texSubImage2D(const GLenum target, const GLint level,
         _pixelData);
 }
 
-ImageHandle Image::PNGImage(FILE *infile)
+ImageHandle Image::PNGImage(IStreamHandle input)
 {
     // Check if its really a PNG image
     unsigned char header[8];
-    fread(header, 1, 8, infile);
-    if (!png_sig_cmp(header, 0, 8))
+    input->read((char*)header, 8);
+    if (png_sig_cmp(header, 0, 8))
     {
-        fseek(infile, -8, SEEK_CUR);
+        cerr << "invalid header" << endl;
+        try {
+            input->seekg(-8, ios_base::cur);
+        } catch (ios_base::failure) {
+            // just catch
+        }
         return ImageHandle();
     }
 
@@ -93,6 +102,7 @@ ImageHandle Image::PNGImage(FILE *infile)
     png_structp data = png_create_read_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0);
     if (!data)
     {
+        cerr << "!data" << endl;
         // TODO: Exception
         return ImageHandle();
     }
@@ -100,6 +110,7 @@ ImageHandle Image::PNGImage(FILE *infile)
     png_infop info = png_create_info_struct(data);
     if (!info)
     {
+        cerr << "!info" << endl;
         png_destroy_read_struct(&data, 0, 0);
         // TODO: Exception
         return ImageHandle();
@@ -108,13 +119,14 @@ ImageHandle Image::PNGImage(FILE *infile)
     // libpng .... exception handling
     if (setjmp(png_jmpbuf(data)))
     {
+        cerr << "libpng exception" << endl;
         // TODO: Exception
         png_destroy_read_struct(&data, &info, 0);
         return ImageHandle();
     }
 
     // initialize libpng io
-    png_init_io(data, infile);
+    png_init_io(data, *input);
     png_set_sig_bytes(data, 8);
 
     // we go the low-level way. This gives us the opportunity to put the

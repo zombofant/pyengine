@@ -37,8 +37,8 @@ class ResourceLoader(object):
     """
 
     @classmethod
-    def _loaderNotAvailable(cls):
-        raise NotImplementedError("{0!s} is not implemented on this platform.".format(cls))
+    def _loaderNotAvailable(cls, error=None):
+        raise NotImplementedError(error or ("{0!s} is not implemented on this platform.".format(cls)))
 
     def __init__(self,
             supportedTargetClasses,

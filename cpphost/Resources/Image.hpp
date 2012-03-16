@@ -23,9 +23,12 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
+#ifndef _PYUNI_RESOURCES_IMAGE_H
+#define _PYUNI_RESOURCES_IMAGE_H
+
 #include <glew.h>
 #include <png.h>
-
+#include <iostream>
 #include <boost/shared_ptr.hpp>
 
 namespace PyUni {
@@ -33,6 +36,8 @@ namespace Resources {
 
 struct Image;
 typedef boost::shared_ptr<Image> ImageHandle;
+
+typedef boost::shared_ptr<std::istream> IStreamHandle;
 
 struct Image
 {
@@ -56,8 +61,10 @@ struct Image
             const GLint internalFormat,
             const GLint x, const GLint y) const;
     public:
-        static ImageHandle PNGImage(FILE *infile);
+        static ImageHandle PNGImage(IStreamHandle input);
 };
 
 }
 }
+
+#endif

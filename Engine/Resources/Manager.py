@@ -25,7 +25,9 @@
 ########################################################################
 from __future__ import unicode_literals, print_function, division
 from our_future import *
+
 import os
+import sys
 
 from Base import ResourceLoader
 from Engine.VFS.FileSystem import FileSystem
@@ -155,7 +157,8 @@ class ResourceManager(object):
         """
         try:
             loader = loaderClass(**kwargs)
-        except NotImplementedError:
+        except NotImplementedError as err:
+            print("Loader {0!s} is not available. Reason: {1!s}".format(loaderClass, err), file=sys.stderr)
             return
         for resourceType in loader.ResourceTypes:
             if resourceType in self._resourceLoaders:

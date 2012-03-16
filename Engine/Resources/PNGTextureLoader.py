@@ -1,4 +1,4 @@
-# File name: TextureLoader.py
+# File name: PNGTextureLoader.py
 # This file is part of: pyuni
 #
 # LICENSE
@@ -28,23 +28,32 @@ from our_future import *
 from Base import ResourceLoader
 from Manager import ResourceManager
 
-from Engine.GL.Texture import Texture2D
-from OpenGL.GL import GL_RGBA, GL_UNSIGNED_BYTE
+__globalError = None
+try:
+    from Engine.GL.Texture import Texture2D
+    from OpenGL.GL import GL_RGBA, GL_UNSIGNED_BYTE
 
-class TextureLoader(ResourceLoader):
+    import CUni.Resources as CResources
+except ImportError as err:
+    __globalError = err
+
+class PNGTextureLoader(ResourceLoader):
     """
-    Implement a loader for texture resources.
+    Implement a loader for png images as OpenGL textures.
     """
 
     def __init__(self, **kwargs):
+        if globals()["__globalError"]:
+            self._loaderNotAvailable(globals()["__globalError"])
         try:
-            super(TextureLoader, self).__init__(
+            super(PNGTextureLoader, self).__init__(
                 [Texture2D],
-                ['png', 'jpg'],
+                ['png'],
                 relativePathPrefix="/data/textures",
                 **kwargs)
-        except NameError:
-            self._loaderNotAvailable()
+            # just probe for a NameError
+        except NameError as err:
+            self._loaderNotAvailable(unicode(err))
         
  
     def load(self, fileLike, targetClass=None):
@@ -52,17 +61,17 @@ class TextureLoader(ResourceLoader):
         Load the texture.
         We simply use the pyglet image loading functionality at the moment.
         """
-        # data = image.load(fileLike.name, fileLike).get_image_data()
-        # FIXME/pyglet: load images
-        data = None
+        image = CResources.PNGImage(CResources.CIStream(fileLike))
+        if image is None or not image.IsValid:
+            raise ValueError("Not valid PNG data.")
         texture = Texture2D(
-            width=data.width,
-            height=data.height,
+            width=image.Width,
+            height=image.Height,
             format=GL_RGBA,
-            data=(GL_RGBA, GL_UNSIGNED_BYTE, data.get_data('RGBA', data.pitch)))
-        del data
+            data=image)
+        del image
         return texture
 
 # register an instance of TextLoader with the resource manager
-ResourceManager().registerResourceLoader(TextureLoader)
+ResourceManager().registerResourceLoader(PNGTextureLoader)
 

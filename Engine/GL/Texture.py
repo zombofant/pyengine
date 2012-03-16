@@ -29,6 +29,12 @@ from Base import *
 from Renderbuffer import RenderbufferBase
 import numpy as np
 
+try:
+    import CUni.Resources as CResources
+except ImportError:
+    class CResources(object):
+        Image = type(None)
+
 class TextureBase(BindableObject):
     _bindCall = glBindTexture
     
@@ -74,9 +80,12 @@ class Texture2D(TextureBase, RenderbufferBase):
     
     def __init__(self, width=None, height=None, format=None, data=None, **kwargs):
         super(Texture2D, self).__init__(width=width, height=height, format=format, **kwargs)
-        dataFormat, dataType, data = self._getDataFormatType(data)
         self.bind()
-        glTexImage2D(GL_TEXTURE_2D, 0, format, self._dimensions[0], self._dimensions[1], 0, dataFormat, dataType, data)
+        if isinstance(data, CResources.Image):
+            data.texImage2D(GL_TEXTURE_2D, 0, format)
+        else:
+            dataFormat, dataType, data = self._getDataFormatType(data)
+            glTexImage2D(GL_TEXTURE_2D, 0, format, self._dimensions[0], self._dimensions[1], 0, dataFormat, dataType, data)
         self[GL_TEXTURE_MAG_FILTER] = GL_NEAREST
         self[GL_TEXTURE_MIN_FILTER] = GL_NEAREST
         self[GL_TEXTURE_WRAP_S] = GL_CLAMP_TO_EDGE
