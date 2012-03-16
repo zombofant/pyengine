@@ -31,7 +31,7 @@ named in the AUTHORS file.
 #include <X11/extensions/Xinerama.h>
 
 #include "../Display.hpp"
-#include "../EventSink.h"
+#include "../EventSink.hpp"
 
 namespace PyUni {
 class X11Display : public Display {

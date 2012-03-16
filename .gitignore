@@ -3,6 +3,7 @@
 *.pyo
 .*.swp
 *~
+*.a
 Engine/UI/CSS/GeneratedParser.py
 CMakeCache.txt
 CMakeFiles
