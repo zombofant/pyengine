@@ -10,3 +10,5 @@ CMakeFiles
 cmake_install.cmake
 Makefile
 pyuni-client
+*.a
+*.o

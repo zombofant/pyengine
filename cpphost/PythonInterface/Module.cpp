@@ -1,40 +1,38 @@
 #include "Module.hpp"
-#include "WindowInterface/Display.hpp"
-#include <boost/python.hpp>
 #include <vector>
+
 #include "WindowInterface/X11/X11Display.hpp"
+#include "WindowInterface/X11/X11Window.hpp"
 
 using namespace boost::python;
 
 namespace PyUni {
 
-PyObject *Display_screens_get(const Display &self)
+list Display_screens_get(const Display &self)
 {
     const std::vector<Screen> &screens = self.getScreens();
-    PyObject *pyList = PyList_New(screens.size());
-    list boostList = list(handle<>(pyList));
+    list boostList = list();
     for (unsigned int i = 0; i < screens.size(); i++)
     {
-        boostList[i] = screens[i];
+        boostList.append(screens[i]);
     }
-    return pyList;
+    return boostList;
 }
 
-PyObject *Display_displayModes_get(const Display &self)
+list Display_displayModes_get(const Display &self)
 {
     const std::vector<DisplayMode> &displayModes = self.getDisplayModes();
-    PyObject *pyList = PyList_New(displayModes.size());
-    list boostList = list(handle<>(pyList));
+    list boostList = list();
     for (unsigned int i = 0; i < displayModes.size(); i++)
     {
-        boostList[i] = displayModes[i];
+        boostList.append(displayModes[i]);
     }
-    return pyList;
+    return boostList;
 }
 
 BOOST_PYTHON_MODULE(cuni)
 {
-    class_<DisplayMode>("DisplayMode", init<unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, bool>())
+    class_<DisplayMode>("DisplayMode", init<unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, bool>())
         .def_readwrite("redBits", &DisplayMode::redBits)
         .def_readwrite("greenBits", &DisplayMode::greenBits)
         .def_readwrite("blueBits", &DisplayMode::blueBits)
@@ -42,7 +40,13 @@ BOOST_PYTHON_MODULE(cuni)
         .def_readwrite("depthBits", &DisplayMode::depthBits)
         .def_readwrite("stencilBits", &DisplayMode::stencilBits)
         .def_readwrite("doubleBuffered", &DisplayMode::doubleBuffered)
-        .def_readonly("index", &DisplayMode::index)
+        .def(self < other<DisplayMode>())
+        .def(self <= other<DisplayMode>())
+        .def(self > other<DisplayMode>())
+        .def(self >= other<DisplayMode>())
+        .def(self == other<DisplayMode>())
+        .def(self != other<DisplayMode>())
+        .def(self_ns::repr(self))
     ;
     class_<Screen>("Screen", no_init)
         .def_readonly("index", &Screen::index)
@@ -51,10 +55,19 @@ BOOST_PYTHON_MODULE(cuni)
         .def_readonly("y", &Screen::y)
         .def_readonly("width", &Screen::width)
         .def_readonly("height", &Screen::height)
+        .def(self_ns::repr(self))
     ;
-    class_<Display, boost::noncopyable>("Display", no_init)
+    class_<WindowWrap, boost::noncopyable>("Window", no_init)
+        .def("flip", pure_virtual(&Window::flip))
+        .def("switchTo", pure_virtual(&Window::switchTo))
+    ;
+    class_<X11Window, bases<Window> >("X11Window", no_init);
+    class_<DisplayWrap, boost::noncopyable>("Display", no_init)
         .add_property("Screens", &Display_screens_get)
-        .add_property("DisplayModes", &Display_displayModes_get);
+        .add_property("DisplayModes", &Display_displayModes_get)
+        .def("createWindow", pure_virtual(&Display::createWindow), boost::python::return_value_policy<boost::python::manage_new_object>())
+    ;
+    class_<X11Display, bases<Display> >("X11Display", no_init);
 }
 
 void addToPython() {

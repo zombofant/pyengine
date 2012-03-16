@@ -30,6 +30,8 @@ named in the AUTHORS file.
 #include "X11Window.hpp"
 #include "../Display.hpp"
 
+#include <iostream>
+
 namespace PyUni {
 X11Display::X11Display(const char *display) {
     if (display == NULL) {
@@ -42,28 +44,47 @@ X11Display::X11Display(const char *display) {
 
     _display = XOpenDisplay(display);
 
-    _config = -1;
-    _x_visual = NULL;
-    _configs = NULL;
-
     this->detectScreens();
     this->detectDisplayModes();
 }
 
 X11Display::~X11Display() {
-    XFree(_configs);
     XCloseDisplay(_display);
 }
 
-Window *X11Display::createWindow(int w, int h, bool fullscreen) {
-    return new X11Window(_display, _x_visual, _configs[_config], _glx_context, w, h);
-}
+Window *X11Display::createWindow(const DisplayMode &mode, int w, int h, bool fullscreen) {
+    XVisualInfo *xVisual;
+    GLXContext glxContext;
+    
+    static int reqAttribs[] = {
+        GLX_X_RENDERABLE    , True,
+        GLX_DRAWABLE_TYPE   , GLX_WINDOW_BIT,
+        GLX_RENDER_TYPE     , GLX_RGBA_BIT,
+        GLX_DEPTH_SIZE      , mode.depthBits,
+        GLX_RED_SIZE        , mode.redBits,
+        GLX_GREEN_SIZE      , mode.greenBits,
+        GLX_BLUE_SIZE       , mode.blueBits,
+        GLX_ALPHA_SIZE      , mode.alphaBits,
+        GLX_STENCIL_SIZE    , mode.stencilBits,
+        GLX_DOUBLEBUFFER    , mode.doubleBuffered,
+        None
+    };
 
-void X11Display::selectMode(int index) {
-    // this should be done only once, and we should error check
-    _glx_context = glXCreateNewContext(_display, _configs[index], GLX_RGBA_TYPE, NULL, True);
-    _x_visual = glXGetVisualFromFBConfig(_display, _configs[index]);
-    _config = index;
+    int count;
+    GLXFBConfig *configs = glXChooseFBConfig(_display, DefaultScreen(_display), reqAttribs, &count);
+    if (count == 0) {
+        // TODO: Raise an error here
+        std::cerr << "No config found for: " << mode << std::endl;
+        return 0;
+    }
+    
+    glxContext = glXCreateNewContext(_display, configs[0], GLX_RGBA_TYPE, NULL, True);
+    xVisual = glXGetVisualFromFBConfig(_display, configs[0]);
+    
+
+    X11Window *win = new X11Window(_display, xVisual, configs[0], glxContext, w, h);
+    XFree(configs);
+    return win;
 }
 
 void X11Display::detectScreens() {
@@ -110,31 +131,44 @@ void X11Display::detectDisplayModes() {
     // perhaps we should query for the GLX extension first
     // but that is not that important right now, though it
     // may lead to strange failure (but who has X withou GLX?)
-    _configs = glXGetFBConfigs(_display, DefaultScreen(_display), &count);
+
+    // we ignore all configs not matching at least these required attribs:
+    static int reqAttribs[] = {
+        GLX_X_RENDERABLE    , True,
+        GLX_DRAWABLE_TYPE   , GLX_WINDOW_BIT,
+        GLX_RENDER_TYPE     , GLX_RGBA_BIT,
+        GLX_DEPTH_SIZE      , 16,
+        None
+    };
+    GLXFBConfig *configs = glXChooseFBConfig(_display, DefaultScreen(_display), reqAttribs, &count);
 
     _displayModes.clear();
 
     for (int i = 0; i < count; i++) {
         int redBits, greenBits, blueBits, alphaBits, depthBits,
-            stencilBits, doubleBuffered;
+            stencilBits, doubleBuffered, samples;
 
-        glXGetFBConfigAttrib(_display, _configs[i], GLX_RED_SIZE, &redBits);
-        glXGetFBConfigAttrib(_display, _configs[i], GLX_GREEN_SIZE, &greenBits);
-        glXGetFBConfigAttrib(_display, _configs[i], GLX_BLUE_SIZE, &blueBits);
-        glXGetFBConfigAttrib(_display, _configs[i], GLX_ALPHA_SIZE, &alphaBits);
-        glXGetFBConfigAttrib(_display, _configs[i], GLX_DEPTH_SIZE, &depthBits);
-        glXGetFBConfigAttrib(_display, _configs[i], GLX_STENCIL_SIZE, &stencilBits);
-        glXGetFBConfigAttrib(_display, _configs[i], GLX_DOUBLEBUFFER, &doubleBuffered);
+        glXGetFBConfigAttrib(_display, configs[i], GLX_RED_SIZE, &redBits);
+        glXGetFBConfigAttrib(_display, configs[i], GLX_GREEN_SIZE, &greenBits);
+        glXGetFBConfigAttrib(_display, configs[i], GLX_BLUE_SIZE, &blueBits);
+        glXGetFBConfigAttrib(_display, configs[i], GLX_ALPHA_SIZE, &alphaBits);
+        glXGetFBConfigAttrib(_display, configs[i], GLX_DEPTH_SIZE, &depthBits);
+        glXGetFBConfigAttrib(_display, configs[i], GLX_STENCIL_SIZE, &stencilBits);
+        glXGetFBConfigAttrib(_display, configs[i], GLX_DOUBLEBUFFER, &doubleBuffered);
+        glXGetFBConfigAttrib(_display, configs[i], GLX_SAMPLES, &samples);
 
-        _displayModes.push_back(DisplayMode(redBits,
+        const DisplayMode instance = DisplayMode(redBits,
                                             greenBits,
                                             blueBits,
                                             alphaBits,
                                             depthBits,
                                             stencilBits,
-                                            doubleBuffered,
-                                            i));
+                                            samples,
+                                            doubleBuffered);
+        if (!hasDisplayMode(instance))
+            _displayModes.push_back(instance);
     }
+    XFree(configs);
 }
 
 void X11Display::handleEvents(EventSink *sink) {

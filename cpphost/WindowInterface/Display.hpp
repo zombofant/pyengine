@@ -28,6 +28,7 @@ named in the AUTHORS file.
 #define PYUNI_DISPLAY_H
 
 #include <vector>
+#include <iostream>
 
 #include "EventSink.hpp"
 
@@ -59,8 +60,8 @@ struct DisplayMode {
     unsigned int redBits, greenBits, blueBits, alphaBits;
     unsigned int depthBits;
     unsigned int stencilBits;
+    unsigned int samples;
     bool doubleBuffered;
-    int index;
 
     DisplayMode(unsigned int aRedBits,
             unsigned int aGreenBits,
@@ -68,26 +69,7 @@ struct DisplayMode {
             unsigned int aAlphaBits,
             unsigned int aDepthBits,
             unsigned int aStencilBits,
-            bool aDoubleBuffered,
-            int aIndex):
-        redBits(aRedBits),
-        greenBits(aGreenBits),
-        blueBits(aBlueBits),
-        alphaBits(aAlphaBits),
-        depthBits(aDepthBits),
-        stencilBits(aStencilBits),
-        doubleBuffered(aDoubleBuffered),
-        index(aIndex)
-    {
-
-    }
-
-    DisplayMode(unsigned int aRedBits,
-            unsigned int aGreenBits,
-            unsigned int aBlueBits,
-            unsigned int aAlphaBits,
-            unsigned int aDepthBits,
-            unsigned int aStencilBits,
+            unsigned int aSamples,
             bool aDoubleBuffered):
         redBits(aRedBits),
         greenBits(aGreenBits),
@@ -95,12 +77,20 @@ struct DisplayMode {
         alphaBits(aAlphaBits),
         depthBits(aDepthBits),
         stencilBits(aStencilBits),
-        doubleBuffered(aDoubleBuffered),
-        index(-1)
+        samples(aSamples),
+        doubleBuffered(aDoubleBuffered)
     {
 
     }
+
+    bool operator== (const DisplayMode &other) const;
+    bool operator> (const DisplayMode &other) const;
+    bool operator< (const DisplayMode &other) const;
+    bool operator>= (const DisplayMode &other) const;
+    bool operator<= (const DisplayMode &other) const;
+    bool operator!= (const DisplayMode &other) const;
 };
+
 
 // forward declaration of the Window class
 class Window;
@@ -118,8 +108,8 @@ public:
     bool hasDisplayMode(const DisplayMode &displayMode);
     void dumpScreens();
 
-    virtual void selectMode(int index) = 0;
-    virtual Window *createWindow(int w, int h, bool fullscreen=false) = 0;
+    virtual Window *createWindow(const DisplayMode &mode,
+        int w, int h, bool fullscreen=false) = 0;
 
     virtual void handleEvents(EventSink *eventSink) = 0;
 
@@ -131,6 +121,10 @@ public:
         return _displayModes;
     }
 };
+
+std::ostream& operator <<(std::ostream &stream, const Screen &screen);
+std::ostream& operator <<(std::ostream &stream, const DisplayMode &dm);
+
 }
 #endif
 // Local Variables:

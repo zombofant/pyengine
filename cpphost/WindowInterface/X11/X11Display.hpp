@@ -25,6 +25,7 @@ named in the AUTHORS file.
 **********************************************************************/
 
 #ifndef PYUNI_X11_DISPLAY_H
+#define PYUNI_X11_DISPLAY_H
 
 #include <X11/Xlib.h>
 #include <GL/glx.h>
@@ -39,18 +40,14 @@ public:
     X11Display(const char *foo = 0);
     virtual ~X11Display();
 
-    virtual Window *createWindow(int w, int h, bool fullscreen=false);
-    virtual void selectMode(int index);
+    virtual Window *createWindow(const DisplayMode &mode,
+        int w, int h, bool fullscreen=false);
 
     virtual void handleEvents(EventSink *eventSink);
 private:
     void detectScreens();
     void detectDisplayModes();
 
-    int _config;
-    GLXFBConfig *_configs;
-    GLXContext _glx_context;
-    XVisualInfo *_x_visual;
     ::Display *_display;
 };
 }

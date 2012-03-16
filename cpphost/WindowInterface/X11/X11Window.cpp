@@ -43,6 +43,7 @@ X11Window::X11Window(::Display *disp,
 }
 
 X11Window::~X11Window() {
+    glXMakeCurrent(_display, 0, 0);
     glXDestroyWindow(_display, _glx_win);
     XDestroyWindow(_display, _win);
 }
