@@ -24,7 +24,6 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
-
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
@@ -67,6 +66,11 @@ import traceback
 import argparse
 import textwrap
 import itertools
+import platform
+import time
+
+if platform.python_implementation() == "PyPy":
+    import numpypy
 
 STATE_PASS = 0
 STATE_SKIP = 1
@@ -155,11 +159,20 @@ group.add_argument(
     const="",
     help="Disable stripping of the module name."
 )
-parser.add_argument(
+group = parser.add_mutually_exclusive_group()
+group.add_argument(
     "--no-stats",
     dest="noStats",
     action="store_true",
+    default=False,
     help="Disable summarizing stats."
+)
+group.add_argument(
+    "--force-stats", "-f",
+    dest="forceStats",
+    action="store_true",
+    default=False,
+    help="Print stats even if quiet is enabled."
 )
 parser.add_argument(
     "--quiet", "-q",
@@ -182,6 +195,13 @@ parser.add_argument(
     metavar="DIR",
     default=os.getcwd(),
     help="Set the project directory to DIR; This is important for imports to work correctly. Defaults to . (current directory)"
+)
+parser.add_argument(
+    "--stderr",
+    dest="stderr",
+    action="store_true",
+    default=False,
+    help="Print statistics to stderr instead of stdout; This is useful to separate unittest output from wrapper script output."
 )
 args = parser.parse_args()
 
@@ -342,7 +362,7 @@ class AwesomeTextResult(unittest.TestResult):
         testsTotal = suite.countTestCases()
         return passedCount, errorCount, failureCount, skippedCount, expectedFailureCount, unexpectedSuccessCount, testsTotal
 
-    def printStats(self, stats):
+    def printStats(self, stats, file=sys.stdout):
         passedCount, errorCount, failureCount, skippedCount, expectedFailureCount, unexpectedSuccessCount, testsTotal = stats
 
         passedColour = Colors.Warning
@@ -352,14 +372,14 @@ class AwesomeTextResult(unittest.TestResult):
             passedColour = Colors.Failure
         
         
-        print("{0} ({1} tests in total):".format(Colors("Statistics", Colors.Header), testsTotal))
-        print("  passed                 : {0}".format(Colors(passedCount, passedColour)))
-        print("  skipped                : {0}".format(self._colouredNumber(skippedCount, Colors.Skipped, Colors.Success)))
-        print("  expected failures      : {0}".format(self._colouredNumber(expectedFailureCount, Colors.ExpectedFailure, Colors.Success)))
-        print("  unexpected successes   : {0}".format(self._colouredNumber(unexpectedSuccessCount, Colors.UnexpectedSuccess, Colors.Success)))
-        print("  errors                 : {0}".format(self._colouredNumber(errorCount, Colors.Error, Colors.Success)))
-        print("  failures               : {0}".format(self._colouredNumber(failureCount, Colors.Failure, Colors.Success)))
-        print("  ran                    : {0}".format(Colors(self.testsRun, Colors.Success if self.testsRun == testsTotal else Colors.Warning)))
+        print("{0} ({1} tests in total):".format(Colors("Statistics", Colors.Header), testsTotal), file=file)
+        print("  passed                 : {0}".format(Colors(passedCount, passedColour)), file=file)
+        print("  skipped                : {0}".format(self._colouredNumber(skippedCount, Colors.Skipped, Colors.Success)), file=file)
+        print("  expected failures      : {0}".format(self._colouredNumber(expectedFailureCount, Colors.ExpectedFailure, Colors.Success)), file=file)
+        print("  unexpected successes   : {0}".format(self._colouredNumber(unexpectedSuccessCount, Colors.UnexpectedSuccess, Colors.Success)), file=file)
+        print("  errors                 : {0}".format(self._colouredNumber(errorCount, Colors.Error, Colors.Success)), file=file)
+        print("  failures               : {0}".format(self._colouredNumber(failureCount, Colors.Failure, Colors.Success)), file=file)
+        print("  ran                    : {0}".format(Colors(self.testsRun, Colors.Success if self.testsRun == testsTotal else Colors.Warning)), file=file)
 
 results = AwesomeTextResult(args.ttyWidth, args.quiet, args.stripModulePrefix, args.stripMethodPrefix)
 results.ttyWidth = ttyWidth
@@ -369,10 +389,22 @@ if tests.countTestCases() == 0:
     sys.exit(7)
 if not args.quiet:
     print("Running {0} unittests (detected from auto-discovery)".format(tests.countTestCases()))
+startTime = time.time()
 tests.run(results)
+endTime = time.time()
 stats = results.getStats(tests)
-if not (args.quiet or args.noStats):
-    results.printStats(stats)
+if args.forceStats or not args.quiet:
+    if args.stderr:
+        Colors.disable()
+    if not args.noStats:
+        results.printStats(stats, file=(sys.stderr if args.stderr else sys.stdout))
+    print("Ran {2} tests on {0} in {1} seconds".format(
+        Colors(platform.python_implementation(), Colors.Header),
+        Colors("{0:.6f}".format(endTime-startTime), Colors.Header),
+        Colors(results.testsRun, Colors.Header)
+        ),
+        file=(sys.stderr if args.stderr else sys.stdout)
+    )
 
 # determine the exit code
 passedCount, errorCount, failureCount, skippedCount, expectedFailureCount, unexpectedSuccessCount, testsTotal = stats

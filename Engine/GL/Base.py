@@ -33,10 +33,12 @@ except ImportError:
     class CGL(object):        
         Struct = object
         Class = object
-
-from OpenGL.GL import *
-from OpenGL.GLU import *
-from OpenGL.GL.framebufferobjects import *
+try:
+    from OpenGL.GL import *
+    from OpenGL.GLU import *
+    from OpenGL.GL.framebufferobjects import *
+except ImportError:
+    pass
 
 class Struct(CGL.Struct):
     def __init__(self, **kwargs):

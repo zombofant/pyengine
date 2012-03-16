@@ -27,8 +27,11 @@ from our_future import *
 
 __all__ = ["LabelWidget"]
 
-from OpenGL.GL import *
-import Engine.GL.Shader as Shader
+try:
+    from OpenGL.GL import *
+    import Engine.GL.Shader as Shader
+except (ImportError, NameError):
+    pass
 
 import Engine.Resources.Manager as Manager
 import Engine.Resources.FontLoader
