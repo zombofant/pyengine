@@ -56,7 +56,7 @@ X11Display::~X11Display() {
 WindowHandle X11Display::createWindow(const DisplayMode &mode, int w, int h, bool fullscreen) {
     XVisualInfo *xVisual;
     GLXContext glxContext;
-    
+
     static int reqAttribs[] = {
         GLX_X_RENDERABLE    , True,
         GLX_DRAWABLE_TYPE   , GLX_WINDOW_BIT,
@@ -79,10 +79,10 @@ WindowHandle X11Display::createWindow(const DisplayMode &mode, int w, int h, boo
         std::cerr << "No config found for: " << mode << std::endl;
         return WindowHandle();
     }
-    
+
     glxContext = glXCreateNewContext(_display, configs[0], GLX_RGBA_TYPE, NULL, True);
     xVisual = glXGetVisualFromFBConfig(_display, configs[0]);
-    
+
 
     X11Window *win = new X11Window(_display, xVisual, configs[0], glxContext, w, h);
     XFree(configs);
@@ -177,6 +177,36 @@ void X11Display::detectDisplayModes() {
     }
     XFree(configs);
 }
+
+void X11Display::handleEvents(EventSink *sink) {
+    while (XPending(_display)) {
+        XEvent event;
+        XNextEvent(_display, &event);
+
+        switch (event.type) {
+        case ButtonPress:
+            sink->onMouseDown(event.xbutton.x,
+                               event.xbutton.y,
+                               event.xbutton.button,
+                               event.xbutton.state);
+            break;
+        case ButtonRelease:
+            sink->onMouseUp(event.xbutton.x,
+                             event.xbutton.y,
+                             event.xbutton.button,
+                             event.xbutton.state);
+            break;
+        case MotionNotify:
+            // sink->onMouseMove();
+            break;
+        default:
+            // foo unknown event type
+            // what should we do .., just ignore for now
+            ;
+        }
+    }
+}
+
 }
 
 // Local Variables:

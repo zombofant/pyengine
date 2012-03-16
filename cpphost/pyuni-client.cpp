@@ -46,13 +46,15 @@ int main(int argc, char** argv) {
 
         boost::python::object cuni_window = boost::python::import("_cuni_window");
         boost::python::object cuni_window_namespace = cuni_window.attr("__dict__");
+
         boost::python::object main = boost::python::import("__main__");
         boost::python::object main_namespace = main.attr("__dict__");
 
         PyUni::X11Display *x11 = new PyUni::X11Display();
         disp = x11;
+
         cuni_window_namespace["display"] = x11;
-        
+
         std::string str;
         {
             std::stringstream s;

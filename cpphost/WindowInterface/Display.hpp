@@ -33,6 +33,8 @@ named in the AUTHORS file.
 #include <iostream>
 #include <boost/shared_ptr.hpp>
 
+#include "EventSink.hpp"
+
 namespace PyUni {
     
 struct Screen {
@@ -114,6 +116,8 @@ public:
     virtual WindowHandle createWindow(const DisplayMode &mode,
         int w, int h, bool fullscreen=false) = 0;
     virtual void pullEvents(const EventSink *sink) = 0;
+
+    virtual void handleEvents(EventSink *eventSink) = 0;
 
     const std::vector<Screen> &getScreens() const {
         return _screens;

@@ -44,6 +44,7 @@ public:
         int w, int h, bool fullscreen=false);
     virtual void pullEvents(const EventSink *sink);
 
+    virtual void handleEvents(EventSink *eventSink);
 private:
     void detectScreens();
     void detectDisplayModes();
