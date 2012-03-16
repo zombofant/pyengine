@@ -67,6 +67,11 @@ cmake_minimum_required(VERSION 2.6)
     include_directories(${PNG_INCLUDE_DIRS})
     add_definitions(${PNG_DEFINITIONS})
 
+# configuration
+    configure_file(cpphost/pyuniConfig.template
+        cpphost/pyuniConfig.hpp
+        ESCAPE_QUOTES)
+
 # targets
     add_subdirectory(cpphost)
 

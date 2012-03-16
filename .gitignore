@@ -11,3 +11,4 @@ Makefile
 pyuni-client
 *.a
 *.o
+cpphost/pyuniConfig.hpp
