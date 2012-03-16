@@ -35,9 +35,6 @@ named in the AUTHORS file.
 
 #include "PythonInterface/Package.hpp"
 
-#include <GL/gl.h>
-#include <stdlib.h>
-
 PyUni::Display *disp = 0;
 
 int main(int argc, char** argv) {

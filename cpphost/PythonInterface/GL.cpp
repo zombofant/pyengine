@@ -25,7 +25,7 @@ named in the AUTHORS file.
 **********************************************************************/
 #include "GL.hpp"
 
-#include <GL/glew.h>
+#include <glew.h>
 #include <iostream>
 
 #include <boost/python/slice.hpp>

@@ -26,7 +26,7 @@ named in the AUTHORS file.
 #ifndef _PYUNI_GL_INDEX_BUFFERS_H
 #define _PYUNI_GL_INDEX_BUFFERS_H
 
-#include <GL/glew.h>
+#include <glew.h>
 #include "Base.hpp"
 #include <limits>
 #include <boost/static_assert.hpp>

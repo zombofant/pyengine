@@ -26,7 +26,7 @@ named in the AUTHORS file.
 #ifndef _PYUNI_GL_BASE_H
 #define _PYUNI_GL_BASE_H
 
-#include <GL/glew.h>
+#include <glew.h>
 #include <string>
 #include <boost/shared_ptr.hpp>
 

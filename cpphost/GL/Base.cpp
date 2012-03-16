@@ -24,7 +24,7 @@ For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
 #include <exception>
-#include <GL/glew.h>
+#include <glew.h>
 #include "Base.hpp"
 #include <iostream>
 
