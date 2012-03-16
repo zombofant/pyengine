@@ -79,7 +79,7 @@ class Transformation(object):
 
     def updateMatrix(self):
         self._matrix = self._mTranslate*self._mRotate*self._mScale
-        self._transposedMatrix = self._matrix.T.copy(order='C')
+        self._transposedMatrix = self._matrix.T.copy()
 
     def reset(self):
         self.setIdentity()
