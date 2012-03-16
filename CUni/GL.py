@@ -30,6 +30,8 @@ def __testSizeRange(size, min, max, type):
     return size
 
 def __testIndexRange(idx, min, max, type):
+    if len(idx) == 0:
+        raise ValueError("{0} needs an index.".format(type))
     idx = int(idx)
     if idx > max or idx < min:
         raise ValueError("Index must be in [{0}..{1}] for {2}. Got {3}".format(min, max, type, idx))
@@ -49,6 +51,8 @@ def VertexFormat(fmtSpecifier):
         segmentIterable = fmtSpecifier.split(";")
     segments = [segment.split(':') for segment in segmentIterable]
     for type, size in ((type.strip(), size.strip()) for type, size in segments):
+        if len(type) + len(size) == 0:
+            continue
         if len(type) == 0:
             raise ValueError("Invalid type specifier: {0}".format(type))
         size = int(size)

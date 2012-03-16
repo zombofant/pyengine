@@ -1,2 +1,3 @@
 // This file can use substitutions as specified at
 // <http://www.cmake.org/cmake/help/cmake2.6docs.html#command:configure_file>
+#define GL_ERROR_CHECK

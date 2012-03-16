@@ -26,14 +26,19 @@ named in the AUTHORS file.
 #ifndef _PYUNI_GL_BASE_H
 #define _PYUNI_GL_BASE_H
 
+#include "pyuniConfig.hpp"
+
 #include <glew.h>
 #include <string>
 #include <boost/shared_ptr.hpp>
 
+#include "Misc/Exception.hpp"
+#include <iostream>
+
 namespace PyUni {
 namespace GL {
     
-/*class Error: public Exception {
+class Error: public Exception {
     public:
         Error(const std::string aMessage);
         ~Error() throw() {};
@@ -43,7 +48,7 @@ namespace GL {
         const char *what() {
             return message.c_str();
         }
-};*/
+};
 
 class Struct {
     public:
@@ -61,7 +66,20 @@ class Class: public Struct {
 typedef boost::shared_ptr<Struct> StructHandle;
 typedef boost::shared_ptr<Class> ClassHandle;
 
-// void raiseLastGLError();
+static inline void raiseLastGLError()
+{
+    #ifdef GL_ERROR_CHECK
+    GLuint error = glGetError();
+    if (error != GL_NO_ERROR)
+    {
+        Error exc(std::string((const char*)gluErrorString(error)));
+        std::cerr << exc << std::endl;
+        throw exc;
+    }
+    #else
+    #error "GL_ERROR_CHECK disabled!"
+    #endif
+}
 
 }
 }

@@ -18,6 +18,7 @@ cmake_minimum_required(VERSION 2.6)
         "pyuni_Resources"
         "pyuni_GL"
         "pyuni_Math"
+        "pyuni_Misc"
     )
 
     # opengl + glew

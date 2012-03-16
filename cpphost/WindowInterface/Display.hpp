@@ -99,29 +99,32 @@ class Window;
 typedef boost::shared_ptr<Window> WindowHandle;
 
 class Display {
-public:
-    Display();
-    virtual ~Display();
-protected:
-    void normalizeScreenCoordinates();
+    public:
+        Display();
+        virtual ~Display();
+    protected:
+        void normalizeScreenCoordinates();
 
-    std::vector<Screen> _screens;
-    std::vector<DisplayMode> _displayModes;
-public:
-    bool hasDisplayMode(const DisplayMode &displayMode);
-    void dumpScreens();
+        std::vector<Screen> _screens;
+        std::vector<DisplayMode> _displayModes;
+    public:
+        bool hasDisplayMode(const DisplayMode &displayMode);
+        void dumpScreens();
 
-    virtual WindowHandle createWindow(const DisplayMode &mode,
-        int w, int h, bool fullscreen=false) = 0;
-    virtual void pullEvents(const EventSink *sink) = 0;
+        virtual WindowHandle createWindow(const DisplayMode &mode,
+            int w, int h, bool fullscreen=false) = 0;
+        virtual void pullEvents(const EventSink *sink) = 0;
 
-    const std::vector<Screen> &getScreens() const {
-        return _screens;
-    }
+        const std::vector<Screen> &getScreens() const {
+            return _screens;
+        }
 
-    const std::vector<DisplayMode> &getDisplayModes() const {
-        return _displayModes;
-    }
+        const std::vector<DisplayMode> &getDisplayModes() const {
+            return _displayModes;
+        }
+
+        void initializeGLEW() const;
+        void finalizeGLEW() const;
 };
 
 typedef boost::shared_ptr<Display> DisplayHandle;

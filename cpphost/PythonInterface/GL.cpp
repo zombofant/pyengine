@@ -202,6 +202,9 @@ BOOST_PYTHON_MODULE(_cuni_gl)
     class_<GeometryBuffer, bases<GenericBuffer>, boost::noncopyable>("GeometryBuffer",
             init<const VertexFormatHandle, GLenum>())
         .def("allocateVertices", &GeometryBuffer::allocateVertices)
+        .def("bind", &GeometryBuffer::bind)
+        .def("draw", &GeometryBuffer::draw)
+        .def("unbind", &GeometryBuffer::unbind)
     ;
 
 

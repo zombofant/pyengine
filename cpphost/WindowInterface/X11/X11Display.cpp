@@ -34,7 +34,9 @@ named in the AUTHORS file.
 
 namespace PyUni {
 
-X11Display::X11Display(const char *display) {
+X11Display::X11Display(const char *display):
+    Display::Display()
+{
     if (display == NULL) {
         display = getenv("DISPLAY");
     }

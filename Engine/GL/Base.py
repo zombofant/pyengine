@@ -37,6 +37,7 @@ try:
     from OpenGL.GL import *
     from OpenGL.GLU import *
     from OpenGL.GL.framebufferobjects import *
+    from OpenGL.GL.shaders import *
 except ImportError:
     pass
 
@@ -57,3 +58,8 @@ class BindableObject(Object):
     def bind(self):
         self._bindCall(self._bindClass, self.id)
     
+
+def checkError():
+    error = glGetError()
+    if error != GL_NO_ERROR:
+        raise Exception(gluErrorString(error))

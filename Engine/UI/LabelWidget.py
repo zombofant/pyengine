@@ -54,7 +54,8 @@ class LabelWidget(Widget):
     def render(self):
         self._rootWidget._shader.bind(texturing=True, upsideDown=True)
         # Shader.unbind()
-        self._text.draw()
+        # FIXME/pyglet
+        # self._text.draw()
 
     @property
     def Text(self):

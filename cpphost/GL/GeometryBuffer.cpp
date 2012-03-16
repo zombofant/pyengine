@@ -169,6 +169,7 @@ VertexIndexListHandle GeometryBuffer::allocateVertices(const GLsizei count) {
 
 void GeometryBuffer::gc() {
     bool changed = true;
+    std::cerr << "garbage collection in geometry buffer " << glID << " invoked. Use counts follow: " << std::endl;
     while (changed) {
         changed = false;
         for (VertexIndexListHandleList::iterator it = _handles.begin();
@@ -176,6 +177,7 @@ void GeometryBuffer::gc() {
             it++)
         {
             VertexIndexListHandle handle = *it;
+            std::cerr << handle.use_count() << " ";
             if (handle.use_count() == 1) {
                 gc_one(handle);
                 _handles.erase(it);
@@ -184,6 +186,7 @@ void GeometryBuffer::gc() {
             }
         }
     }
+    std::cerr << std::endl;
 }
 
 /*GeometryBufferDriverHandle GeometryBuffer::createDriver(const VertexFormatHandle handle) 
@@ -278,6 +281,14 @@ void GeometryBuffer::bind()
     if (fmt->nVertexAttrib3 > 0) {
         glVertexAttribPointer(3, fmt->nVertexAttrib3, glType, GL_FALSE, vertexSize, (const void*)fmt->vertexAttrib3Offset);
     }
+}
+
+void GeometryBuffer::draw(const VertexIndexListHandle &handle,
+    const GLenum mode)
+{
+    // assume bound
+    VertexIndex *indicies = &(handle.get()->front());
+    glDrawElements(mode, handle->size(), GL_UNSIGNED_INT, (const GLvoid*)indicies);
 }
 
 void GeometryBuffer::unbind()

@@ -26,6 +26,8 @@ named in the AUTHORS file.
 #include "GeometryBufferView.hpp"
 #include "GeometryObject.hpp"
 
+#include <iostream>
+
 namespace PyUni {
 namespace GL {
 
@@ -55,6 +57,11 @@ GeometryBufferView::GeometryBufferView(
     })
 {
     
+}
+
+GeometryBufferView::~GeometryBufferView()
+{
+    std::cerr << "view destroyed" << std::endl;
 }
 
 GeometryBufferView::AttributeView *GeometryBufferView::newAttribView(
@@ -222,8 +229,8 @@ void GeometryBufferView::AttributeSlice::set(const GLVertexFloat *data)
     for (GLsizei i = _start; i < _stop; i += _step)
     {
         const GLsizei actualIndex = map->map(i);
-        minIndex = ((actualIndex<minIndex) || (minIndex == -1)?actualIndex:minIndex);
-        minIndex = ((actualIndex>maxIndex) || (maxIndex == -1)?actualIndex:maxIndex);
+        minIndex = ((actualIndex<minIndex) || (minIndex < 0)?actualIndex:minIndex);
+        maxIndex = ((actualIndex>maxIndex) || (maxIndex < 0)?actualIndex:maxIndex);
         
         const GLsizei floatIndex = actualIndex * vertexLength + attribOffset;
         memcpy(&dest[floatIndex], src, copySize);

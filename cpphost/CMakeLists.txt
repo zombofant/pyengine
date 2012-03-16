@@ -1,4 +1,4 @@
-
+add_subdirectory(Misc)
 add_subdirectory(Math)
 add_subdirectory(GL)
 add_subdirectory(Resources)

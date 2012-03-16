@@ -87,6 +87,7 @@ class GeometryBufferView {
     public:
         GeometryBufferView(const GeometryBufferHandle bufferHandle,
             const VertexIndexListHandle indicies);
+        virtual ~GeometryBufferView();
     private:
         GeometryBufferHandle _buffer;
         const VertexFormat *_bufferFormat;

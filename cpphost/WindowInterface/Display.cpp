@@ -144,7 +144,9 @@ bool DisplayMode::operator!=(const DisplayMode &other) const
 }
 
     
-Display::Display() {
+Display::Display()
+{
+    printf("glew init");
 }
 
 Display::~Display() {
@@ -182,7 +184,6 @@ bool Display::hasDisplayMode(const DisplayMode &displayMode) {
     }
     return false;
 }
-
 
 std::ostream& operator <<(std::ostream &stream, const Screen &screen)
 {

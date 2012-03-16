@@ -36,6 +36,11 @@ from Style import Style
 from OpenGL.GL import GL_TRIANGLES, glEnable, GL_TEXTURE_2D
 from Engine.GL.Texture import Texture2D
 
+try:
+    import CUni.GL as CGL
+except ImportError:
+    pass
+
 class AbstractWidget(object):
     """
     Abstract base class for widgets. Do not derive from this if you are not
@@ -58,6 +63,7 @@ class AbstractWidget(object):
         self._invalidateComputedStyle()
         self._styleClasses = ClassSet()
         self._rootWidget = None
+        self._geometryBuffer = None
         
     def _absMetricsChanged(self):
         self._invalidateAlignment()
@@ -86,13 +92,23 @@ class AbstractWidget(object):
         pass
 
     def render(self):
+        buffer = self._geometryBuffer
         if self._invalidatedGeometry:
             self.realign()
             faceBuffer = FaceBuffer()
             self.ComputedStyle.geometryForRect(self.AbsoluteRect, faceBuffer)
-            self._geometry = dict(
-                ((tex, pyglet.graphics.vertex_list((len(geometry[0][1]))//2, *geometry)) for tex, geometry in faceBuffer.getGeometry().iteritems())
-            )
+            geoData = ((tex, (len(geometry[0][1])//2, geometry)) for tex, geometry in faceBuffer.getGeometry().iteritems())
+            
+            self._geometry = dict()
+            for tex, (length, data) in geoData:
+                allocation = buffer.allocateVertices(length)
+                view = CGL.GeometryBufferView(buffer, allocation)
+                view.Vertex[:].set(data[0][1])
+                view.Colour[:].set(data[1][1])
+                view.TexCoord(0)[:].set(data[2][1])
+                del view
+            
+            del geoData
             del faceBuffer
             self._invalidateGeometry = False
         for tex, vertexList in self._geometry.iteritems():
@@ -101,7 +117,7 @@ class AbstractWidget(object):
                 tex.bind()
             else:
                 self._rootWidget._shader.bind(texturing=False, upsideDown=False).id
-            vertexList.draw(GL_TRIANGLES)
+            buffer.draw(vertexList, GL_TRIANGLES)
             
 
     def onKeyDown(self, symbol, modifiers):
@@ -201,6 +217,7 @@ class Widget(AbstractWidget):
         self._flags = set()
         parent.add(self)
         self._rootWidget = parent._rootWidget
+        self._geometryBuffer = self._rootWidget._geometryBuffer
 
     def _requireParent(self):
         if self._parent is None:
@@ -210,8 +227,10 @@ class Widget(AbstractWidget):
         assert self._parent is None or isinstance(self._parent, WidgetContainer)
         if self._parent is not None:
             self._rootWidget = self._parent.getRootWidget()
+            self._geometryBuffer = self._rootWidget._geometryBuffer
         else:
             self._rootWidget = None
+            self._geometryBuffer = None
 
     def hitTest(self, p):
         return self if p in self.AbsoluteRect else None
