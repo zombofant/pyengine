@@ -34,9 +34,15 @@ namespace GL {
 
 VertexIndexListMap::VertexIndexListMap(const VertexIndexListHandle vertices):
     BufferMap(),
-    _vertices(vertices)
+    _verticesHandle(vertices),
+    _vertices(_verticesHandle.get())
 {
     
+}
+
+VertexIndexListMap::~VertexIndexListMap()
+{
+    _vertices = 0;
 }
 
 void VertexIndexListMap::rangeCheck(const size_t index) {
@@ -50,8 +56,7 @@ void VertexIndexListMap::rangeCheck(const size_t index) {
 size_t VertexIndexListMap::map(const size_t index) {
     const size_t mappedIndex = BufferMap::map(index);
     rangeCheck(mappedIndex);
-    const VertexIndexList *list = _vertices.get();
-    return (*list)[mappedIndex];
+    return (*_vertices)[mappedIndex];
 }
 
 

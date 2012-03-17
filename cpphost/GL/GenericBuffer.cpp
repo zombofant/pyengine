@@ -64,10 +64,13 @@ void GenericBuffer::doExpand(const GLsizei oldCapacity, const GLsizei newCapacit
 
 void GenericBuffer::doFlushAll() {
     glBufferSubData(bufferKind, 0, capacity * itemSize, data);
+    raiseLastGLError();
 }
 
 void GenericBuffer::doFlushRange(const GLsizei minItem, const GLsizei count) {
+    std::cerr << minItem << " " << count << " " << itemSize << std::endl;
     glBufferSubData(bufferKind, minItem * itemSize, count * itemSize, data);
+    raiseLastGLError();
 }
 
 void GenericBuffer::expand() {
@@ -96,10 +99,13 @@ void GenericBuffer::freeBuffer() {
 void GenericBuffer::initBuffer() {
     glGenBuffers(1, &glID);
     std::cout << "initialized buffer " << glID << " capacity is currently " << capacity << std::endl;
+    raiseLastGLError();
     if (capacity > 0) {
         glBindBuffer(bufferKind, glID);
         std::cout << "writing " << capacity * itemSize << " bytes ( = " << capacity << " items) to the buffer as initalization" << std::endl;
+        raiseLastGLError();
         glBufferData(bufferKind, capacity * itemSize, data, bufferPurpose);
+        raiseLastGLError();
     }
 }
 
@@ -112,6 +118,7 @@ void GenericBuffer::rangeCheck(const GLsizei index) {
 void GenericBuffer::requireBuffer() {
     if (glID == 0) {
         initBuffer();
+        raiseLastGLError();
     }
     if (glID == 0) {
         // throw Exception("buffer initialized with id 0.");

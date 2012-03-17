@@ -37,16 +37,17 @@ class ShaderLibrary(object):
 
     def _buildShader(self, variables):
         shader = Shader()
-        shader.loadShader(self._vertexProgramTree(variables), self._fragmentProgramTree(variables))
+        sentinel = dict(variables)
+        shader.loadShader(self._vertexProgramTree(sentinel), self._fragmentProgramTree(sentinel))
         return shader
 
     def requireShader(self, variables):
         cacheToken = tuple(variables.iteritems())
-        if cacheToken in self._cache:
-            shader = self._cache[cacheToken]
-        else:
-            shader = self._buildShader(variables)
-            self._cache[cacheToken] = shader
+        shader = self._cache.get(cacheToken, None)
+        if shader is not None:
+            return shader
+        shader = self._buildShader(variables)
+        self._cache[cacheToken] = shader
         return shader
 
     def cacheShaders(self, variableDicts):

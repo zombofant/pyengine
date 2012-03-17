@@ -36,6 +36,7 @@ class BufferMap {
     public:
         BufferMap():
             _offset(0) {};
+        virtual ~BufferMap() {};
     private:
         size_t _offset;
     public:

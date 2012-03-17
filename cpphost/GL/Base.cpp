@@ -33,11 +33,11 @@ namespace GL {
 
 /* PyUni::GL::Error */
 
-/*Error::Error(const std::string aMessage):
+Error::Error(const std::string aMessage):
     Exception("OpenGL error: "+aMessage)
 {
     
-}*/
+}
 
 /* PyUni::GL::Class */
 
@@ -49,14 +49,14 @@ Class::Class():
 
 /* free functions */
 
-void raiseLastGLError() {
+/*void raiseLastGLError() {
     const GLenum error = glGetError();
     if (error != GL_NO_ERROR) {
         std::cerr << (const char *)gluErrorString(error) << std::endl;
         // throw Error((const char *)gluErrorString(error));
     }
     
-}
+}*/
 
 }
 }

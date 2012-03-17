@@ -1,5 +1,15 @@
 cmake_minimum_required(VERSION 2.6)
 
+# macros
+    macro(add_sphinx_target TARGET_NAME BUILDER COMMENT_STR)
+        add_custom_target(${TARGET_NAME}
+        COMMAND sphinx-build -b ${BUILDER} . sphinx/build/${BUILDER}
+            WORKING_DIRECTORY docs
+            COMMENT ${COMMENT_STR}
+        )
+    endmacro(add_sphinx_target)
+
+
 # project setup
     project(pyUniverse CXX C)
     set(EXEC "pyuni-client")
@@ -18,6 +28,7 @@ cmake_minimum_required(VERSION 2.6)
         "pyuni_Resources"
         "pyuni_GL"
         "pyuni_Math"
+        "pyuni_Misc"
     )
 
     # opengl + glew
@@ -79,3 +90,27 @@ cmake_minimum_required(VERSION 2.6)
     add_dependencies(pyuni-client ${PYUNI_MODULES})
     target_link_libraries(${EXEC} ${PYUNI_MODULES} ${LIBS})
 
+# documentation targets
+    add_sphinx_target(docs-html
+        html
+        "Build html documentation"
+    )
+
+    add_sphinx_target(docs-pdf
+        latexpdf
+        "Build pdf documentation"
+    )
+
+    add_sphinx_target(docs-man
+        man
+        "Build manpages"
+    )
+
+    add_custom_target(docs
+        DEPENDS docs-html)
+
+    add_custom_target(clean-docs
+        COMMAND ./clean.sh
+        WORKING_DIRECTORY docs/sphinx
+        COMMENT "Clean all generated documentation"
+    )

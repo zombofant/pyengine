@@ -29,6 +29,8 @@ import Engine.Utils as Utils
 
 from Base import *
 
+import ctypes as c
+
 class Shader(BindableObject):
     def __init__(self, **kwargs):
         super(Shader, self).__init__(**kwargs)
@@ -69,6 +71,10 @@ class Shader(BindableObject):
             
             glDeleteShader(vsObj)
             glDeleteShader(fsObj)
+
+            glValidateProgram(program)
+            if glGetProgramiv(program, GL_VALIDATE_STATUS) != GL_TRUE:
+                raise ValueError("Program did not validate.")
             
             self.id = program
         except:
@@ -77,7 +83,7 @@ class Shader(BindableObject):
             if fsObj is not None:
                 glDeleteShader(fsObj)
             glDeleteProgram(program)
-            self.id = None
+            self.id = 0
             raise
             
     def loadFromFile(self, vsName, fsName, uniforms):

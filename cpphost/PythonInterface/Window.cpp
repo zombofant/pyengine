@@ -93,6 +93,7 @@ BOOST_PYTHON_MODULE(_cuni_window)
     class_<Window, WindowHandle, boost::noncopyable>("Window", no_init)
         .def("flip", pure_virtual(&Window::flip))
         .def("switchTo", pure_virtual(&Window::switchTo))
+        .def("initializeGLEW", &Window::initializeGLEW)
     ;
     class_<X11Window, bases<Window> >("X11Window", no_init)
         .def("flip", &X11Window::flip)

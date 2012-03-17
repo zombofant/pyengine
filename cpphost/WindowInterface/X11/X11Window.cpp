@@ -87,10 +87,13 @@ X11Window::~X11Window() {
 
     XMapWindow(_display, win);
 
+    glXWaitGL();
+    glXWaitX();
     return win;
 }
 
 void X11Window::switchTo() {
+    glXMakeCurrent(_display, _glx_win, _glx_context);
     glXMakeContextCurrent(_display, _glx_win, _glx_win, _glx_context);
 }
 

@@ -133,6 +133,7 @@ class GeometryBuffer: public GenericBuffer {
         void setMap(BufferMapHandle aValue);
     public:
         virtual void bind();
+        void draw(const VertexIndexListHandle &handle, const GLenum mode);
         virtual void unbind();
 };
 

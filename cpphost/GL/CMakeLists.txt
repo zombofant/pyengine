@@ -7,4 +7,4 @@ add_library(pyuni_GL
     "GeometryBufferView.cpp"
     "GeometryObject.cpp"
 )
-add_dependencies(pyuni_GL pyuni_Math)
+add_dependencies(pyuni_GL pyuni_Math pyuni_Misc)

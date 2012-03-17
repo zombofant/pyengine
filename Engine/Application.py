@@ -27,6 +27,7 @@ from our_future import *
 
 import CUni
 import CUni.Window
+import CUni.GL as CGL
 
 import time
 from OpenGL.GL import *
@@ -51,6 +52,9 @@ class Application(RootWidget, CUni.Window.EventSink):
         self.SyncedFrameLength = 0.01
         self.SyncedSpeedFactor = 1.
         self._aggregatedTime = 0.
+
+        self._geometryBuffer = CGL.GeometryBuffer(CGL.VertexFormat("v:2;t0:2;c:4"), GL_DYNAMIC_DRAW)
+        self.updateGeometryBuffer()
         
         self._render = super(Application, self).render
 
@@ -63,6 +67,8 @@ class Application(RootWidget, CUni.Window.EventSink):
             print("Creating context with mode: {0}".format(mode))
             self._window = display.createWindow(mode, geometry[0], geometry[1], fullscreen)
             self._window.switchTo()
+            self._window.initializeGLEW()
+            #self._window.switchTo()
             self._newScreen(self._window, 0, 0, *geometry)
         
         self.realign()

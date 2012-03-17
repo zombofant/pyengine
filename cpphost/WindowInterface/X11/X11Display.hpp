@@ -28,7 +28,6 @@ named in the AUTHORS file.
 #define _PYUNI_X11_DISPLAY_H
 
 #include <X11/Xlib.h>
-#include <GL/glx.h>
 #include <X11/extensions/Xinerama.h>
 
 #include "../Display.hpp"

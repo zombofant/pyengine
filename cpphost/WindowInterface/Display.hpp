@@ -124,6 +124,9 @@ public:
     const std::vector<DisplayMode> &getDisplayModes() const {
         return _displayModes;
     }
+
+    void initializeGLEW() const;
+    void finalizeGLEW() const;
 };
 
 typedef boost::shared_ptr<Display> DisplayHandle;

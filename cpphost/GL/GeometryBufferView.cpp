@@ -26,6 +26,8 @@ named in the AUTHORS file.
 #include "GeometryBufferView.hpp"
 #include "GeometryObject.hpp"
 
+#include <iostream>
+
 namespace PyUni {
 namespace GL {
 
@@ -33,7 +35,7 @@ namespace GL {
 
 GeometryBufferView::GeometryBufferView(
         const GeometryBufferHandle buffer,
-        const VertexIndexListHandle indicies):
+        VertexIndexListHandle indicies):
     _buffer(buffer),
     _bufferFormat(buffer->getFormat()),
     _indicies(indicies),
@@ -54,7 +56,15 @@ GeometryBufferView::GeometryBufferView(
         newAttribView(_bufferFormat->vertexAttrib3Offset, _bufferFormat->nVertexAttrib3, _bufferFormat->vertexSize)
     })
 {
-    
+    std::cerr << "uc: " << _indicies.use_count() << std::endl;
+}
+
+GeometryBufferView::~GeometryBufferView()
+{
+    std::cerr << "uc: " << _indicies.use_count() << std::endl;
+    std::cerr << "deleting map" << std::endl;
+    delete _map;
+    std::cerr << "uc: " << _indicies.use_count() << std::endl;
 }
 
 GeometryBufferView::AttributeView *GeometryBufferView::newAttribView(
@@ -222,8 +232,8 @@ void GeometryBufferView::AttributeSlice::set(const GLVertexFloat *data)
     for (GLsizei i = _start; i < _stop; i += _step)
     {
         const GLsizei actualIndex = map->map(i);
-        minIndex = ((actualIndex<minIndex) || (minIndex == -1)?actualIndex:minIndex);
-        minIndex = ((actualIndex>maxIndex) || (maxIndex == -1)?actualIndex:maxIndex);
+        minIndex = ((actualIndex<minIndex) || (minIndex < 0)?actualIndex:minIndex);
+        maxIndex = ((actualIndex>maxIndex) || (maxIndex < 0)?actualIndex:maxIndex);
         
         const GLsizei floatIndex = actualIndex * vertexLength + attribOffset;
         memcpy(&dest[floatIndex], src, copySize);

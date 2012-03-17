@@ -1,6 +1,7 @@
 
 add_library(pyuni_WindowInterface STATIC
     "Display.cpp"
+    "Window.cpp"
     "EventSink.cpp"
     "EventLoop.cpp"
     "X11/EventLoop.cpp"
