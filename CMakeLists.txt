@@ -1,6 +1,14 @@
 cmake_minimum_required(VERSION 2.6)
 project(pyUniverse CXX C)
 
+macro(add_sphinx_target TARGET_NAME BUILDER COMMENT_STR)
+    add_custom_target(${TARGET_NAME}
+        COMMAND sphinx-build -b ${BUILDER} . sphinx/build/html
+        WORKING_DIRECTORY docs
+        COMMENT ${COMMENT_STR}
+    )
+endmacro(add_sphinx_target)
+
 set(CMAKE_CXX_FLAGS "-g -Wall -std=c++0x")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "CMakeModules")
 
@@ -16,9 +24,20 @@ set(LIBS ${LIBS} ${OPENGL_gl_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_REGEX_LIBR
 add_executable(pyuni-client client-host/pyuni-client.cpp)
 target_link_libraries(pyuni-client ${LIBS})
 
-add_custom_target(docs-html
-    COMMAND sphinx-build -b html . sphinx/build/html
-    WORKING_DIRECTORY docs
-    COMMENT "Build documentation using sphinx-build"
-    VERBATIM
+add_sphinx_target(docs-html
+    html
+    "Build html documentation"
 )
+
+add_sphinx_target(docs-pdf
+    latexpdf
+    "Build pdf documentation"
+)
+
+add_sphinx_target(docs-man
+    man
+    "Build manpages"
+)
+
+add_custom_target(docs
+    DEPENDS docs-html)
