@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.6)
 # macros
     macro(add_sphinx_target TARGET_NAME BUILDER COMMENT_STR)
         add_custom_target(${TARGET_NAME}
-            COMMAND sphinx-build -b ${BUILDER} . sphinx/build/html
+        COMMAND sphinx-build -b ${BUILDER} . sphinx/build/${BUILDER}
             WORKING_DIRECTORY docs
             COMMENT ${COMMENT_STR}
         )
@@ -108,3 +108,9 @@ cmake_minimum_required(VERSION 2.6)
 
     add_custom_target(docs
         DEPENDS docs-html)
+
+    add_custom_target(clean-docs
+        COMMAND ./clean.sh
+        WORKING_DIRECTORY docs/sphinx
+        COMMENT "Clean all generated documentation"
+    )
