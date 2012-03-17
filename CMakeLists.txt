@@ -3,7 +3,7 @@ project(pyUniverse CXX C)
 
 macro(add_sphinx_target TARGET_NAME BUILDER COMMENT_STR)
     add_custom_target(${TARGET_NAME}
-        COMMAND sphinx-build -b ${BUILDER} . sphinx/build/html
+        COMMAND sphinx-build -b ${BUILDER} . sphinx/build/${BUILDER}
         WORKING_DIRECTORY docs
         COMMENT ${COMMENT_STR}
     )
