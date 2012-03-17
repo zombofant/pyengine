@@ -35,7 +35,7 @@ namespace GL {
 
 GeometryBufferView::GeometryBufferView(
         const GeometryBufferHandle buffer,
-        const VertexIndexListHandle indicies):
+        VertexIndexListHandle indicies):
     _buffer(buffer),
     _bufferFormat(buffer->getFormat()),
     _indicies(indicies),
@@ -56,12 +56,15 @@ GeometryBufferView::GeometryBufferView(
         newAttribView(_bufferFormat->vertexAttrib3Offset, _bufferFormat->nVertexAttrib3, _bufferFormat->vertexSize)
     })
 {
-    
+    std::cerr << "uc: " << _indicies.use_count() << std::endl;
 }
 
 GeometryBufferView::~GeometryBufferView()
 {
-    std::cerr << "view destroyed" << std::endl;
+    std::cerr << "uc: " << _indicies.use_count() << std::endl;
+    std::cerr << "deleting map" << std::endl;
+    delete _map;
+    std::cerr << "uc: " << _indicies.use_count() << std::endl;
 }
 
 GeometryBufferView::AttributeView *GeometryBufferView::newAttribView(

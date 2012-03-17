@@ -98,7 +98,7 @@ class AbstractWidget(object):
             faceBuffer = FaceBuffer()
             self.ComputedStyle.geometryForRect(self.AbsoluteRect, faceBuffer)
             geoData = ((tex, (len(geometry[0][1])//2, geometry)) for tex, geometry in faceBuffer.getGeometry().iteritems())
-            
+
             self._geometry = dict()
             for tex, (length, data) in geoData:
                 allocation = buffer.allocateVertices(length)
@@ -107,10 +107,14 @@ class AbstractWidget(object):
                 view.Colour[:].set(data[1][1])
                 view.TexCoord(0)[:].set(data[2][1])
                 del view
+                self._geometry[tex] = allocation
+                del allocation
             
             del geoData
             del faceBuffer
-            self._invalidateGeometry = False
+            buffer.flush()
+            self._invalidatedGeometry = False
+        
         for tex, vertexList in self._geometry.iteritems():
             if tex is not None:
                 self._rootWidget._shader.bind(texturing=True, upsideDown=False).id
@@ -332,6 +336,10 @@ class WidgetContainer(object):
                     yield node
             else:
                 yield child
+
+    def updateGeometryBuffer(self):
+        for widget in self.treeDepthFirst():
+            widget._geometryBuffer = widget._rootWidget._geometryBuffer
 
 
 class ParentWidget(Widget, WidgetContainer):

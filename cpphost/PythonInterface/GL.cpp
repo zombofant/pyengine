@@ -185,6 +185,7 @@ BOOST_PYTHON_MODULE(_cuni_gl)
     class_<GenericBuffer, bases<Class>, boost::shared_ptr<GenericBuffer>, boost::noncopyable>("GenericBuffer", no_init)
         .def("bind", &GenericBuffer::bind)
         .def("unbind", &GenericBuffer::unbind)
+        .def("flush", &GenericBuffer::flush)
     ;
     
 
@@ -205,6 +206,7 @@ BOOST_PYTHON_MODULE(_cuni_gl)
         .def("bind", &GeometryBuffer::bind)
         .def("draw", &GeometryBuffer::draw)
         .def("unbind", &GeometryBuffer::unbind)
+        .def("gc", &GeometryBuffer::gc)
     ;
 
 

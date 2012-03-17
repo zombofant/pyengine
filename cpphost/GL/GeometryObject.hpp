@@ -35,8 +35,10 @@ namespace GL {
 class VertexIndexListMap: public BufferMap {
     public:
         VertexIndexListMap(const VertexIndexListHandle vertices);
+        virtual ~VertexIndexListMap();
     private:
-        const VertexIndexListHandle _vertices;
+        const VertexIndexListHandle _verticesHandle;
+        VertexIndexList *_vertices;
     protected:
         void rangeCheck(const size_t index);
     public:
