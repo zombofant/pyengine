@@ -27,7 +27,7 @@ from our_future import *
 
 import itertools
 
-__all__ = ["interleave"]
+__all__ = ["interleave", "flattenTwoLevels", "yieldCount"]
 
 def interleave(*iterators):
     """

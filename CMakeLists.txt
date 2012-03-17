@@ -15,3 +15,10 @@ set(LIBS ${LIBS} ${OPENGL_gl_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_REGEX_LIBR
 
 add_executable(pyuni-client client-host/pyuni-client.cpp)
 target_link_libraries(pyuni-client ${LIBS})
+
+add_custom_target(docs-html
+    COMMAND sphinx-build -b html . sphinx/build/html
+    WORKING_DIRECTORY docs
+    COMMENT "Build documentation using sphinx-build"
+    VERBATIM
+)
