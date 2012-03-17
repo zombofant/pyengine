@@ -36,7 +36,7 @@ named in the AUTHORS file.
 #include "EventSink.hpp"
 
 namespace PyUni {
-    
+
 struct Screen {
     unsigned int index;
     bool primary;
@@ -115,9 +115,7 @@ public:
 
     virtual WindowHandle createWindow(const DisplayMode &mode,
         int w, int h, bool fullscreen=false) = 0;
-    virtual void pullEvents(const EventSink *sink) = 0;
-
-    virtual void handleEvents(EventSink *eventSink) = 0;
+    virtual void pullEvents(EventSink *sink) = 0;
 
     const std::vector<Screen> &getScreens() const {
         return _screens;

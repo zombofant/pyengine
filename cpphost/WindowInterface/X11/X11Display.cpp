@@ -89,11 +89,6 @@ WindowHandle X11Display::createWindow(const DisplayMode &mode, int w, int h, boo
     return WindowHandle(win);
 }
 
-void X11Display::pullEvents(const EventSink *sink)
-{
-    // FIXME: handle X11 events
-}
-
 void X11Display::detectScreens() {
     int event_base_return, error_base_return;
     _screens.clear();
@@ -119,6 +114,10 @@ void X11Display::detectScreens() {
     } else {
         // anyone without xinerama should have only one screen
         // therefore x,y = 0,0
+        // should we assert that, if not: how do we define
+        // the positions of the screens, stretching windows
+        // will be impossible then anyway
+        // and it seems we want one large window ...
         int numOfScreens = ScreenCount(_display);
         int defaultScreen = DefaultScreen(_display);
         for (int i = 0; i < numOfScreens; i++) {
@@ -178,26 +177,61 @@ void X11Display::detectDisplayModes() {
     XFree(configs);
 }
 
-void X11Display::handleEvents(EventSink *sink) {
+void X11Display::pullEvents(EventSink *sink) {
+
     while (XPending(_display)) {
         XEvent event;
         XNextEvent(_display, &event);
 
         switch (event.type) {
         case ButtonPress:
-            sink->onMouseDown(event.xbutton.x,
-                               event.xbutton.y,
-                               event.xbutton.button,
-                               event.xbutton.state);
+            sink->handleMouseDown(event.xbutton.x,
+                                  event.xbutton.y,
+                                  event.xbutton.button,
+                                  event.xbutton.state);
             break;
         case ButtonRelease:
-            sink->onMouseUp(event.xbutton.x,
-                             event.xbutton.y,
-                             event.xbutton.button,
-                             event.xbutton.state);
+            sink->handleMouseUp(event.xbutton.x,
+                                event.xbutton.y,
+                                event.xbutton.button,
+                                event.xbutton.state);
             break;
         case MotionNotify:
-            // sink->onMouseMove();
+            sink->handleMouseMove(event.xmotion.x,
+                                  event.xmotion.y,
+                                  // TODO track mouse location
+                                  // to calculate dx, dy
+                                  0, 0,
+                                  event.xmotion.state);
+            break;
+        case KeyPress:
+            int ret = Xutf8LookupString(_input_context,
+                                        &event.xkey,
+                                        &buf,
+                                        &buf_size,
+                                        &keysym,
+                                        &ret_state);
+
+            if (ret_state == XLookupBoth || ret_state == XLookupKeySym) {
+                sink->handleKeyDown(lookupKeyName(keysym), event.xkey.state);
+            }
+
+            if (ret_state == XLookupBoth || ret_state == XLookupChars) {
+                sink->handleTextInput(std::string(buf));
+            }
+            break;
+        case KeyRelease:
+            sink->handleKeyUp(lookupKeyName(XLookupKeysym(&event.xkey, /* ??? */ 0)), event.xkey.state);
+            break;
+        case ConfigureNotify:
+            // resizing ... are we interested in that?
+
+            break;
+        case ClientMessage:
+            // check for destruction notification, we do not know the loop
+            // so this should be done via the event sink, or perhaps
+            // via return value ... just keep this invalid code here as a reminder
+            loop->terminate();
             break;
         default:
             // foo unknown event type
@@ -206,6 +240,9 @@ void X11Display::handleEvents(EventSink *sink) {
         }
     }
 }
+
+// TODO: autogenerate lookupKeyName from
+// X11/keysymdef.h
 
 }
 

@@ -42,9 +42,8 @@ public:
 
     virtual WindowHandle createWindow(const DisplayMode &mode,
         int w, int h, bool fullscreen=false);
-    virtual void pullEvents(const EventSink *sink);
 
-    virtual void handleEvents(EventSink *eventSink);
+    virtual void pullEvents(EventSink *sink);
 private:
     void detectScreens();
     void detectDisplayModes();
