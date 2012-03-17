@@ -41,3 +41,9 @@ add_sphinx_target(docs-man
 
 add_custom_target(docs
     DEPENDS docs-html)
+
+add_custom_target(clean-docs
+    COMMAND ./clean.sh
+    WORKING_DIRECTORY docs/sphinx
+    COMMENT "Clean all generated documentation"
+)
