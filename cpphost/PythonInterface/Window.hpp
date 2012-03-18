@@ -109,7 +109,7 @@ class EventSinkWrap: public EventSink, public boost::python::wrapper<EventSink>
         this->get_override("handleResize")(w, h);
     }
 
-    virtual void handleTextInput(const std::string &text)
+    virtual void handleTextInput(const char *text)
     {
         this->get_override("handleTextInput")(text);
     }

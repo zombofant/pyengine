@@ -55,7 +55,7 @@ class Application(RootWidget, CUni.Window.EventSink):
 
         self._geometryBuffer = CGL.GeometryBuffer(CGL.VertexFormat("v:2;t0:2;c:4"), GL_DYNAMIC_DRAW)
         self.updateGeometryBuffer()
-        
+
         self._render = super(Application, self).render
 
         if fullscreen:
@@ -70,7 +70,7 @@ class Application(RootWidget, CUni.Window.EventSink):
             self._window.initializeGLEW()
             #self._window.switchTo()
             self._newScreen(self._window, 0, 0, *geometry)
-        
+
         self.realign()
         self._eventLoop = CUni.Window.EventLoop(display, self)
 
@@ -183,7 +183,7 @@ class Application(RootWidget, CUni.Window.EventSink):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
         wx, wy, ww, wh = window.widget.AbsoluteRect.XYWH
-        
+
         for sceneWidget in window._sceneWidgets:
             x, y, w, h = sceneWidget.AbsoluteRect.XYWH
             xlog, ylog = window.UILogicalCoords
@@ -191,7 +191,7 @@ class Application(RootWidget, CUni.Window.EventSink):
             y -= ylog
             glViewport(x, y, w, h)
             sceneWidget.renderScene()
-            
+
         glViewport(0, 0, ww, wh)
         self._setUIOffset(wx, wy)
         glMatrixMode(GL_PROJECTION)
@@ -208,7 +208,7 @@ class Application(RootWidget, CUni.Window.EventSink):
     def _renderWindowWithFBO(self, window):
         glClearColor(0.0, 0.0, 0.0, 1.0)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-        
+
         for sceneWidget in window._sceneWidgets:
             x, y, w, h = sceneWidget.AbsoluteRect.XYWH
             xlog, ylog = window.UILogicalCoords
@@ -216,7 +216,7 @@ class Application(RootWidget, CUni.Window.EventSink):
             y -= ylog
             glViewport(x, y, w, h)
             sceneWidget.renderScene()
-        
+
         glViewport(0, 0, window.width, window.height)
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()

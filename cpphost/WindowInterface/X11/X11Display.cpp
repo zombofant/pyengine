@@ -235,9 +235,12 @@ void X11Display::pullEvents(EventSink *sink) {
             _mouse_valid = true;
             break;
         case KeyPress: {
+            // XXX: this will break with threading
+            // avoid repeated reallocation of the text buffer
+            static int buf_size = 0;
+            static char *buf = NULL;
+
             Status ret_state;
-            int buf_size = 10;
-            char *buf = (char *) malloc(10);
 
             int len = Xutf8LookupString(_input_context,
                                         &event.xkey,
@@ -247,7 +250,13 @@ void X11Display::pullEvents(EventSink *sink) {
                                         &ret_state);
 
             if (ret_state == XBufferOverflow) {
-                buf = (char *) realloc(buf, sizeof(char) * len);
+                buf_size = len + 1;
+                buf = (char *) realloc(buf, buf_size);
+
+                if (buf == NULL) {
+                    // FIXME: raise exception, die ungracefully but loudly
+                }
+
                 len = Xutf8LookupString(_input_context,
                                         &event.xkey,
                                         buf,
@@ -257,19 +266,29 @@ void X11Display::pullEvents(EventSink *sink) {
 
             }
 
-            fprintf(stderr, "Text Input: ");
-            fwrite(buf, 1, len, stderr);
-            fprintf(stderr, "\n");
+            // fprintf(stderr, "Text Input: ");
+            // fwrite(buf, 1, len, stderr);
+            // fprintf(stderr, "\n");
 
             if (ret_state == XLookupBoth || ret_state == XLookupKeySym) {
                 sink->handleKeyDown(keysym, event.xkey.state);
             }
 
             if (ret_state == XLookupBoth || ret_state == XLookupChars) {
-                sink->handleTextInput(std::string(buf, len));
-            }
+                // fully filled buffer, we need one more byte to zero terminate
+                if (len == buf_size) {
+                    // make space for
+                    buf = (char *) realloc(buf, ++buf_size);
+                    if (buf == NULL) {
+                        // FIXME: raise exception, die ungracefully but loudly
+                    }
+                }
 
-            free(buf);
+                // add zero termination to make it a C string
+                buf[len] = '\0';
+
+                sink->handleTextInput(buf);
+            }
         } break;
         case KeyRelease:
             sink->handleKeyUp(XLookupKeysym(&event.xkey, /* ??? */ 0), event.xkey.state);

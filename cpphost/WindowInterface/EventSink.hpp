@@ -50,7 +50,7 @@ public:
     virtual void handleMouseScroll(unsigned int x, unsigned int y,
                                    int scrollX, int scrollY) = 0;
     virtual void handleResize(unsigned int w, unsigned int h) = 0;
-    virtual void handleTextInput(const std::string &text) = 0;
+    virtual void handleTextInput(const char *text) = 0;
 };
 
 typedef boost::shared_ptr<EventSink> EventSinkHandle;
