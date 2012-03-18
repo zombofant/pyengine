@@ -126,7 +126,7 @@ ImageHandle Image::PNGImage(StreamHandle stream)
     }
 
     // initialize libpng io
-    png_init_io(data, stream.get());
+    pngReadStream(data, stream.get());
     png_set_sig_bytes(data, 8);
 
     // we go the low-level way. This gives us the opportunity to put the

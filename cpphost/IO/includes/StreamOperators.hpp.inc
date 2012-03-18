@@ -1,6 +1,6 @@
 /**********************************************************************
-File name: StreamOperators.hpp
-This file is part of: tt3d — Freeform transport simulation
+File name: StreamOperators.hpp.inc
+This file is part of: Pythonic Universe
 
 LICENSE
 
@@ -20,7 +20,7 @@ provisions of GPL License are applicable instead of those above.
 
 FEEDBACK & QUESTIONS
 
-For feedback and questions about tt3d please e-mail one of the authors
+For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
 

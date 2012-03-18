@@ -31,7 +31,8 @@ named in the AUTHORS file.
 
 namespace PyUni {
 
-void png_init_io(png_structp data, Stream *io);
+void pngReadStream(png_structp data, Stream *io);
+void pngWriteStream(png_structp data, Stream *io);
 
 }
 

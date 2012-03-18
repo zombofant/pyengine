@@ -31,7 +31,7 @@ named in the AUTHORS file.
 #include <ft2build.h>
 #include <freetype/freetype.h>
 
-#include "IO/IO.hpp"
+#include "IO/Stream.hpp"
 #include <boost/weak_ptr.hpp>
 
 namespace PyUni {
@@ -75,7 +75,7 @@ class Font
         FontFaceMap _faceMap;
     public:
         FontFaceHandle get(unsigned int style);
-        FontFaceHandle load(IStreamHandle input, int faceIndex);
+        FontFaceHandle load(StreamHandle input, int faceIndex);
 };
 
 typedef boost::shared_ptr<Font> FontHandle;

@@ -76,7 +76,7 @@ FontFaceHandle Font::get(unsigned int style)
         return FontFaceHandle();
 }
 
-FontFaceHandle Font::load(IStreamHandle input, int faceIndex)
+FontFaceHandle Font::load(StreamHandle input, int faceIndex)
 {
     FT_Face face;
     catchFTError(FT_Open_Face(_library->getFTLibrary(), openAsStream(input), faceIndex, &face));

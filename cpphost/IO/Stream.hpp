@@ -169,8 +169,9 @@ class Stream {
         virtual sizeuint write(const void *data, const sizeuint length);
         sizeuint write(const char *data, const sizeuint length);
     protected:
-        void raiseReadError(const sizeuint read, const sizeuint required);
-        void raiseWriteError(const sizeuint written, const sizeuint required);
+        void raiseSeekNotSupportedError() const;
+        void raiseReadError(const sizeuint read, const sizeuint required) const;
+        void raiseWriteError(const sizeuint written, const sizeuint required) const;
         template <class _T> _T readInt();
         template <class _T> void writeInt(const _T value);
     public:

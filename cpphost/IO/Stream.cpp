@@ -34,47 +34,65 @@ namespace PyUni {
 
 /* PyUni::Stream */
 
-void Stream::flush() {
+void Stream::flush()
+{
     
 }
 
-sizeuint Stream::read(void *data, const sizeuint length) {
+sizeuint Stream::read(void *data, const sizeuint length)
+{
     throw StreamNotSupportedError((boost::format("%s does not support reading.") % typeid(this).name()).str());
 }
 
-sizeuint Stream::read(char *data, const sizeuint length) {
+sizeuint Stream::read(char *data, const sizeuint length)
+{
     return read((void*)data, length);
 }
 
-sizeuint Stream::seek(const int whence, const sizeint offset) {
-    throw StreamNotSupportedError((boost::format("%s does not support seeking.") % typeid(this).name()).str());
-}
-
-const sizeuint Stream::size() const {
-    throw StreamNotSupportedError((boost::format("%s does not support seeking.") % typeid(this).name()).str());
-}
-
-const sizeuint Stream::tell() const {
+sizeuint Stream::seek(const int whence, const sizeint offset)
+{
+    raiseSeekNotSupportedError();
     return 0;
 }
 
-sizeuint Stream::write(const void *data, const sizeuint length) {
+const sizeuint Stream::size() const
+{
+    raiseSeekNotSupportedError();
+    return 0;
+}
+
+const sizeuint Stream::tell() const
+{
+    return 0;
+}
+
+sizeuint Stream::write(const void *data, const sizeuint length)
+{
     throw StreamNotSupportedError((boost::format("%s does not support writing.") % typeid(this).name()).str());
 }
 
-sizeuint Stream::write(const char *data, const sizeuint length) {
+sizeuint Stream::write(const char *data, const sizeuint length)
+{
     return write((const void*)data, length);
 }
 
-void Stream::raiseReadError(const sizeuint read, const sizeuint required) {
+void Stream::raiseSeekNotSupportedError() const
+{
+    throw StreamNotSupportedError((boost::format("%s does not support seeking.") % typeid(this).name()).str());
+}
+
+void Stream::raiseReadError(const sizeuint read, const sizeuint required) const
+{
     throw StreamReadError((boost::format("Stream read error. Read %d bytes, wanted %d.") % read % required).str());
 }
 
-void Stream::raiseWriteError(const sizeuint written, const sizeuint required) {
+void Stream::raiseWriteError(const sizeuint written, const sizeuint required) const
+{
     throw StreamReadError((boost::format("Stream write error. Wrote %d bytes, wanted %d.") % written % required).str());
 }
 
-template <class _T> _T Stream::readInt() {
+template <class _T> _T Stream::readInt()
+{
     _T result;
     const sizeuint readBytes = read(&result, sizeof(_T));
     if (readBytes < sizeof(_T)) {
@@ -83,7 +101,8 @@ template <class _T> _T Stream::readInt() {
     return result;
 }
 
-template <class _T> void Stream::writeInt(const _T value) {
+template <class _T> void Stream::writeInt(const _T value)
+{
     const sizeuint writtenBytes = write(&value, sizeof(_T));
     if (writtenBytes < sizeof(_T)) {
         raiseWriteError(writtenBytes, sizeof(_T));
@@ -98,23 +117,28 @@ void Stream::readBytes(void *data, const sizeuint length)
     }
 }
 
-int8 Stream::readInt8() {
+int8 Stream::readInt8()
+{
     return readInt<int8>();
 }
 
-int16 Stream::readInt16() {
+int16 Stream::readInt16()
+{
     return readInt<int16>();
 }
 
-int32 Stream::readInt32() {
+int32 Stream::readInt32()
+{
     return readInt<int32>();
 }
 
-int64 Stream::readInt64() {
+int64 Stream::readInt64()
+{
     return readInt<int64>();
 }
 
-std::string Stream::readString(const sizeuint length) {
+std::string Stream::readString(const sizeuint length)
+{
     void *buffer = malloc(length);
     try {
         readBytes(buffer, length);
@@ -127,23 +151,28 @@ std::string Stream::readString(const sizeuint length) {
     return result;
 }
 
-uint8 Stream::readUInt8() {
+uint8 Stream::readUInt8()
+{
     return readInt<uint8>();
 }
 
-uint16 Stream::readUInt16() {
+uint16 Stream::readUInt16()
+{
     return readInt<uint16>();
 }
 
-uint32 Stream::readUInt32() {
+uint32 Stream::readUInt32()
+{
     return readInt<uint32>();
 }
 
-uint64 Stream::readUInt64() {
+uint64 Stream::readUInt64()
+{
     return readInt<uint64>();
 }
 
-void Stream::writeEndl() {
+void Stream::writeEndl()
+{
     #if defined (__linux__)
         static const int length = 1;
         static const char lineEnding[length+1] = "\n";
@@ -163,23 +192,28 @@ void Stream::writeEndl() {
     write(lineEnding, length);
 }
 
-void Stream::writeInt8(const int8 value) {
+void Stream::writeInt8(const int8 value)
+{
     return writeInt<int8>(value);
 }
 
-void Stream::writeInt16(const int16 value) {
+void Stream::writeInt16(const int16 value)
+{
     return writeInt<int16>(value);
 }
 
-void Stream::writeInt32(const int32 value) {
+void Stream::writeInt32(const int32 value)
+{
     return writeInt<int32>(value);
 }
 
-void Stream::writeInt64(const int64 value) {
+void Stream::writeInt64(const int64 value)
+{
     return writeInt<int64>(value);
 }
 
-void Stream::writeString(const std::string &value) {
+void Stream::writeString(const std::string &value)
+{
     
     // TODO: Replace this by a proper <limits> query
     if (value.size() >= 4294967296) {
@@ -192,7 +226,8 @@ void Stream::writeString(const std::string &value) {
     }
 }
 
-void Stream::writeString(const char *value) {
+void Stream::writeString(const char *value)
+{
     const sizeuint len = strlen(value);
     const sizeuint writtenBytes = write(value, len);
     if (writtenBytes < len) {
@@ -200,19 +235,23 @@ void Stream::writeString(const char *value) {
     }
 }
 
-void Stream::writeUInt8(const uint8 value) {
+void Stream::writeUInt8(const uint8 value)
+{
     return writeInt<uint8>(value);
 }
 
-void Stream::writeUInt16(const uint16 value) {
+void Stream::writeUInt16(const uint16 value)
+{
     return writeInt<uint16>(value);
 }
 
-void Stream::writeUInt32(const uint32 value) {
+void Stream::writeUInt32(const uint32 value)
+{
     return writeInt<uint32>(value);
 }
 
-void Stream::writeUInt64(const uint64 value) {
+void Stream::writeUInt64(const uint64 value)
+{
     return writeInt<uint64>(value);
 }
 
