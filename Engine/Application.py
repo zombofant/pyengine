@@ -261,3 +261,6 @@ class Application(RootWidget, CUni.Window.EventSink):
 
     def handleTextInput(self, text):
         self.dispatchTextInput(text)
+
+    def handleWMQuit(self):
+        self._eventLoop.terminate()

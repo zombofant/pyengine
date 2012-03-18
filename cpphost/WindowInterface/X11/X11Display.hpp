@@ -49,6 +49,7 @@ private:
     void openInputContext();
 
     ::Display *_display;
+    Atom _wm_quit, _wm_protocols;
     XIC _input_context;
     int _mouse_x, _mouse_y;
     bool _mouse_valid;

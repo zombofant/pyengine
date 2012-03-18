@@ -52,6 +52,9 @@ X11Display::X11Display(const char *display):
     _mouse_y = 0;
     _mouse_valid = false;
 
+    _wm_quit = XInternAtom(_display, "WM_DELETE_WINDOW", False);
+    _wm_protocols = XInternAtom(_display, "WM_PROTOCOLS", False);
+
     this->detectScreens();
     this->detectDisplayModes();
 
@@ -297,11 +300,19 @@ void X11Display::pullEvents(EventSink *sink) {
             sink->handleResize(event.xconfigure.width, event.xconfigure.height);
             break;
         case ClientMessage:
-            // check for destruction notification, we do not know the loop
-            // so this should be done via the event sink, or perhaps
-            // via return value ... just keep this invalid code here as a reminder
-            // TODO!!
-            // sink->handleWMClose();
+            if (event.xclient.message_type == _wm_protocols) {
+                if ((Atom)event.xclient.data.l[0] == _wm_quit) {
+                    sink->handleWMQuit();
+                } else {
+                    char *name = XGetAtomName(_display, event.xclient.data.l[0]);
+                    fprintf(stderr, "Unknown X WM Protocol message %s!\n", name);
+                    XFree(name);
+                }
+            } else {
+                char *name = XGetAtomName(_display, event.xclient.message_type);
+                fprintf(stderr, "Unknown X ClientMessage type %s!\n", name);
+                XFree(name);
+            }
             break;
         default:
             fprintf(stderr, "Unknown X Event (type %d)!\n", event.type);

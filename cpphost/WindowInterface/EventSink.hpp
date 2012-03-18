@@ -51,6 +51,7 @@ public:
                                    int scrollX, int scrollY) = 0;
     virtual void handleResize(unsigned int w, unsigned int h) = 0;
     virtual void handleTextInput(const char *text) = 0;
+    virtual void handleWMQuit() = 0;
 };
 
 typedef boost::shared_ptr<EventSink> EventSinkHandle;
@@ -63,4 +64,3 @@ typedef boost::shared_ptr<EventSink> EventSinkHandle;
 // c-file-style: "k&r"
 // c-basic-offset: 4
 // End:
-

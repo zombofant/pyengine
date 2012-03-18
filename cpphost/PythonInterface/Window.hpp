@@ -113,6 +113,11 @@ class EventSinkWrap: public EventSink, public boost::python::wrapper<EventSink>
     {
         this->get_override("handleTextInput")(text);
     }
+
+    virtual void handleWMQuit()
+    {
+        this->get_override("handleWMQuit")();
+    }
 };
 
 void addWindowToInittab();
@@ -120,3 +125,7 @@ void addWindowToInittab();
 }
 
 #endif
+// Local Variables:
+// c-file-style: "k&r"
+// c-basic-offset: 4
+// End:
