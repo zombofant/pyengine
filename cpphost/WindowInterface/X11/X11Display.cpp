@@ -192,7 +192,9 @@ void X11Display::detectDisplayModes() {
 void X11Display::openInputContext() {
     // default input method for now
     XIM im = XOpenIM(_display, NULL, NULL, NULL);
-    _input_context = XCreateIC(im, 0);
+    _input_context = XCreateIC(im,
+                               XNInputStyle, XIMPreeditNothing | XIMStatusNothing,
+                               NULL);
     XSetICFocus(_input_context);
 }
 
@@ -255,12 +257,16 @@ void X11Display::pullEvents(EventSink *sink) {
 
             }
 
+            fprintf(stderr, "Text Input: ");
+            fwrite(buf, 1, len, stderr);
+            fprintf(stderr, "\n");
+
             if (ret_state == XLookupBoth || ret_state == XLookupKeySym) {
                 sink->handleKeyDown(keysym, event.xkey.state);
             }
 
             if (ret_state == XLookupBoth || ret_state == XLookupChars) {
-                sink->handleTextInput(std::string(buf));
+                sink->handleTextInput(std::string(buf, len));
             }
 
             free(buf);
