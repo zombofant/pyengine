@@ -72,6 +72,31 @@ void TextureAtlas::grow()
     throw Exception("FIXME: TextureAtlas::grow not implemented.");
 }
 
+void TextureAtlas::setSegment(const Rect &rect, const void *data,
+    bool rotated,
+    GLVertexFloat *rmin, GLVertexFloat *rmax,
+    GLVertexFloat *smin, GLVertexFloat *smax)
+{
+    const GLVertexFloat
+        firstMin = ((double)rect.x / (double)_width),
+        firstMax = ((double)(rect.x + rect.height) / (double)_height),
+        secondMin = ((double)rect.y / (double)_height),
+        secondMax = ((double)(rect.y + rect.height) / (double)_height);
+    if (rotated)
+    {
+        *rmin = secondMin;
+        *rmax = secondMax;
+        *smin = firstMin;
+        *smax = firstMax;
+    } else {
+        *rmin = firstMin;
+        *rmax = firstMax;
+        *smin = secondMin;
+        *smax = secondMax;
+    }
+    glTexSubImage2D(GL_TEXTURE_2D, 0, rect.x, rect.y, rect.width, rect.height, GL_ALPHA, GL_UNSIGNED_BYTE, data);
+}
+
 void TextureAtlas::bind()
 {
     glBindTexture(GL_TEXTURE_2D, glID);
@@ -151,7 +176,7 @@ TextureAtlas::AllocationHandle TextureAtlas::upload(AbstractImage2D *image, uint
             }
         }
         GLVertexFloat rmin = 0., rmax = 0., smin = 0., smax = 0.;
-        setSegment(r, buffer, height, width,
+        setSegment(r, buffer, true,
             &rmin, &rmax, &smin, &smax);
         free(buffer);
         AllocationHandle alloc = AllocationHandle(new Allocation(r, true,
@@ -162,9 +187,9 @@ TextureAtlas::AllocationHandle TextureAtlas::upload(AbstractImage2D *image, uint
     else
     {
         GLVertexFloat rmin = 0., rmax = 0., smin = 0., smax = 0.;
-        setSegment(r, image->getPixelData(), width, height,
+        setSegment(r, image->getPixelData(), false,
             &rmin, &rmax, &smin, &smax);
-        AllocationHandle alloc = AllocationHandle(new Allocation(r, true,
+        AllocationHandle alloc = AllocationHandle(new Allocation(r, false,
             rmin, rmax, smin, smax));
         _handles.push_back(alloc);
         return alloc;

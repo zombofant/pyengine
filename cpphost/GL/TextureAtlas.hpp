@@ -67,9 +67,9 @@ class TextureAtlas: public Class
     protected:
         void grow();
         void setSegment(const Rect &rect, const void *data,
-            const GLsizei width, const GLsizei height,
-            const GLVertexFloat *rmin, const GLVertexFloat *rmax,
-            const GLVertexFloat *smin, const GLVertexFloat *smax);
+            bool rotated,
+            GLVertexFloat *rmin, GLVertexFloat *rmax,
+            GLVertexFloat *smin, GLVertexFloat *smax);
     public:
         bool ownsTexture;
     public:
@@ -87,6 +87,7 @@ class TextureAtlas: public Class
          */
         AllocationHandle upload(AbstractImage2D *image, uint32 *grew);
 };
+typedef boost::shared_ptr<TextureAtlas> TextureAtlasHandle;
 
 bool operator == (const Rect &a, const Rect &b);
 
