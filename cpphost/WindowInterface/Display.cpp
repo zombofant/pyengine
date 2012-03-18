@@ -86,7 +86,7 @@ bool DisplayMode::operator<(const DisplayMode &other) const
     {
         return true;
     }
-    
+
 
     test = compare(doubleBuffered, other.doubleBuffered);
     if (test == 1)
@@ -97,7 +97,7 @@ bool DisplayMode::operator<(const DisplayMode &other) const
     {
         return true;
     }
-    
+
 
     test = compare(samples, other.samples);
     if (test == 1)
@@ -108,7 +108,7 @@ bool DisplayMode::operator<(const DisplayMode &other) const
     {
         return true;
     }
-    
+
 
     test = compare(stencilBits, other.stencilBits);
     if (test == 1)
@@ -119,7 +119,7 @@ bool DisplayMode::operator<(const DisplayMode &other) const
     {
         return true;
     }
-    
+
     return true;
 }
 
@@ -143,7 +143,6 @@ bool DisplayMode::operator!=(const DisplayMode &other) const
     return !((*this)==other);
 }
 
-    
 Display::Display()
 {
     printf("glew init");
@@ -154,7 +153,12 @@ Display::~Display() {
 
 void Display::dumpScreens() {
     for (unsigned int i = 0; i < _screens.size(); i++) {
-        printf("Screen %d rect(%d, %d, %d, %d)\n", i, _screens[i].x, _screens[i].y, _screens[i].width, _screens[i].height);
+        printf("Screen %d rect(%d, %d, %d, %d)\n",
+               i,
+               _screens[i].x,
+               _screens[i].y,
+               _screens[i].width,
+               _screens[i].height);
     }
 }
 

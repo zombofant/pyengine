@@ -41,13 +41,17 @@ public:
 
     virtual WindowHandle createWindow(const DisplayMode &mode,
         int w, int h, bool fullscreen=false);
-    virtual void pullEvents(const EventSink *sink);
 
+    virtual void pullEvents(EventSink *sink);
 private:
     void detectScreens();
     void detectDisplayModes();
+    void openInputContext();
 
     ::Display *_display;
+    XIC _input_context;
+    int _mouse_x, _mouse_y;
+    bool _mouse_valid;
 };
 
 }

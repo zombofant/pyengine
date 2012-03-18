@@ -32,24 +32,25 @@ named in the AUTHORS file.
 namespace PyUni {
 
 class EventSink {
-    public:
-        virtual void frameSynced() = 0;
-        virtual void frameUnsynced(double deltaT) = 0;
-        virtual void handleKeyDown(const std::string &symbol,
-            unsigned int modifiers) = 0;
-        virtual void handleKeyUp(const std::string &symbol,
-            unsigned int modifiers) = 0;
-        virtual void handleMouseDown(unsigned int x, unsigned int y,
-            unsigned int buttons, unsigned int modifiers) = 0;
-        virtual void handleMouseMove(unsigned int x, unsigned int y,
-             int dx, int dy, unsigned int buttons,
-             unsigned int modifiers) = 0;
-        virtual void handleMouseUp(unsigned int x, unsigned int y,
-            unsigned int buttons, unsigned int modifiers) = 0;
-        virtual void handleMouseScroll(unsigned int x, unsigned int y,
-            int scrollX, int scrollY) = 0;
-        virtual void handleResize(unsigned int w, unsigned int h) = 0;
-        virtual void handleTextInput(const std::string &text) = 0;
+public:
+    virtual ~EventSink();
+    virtual void frameSynced() = 0;
+    virtual void frameUnsynced(double deltaT) = 0;
+    virtual void handleKeyDown(unsigned int key,
+                               unsigned int modifiers) = 0;
+    virtual void handleKeyUp(unsigned int key,
+                             unsigned int modifiers) = 0;
+    virtual void handleMouseDown(unsigned int x, unsigned int y,
+                                 unsigned int buttons, unsigned int modifiers) = 0;
+    virtual void handleMouseMove(unsigned int x, unsigned int y,
+                                 int dx, int dy, unsigned int buttons,
+                                 unsigned int modifiers) = 0;
+    virtual void handleMouseUp(unsigned int x, unsigned int y,
+                               unsigned int buttons, unsigned int modifiers) = 0;
+    virtual void handleMouseScroll(unsigned int x, unsigned int y,
+                                   int scrollX, int scrollY) = 0;
+    virtual void handleResize(unsigned int w, unsigned int h) = 0;
+    virtual void handleTextInput(const std::string &text) = 0;
 };
 
 typedef boost::shared_ptr<EventSink> EventSinkHandle;
@@ -57,3 +58,9 @@ typedef boost::shared_ptr<EventSink> EventSinkHandle;
 }
 
 #endif
+
+// Local Variables:
+// c-file-style: "k&r"
+// c-basic-offset: 4
+// End:
+

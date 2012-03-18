@@ -144,12 +144,6 @@ class Application(RootWidget, CUni.Window.EventSink):
         amount of time specified.
         """
 
-    def frameSynced(self):
-        pass
-
-    def frameUnsynced(self, deltaT):
-        pass
-
     def render(self):
         self._render()
 
@@ -238,125 +232,32 @@ class Application(RootWidget, CUni.Window.EventSink):
         Texture2D.unbind()
         glDisable(GL_BLEND)
 
-    def _fold_coords(self, win, x, y):
-        """
-        Fold window coordinates *x*, *y* from window *win* to logical
-        UI coordinates
-        """
-        lx, ly = win.UILogicalCoords
-        return lx+x, ly+y
-
-    def _on_close(self, win):
-        pyglet.app.exit()
-
-    def _on_draw(self, win):
-        self.renderWindow(win)
-
-    def _on_key_press(self, win, symbol, modifiers):
-        self.dispatchKeyDown(symbol, modifiers)
-
-    def _on_key_release(self, win, symbol, modifiers):
-        self.dispatchKeyUp(symbol, modifiers)
-
-    def _on_mouse_drag(self, win, x, y, dx, dy, buttons, modifiers):
-        lx, ly = self._fold_coords(win, x, y)
-        self.dispatchMouseMove(lx, ly, dx, dy, buttons, modifiers)
-
-    def _on_mouse_motion(self, win, x, y, dx, dy):
-        lx, ly = self._fold_coords(win, x, y)
-
-        # the last two arguments are modifier bitmaps, as we don't get
-        # any just pass none of them
-        self.dispatchMouseMove(lx, ly, dx, dy, 0, 0)
-
-
-    def _on_mouse_press(self, win, x, y, button, modifiers):
-        lx, ly = self._fold_coords(win, x, y)
-        self.dispatchMouseDown(lx, ly, button, modifiers)
-
-    def _on_mouse_release(self, win, x, y, button, modifiers):
-        lx, ly = self._fold_coords(win, x, y)
-        self.dispatchMouseUp(lx, ly, button, modifiers)
-
-    def _on_mouse_scroll(self, win, x, y, scroll_x, scroll_y):
-        lx, ly = self._fold_coords(win, x, y)
-        self.dispatchScroll(lx, ly, scroll_x, scroll_y)
-
-    def _on_resize(self, win, width, height):
+    def frameSynced(self):
         pass
 
-    def _on_text(self, win, text):
+    def frameUnsynced(self, deltaT):
+        pass
+
+    def handleKeyDown(self, key, modifiers):
+        self.dispatchKeyDown(key, modifiers)
+
+    def handleKeyUp(self, key, modifiers):
+        self.dispatchKeyUp(key, modifiers)
+
+    def handleMouseDown(self, x, y, button, modifiers):
+        self.dispatchMouseDown(x, y, button, modifiers)
+
+    def handleMouseMove(self, x, y, dx, dy, buttons, modifiers):
+        self.dispatchMouseMove(x, y, dx, dy, buttons, modifiers)
+
+    def handleMouseUp(self, x, y, button, modifiers):
+        self.dispatchMouseUp(x, y, button, modifiers)
+
+    def handleMouseScroll(self, x, y, scrollX, scrollY):
+        self.dispatchMouseScroll(x, y, scrollX, scrollY)
+
+    def handleResize(self, width, height):
+        pass
+
+    def handleTextInput(self, text):
         self.dispatchTextInput(text)
-
-    def _on_text_motion(self, win, motion):
-        self.dispatchCaretMotion(motion)
-
-    def _on_text_motion_select(self, win, motion):
-        self.dispatchCaretMotionSelect(motion)
-
-"""class Window(pyglet.window.Window):
-
-    def __init__(self, application, ui_logical,
-            **kwargs):
-        
-        super(Window, self).__init__(**kwargs)
-
-        self._application = application
-
-        self._terminated = True
-        self._syncedFrameLength = 0.01
-        self._ui_logical_coords = ui_logical
-        self._sceneWidgets = []
-
-    @property
-    def UILogicalCoords(self):
-        return self._ui_logical_coords
-
-    def _raiseDimensionsTooSmall(self, w, h):
-        raise ValueError("Width and height must be positive (got w={0}, h={1})".format(w, h))
-
-    def on_close(self):
-        self._application._on_close(self)
-
-    def on_context_lost(self):
-        raise RuntimeError()
-
-    def on_context_state_lost(self):
-        raise RuntimeError()
-
-    def on_draw(self):
-        self._application._on_draw(self)
-
-    def on_key_press(self, symbol, modifiers):
-        self._application._on_key_press(self, symbol, modifiers)
-
-    def on_key_release(self, symbol, modifiers):
-        self._application._on_key_release(self, symbol, modifiers)
-
-    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
-        self._application._on_mouse_drag(self, x, y, dx, dy, buttons, modifiers)
-
-    def on_mouse_motion(self, x, y, dx, dy):
-        self._application._on_mouse_motion(self, x, y, dx, dy)
-
-    def on_mouse_press(self, x, y, button, modifiers):
-        self._application._on_mouse_press(self, x, y, button, modifiers)
-
-    def on_mouse_release(self, x, y, button, modifiers):
-        self._application._on_mouse_release(self, x, y, button, modifiers)
-
-    def on_mouse_scroll(self, x, y, scroll_x, scroll_y):
-        self._application._on_mouse_scroll(self, x, y, scroll_x, scroll_y)
-
-    def on_resize(self, width, height):
-        self._application._on_resize(self, width, height)
-
-    def on_text(self, text):
-        self._application._on_text(self, text)
-
-    def on_text_motion(self, motion):
-        self._application._on_text_motion(self, motion)
-
-    def on_text_motion_select(self, motion):
-        self._application._on_text_motion_select(self, motion)
-"""

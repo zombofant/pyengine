@@ -24,3 +24,14 @@ For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
 #include "EventSink.hpp"
+
+namespace PyUni {
+EventSink::~EventSink() {
+}
+}
+
+// Local Variables:
+// c-file-style: "k&r"
+// c-basic-offset: 4
+// End:
+

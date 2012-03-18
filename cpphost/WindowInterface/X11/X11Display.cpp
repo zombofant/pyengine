@@ -25,6 +25,7 @@ named in the AUTHORS file.
 **********************************************************************/
 
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "X11Display.hpp"
 #include "X11Window.hpp"
@@ -47,18 +48,27 @@ X11Display::X11Display(const char *display):
 
     _display = XOpenDisplay(display);
 
+    _mouse_x = 0;
+    _mouse_y = 0;
+    _mouse_valid = false;
+
     this->detectScreens();
     this->detectDisplayModes();
+
+    // this should go somewhere else
+    // but for now it has to stay here
+    this->openInputContext();
 }
 
 X11Display::~X11Display() {
+    XDestroyIC(_input_context);
     XCloseDisplay(_display);
 }
 
 WindowHandle X11Display::createWindow(const DisplayMode &mode, int w, int h, bool fullscreen) {
     XVisualInfo *xVisual;
     GLXContext glxContext;
-    
+
     static int reqAttribs[] = {
         GLX_X_RENDERABLE    , True,
         GLX_DRAWABLE_TYPE   , GLX_WINDOW_BIT,
@@ -81,19 +91,14 @@ WindowHandle X11Display::createWindow(const DisplayMode &mode, int w, int h, boo
         std::cerr << "No config found for: " << mode << std::endl;
         return WindowHandle();
     }
-    
+
     glxContext = glXCreateNewContext(_display, configs[0], GLX_RGBA_TYPE, NULL, True);
     xVisual = glXGetVisualFromFBConfig(_display, configs[0]);
-    
+
 
     X11Window *win = new X11Window(_display, xVisual, configs[0], glxContext, w, h);
     XFree(configs);
     return WindowHandle(win);
-}
-
-void X11Display::pullEvents(const EventSink *sink)
-{
-    // FIXME: handle X11 events
 }
 
 void X11Display::detectScreens() {
@@ -121,6 +126,10 @@ void X11Display::detectScreens() {
     } else {
         // anyone without xinerama should have only one screen
         // therefore x,y = 0,0
+        // should we assert that, if not: how do we define
+        // the positions of the screens, stretching windows
+        // will be impossible then anyway
+        // and it seems we want one large window ...
         int numOfScreens = ScreenCount(_display);
         int defaultScreen = DefaultScreen(_display);
         for (int i = 0; i < numOfScreens; i++) {
@@ -179,6 +188,103 @@ void X11Display::detectDisplayModes() {
     }
     XFree(configs);
 }
+
+void X11Display::openInputContext() {
+    // default input method for now
+    XIM im = XOpenIM(_display, NULL, NULL, NULL);
+    _input_context = XCreateIC(im, 0);
+    XSetICFocus(_input_context);
+}
+
+void X11Display::pullEvents(EventSink *sink) {
+
+    while (XPending(_display)) {
+        XEvent event;
+        KeySym keysym;
+
+        XNextEvent(_display, &event);
+
+        if (XFilterEvent(&event, None))
+            continue;
+
+        switch (event.type) {
+        case ButtonPress:
+            sink->handleMouseDown(event.xbutton.x,
+                                  event.xbutton.y,
+                                  event.xbutton.button,
+                                  event.xbutton.state);
+            break;
+        case ButtonRelease:
+            sink->handleMouseUp(event.xbutton.x,
+                                event.xbutton.y,
+                                event.xbutton.button,
+                                event.xbutton.state);
+            break;
+        case MotionNotify:
+            sink->handleMouseMove(event.xmotion.x,
+                                  event.xmotion.y,
+                                  _mouse_valid ? event.xmotion.x - _mouse_x : 0,
+                                  _mouse_valid ? event.xmotion.y - _mouse_y : 0,
+                                  event.xmotion.state,
+                                  event.xmotion.state);
+
+            _mouse_x = event.xmotion.x;
+            _mouse_y = event.xmotion.y;
+            _mouse_valid = true;
+            break;
+        case KeyPress: {
+            Status ret_state;
+            int buf_size = 10;
+            char *buf = (char *) malloc(10);
+
+            int len = Xutf8LookupString(_input_context,
+                                        &event.xkey,
+                                        buf,
+                                        buf_size,
+                                        &keysym,
+                                        &ret_state);
+
+            if (ret_state == XBufferOverflow) {
+                buf = (char *) realloc(buf, sizeof(char) * len);
+                len = Xutf8LookupString(_input_context,
+                                        &event.xkey,
+                                        buf,
+                                        len,
+                                        &keysym,
+                                        &ret_state);
+
+            }
+
+            if (ret_state == XLookupBoth || ret_state == XLookupKeySym) {
+                sink->handleKeyDown(keysym, event.xkey.state);
+            }
+
+            if (ret_state == XLookupBoth || ret_state == XLookupChars) {
+                sink->handleTextInput(std::string(buf));
+            }
+
+            free(buf);
+        } break;
+        case KeyRelease:
+            sink->handleKeyUp(XLookupKeysym(&event.xkey, /* ??? */ 0), event.xkey.state);
+            break;
+        case ConfigureNotify:
+            sink->handleResize(event.xconfigure.width, event.xconfigure.height);
+            break;
+        case ClientMessage:
+            // check for destruction notification, we do not know the loop
+            // so this should be done via the event sink, or perhaps
+            // via return value ... just keep this invalid code here as a reminder
+            // TODO!!
+            // sink->handleWMClose();
+            break;
+        default:
+            fprintf(stderr, "Unknown X Event (type %d)!\n", event.type);
+            break;
+        }
+    }
+}
+
 }
 
 // Local Variables:
