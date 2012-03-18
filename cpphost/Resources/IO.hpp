@@ -1,5 +1,5 @@
 /**********************************************************************
-File name: Image.hpp
+File name: IO.hpp
 This file is part of: Pythonic Universe
 
 LICENSE
@@ -23,45 +23,25 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_RESOURCES_IMAGE_H
-#define _PYUNI_RESOURCES_IMAGE_H
+#ifndef _PYUNI_RESOURCES_IO_H
+#define _PYUNI_RESOURCES_IO_H
 
-#include <glew.h>
-#include <png.h>
-#include "IO.hpp"
+#include <boost/shared_ptr.hpp>
+#include <iostream>
 
 namespace PyUni {
-namespace Resources {
 
-struct Image;
-typedef boost::shared_ptr<Image> ImageHandle;
+typedef boost::shared_ptr<std::istream> IStreamHandle;
 
-struct Image
-{
+template <class HandleT>
+struct KeepAlive {
     public:
-        Image(GLvoid *pixelData,
-            const GLsizei aWidth, const GLsizei aHeight,
-            const GLenum aFormat, const GLenum aType);
-        virtual ~Image();
-    protected:
-        GLvoid *_pixelData;
+        KeepAlive(HandleT aHandle):
+            handle(handle) {};
     public:
-        const GLenum format, type;
-        const GLsizei width, height;
-    public:
-        bool getIsValid() const;
-        void dropData();
-    public:
-        void texImage2D(const GLenum target, const GLint level,
-            const GLint internalFormat) const;
-        void texSubImage2D(const GLenum target, const GLint level,
-            const GLint internalFormat,
-            const GLint x, const GLint y) const;
-    public:
-        static ImageHandle PNGImage(IStreamHandle input);
+        HandleT handle;
 };
 
-}
 }
 
 #endif
