@@ -1,4 +1,4 @@
-# File name: Window.py
+# File name: __init__.py
 # This file is part of: pyuni
 #
 # LICENSE
