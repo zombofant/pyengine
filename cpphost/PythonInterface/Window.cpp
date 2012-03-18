@@ -127,6 +127,7 @@ BOOST_PYTHON_MODULE(_cuni_window)
     
     class_<EventLoop, boost::shared_ptr<EventLoop>, boost::noncopyable>("EventLoop", init<DisplayHandle, EventSinkHandle>())
         .def("run", &EventLoop::run)
+        .def("terminate", &EventLoop::terminate)
         .add_property("SyncedFrameLength", &EventLoop::getSyncedFrameLength, &EventLoop::setSyncedFrameLength)
     ;
 }

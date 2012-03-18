@@ -26,6 +26,7 @@ named in the AUTHORS file.
 
 #include "EventLoop.hpp"
 #include "Display.hpp"
+#include "Misc/Exception.hpp"
 #include <iostream>
 #include <boost/python.hpp>
 
@@ -43,7 +44,7 @@ EventLoop::EventLoop(DisplayHandle display, EventSinkHandle eventSink):
 
 EventLoop::~EventLoop()
 {
-
+    throw Exception("Being destructed");
 }
 
 double EventLoop::getSyncedFrameLength()
