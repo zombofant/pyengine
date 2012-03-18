@@ -29,15 +29,13 @@ named in the AUTHORS file.
 #include <ft2build.h>
 #include <freetype/freetype.h>
 
-#include "IO.hpp"
+#include "Stream.hpp"
 
 namespace PyUni {
-namespace Resources {
 
-FT_Stream fromIStream(IStreamHandle istream);
-FT_Open_Args *openAsStream(IStreamHandle istream);
+FT_Stream fromStream(StreamHandle istream);
+FT_Open_Args *openAsStream(StreamHandle istream);
 
-}
 }
 
 #endif

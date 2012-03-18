@@ -24,30 +24,22 @@ For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
 #include "FTIOWrapper.hpp"
+#include "IO.hpp"
 
 namespace PyUni {
-namespace Resources {
 
 using namespace std;
 
-inline ssize_t getLength(istream *stream)
+inline Stream *extractStream(FT_Stream stream)
 {
-    ssize_t orig = stream->tellg();
-    ssize_t len = stream->seekg(0, ios_base::end).tellg();
-    stream->seekg(orig, ios_base::beg);
-    return len;
-}
-
-inline istream *extractStream(FT_Stream stream)
-{
-    return ((KeepAlive<IStreamHandle>*)stream->descriptor.pointer)->handle.get();
+    return ((KeepAlive<StreamHandle>*)stream->descriptor.pointer)->handle.get();
 }
 
 unsigned long FT_read(FT_Stream ftStream, unsigned long offset,
     unsigned char* buffer, unsigned long count)
 {
-    istream *stream = extractStream(ftStream);
-    stream->seekg(offset, ios_base::beg);
+    Stream *stream = extractStream(ftStream);
+    stream->seek(SEEK_CUR, offset);
     if (count == 0)
         return 0;
     stream->read((char*)buffer, count);
@@ -56,24 +48,24 @@ unsigned long FT_read(FT_Stream ftStream, unsigned long offset,
 
 void FT_close(FT_Stream stream)
 {
-    delete (KeepAlive<IStreamHandle>*)stream->descriptor.pointer;
+    delete (KeepAlive<StreamHandle>*)stream->descriptor.pointer;
 }
 
-FT_Stream fromIStream(IStreamHandle input)
+FT_Stream fromIStream(StreamHandle input)
 {
-    istream *stream = input.get();
+    Stream *stream = input.get();
     FT_Stream result = new FT_StreamRec();
     result->base = 0;
-    result->size = getLength(stream);
-    result->pos = stream->tellg();
-    result->descriptor.pointer = (void*)(new KeepAlive<IStreamHandle>(input));
+    result->size = stream->size();
+    result->pos = stream->tell();
+    result->descriptor.pointer = (void*)(new KeepAlive<StreamHandle>(input));
     result->pathname.pointer = 0;
     result->read = &FT_read;
     result->close = &FT_close;
     return result;
 }
 
-FT_Open_Args *openAsStream(IStreamHandle stream)
+FT_Open_Args *openAsStream(StreamHandle stream)
 {
     FT_Open_Args *result = new FT_Open_Args();
     result->flags = FT_OPEN_STREAM;
@@ -87,5 +79,4 @@ FT_Open_Args *openAsStream(IStreamHandle stream)
     return result;
 }
 
-}
 }

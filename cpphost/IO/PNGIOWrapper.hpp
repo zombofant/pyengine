@@ -27,12 +27,12 @@ named in the AUTHORS file.
 #define _PYUNI_RESOURCES_PNG_IO_WRAPPER_H
 
 #include <png.h>
-#include <istream>
+#include "Stream.hpp"
 
-using namespace std;
+namespace PyUni {
 
-void png_init_io(png_structp data, istream &input);
-void png_init_io(png_structp data, ostream &output);
-void png_init_io(png_structp data, iostream &io);
+void png_init_io(png_structp data, StreamHandle io);
+
+}
 
 #endif

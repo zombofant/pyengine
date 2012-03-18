@@ -27,39 +27,35 @@ named in the AUTHORS file.
 
 namespace PyUni {
 
-using namespace std;
+inline Stream *extractStream(png_structp png_ptr)
+{
+    return (Stream*)png_get_io_ptr(png_ptr);
+}
 
 void iostream_write_data(png_structp png_ptr,
-    png_bytep data, png_size_t length);
-void iostream_flush_data(png_structp png_ptr);
+    png_bytep data, png_size_t length)
+{
+    Stream *stream = extractStream(png_ptr);
+    stream->write(data, length);
+}
+
+void iostream_flush_data(png_structp png_ptr)
+{
+    Stream *stream = extractStream(png_ptr);
+    stream->flush();
+}
 
 void iostream_read_data(png_structp png_ptr,
     png_bytep data, png_size_t length)
 {
-    istream *input = (istream*)png_get_io_ptr(png_ptr);
+    Stream *stream = extractStream(png_ptr);
     // this will throw if we run out of data
-    input->read((char*)data, length);
+    stream->read((char*)data, length);
 }
 
-}
-
-using namespace std;
-using namespace PyUni;
-
-void png_init_io(png_structp data, istream &input)
+void png_init_io(png_structp data, Stream *stream)
 {
-    png_set_read_fn(data, &input, &iostream_read_data);
+    png_set_read_fn(data, stream, &iostream_read_data);
 }
 
-/*void png_init_io(png_structp data, ostream &output)
-{
-    png_set_write_fn(data, &output, &iostream_write_data,
-        &iostream_flush_data);
 }
-
-void png_init_io(png_structp data, iostream &io)
-{
-    png_set_read_fn(data, &io, &iostream_read_data);
-    png_set_write_fn(data, &io, &iostream_write_data,
-        &iostream_flush_data);
-}*/

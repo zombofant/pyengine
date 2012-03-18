@@ -27,11 +27,8 @@ named in the AUTHORS file.
 #define _PYUNI_RESOURCES_IO_H
 
 #include <boost/shared_ptr.hpp>
-#include <iostream>
 
 namespace PyUni {
-
-typedef boost::shared_ptr<std::istream> IStreamHandle;
 
 template <class HandleT>
 struct KeepAlive {
