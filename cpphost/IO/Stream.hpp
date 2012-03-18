@@ -32,7 +32,6 @@ named in the AUTHORS file.
 #include <boost/shared_ptr.hpp>
 
 namespace PyUni {
-namespace IO {
     
 /**
  * Just that we can be sure these two are equivalent.
@@ -211,7 +210,6 @@ typedef boost::shared_ptr<Stream> StreamHandle;
 
 #include "includes/StreamOperators.hpp.inc"
 
-}
 }
 
 #endif

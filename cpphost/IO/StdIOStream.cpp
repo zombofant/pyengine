@@ -28,9 +28,8 @@ named in the AUTHORS file.
 #include <unistd.h>
 
 namespace PyUni {
-namespace IO {
 
-/* PyUni::IO::StdIOStream */
+/* PyUni::StdIOStream */
 
 StdIOStream::StdIOStream(const int origFD):
     FDStream::FDStream(checkFD(dup(origFD)), true)
@@ -42,7 +41,7 @@ bool StdIOStream::isSeekable() const {
     return false;
 }
 
-/* PyUni::IO::StdInStream */
+/* PyUni::StdInStream */
 
 StdInStream::StdInStream():
     StdIOStream::StdIOStream(STDIN_FILENO)
@@ -58,7 +57,7 @@ bool StdInStream::isWritable() const {
     return false;
 }
 
-/* PyUni::IO::StdOutStream */
+/* PyUni::StdOutStream */
 
 StdOutStream::StdOutStream():
     StdIOStream::StdIOStream(STDOUT_FILENO)
@@ -74,7 +73,7 @@ bool StdOutStream::isWritable() const {
     return true;
 }
 
-/* PyUni::IO::StdErrStream */
+/* PyUni::StdErrStream */
 
 StdErrStream::StdErrStream():
     StdIOStream::StdIOStream(STDERR_FILENO)
@@ -92,5 +91,4 @@ bool StdErrStream::isWritable() const {
 
 StreamHandle stdin(new StdInStream()), stdout(new StdOutStream()), stderr(new StdErrStream());
 
-}
 }

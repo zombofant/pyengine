@@ -30,7 +30,6 @@ named in the AUTHORS file.
 #include "FileStream.hpp"
 
 namespace PyUni {
-namespace IO {
 
 class StdIOStream: public FDStream {
     public:
@@ -65,7 +64,6 @@ class StdErrStream: public StdIOStream {
 
 extern StreamHandle stdin, stdout, stderr;
 
-}
 }
 
 #endif

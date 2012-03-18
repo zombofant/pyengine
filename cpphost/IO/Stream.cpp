@@ -31,9 +31,8 @@ named in the AUTHORS file.
 #include <cstring>
 
 namespace PyUni {
-namespace IO {
 
-/* PyUni::IO::Stream */
+/* PyUni::Stream */
 
 void Stream::flush() {
     
@@ -210,5 +209,4 @@ void Stream::writeUInt64(const uint64 value) {
 
 #include "includes/StreamOperators.cpp.inc"
 
-}
 }

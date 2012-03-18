@@ -32,9 +32,8 @@ named in the AUTHORS file.
 // #include "Log.hpp"
 
 namespace PyUni {
-namespace IO {
     
-/* PyUni::IO::FDStream */
+/* PyUni::FDStream */
 
 FDStream::FDStream(int fd, bool ownsFD):
     _fd(fd),
@@ -89,7 +88,7 @@ sizeuint FDStream::write(const void *data, const sizeuint length) {
     return writtenBytes;
 }
 
-/* PyUni::IO::FileStream */
+/* PyUni::FileStream */
 
 // note that throwing the exception on a failed open is done in checkFD
 FileStream::FileStream(const std::string fileName, 
@@ -125,5 +124,4 @@ bool FileStream::isWritable() const {
     return (_openMode != OM_READ);
 }
     
-}
 }

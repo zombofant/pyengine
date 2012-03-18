@@ -29,7 +29,6 @@ named in the AUTHORS file.
 #include "Stream.hpp"
 
 namespace PyUni {
-namespace IO {
     
 static inline int checkFD(int fd) {
     if (fd == -1) {
@@ -117,7 +116,6 @@ class FileStream: public FDStream {
         virtual bool isWritable() const;
 };
 
-}
 }
 
 #endif
