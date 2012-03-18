@@ -27,6 +27,7 @@ cmake_minimum_required(VERSION 2.6)
         "pyuni_SceneGraph"
         "pyuni_Resources"
         "pyuni_GL"
+        "pyuni_IO"
         "pyuni_Math"
         "pyuni_Misc"
     )

@@ -24,7 +24,7 @@ For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
 #include "Image.hpp"
-#include "PNGIOWrapper.hpp"
+#include "IO/PNGIOWrapper.hpp"
 
 #include <cassert>
 

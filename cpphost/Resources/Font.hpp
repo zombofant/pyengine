@@ -31,7 +31,7 @@ named in the AUTHORS file.
 #include <ft2build.h>
 #include <freetype/freetype.h>
 
-#include "IO.hpp"
+#include "IO/IO.hpp"
 #include <boost/weak_ptr.hpp>
 
 namespace PyUni {

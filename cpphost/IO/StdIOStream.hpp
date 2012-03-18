@@ -1,5 +1,5 @@
 /**********************************************************************
-File name: Image.hpp
+File name: StdIOStream.hpp
 This file is part of: Pythonic Universe
 
 LICENSE
@@ -23,43 +23,47 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_RESOURCES_IMAGE_H
-#define _PYUNI_RESOURCES_IMAGE_H
 
-#include <glew.h>
-#include <png.h>
-#include "IO/IO.hpp"
+#ifndef _PYUNI_IO_STDIOSTREAM_H
+#define _PYUNI_IO_STDIOSTREAM_H
+
+#include "FileStream.hpp"
 
 namespace PyUni {
-namespace Resources {
+namespace IO {
 
-struct Image;
-typedef boost::shared_ptr<Image> ImageHandle;
-
-struct Image
-{
+class StdIOStream: public FDStream {
     public:
-        Image(GLvoid *pixelData,
-            const GLsizei aWidth, const GLsizei aHeight,
-            const GLenum aFormat, const GLenum aType);
-        virtual ~Image();
-    protected:
-        GLvoid *_pixelData;
+        StdIOStream(int origFD);
     public:
-        const GLenum format, type;
-        const GLsizei width, height;
-    public:
-        bool getIsValid() const;
-        void dropData();
-    public:
-        void texImage2D(const GLenum target, const GLint level,
-            const GLint internalFormat) const;
-        void texSubImage2D(const GLenum target, const GLint level,
-            const GLint internalFormat,
-            const GLint x, const GLint y) const;
-    public:
-        static ImageHandle PNGImage(IStreamHandle input);
+        virtual bool isSeekable() const;
 };
+
+class StdInStream: public StdIOStream {
+    public:
+        StdInStream();
+    public:
+        virtual bool isReadable() const;
+        virtual bool isWritable() const;
+};
+
+class StdOutStream: public StdIOStream {
+    public:
+        StdOutStream();
+    public:
+        virtual bool isReadable() const;
+        virtual bool isWritable() const;
+};
+
+class StdErrStream: public StdIOStream {
+    public:
+        StdErrStream();
+    public:
+        virtual bool isReadable() const;
+        virtual bool isWritable() const;
+};
+
+extern StreamHandle stdin, stdout, stderr;
 
 }
 }

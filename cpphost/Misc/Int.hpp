@@ -1,5 +1,5 @@
 /**********************************************************************
-File name: Image.hpp
+File name: Int.hpp
 This file is part of: Pythonic Universe
 
 LICENSE
@@ -23,45 +23,25 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_RESOURCES_IMAGE_H
-#define _PYUNI_RESOURCES_IMAGE_H
 
-#include <glew.h>
-#include <png.h>
-#include "IO/IO.hpp"
+#include <cstddef>
+#include <cstdint>
+#include <unistd.h>
 
 namespace PyUni {
-namespace Resources {
 
-struct Image;
-typedef boost::shared_ptr<Image> ImageHandle;
+typedef uint8_t uint8;
+typedef uint16_t uint16;
+typedef uint32_t uint32;
+typedef uint64_t uint64;
+typedef int8_t int8;
+typedef int16_t int16;
+typedef int32_t int32;
+typedef int64_t int64;
 
-struct Image
-{
-    public:
-        Image(GLvoid *pixelData,
-            const GLsizei aWidth, const GLsizei aHeight,
-            const GLenum aFormat, const GLenum aType);
-        virtual ~Image();
-    protected:
-        GLvoid *_pixelData;
-    public:
-        const GLenum format, type;
-        const GLsizei width, height;
-    public:
-        bool getIsValid() const;
-        void dropData();
-    public:
-        void texImage2D(const GLenum target, const GLint level,
-            const GLint internalFormat) const;
-        void texSubImage2D(const GLenum target, const GLint level,
-            const GLint internalFormat,
-            const GLint x, const GLint y) const;
-    public:
-        static ImageHandle PNGImage(IStreamHandle input);
-};
+typedef size_t sizeuint;
+typedef size_t ptruint;
+typedef ssize_t sizeint;
+typedef ssize_t ptrint;
 
 }
-}
-
-#endif

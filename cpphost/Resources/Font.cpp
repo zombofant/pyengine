@@ -24,7 +24,7 @@ For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
 #include "Font.hpp"
-#include "FTIOWrapper.hpp"
+#include "IO/FTIOWrapper.hpp"
 #include "Misc/Exception.hpp"
 
 namespace PyUni {
