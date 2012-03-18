@@ -82,17 +82,17 @@ void Image::texSubImage2D(const GLenum target, const GLint level,
         _pixelData);
 }
 
-ImageHandle Image::PNGImage(IStreamHandle input)
+ImageHandle Image::PNGImage(StreamHandle stream)
 {
     // Check if its really a PNG image
     unsigned char header[8];
-    input->read((char*)header, 8);
+    stream->readBytes((char*)header, 8);
     if (png_sig_cmp(header, 0, 8))
     {
         cerr << "invalid header" << endl;
         try {
-            input->seekg(-8, ios_base::cur);
-        } catch (ios_base::failure) {
+            stream->seek(SEEK_CUR, -8);
+        } catch (StreamError) {
             // just catch
         }
         return ImageHandle();
@@ -126,7 +126,7 @@ ImageHandle Image::PNGImage(IStreamHandle input)
     }
 
     // initialize libpng io
-    png_init_io(data, *input);
+    png_init_io(data, stream.get());
     png_set_sig_bytes(data, 8);
 
     // we go the low-level way. This gives us the opportunity to put the

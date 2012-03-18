@@ -90,6 +90,14 @@ template <class _T> void Stream::writeInt(const _T value) {
     }
 }
 
+void Stream::readBytes(void *data, const sizeuint length)
+{
+    const sizeuint readBytes = read(data, length);
+    if (readBytes < length) {
+        raiseReadError(readBytes, length);
+    }
+}
+
 int8 Stream::readInt8() {
     return readInt<int8>();
 }
@@ -108,10 +116,11 @@ int64 Stream::readInt64() {
 
 std::string Stream::readString(const sizeuint length) {
     void *buffer = malloc(length);
-    const sizeuint readBytes = read(buffer, length);
-    if (readBytes < length) {
+    try {
+        readBytes(buffer, length);
+    } catch (...) {
         free(buffer);
-        raiseReadError(readBytes, length);
+        throw;
     }
     std::string result((char*)buffer);
     free(buffer);

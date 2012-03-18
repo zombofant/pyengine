@@ -29,6 +29,7 @@ named in the AUTHORS file.
 #include <glew.h>
 #include <png.h>
 #include "IO/IO.hpp"
+#include "IO/Stream.hpp"
 
 namespace PyUni {
 namespace Resources {
@@ -58,7 +59,7 @@ struct Image
             const GLint internalFormat,
             const GLint x, const GLint y) const;
     public:
-        static ImageHandle PNGImage(IStreamHandle input);
+        static ImageHandle PNGImage(StreamHandle stream);
 };
 
 }

@@ -55,7 +55,13 @@ void iostream_read_data(png_structp png_ptr,
 
 void png_init_io(png_structp data, Stream *stream)
 {
-    png_set_read_fn(data, stream, &iostream_read_data);
+    if (stream->isReadable())
+        png_set_read_fn(data, stream, &iostream_read_data);
+    if (stream->isWritable())
+    {
+        png_set_write_fn(data, stream, &iostream_write_data,
+            &iostream_flush_data);
+    }
 }
 
 }

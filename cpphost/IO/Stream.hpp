@@ -174,6 +174,7 @@ class Stream {
         template <class _T> _T readInt();
         template <class _T> void writeInt(const _T value);
     public:
+        void readBytes(void *data, const sizeuint length);
         int8 readInt8();
         int16 readInt16();
         int32 readInt32();
