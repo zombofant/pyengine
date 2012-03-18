@@ -33,6 +33,7 @@ try:
     from Engine.GL.Texture import Texture2D
     from OpenGL.GL import GL_RGBA, GL_UNSIGNED_BYTE
 
+    import CUni
     import CUni.Resources as CResources
 except ImportError as err:
     __globalError = err
@@ -61,7 +62,7 @@ class PNGTextureLoader(ResourceLoader):
         Load the texture.
         We simply use the pyglet image loading functionality at the moment.
         """
-        image = CResources.PNGImage(CResources.CIStream(fileLike))
+        image = CResources.PNGImage(CUni.Stream(fileLike))
         if image is None or not image.IsValid:
             raise ValueError("Not valid PNG data.")
         texture = Texture2D(

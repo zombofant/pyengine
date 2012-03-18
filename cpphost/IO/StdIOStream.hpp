@@ -1,5 +1,5 @@
 /**********************************************************************
-File name: Resources.cpp
+File name: StdIOStream.hpp
 This file is part of: Pythonic Universe
 
 LICENSE
@@ -23,34 +23,47 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#include "Resources.hpp"
 
-#include <boost/shared_ptr.hpp>
+#ifndef _PYUNI_IO_STDIOSTREAM_H
+#define _PYUNI_IO_STDIOSTREAM_H
+
+#include "FileStream.hpp"
 
 namespace PyUni {
 
-using namespace boost::python;
-using namespace PyUni::Resources;
+class StdIOStream: public FDStream {
+    public:
+        StdIOStream(int origFD);
+    public:
+        virtual bool isSeekable() const;
+};
 
-BOOST_PYTHON_MODULE(_cuni_resources)
-{    
-    class_<Image, ImageHandle, boost::noncopyable>("Image", no_init)
-        .def("dropData", &Image::dropData)
-        .def("texImage2D", &Image::texImage2D)
-        .def("texSubImage2D", &Image::texSubImage2D)
-        .add_property("IsValid", &Image::getIsValid)
-        .def_readonly("Width", &Image::width)
-        .def_readonly("Height", &Image::height)
-        .def_readonly("Format", &Image::format)
-        .def_readonly("Type", &Image::type)
-    ;
+class StdInStream: public StdIOStream {
+    public:
+        StdInStream();
+    public:
+        virtual bool isReadable() const;
+        virtual bool isWritable() const;
+};
 
-    def("PNGImage", &Image::PNGImage);
+class StdOutStream: public StdIOStream {
+    public:
+        StdOutStream();
+    public:
+        virtual bool isReadable() const;
+        virtual bool isWritable() const;
+};
+
+class StdErrStream: public StdIOStream {
+    public:
+        StdErrStream();
+    public:
+        virtual bool isReadable() const;
+        virtual bool isWritable() const;
+};
+
+extern StreamHandle stdin, stdout, stderr;
+
 }
 
-void addResourcesToInittab()
-{
-    PyImport_AppendInittab("_cuni_resources", &init_cuni_resources);
-}
-
-}
+#endif

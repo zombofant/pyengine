@@ -26,7 +26,39 @@ named in the AUTHORS file.
 #ifndef _PYUNI_PYTHON_PACKAGE_H
 #define _PYUNI_PYTHON_PACKAGE_H
 
+#include "IO/Stream.hpp"
+#include <boost/python.hpp>
+
 namespace PyUni {
+
+class PyStream;
+typedef boost::shared_ptr<PyStream> PyStreamHandle;
+
+class PyStream: public Stream
+{
+    public:
+        PyStream(PyObject *obj);
+        ~PyStream() throw();
+    private:
+        PyObject *_readCall, *_writeCall, *_seekCall, *_flushCall,
+            *_tellCall;
+        const bool _readable, _seekable, _writeable;
+    protected:
+        void doSeek(const int whence, const sizeint offset) const;
+    public:
+        virtual void flush();
+        virtual sizeuint read(void *data, const sizeuint length);
+        virtual sizeuint seek(const int whence, const sizeint offset);
+        virtual const sizeuint size() const;
+        virtual const sizeuint tell() const;
+        virtual sizeuint write(const void *data, const sizeuint length);
+    public:
+        virtual bool isReadable() const { return _readable; };
+        virtual bool isSeekable() const { return _seekable; };
+        virtual bool isWritable() const { return _writeable; };
+    public:
+        static PyStreamHandle create(boost::python::object obj);
+};
 
 void addCUniToInittab();
 
