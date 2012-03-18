@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: Exception.cpp
-This file is part of: PyUni — Freeform transport simulation
+This file is part of: Pythonic Universe
 
 LICENSE
 
@@ -20,7 +20,7 @@ provisions of GPL License are applicable instead of those above.
 
 FEEDBACK & QUESTIONS
 
-For feedback and questions about PyUni please e-mail one of the authors
+For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
 #include "Exception.hpp"
