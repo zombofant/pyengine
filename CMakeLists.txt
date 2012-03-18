@@ -78,6 +78,11 @@ cmake_minimum_required(VERSION 2.6)
     include_directories(${PNG_INCLUDE_DIRS})
     add_definitions(${PNG_DEFINITIONS})
 
+    # freetype
+    find_package(Freetype REQUIRED)
+    set(LIBS ${LIBS} ${FREETYPE_LIBRARIES})
+    include_directories(${FREETYPE_INCLUDE_DIRS})
+
 # configuration
     configure_file(cpphost/pyuniConfig.template
         cpphost/pyuniConfig.hpp
