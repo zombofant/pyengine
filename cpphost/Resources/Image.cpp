@@ -37,12 +37,14 @@ using namespace std;
 
 Image::Image(GLvoid *pixelData, 
         const GLsizei aWidth, const GLsizei aHeight,
-        const GLenum aFormat, const GLenum aType):
+        const GLenum aFormat, const GLenum aType,
+        const GLsizei aPixelSize):
     _pixelData(pixelData),
+    width(aWidth),
+    height(aHeight),
     format(aFormat),
     type(aType),
-    width(aWidth),
-    height(aHeight)
+    pixelSize(aPixelSize)
 {
     assert(_pixelData != 0);
 }
@@ -267,7 +269,7 @@ ImageHandle Image::PNGImage(StreamHandle stream)
     png_destroy_read_struct(&data, &info, 0);
 
     // now we have all the data, put it into an Image
-    return ImageHandle(new Image(pixelData, width, height, format, type));
+    return ImageHandle(new Image(pixelData, width, height, format, type, channels*channelBytes));
 }
 
 }
