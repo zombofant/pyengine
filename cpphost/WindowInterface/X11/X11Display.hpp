@@ -46,8 +46,12 @@ public:
 private:
     void detectScreens();
     void detectDisplayModes();
+    void openInputContext();
 
     ::Display *_display;
+    XIC _input_context;
+    int _mouse_x, _mouse_y;
+    bool _mouse_valid;
 };
 
 }

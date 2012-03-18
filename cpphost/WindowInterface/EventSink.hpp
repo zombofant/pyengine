@@ -36,9 +36,9 @@ public:
     virtual ~EventSink();
     virtual void frameSynced() = 0;
     virtual void frameUnsynced(double deltaT) = 0;
-    virtual void handleKeyDown(const std::string &symbol,
+    virtual void handleKeyDown(unsigned int key,
                                unsigned int modifiers) = 0;
-    virtual void handleKeyUp(const std::string &symbol,
+    virtual void handleKeyUp(unsigned int key,
                              unsigned int modifiers) = 0;
     virtual void handleMouseDown(unsigned int x, unsigned int y,
                                  unsigned int buttons, unsigned int modifiers) = 0;

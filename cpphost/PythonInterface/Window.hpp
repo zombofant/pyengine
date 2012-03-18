@@ -42,7 +42,7 @@ class DisplayWrap: public Display, public boost::python::wrapper<Display>
     {
         this->get_override("selectMode")(index);
     }
-    
+
     virtual Window *createWindow(int w, int h, bool fullscreen=false)
     {
         return this->get_override("createWindow")(w, h, fullscreen);
@@ -55,7 +55,7 @@ class WindowWrap: public Window, public boost::python::wrapper<Window>
     {
         this->get_override("flip")();
     }
-    
+
     virtual void switchTo()
     {
         this->get_override("switchTo")();
@@ -68,18 +68,18 @@ class EventSinkWrap: public EventSink, public boost::python::wrapper<EventSink>
     {
         this->get_override("frameSynced")();
     }
-    
+
     virtual void frameUnsynced(double deltaT)
     {
         this->get_override("frameUnsynced")(deltaT);
     }
-    
-    virtual void handleKeyDown(const std::string &symbol, unsigned int modifiers)
+
+    virtual void handleKeyDown(unsigned int symbol, unsigned int modifiers)
     {
         this->get_override("handleKeyDown")(symbol, modifiers);
     }
 
-    virtual void handleKeyUp(const std::string &symbol, unsigned int modifiers)
+    virtual void handleKeyUp(unsigned int symbol, unsigned int modifiers)
     {
         this->get_override("handleKeyUp")(symbol, modifiers);
     }
