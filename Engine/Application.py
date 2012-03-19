@@ -254,7 +254,7 @@ class Application(RootWidget, CUni.Window.EventSink):
         self.dispatchMouseUp(x, y, button, modifiers)
 
     def handleMouseScroll(self, x, y, scrollX, scrollY):
-        self.dispatchMouseScroll(x, y, scrollX, scrollY)
+        self.dispatchScroll(x, y, scrollX, scrollY)
 
     def handleResize(self, width, height):
         pass

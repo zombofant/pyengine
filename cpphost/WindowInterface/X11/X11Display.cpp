@@ -26,12 +26,15 @@ named in the AUTHORS file.
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
 
 #include "X11Display.hpp"
 #include "X11Window.hpp"
 #include "../Display.hpp"
 
 #include <iostream>
+
+#define MAXBUTTONS 8
 
 namespace PyUni {
 
@@ -60,12 +63,29 @@ X11Display::X11Display(const char *display):
 
     // this should go somewhere else
     // but for now it has to stay here
+    // AND: this might need config for someone else
     this->openInputContext();
+
+    // FIXME: This should be configurable (or at least discoverable)
+    // ask the pyglet source
+    _scroll_x = (int *) malloc(sizeof(int) * MAXBUTTONS);
+    _scroll_y = (int *) malloc(sizeof(int) * MAXBUTTONS);
+
+    for (int i = 0; i < MAXBUTTONS; i++) {
+        _scroll_x[i] = 0;
+        _scroll_y[i] = 0;
+    }
+    _scroll_y[4] = 1;
+    _scroll_y[5] = -1;
+    _scroll_x[6] = 1;
+    _scroll_x[7] = -1;
 }
 
 X11Display::~X11Display() {
     XDestroyIC(_input_context);
     XCloseDisplay(_display);
+    free(_scroll_x);
+    free(_scroll_y);
 }
 
 WindowHandle X11Display::createWindow(const DisplayMode &mode, int w, int h, bool fullscreen) {
@@ -198,6 +218,10 @@ void X11Display::openInputContext() {
     _input_context = XCreateIC(im,
                                XNInputStyle, XIMPreeditNothing | XIMStatusNothing,
                                NULL);
+    if (_input_context == NULL) {
+        // FIXME: die loudly, or try to correct
+    }
+
     XSetICFocus(_input_context);
 }
 
@@ -209,21 +233,39 @@ void X11Display::pullEvents(EventSink *sink) {
 
         XNextEvent(_display, &event);
 
+        // interaction with the input method
         if (XFilterEvent(&event, None))
             continue;
 
         switch (event.type) {
         case ButtonPress:
-            sink->handleMouseDown(event.xbutton.x,
-                                  event.xbutton.y,
-                                  event.xbutton.button,
-                                  event.xbutton.state);
+            assert(event.xbutton.button < MAXBUTTONS);
+
+            // filter scroll events
+            if (_scroll_x[event.xbutton.button] != 0
+             || _scroll_y[event.xbutton.button] != 0) {
+                sink->handleMouseScroll(event.xbutton.x,
+                                        event.xbutton.y,
+                                        _scroll_x[event.xbutton.button],
+                                        _scroll_y[event.xbutton.button]);
+            } else {
+                sink->handleMouseDown(event.xbutton.x,
+                                      event.xbutton.y,
+                                      event.xbutton.button,
+                                      event.xbutton.state);
+            }
             break;
         case ButtonRelease:
-            sink->handleMouseUp(event.xbutton.x,
-                                event.xbutton.y,
-                                event.xbutton.button,
-                                event.xbutton.state);
+            assert(event.xbutton.button < MAXBUTTONS);
+
+            // only report release events for non-scroll
+            if (_scroll_x[event.xbutton.button] == 0
+             && _scroll_y[event.xbutton.button] == 0) {
+                sink->handleMouseUp(event.xbutton.x,
+                                    event.xbutton.y,
+                                    event.xbutton.button,
+                                    event.xbutton.state);
+            }
             break;
         case MotionNotify:
             sink->handleMouseMove(event.xmotion.x,
@@ -239,7 +281,7 @@ void X11Display::pullEvents(EventSink *sink) {
             break;
         case KeyPress: {
             // XXX: this will break with threading
-            // avoid repeated reallocation of the text buffer
+            // avoids repeated reallocation of the text buffer
             static int buf_size = 0;
             static char *buf = NULL;
 
@@ -294,7 +336,8 @@ void X11Display::pullEvents(EventSink *sink) {
             }
         } break;
         case KeyRelease:
-            sink->handleKeyUp(XLookupKeysym(&event.xkey, /* ??? */ 0), event.xkey.state);
+            sink->handleKeyUp(XLookupKeysym(&event.xkey, /* ??? */ 0),
+                              event.xkey.state);
             break;
         case ConfigureNotify:
             sink->handleResize(event.xconfigure.width, event.xconfigure.height);

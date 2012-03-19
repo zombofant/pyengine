@@ -74,14 +74,16 @@ X11Window::~X11Window() {
     protos[0] = XInternAtom(_display, "WM_DELETE_WINDOW", 1);
     XSetWMProtocols(_display, win, protos, 1);
 
-    // TODO: set title
+    // TODO: set title, _net title
 
     // select input and map the window
     XSelectInput(_display, win,
                  ButtonPressMask
                  |ButtonReleaseMask
+                 |PointerMotionMask
                  |StructureNotifyMask
-                 |KeyPressMask);
+                 |KeyPressMask
+                 |KeyReleaseMask);
 
     // glXSelectInput?
 
