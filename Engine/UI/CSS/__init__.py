@@ -40,13 +40,18 @@ try:
         mtime += unicode(os.stat(LANGUAGE_FILE).st_mtime)
         return mtime
 
-    mtime = mktimestamp()
+    try:
+        mtime = mktimestamp()
+    except OSError:
+        # most likely syntax file not found. Try to skip
+        mtime = None
     try:
         import GeneratedParser
     except SyntaxError as err:
         raise ImportError(err)
-    if GeneratedParser.__version__ != unicode(mtime):
-        raise TooOld()
+    if mtime is not None:
+        if GeneratedParser.__version__ != unicode(mtime):
+            raise TooOld()
 except (ImportError, TooOld) as err:
     # try to find the parser generator, otherwise fail
     import sys
