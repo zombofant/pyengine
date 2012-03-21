@@ -27,10 +27,10 @@ from WidgetBase import *
 from LabelWidget import *
 from BoxWidget import *
 from WindowWidget import *
+from RootWidget import *
 try:
     import pyglet
     from ScreenWidget import *
-    from RootWidget import *
     from SceneWidget import *
 except ImportError:
     pass

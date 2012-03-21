@@ -24,7 +24,11 @@
 ########################################################################
 from __future__ import unicode_literals, print_function, division
 from our_future import *
-import pyglet
+try:
+    import pyglet
+except ImportError:
+    pass
+
 import time
 from UI import Rect, RootWidget, ScreenWidget, SceneWidget
 from OpenGL.GL import *
@@ -375,6 +379,15 @@ class Application(RootWidget):
 
     def _on_text_motion_select(self, win, motion):
         self.dispatchCaretMotionSelect(motion)
+
+# XXX: Kludge to make docs work.
+try:
+    pyglet
+except NameError:
+    class pyglet(object):
+        class window(object):
+            class Window(object):
+                pass
 
 class Window(pyglet.window.Window):
 
