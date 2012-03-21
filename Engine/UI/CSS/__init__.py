@@ -33,79 +33,90 @@ class TooOld(BaseException):
     pass
 
 # make sure the CSS parser exists.
+CSS_AVAILABLE = False
 import os
-try:
-    def mktimestamp():
-        mtime = unicode(os.stat(SYNTAX_FILE).st_mtime)
-        mtime += unicode(os.stat(LANGUAGE_FILE).st_mtime)
-        return mtime
+from warnings import warn
 
+def __mktimestamp():
+    mtime = unicode(os.stat(SYNTAX_FILE).st_mtime)
+    mtime += unicode(os.stat(LANGUAGE_FILE).st_mtime)
+    return mtime
+
+def buildCSSParser():
+    tooOld = False
     try:
-        mtime = mktimestamp()
-    except OSError:
-        # most likely syntax file not found. Try to skip
-        mtime = None
-    try:
-        import GeneratedParser
-    except SyntaxError as err:
-        raise ImportError(err)
-    if mtime is not None:
+        try:
+            mtime = __mktimestamp()
+        except OSError:
+            return False
+        try:
+            import GeneratedParser
+        except SyntaxError as err:
+            raise ImportError(err)
+        if not hasattr(GeneratedParser, "__version__"):
+            raise TooOld()
         if GeneratedParser.__version__ != unicode(mtime):
             raise TooOld()
-except (ImportError, TooOld) as err:
+        return True
+    except TooOld as err:
+        tooOld = True
+    except ImportError as err:
+        pass
+    
     # try to find the parser generator, otherwise fail
     import sys
+    
+    path = os.path.join(os.getcwd(), "utils", "pyLR1")
+    sys.path.insert(1, path)
     try:
-        path = os.path.join(os.getcwd(), "utils", "pyLR1")
-        sys.path.insert(1, path)
         try:
-            try:
-                import pyLRp
-            except ImportError as err:
-                raise ImportError("Could not generate CSS parser: {0}".format(err))
-            syntaxFile = open(SYNTAX_FILE, "r")
-            parser = pyLRp.Parser(syntaxFile)
-            syntax = parser.Parse()
-            syntaxFile.close()
-            del syntaxFile
-            del parser
+            import pyLRp
+        except ImportError as err:
+            warn(ImportWarning("Could not generate CSS parser: {0}".format(err)))
+            print("Exception occured while trying to find the parser generator. Did you run a git submodule init && git submodule update?")
+            return tooOld
+        # rebuild the parser
+        syntaxFile = open(SYNTAX_FILE, "r")
+        parser = pyLRp.Parser(syntaxFile)
+        syntax = parser.Parse()
+        syntaxFile.close()
+        del syntaxFile
+        del parser
 
-            graph = pyLRp.LALR1StateTransitionGraph(syntax)
-            graph.Construct()
+        graph = pyLRp.LALR1StateTransitionGraph(syntax)
+        graph.Construct()
 
-            lexingNFA = pyLRp.LexingNFA(syntax)
-            lexingNFA.Construct()
-            lexingDFA = lexingNFA.CreateDFA()
-            del lexingNFA
-            lexingDFA.Optimize()
+        lexingNFA = pyLRp.LexingNFA(syntax)
+        lexingNFA.Construct()
+        lexingDFA = lexingNFA.CreateDFA()
+        del lexingNFA
+        lexingDFA.Optimize()
 
-            lexingTable = lexingDFA.CreateLexTable()
-            del lexingDFA
+        lexingTable = lexingDFA.CreateLexTable()
+        del lexingDFA
 
-            lexingTable.ConstructEquivalenceClasses()
-            
-            parserFile = open(PARSER_FILE, "w")
-            writer = pyLRp.Writer(parserFile, True, False, True, sys.version_info[0] >= 3, version=mtime)
-            writer.Write(syntax, graph, lexingTable)
+        lexingTable.ConstructEquivalenceClasses()
+        
+        parserFile = open(PARSER_FILE, "w")
+        writer = pyLRp.Writer(parserFile, True, False, True, sys.version_info[0] >= 3, version=mtime)
+        writer.Write(syntax, graph, lexingTable)
 
-            del graph
-            del lexingTable
-            del syntax
-            del writer
-            parserFile.close()
-            del parserFile
-        finally:
-            del sys.path[1]
-    except:
-        print("Exception occured while trying to find the parser generator. Did you run a git submodule init && git submodule update?")
-        if isinstance(err, TooOld):
-            pass
-        else:
-            raise
+        del graph
+        del lexingTable
+        del syntax
+        del writer
+        parserFile.close()
+        del parserFile
+    finally:
+        del sys.path[1]
+
     try:
-        if isinstance(err, TooOld):
+        if tooOld:
             reload(GeneratedParser)
         else:
             import GeneratedParser
     except ImportError as err:
-        raise ImportError("Despite having created the parser: {0}".format(err))
+        warn(ImportWarning("Despite having created the parser: {0}".format(err)))
+
+if not buildCSSParser():
+    warn(UserWarning("CSS interpreter will be unavailable."))

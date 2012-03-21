@@ -30,10 +30,13 @@ import itertools
 __all__ = ["Parser"]
 
 from Rules import Rule
-import GeneratedParser
-genLexer = GeneratedParser.Lexer
-genParser = GeneratedParser.Parser
-        
+try:
+    import GeneratedParser
+    genLexer = GeneratedParser.Lexer
+    genParser = GeneratedParser.Parser
+except ImportError:
+    pass
+
 class Parser(object):
     def __init__(self, **kwargs):
         super(Parser, self).__init__(**kwargs)
