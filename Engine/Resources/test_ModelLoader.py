@@ -70,10 +70,10 @@ class OBJModelLoaderTest(unittest.TestCase):
         del loader, loadedInstance
 
     def test_loadRenderModel(self):
-        try:
-            from Engine.GL.RenderModel import RenderModel
-        except ImportError:
+        import Engine.GL.RenderModel
+        if not hasattr(Engine.GL.RenderModel, "pyglet"):
             self.skipTest('RenderModel class not available')
+        RenderModel = Engine.GL.RenderModel
         loader = OBJModelLoader()
         # FIXME create virtual material file and test it
         loadedInstance = loader.load(self._testModel, targetClass=RenderModel)

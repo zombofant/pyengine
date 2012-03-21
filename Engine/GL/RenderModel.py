@@ -30,7 +30,10 @@ from OpenGL.GL import *
 from Engine.Resources.Manager import ResourceManager
 from SceneGraph.Core import Spatial
 
-import pyglet
+try:
+    import pyglet
+except:
+    pass
 
 class RenderModel(Model, Spatial):
     """

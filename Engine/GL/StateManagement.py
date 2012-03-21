@@ -26,7 +26,13 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 from Base import BindableObject
-from pyglet.graphics import Group, OrderedGroup
+try:
+    from pyglet.graphics import Group, OrderedGroup
+except ImportError:
+    class Group(object):
+        pass
+    class OrderedGroup(object):
+        pass
 from OpenGL.GL import glActiveTexture
 
 class StateContext(object):
