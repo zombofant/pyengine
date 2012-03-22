@@ -32,7 +32,15 @@ from __future__ import unicode_literals, print_function, division
 __all__ = ["range", "zip", "map", "filter"]
 
 from itertools import izip, imap, ifilter
+
 range = xrange
+"""Alias of :func:`xrange`"""
+
 zip = izip
+"""Alias of :func:`itertools.izip`"""
+
 map = imap
+"""Alias of :func:`itertools.imap`"""
+
 filter = ifilter
+"""Alias of :func:`itertools.ifilter`"""
