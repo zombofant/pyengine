@@ -59,8 +59,8 @@ class PNGTextureLoader(ResourceLoader):
  
     def load(self, fileLike, targetClass=None):
         """
-        Load the texture.
-        We simply use the pyglet image loading functionality at the moment.
+        Loads the given fileLike as PNG image. This is done using
+        :cpp:func:`PNGImage` from CUni.
         """
         image = CResources.PNGImage(CUni.Stream(fileLike))
         if image is None or not image.IsValid:
