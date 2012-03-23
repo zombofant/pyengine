@@ -75,6 +75,7 @@ class OBJModelLoaderTest(unittest.TestCase):
             from Engine.GL.RenderModel import RenderModel
         except ImportError:
             self.skipTest('RenderModel class not available')
+        RenderModel = Engine.GL.RenderModel
         loader = OBJModelLoader()
         # FIXME create virtual material file and test it
         loadedInstance = loader.load(self._testModel, targetClass=RenderModel)

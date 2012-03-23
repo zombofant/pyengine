@@ -1,5 +1,5 @@
 /**********************************************************************
-File name: Resources.cpp
+File name: StreamOperators.hpp.inc
 This file is part of: Pythonic Universe
 
 LICENSE
@@ -23,34 +23,24 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#include "Resources.hpp"
 
-#include <boost/shared_ptr.hpp>
+/* tt3d Stream operators */
 
-namespace PyUni {
+Stream &operator<<(Stream &stream, const int8 value);
+Stream &operator<<(Stream &stream, const int16 value);
+Stream &operator<<(Stream &stream, const int32 value);
+Stream &operator<<(Stream &stream, const int64 value);
+Stream &operator<<(Stream &stream, const uint8 value);
+Stream &operator<<(Stream &stream, const uint16 value);
+Stream &operator<<(Stream &stream, const uint32 value);
+Stream &operator<<(Stream &stream, const uint64 value);
+Stream &operator<<(Stream &stream, const std::string &value);
 
-using namespace boost::python;
-using namespace PyUni::Resources;
-
-BOOST_PYTHON_MODULE(_cuni_resources)
-{    
-    class_<Image, ImageHandle, boost::noncopyable>("Image", no_init)
-        .def("dropData", &Image::dropData)
-        .def("texImage2D", &Image::texImage2D)
-        .def("texSubImage2D", &Image::texSubImage2D)
-        .add_property("IsValid", &Image::getIsValid)
-        .def_readonly("Width", &Image::width)
-        .def_readonly("Height", &Image::height)
-        .def_readonly("Format", &Image::format)
-        .def_readonly("Type", &Image::type)
-    ;
-
-    def("PNGImage", &Image::PNGImage);
-}
-
-void addResourcesToInittab()
-{
-    PyImport_AppendInittab("_cuni_resources", &init_cuni_resources);
-}
-
-}
+Stream &operator>>(Stream &stream, int8 &value);
+Stream &operator>>(Stream &stream, int16 &value);
+Stream &operator>>(Stream &stream, int32 &value);
+Stream &operator>>(Stream &stream, int64 &value);
+Stream &operator>>(Stream &stream, uint8 &value);
+Stream &operator>>(Stream &stream, uint16 &value);
+Stream &operator>>(Stream &stream, uint32 &value);
+Stream &operator>>(Stream &stream, uint64 &value);

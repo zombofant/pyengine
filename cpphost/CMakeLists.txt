@@ -1,5 +1,8 @@
+add_subdirectory(Contrib)
+
 add_subdirectory(Misc)
 add_subdirectory(Math)
+add_subdirectory(IO)
 add_subdirectory(GL)
 add_subdirectory(Resources)
 add_subdirectory(SceneGraph)

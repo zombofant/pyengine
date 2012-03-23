@@ -20,6 +20,9 @@ cmake_minimum_required(VERSION 2.6)
     # pyUniverse
     include_directories(${PROJECT_SOURCE_DIR}/cpphost)
     set(LIBS ${LIBS} ${PYUNI_MODULES})
+    set(CONTRIB_MODULES
+        "contrib_BinPack"
+    )
     set(PYUNI_MODULES
         "pyuni_PythonInterface"
         "pyuni_WindowInterface"
@@ -27,6 +30,7 @@ cmake_minimum_required(VERSION 2.6)
         "pyuni_SceneGraph"
         "pyuni_Resources"
         "pyuni_GL"
+        "pyuni_IO"
         "pyuni_Math"
         "pyuni_Misc"
     )
@@ -78,6 +82,11 @@ cmake_minimum_required(VERSION 2.6)
     include_directories(${PNG_INCLUDE_DIRS})
     add_definitions(${PNG_DEFINITIONS})
 
+    # freetype
+    find_package(Freetype REQUIRED)
+    set(LIBS ${LIBS} ${FREETYPE_LIBRARIES})
+    include_directories(${FREETYPE_INCLUDE_DIRS})
+
 # configuration
     configure_file(cpphost/pyuniConfig.template
         cpphost/pyuniConfig.hpp
@@ -87,8 +96,8 @@ cmake_minimum_required(VERSION 2.6)
     add_subdirectory(cpphost)
 
     add_executable(pyuni-client cpphost/pyuni-client.cpp)
-    add_dependencies(pyuni-client ${PYUNI_MODULES})
-    target_link_libraries(${EXEC} ${PYUNI_MODULES} ${LIBS})
+    add_dependencies(pyuni-client ${PYUNI_MODULES} ${CONTRIB_MODULES})
+    target_link_libraries(${EXEC} ${PYUNI_MODULES} ${CONTRIB_MODULES} ${LIBS})
 
 # documentation targets
     add_sphinx_target(docs-html

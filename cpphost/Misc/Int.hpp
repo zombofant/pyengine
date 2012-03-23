@@ -1,5 +1,5 @@
 /**********************************************************************
-File name: PNGIOWrapper.cpp
+File name: Int.hpp
 This file is part of: Pythonic Universe
 
 LICENSE
@@ -23,43 +23,25 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#include "PNGIOWrapper.hpp"
+
+#include <cstddef>
+#include <cstdint>
+#include <unistd.h>
 
 namespace PyUni {
 
-using namespace std;
+typedef uint8_t uint8;
+typedef uint16_t uint16;
+typedef uint32_t uint32;
+typedef uint64_t uint64;
+typedef int8_t int8;
+typedef int16_t int16;
+typedef int32_t int32;
+typedef int64_t int64;
 
-void iostream_write_data(png_structp png_ptr,
-    png_bytep data, png_size_t length);
-void iostream_flush_data(png_structp png_ptr);
+typedef size_t sizeuint;
+typedef size_t ptruint;
+typedef ssize_t sizeint;
+typedef ssize_t ptrint;
 
-void iostream_read_data(png_structp png_ptr,
-    png_bytep data, png_size_t length)
-{
-    istream *input = (istream*)png_get_io_ptr(png_ptr);
-    // this will throw if we run out of data
-    input->read((char*)data, length);
 }
-
-}
-
-using namespace std;
-using namespace PyUni;
-
-void png_init_io(png_structp data, istream &input)
-{
-    png_set_read_fn(data, &input, &iostream_read_data);
-}
-
-/*void png_init_io(png_structp data, ostream &output)
-{
-    png_set_write_fn(data, &output, &iostream_write_data,
-        &iostream_flush_data);
-}
-
-void png_init_io(png_structp data, iostream &io)
-{
-    png_set_read_fn(data, &io, &iostream_read_data);
-    png_set_write_fn(data, &io, &iostream_write_data,
-        &iostream_flush_data);
-}*/

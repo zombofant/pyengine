@@ -24,7 +24,7 @@ For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
 #include "Image.hpp"
-#include "PNGIOWrapper.hpp"
+#include "IO/PNGIOWrapper.hpp"
 
 #include <cassert>
 
@@ -37,12 +37,14 @@ using namespace std;
 
 Image::Image(GLvoid *pixelData, 
         const GLsizei aWidth, const GLsizei aHeight,
-        const GLenum aFormat, const GLenum aType):
+        const GLenum aFormat, const GLenum aType,
+        const GLsizei aPixelSize):
     _pixelData(pixelData),
+    width(aWidth),
+    height(aHeight),
     format(aFormat),
     type(aType),
-    width(aWidth),
-    height(aHeight)
+    pixelSize(aPixelSize)
 {
     assert(_pixelData != 0);
 }
@@ -82,17 +84,17 @@ void Image::texSubImage2D(const GLenum target, const GLint level,
         _pixelData);
 }
 
-ImageHandle Image::PNGImage(IStreamHandle input)
+ImageHandle Image::PNGImage(StreamHandle stream)
 {
     // Check if its really a PNG image
     unsigned char header[8];
-    input->read((char*)header, 8);
+    stream->readBytes((char*)header, 8);
     if (png_sig_cmp(header, 0, 8))
     {
         cerr << "invalid header" << endl;
         try {
-            input->seekg(-8, ios_base::cur);
-        } catch (ios_base::failure) {
+            stream->seek(SEEK_CUR, -8);
+        } catch (StreamError) {
             // just catch
         }
         return ImageHandle();
@@ -126,7 +128,7 @@ ImageHandle Image::PNGImage(IStreamHandle input)
     }
 
     // initialize libpng io
-    png_init_io(data, *input);
+    pngReadStream(data, stream.get());
     png_set_sig_bytes(data, 8);
 
     // we go the low-level way. This gives us the opportunity to put the
@@ -267,7 +269,7 @@ ImageHandle Image::PNGImage(IStreamHandle input)
     png_destroy_read_struct(&data, &info, 0);
 
     // now we have all the data, put it into an Image
-    return ImageHandle(new Image(pixelData, width, height, format, type));
+    return ImageHandle(new Image(pixelData, width, height, format, type, channels*channelBytes));
 }
 
 }

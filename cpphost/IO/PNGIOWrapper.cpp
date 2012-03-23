@@ -1,5 +1,5 @@
 /**********************************************************************
-File name: Resources.cpp
+File name: PNGIOWrapper.cpp
 This file is part of: Pythonic Universe
 
 LICENSE
@@ -23,34 +23,49 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#include "Resources.hpp"
-
-#include <boost/shared_ptr.hpp>
+#include "PNGIOWrapper.hpp"
 
 namespace PyUni {
 
-using namespace boost::python;
-using namespace PyUni::Resources;
-
-BOOST_PYTHON_MODULE(_cuni_resources)
-{    
-    class_<Image, ImageHandle, boost::noncopyable>("Image", no_init)
-        .def("dropData", &Image::dropData)
-        .def("texImage2D", &Image::texImage2D)
-        .def("texSubImage2D", &Image::texSubImage2D)
-        .add_property("IsValid", &Image::getIsValid)
-        .def_readonly("Width", &Image::width)
-        .def_readonly("Height", &Image::height)
-        .def_readonly("Format", &Image::format)
-        .def_readonly("Type", &Image::type)
-    ;
-
-    def("PNGImage", &Image::PNGImage);
+inline Stream *extractStream(png_structp png_ptr)
+{
+    return (Stream*)png_get_io_ptr(png_ptr);
 }
 
-void addResourcesToInittab()
+void iostream_write_data(png_structp png_ptr,
+    png_bytep data, png_size_t length)
 {
-    PyImport_AppendInittab("_cuni_resources", &init_cuni_resources);
+    Stream *stream = extractStream(png_ptr);
+    stream->write(data, length);
+}
+
+void iostream_flush_data(png_structp png_ptr)
+{
+    Stream *stream = extractStream(png_ptr);
+    stream->flush();
+}
+
+void iostream_read_data(png_structp png_ptr,
+    png_bytep data, png_size_t length)
+{
+    Stream *stream = extractStream(png_ptr);
+    // this will throw if we run out of data
+    stream->read((char*)data, length);
+}
+
+void pngReadStream(png_structp data, Stream *stream)
+{
+    if (stream->isReadable())
+        png_set_read_fn(data, stream, &iostream_read_data);
+}
+
+void pngWriteStream(png_structp data, Stream *stream)
+{
+    if (stream->isWritable())
+    {
+        png_set_write_fn(data, stream, &iostream_write_data,
+            &iostream_flush_data);
+    }
 }
 
 }
