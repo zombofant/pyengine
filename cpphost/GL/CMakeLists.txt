@@ -6,5 +6,7 @@ add_library(pyuni_GL
     "StateManagement.cpp"
     "GeometryBufferView.cpp"
     "GeometryObject.cpp"
+    "AbstractImage.cpp"
+    "TextureAtlas.cpp"
 )
 add_dependencies(pyuni_GL pyuni_Math pyuni_Misc)

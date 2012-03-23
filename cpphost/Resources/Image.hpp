@@ -26,42 +26,52 @@ named in the AUTHORS file.
 #ifndef _PYUNI_RESOURCES_IMAGE_H
 #define _PYUNI_RESOURCES_IMAGE_H
 
-#include <glew.h>
 #include <png.h>
-#include <iostream>
-#include <boost/shared_ptr.hpp>
+#include "IO/IO.hpp"
+#include "IO/Stream.hpp"
+
+#include "GL/AbstractImage.hpp"
 
 namespace PyUni {
 namespace Resources {
 
-struct Image;
+using namespace PyUni::GL;
+
+class Image;
 typedef boost::shared_ptr<Image> ImageHandle;
 
-typedef boost::shared_ptr<std::istream> IStreamHandle;
-
-struct Image
+class Image: public AbstractImage2D
 {
     public:
         Image(GLvoid *pixelData,
             const GLsizei aWidth, const GLsizei aHeight,
-            const GLenum aFormat, const GLenum aType);
+            const GLenum aFormat, const GLenum aType,
+            const GLsizei aPixelSize);
         virtual ~Image();
     protected:
         GLvoid *_pixelData;
     public:
-        const GLenum format, type;
         const GLsizei width, height;
+        const GLenum format, type;
+        const GLsizei pixelSize;
+    public: // to comply with AbstractImage2D specification
+        virtual GLenum getFormat() const { return format; };
+        virtual GLsizei getHeight() const { return height; };
+        virtual const void *getPixelData() const { return _pixelData; };
+        virtual GLsizei getPixelSize() const { return pixelSize; };
+        virtual GLenum getType() const { return type; };
+        virtual GLsizei getWidth() const { return width; };
     public:
         bool getIsValid() const;
         void dropData();
     public:
-        void texImage2D(const GLenum target, const GLint level,
+        virtual void texImage2D(const GLenum target, const GLint level,
             const GLint internalFormat) const;
-        void texSubImage2D(const GLenum target, const GLint level,
-            const GLint internalFormat,
+        virtual void texSubImage2D(const GLenum target,
+            const GLint level, const GLint internalFormat,
             const GLint x, const GLint y) const;
     public:
-        static ImageHandle PNGImage(IStreamHandle input);
+        static ImageHandle PNGImage(StreamHandle stream);
 };
 
 }

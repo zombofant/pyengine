@@ -31,13 +31,12 @@ from Engine.Model import Model
 
 import MaterialLoader
 
-# At server side we probably cannot import GL classes. Therefore we
-# provide a fallback for this case:
-try:
-    from Engine.GL.RenderModel import RenderModel
+# Import will work, *but* if no pyglet is loaded, we must delete the
+# name, as any instanciation will fail
+import Engine.GL.RenderModel
+if hasattr(Engine.GL.RenderModel, "pyglet"):
+    RenderModel = Engine.GL.RenderModel.RenderModel
     from Engine.GL.Material import Material
-except ImportError:
-    pass
 
 class OBJModelLoader(ResourceLoader):
     """
