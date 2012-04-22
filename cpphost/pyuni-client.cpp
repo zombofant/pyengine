@@ -34,6 +34,7 @@ named in the AUTHORS file.
 #include "WindowInterface/X11/X11Display.hpp"
 
 #include "PythonInterface/Package.hpp"
+#include "PythonInterface/CairoHelpers.hpp"
 
 PyUni::Display *disp = 0;
 
@@ -43,6 +44,7 @@ int main(int argc, char** argv) {
         PyUni::addCUniToInittab();
         Py_Initialize();
         PySys_SetArgv(argc, argv);
+        PyUni::setupCairoHelpers();
 
         boost::python::object cuni_window = boost::python::import("_cuni_window");
         boost::python::object cuni_window_namespace = cuni_window.attr("__dict__");

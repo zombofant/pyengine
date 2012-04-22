@@ -40,8 +40,24 @@ struct cairo_surface_from_Pycairo
 };
 
 void setupCairoHelpers() {
-    Pycairo_IMPORT;
-    // cairo_surface_from_Pycairo();
+    /* We are NOT using Pycairo_IMPORT, because it uses an
+     * undocumented(!) python API function and produces warnings which
+     * look as if they came from *our* code. */
+
+    PyObject *module = PyImport_ImportModule("cairo");
+    if (!module) {
+        throw error_already_set();
+    }
+
+    
+    PyObject *capiObject = PyObject_GetAttrString(module, "CAPI");
+    if (!capiObject) {
+        Py_DECREF(module);
+        throw error_already_set();
+    }
+
+    Pycairo_CAPI = (Pycairo_CAPI_t *)PyCObject_AsVoidPtr(capiObject);
+    Py_DECREF(capiObject);
 }
 
 }

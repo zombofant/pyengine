@@ -231,7 +231,6 @@ BOOST_PYTHON_MODULE(_cuni)
 void addCUniToInittab()
 {
     PyImport_AppendInittab("_cuni", &init_cuni);
-    setupCairoHelpers();
     addWindowToInittab();
     addGLToInittab();
     addResourcesToInittab();
