@@ -25,9 +25,16 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-import CUni
-import CUni.Window
-import CUni.GL as CGL
+try:
+    import CUni
+    import CUni.Window
+    import CUni.GL as CGL
+except ImportError:
+    # XXX: make documentation work
+    class CUni(object):
+        class Window(object):
+            class EventSink(object):
+                pass
 
 import time
 from OpenGL.GL import *
