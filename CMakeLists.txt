@@ -43,9 +43,9 @@ cmake_minimum_required(VERSION 2.6)
 
     # pango
     find_package(Pango REQUIRED)
-    include_directories(${PANGO_INCLUDE_DIRS})
+    include_directories(${Pango_INCLUDE_DIRS})
     set(LIBS ${LIBS}
-        ${PANGO_LIBRARIES}
+        ${Pango_LIBRARIES}
     )
 
     # cairo

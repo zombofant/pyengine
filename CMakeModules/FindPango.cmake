@@ -1,5 +1,5 @@
 
-find_path(PANGO_INCLUDE_DIRS pango-1.0
+find_path(Pango_INCLUDE_DIRS pango-1.0
     PATH_SUFFIXES include
     PATHS
         /usr
@@ -24,8 +24,8 @@ find_library(PANGOCAIRO_LIBRARY
         /usr/local
 )
 
-set(PANGO_LIBRARIES ${PANGO_LIBRARY} ${PANGOCAIRO_LIBRARY})
-set(PANGO_FOUND "NO")
-if (PANGO_INCLUDE_DIRS AND PANGO_LIBRARIES)
-    set(PANGO_FOUND "YES")
-endif (PANGO_INCLUDE_DIRS AND PANGO_LIBRARIES)
+set(Pango_LIBRARIES ${PANGO_LIBRARY} ${PANGOCAIRO_LIBRARY})
+set(Pango_FOUND "NO")
+if (Pango_INCLUDE_DIRS AND Pango_LIBRARIES)
+    set(Pango_FOUND "YES")
+endif (Pango_INCLUDE_DIRS AND Pango_LIBRARIES)
