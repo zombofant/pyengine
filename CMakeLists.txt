@@ -49,6 +49,13 @@ cmake_minimum_required(VERSION 2.6)
         ${PYTHON_LIBRARY}
     )
 
+    # pango
+    find_package(Pango REQUIRED)
+    include_directories(${PANGO_INCLUDE_DIRS})
+    set(LIBS ${LIBS}
+        ${PANGO_LIBRARIES}
+    )
+
     # boost
     find_package(Boost COMPONENTS system python REQUIRED)
     include_directories(${Boost_INCLUDE_DIRS})
