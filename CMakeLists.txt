@@ -41,19 +41,26 @@ cmake_minimum_required(VERSION 2.6)
     include_directories(${OpenGL_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS})
     set(LIBS ${LIBS} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} ${GLEW_LIBRARY})
 
+    # pango
+    find_package(Pango REQUIRED)
+    include_directories(${PANGO_INCLUDE_DIRS})
+    set(LIBS ${LIBS}
+        ${PANGO_LIBRARIES}
+    )
+
+    # cairo
+    find_package(Cairo REQUIRED)
+    include_directories(${Cairo_INCLUDE_DIRS})
+    set(LIBS ${LIBS}
+        ${Cairo_LIBRARY}
+    )
+
     # python
     find_package(PythonInterp REQUIRED)
     find_package(PythonLibs REQUIRED)
     include_directories(${PYTHON_INCLUDE_DIR})
     set(LIBS ${LIBS}
         ${PYTHON_LIBRARY}
-    )
-
-    # pango
-    find_package(Pango REQUIRED)
-    include_directories(${PANGO_INCLUDE_DIRS})
-    set(LIBS ${LIBS}
-        ${PANGO_LIBRARIES}
     )
 
     # boost
