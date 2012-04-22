@@ -9,7 +9,6 @@ cmake_minimum_required(VERSION 2.6)
         )
     endmacro(add_sphinx_target)
 
-
 # project setup
     project(pyUniverse CXX C)
     set(EXEC "pyuni-client")
@@ -62,6 +61,10 @@ cmake_minimum_required(VERSION 2.6)
     set(LIBS ${LIBS}
         ${PYTHON_LIBRARY}
     )
+
+    # pycairo
+    set(PYTHON_EXEC "/usr/bin/python2")
+    find_package(pycairo REQUIRED)
 
     # boost
     find_package(Boost COMPONENTS system python REQUIRED)
