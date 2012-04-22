@@ -1,5 +1,6 @@
 
 add_library(pyuni_PythonInterface STATIC
+    "CairoHelpers.cpp"
     "Package.cpp"
     "Window.cpp"
     "GL.cpp"

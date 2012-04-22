@@ -33,6 +33,7 @@ named in the AUTHORS file.
 #include "GL/StateManagement.hpp"
 #include "GL/GeometryBuffer.hpp"
 #include "GL/GeometryBufferView.hpp"
+#include "GL/CairoUtils.hpp"
 
 namespace PyUni {
 

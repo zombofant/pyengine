@@ -23,6 +23,7 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
+#include "CairoHelpers.hpp"
 #include "GL.hpp"
 
 #include <glew.h>
@@ -162,6 +163,19 @@ PyObject *AttributeSlice_set(SliceT *slice, list bpList)
     slice->set(buffer);
     free(buffer);
     return pyList;
+}
+
+void __bp_glTexCairoSurfaceSubImage2D(GLenum target,
+    GLint level,
+    GLint xoffset, GLint yoffset,
+    PyObject *surfaceObj)
+{
+    if (!PyObject_IsInstance(surfaceObj, (PyObject *)Pycairo_CAPI->Surface_Type)) {
+        PyErr_SetString(PyExc_TypeError, "Surface required");
+        throw error_already_set();
+    }
+    cairo_surface_t *surface = ((PycairoSurface*)surfaceObj)->surface;
+    glTexCairoSurfaceSubImage2D(target, level, xoffset, yoffset, surface);
 }
 
 BOOST_PYTHON_MODULE(_cuni_gl)
@@ -310,6 +324,8 @@ BOOST_PYTHON_MODULE(_cuni_gl)
         .def("setUp", &TransformGroup::setUp)
         .def("tearDown", &TransformGroup::tearDown)
     ;
+
+    def("glTexCairoSurfaceSubImage2D", &__bp_glTexCairoSurfaceSubImage2D);
 }
 
 void addGLToInittab()

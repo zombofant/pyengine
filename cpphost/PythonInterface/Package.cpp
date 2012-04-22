@@ -24,6 +24,7 @@ For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
 #include "Package.hpp"
+#include "CairoHelpers.hpp"
 #include "Window.hpp"
 #include "GL.hpp"
 #include "Resources.hpp"
@@ -230,6 +231,7 @@ BOOST_PYTHON_MODULE(_cuni)
 void addCUniToInittab()
 {
     PyImport_AppendInittab("_cuni", &init_cuni);
+    setupCairoHelpers();
     addWindowToInittab();
     addGLToInittab();
     addResourcesToInittab();
