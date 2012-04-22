@@ -1,3 +1,4 @@
+#include "Base.hpp"
 #include "CairoUtils.hpp"
 #include "Misc/Exception.hpp"
 
@@ -35,6 +36,7 @@ void glTexCairoSurfaceSubImage2D(GLenum target,
         glFormat,
         glType,
         (const GLvoid*)cairo_image_surface_get_data(surface));
+    raiseLastGLError();
 }
 
 }

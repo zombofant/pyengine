@@ -37,7 +37,7 @@ EventLoop::EventLoop(DisplayHandle display, EventSinkHandle eventSink):
     _eventSink(eventSink),
     _deltaT(0.01),
     _terminated(false),
-    _currentFPS(0.0)
+    currentFPS(0.0)
 {
     
 }
@@ -80,7 +80,8 @@ void EventLoop::run()
             const TimeFloat fpsInterval = timeIntervalToDouble(frameCounterStart, currentUpdate);
             
             if (fpsInterval >= 1.0) {
-                _currentFPS = (double)(frameCount) / fpsInterval;
+                currentFPS = (double)(frameCount) / fpsInterval;
+                std::cerr << "fps: " << currentFPS << std::endl;
                 frameCounterStart = currentUpdate;
                 frameCount = 0;
             }

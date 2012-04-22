@@ -271,3 +271,6 @@ class Application(RootWidget, CUni.Window.EventSink):
 
     def handleWMQuit(self):
         self._eventLoop.terminate()
+
+    def getCurrentFPS(self):
+        return self._eventLoop.CurrentFPS
