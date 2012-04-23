@@ -22,10 +22,13 @@ void glTexCairoSurfaceSubImage2D(GLenum target,
 
     GLenum glType = GL_UNSIGNED_BYTE;
     GLenum glFormat;
-    if (fmt == CAIRO_FORMAT_ARGB32) {
-        glFormat = GL_RGBA;
-    } else if (fmt == CAIRO_FORMAT_RGB24) {
-        glFormat = GL_RGB;
+    if ((fmt == CAIRO_FORMAT_ARGB32) || (fmt == CAIRO_FORMAT_RGB24)) {
+        // cairo people are strange. They store RGB24 in 32bitse without putting
+        // that in the format name...
+        // so basically we have to rely on cairo to null the alpha channel bits
+        // for RGB24 formats, otherwise we'll get unexpected invalid data in the
+        // alpha channel.
+        glFormat = GL_BGRA;
     } else {
         throw Exception("Got unsupported image surface format");
     }
