@@ -5,6 +5,7 @@ cmake_minimum_required(VERSION 2.6)
         add_custom_target(${TARGET_NAME}
         COMMAND sphinx-build -b ${BUILDER} . sphinx/build/${BUILDER}
             WORKING_DIRECTORY docs
+            DEPENDS doxygen
             COMMENT ${COMMENT_STR}
         )
     endmacro(add_sphinx_target)
@@ -118,6 +119,11 @@ cmake_minimum_required(VERSION 2.6)
     target_link_libraries(${EXEC} ${PYUNI_MODULES} ${CONTRIB_MODULES} ${LIBS})
 
 # documentation targets
+    add_custom_target(doxygen
+        COMMAND doxygen docs/doxygen.conf
+        COMMENT "Build doxygen xml files used by sphinx/breathe."
+    )
+
     add_sphinx_target(docs-html
         html
         "Build html documentation"
