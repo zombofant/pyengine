@@ -65,6 +65,7 @@ cmake_minimum_required(VERSION 2.6)
     # pycairo
     set(PYTHON_EXEC "/usr/bin/python2")
     find_package(pycairo REQUIRED)
+    include_directories(${pycairo_INCLUDE_DIRS})
 
     # boost
     find_package(Boost COMPONENTS system python REQUIRED)
