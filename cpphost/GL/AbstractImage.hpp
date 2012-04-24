@@ -28,6 +28,8 @@ named in the AUTHORS file.
 
 #include "Base.hpp"
 
+#include <cairo/cairo.h>
+
 namespace PyUni {
 namespace GL {
 
@@ -46,6 +48,26 @@ struct AbstractImage2D
         virtual void texSubImage2D(const GLenum target,
             const GLint level, const GLint internalFormat,
             const GLint x, const GLint y) const = 0;
+
+        /**
+         * @brief Create a cairo ImageSurface from the data and return
+         * the pointer. 
+         *
+         * Contents are copied on creation, so this operation should
+         * be considered expensive. This will only work if the given
+         * OpenGL format is one of `GL_RGBA`, `GL_BGRA` or `GL_RGB`,
+         * otherwise an exception is thrown.
+         *
+         * For `GL_RGBA`, it is neccessary to reverse the bytes order,
+         * making it an even more expensive operation than it already
+         * is.
+         *
+         * For `GL_RGB`, the data needs to be expanded to 32bit words
+         * instead of 24bit words, so this is also expensive.
+         *
+         * The cheapest source format is `GL_ABGR`.
+         */
+        cairo_surface_t *cairoSurface();
 
 };
 

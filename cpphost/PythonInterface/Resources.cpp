@@ -25,6 +25,7 @@ named in the AUTHORS file.
 **********************************************************************/
 #include "Resources.hpp"
 
+#include "GL.hpp"
 #include <boost/shared_ptr.hpp>
 
 namespace PyUni {
@@ -34,7 +35,7 @@ using namespace PyUni::Resources;
 
 BOOST_PYTHON_MODULE(_cuni_resources)
 {    
-    class_<Image, ImageHandle, boost::noncopyable>("Image", no_init)
+    class_<Image, ImageHandle, bases<AbstractImage2D>, boost::noncopyable>("Image", no_init)
         .def("dropData", &Image::dropData)
         .def("texImage2D", &Image::texImage2D)
         .def("texSubImage2D", &Image::texSubImage2D)

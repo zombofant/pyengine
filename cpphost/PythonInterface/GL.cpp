@@ -25,6 +25,7 @@ named in the AUTHORS file.
 **********************************************************************/
 #include "CairoHelpers.hpp"
 #include "GL.hpp"
+#include "GL/AbstractImage.hpp"
 
 #include <glew.h>
 #include <iostream>
@@ -178,6 +179,10 @@ void __bp_glTexCairoSurfaceSubImage2D(GLenum target,
     glTexCairoSurfaceSubImage2D(target, level, xoffset, yoffset, surface);
 }
 
+PyObject *__bp_AbstractImage2D__cairoSurface(AbstractImage2DHandle image) {
+    return PycairoSurface_FromSurface(image->cairoSurface(), 0);
+}
+
 BOOST_PYTHON_MODULE(_cuni_gl)
 {
     /* Base.hpp */
@@ -323,6 +328,10 @@ BOOST_PYTHON_MODULE(_cuni_gl)
     class_<TransformGroup, bases<ParentGroup>, TransformGroupHandle, boost::noncopyable>("TransformGroup", no_init)
         .def("setUp", &TransformGroup::setUp)
         .def("tearDown", &TransformGroup::tearDown)
+    ;
+
+    class_<AbstractImage2D, AbstractImage2DHandle, boost::noncopyable>("AbstractImage2D", no_init)
+        .def("cairoSurface", &__bp_AbstractImage2D__cairoSurface)
     ;
 
     def("glTexCairoSurfaceSubImage2D", &__bp_glTexCairoSurfaceSubImage2D);
