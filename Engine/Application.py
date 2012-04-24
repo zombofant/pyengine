@@ -61,7 +61,6 @@ class Application(RootWidget, CUni.Window.EventSink):
         self._aggregatedTime = 0.
 
         self._geometryBuffer = CGL.GeometryBuffer(CGL.VertexFormat("v:2;t0:2;c:4"), GL_DYNAMIC_DRAW)
-        self.updateGeometryBuffer()
 
         self._render = super(Application, self).render
 

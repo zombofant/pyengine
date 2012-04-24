@@ -64,6 +64,7 @@ class AbstractWidget(object):
         self._styleClasses = ClassSet()
         self._rootWidget = None
         self._geometryBuffer = None
+        self._cairoContext = None
         
     def _absMetricsChanged(self):
         self._invalidateAlignment()
@@ -92,7 +93,8 @@ class AbstractWidget(object):
         pass
 
     def render(self):
-        buffer = self._geometryBuffer
+        ctx = self._cairoContext
+        """buffer = self._geometryBuffer
         if self._invalidatedGeometry:
             self.realign()
             faceBuffer = FaceBuffer()
@@ -121,8 +123,9 @@ class AbstractWidget(object):
                 tex.bind()
             else:
                 self._rootWidget._shader.bind(texturing=False, upsideDown=False).id
-            buffer.draw(vertexList, GL_TRIANGLES)
-            
+            buffer.draw(vertexList, GL_TRIANGLES)"""
+
+        self.ComputedStyle.inCairo(self.AbsoluteRect, ctx)
 
     def onKeyDown(self, symbol, modifiers):
         return False
@@ -222,6 +225,7 @@ class Widget(AbstractWidget):
         parent.add(self)
         self._rootWidget = parent._rootWidget
         self._geometryBuffer = self._rootWidget._geometryBuffer
+        self._cairoContext = self._rootWidget._cairoContext
 
     def _requireParent(self):
         if self._parent is None:
@@ -232,9 +236,11 @@ class Widget(AbstractWidget):
         if self._parent is not None:
             self._rootWidget = self._parent.getRootWidget()
             self._geometryBuffer = self._rootWidget._geometryBuffer
+            self._cairoContext = self._rootWidget._cairoContext
         else:
             self._rootWidget = None
             self._geometryBuffer = None
+            self._cairoContext = None
 
     def hitTest(self, p):
         return self if p in self.AbsoluteRect else None
@@ -337,9 +343,10 @@ class WidgetContainer(object):
             else:
                 yield child
 
-    def updateGeometryBuffer(self):
+    def updateRenderingContext(self):
         for widget in self.treeDepthFirst():
             widget._geometryBuffer = widget._rootWidget._geometryBuffer
+            widget._cairoContext = widget._rootWidget._cairoContext
 
 
 class ParentWidget(Widget, WidgetContainer):
