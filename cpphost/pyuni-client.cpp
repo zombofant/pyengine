@@ -44,6 +44,8 @@ int main(int argc, char** argv) {
         PyUni::addCUniToInittab();
         Py_Initialize();
         PySys_SetArgv(argc, argv);
+        // this must happen after python was initialized. We're loading
+        // a module here ;)
         PyUni::setupCairoHelpers();
 
         boost::python::object cuni_window = boost::python::import("_cuni_window");
@@ -52,6 +54,10 @@ int main(int argc, char** argv) {
         boost::python::object main = boost::python::import("__main__");
         boost::python::object main_namespace = main.attr("__dict__");
 
+        // FIXME: Is this possible without explizit reference to the
+        // platform?
+        // Boost needs the explicit type for casting, but it would be
+        // nice to force it somehow to do the right thing.
         PyUni::X11Display *x11 = new PyUni::X11Display();
         disp = x11;
 
