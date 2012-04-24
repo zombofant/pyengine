@@ -97,9 +97,9 @@ void EventLoop::run()
                 lastUpdate = currentUpdate;
                 eventSink->frameUnsynced(interval);
                 frameCount++;
+            } else {
+                usleep(1);
             }
-            
-            usleep(1);
         }
     } catch (boost::python::error_already_set) {
         std::cerr << "During mainloop call-in: " << std::endl;
