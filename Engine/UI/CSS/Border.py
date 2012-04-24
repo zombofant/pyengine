@@ -272,3 +272,33 @@ class Border(BorderComponent):
                 prevFill = fill
             fill.geometryForRect(rect, faceBuffer)
         return box
+
+    def inCairo(self, rect, cr):
+        """
+        Execute all instructions neccessary to draw this border as the
+        inner border in *rect* on cairo context *cr*.
+        """
+
+        box = self.getBox()
+        rectsAndEdges = zip(
+            rect.cut(box),
+            iterutils.interleave((edge.Fill for edge in self._edges), self._corners)
+        )
+        prevFill = None
+        for rect, fill in rectsAndEdges:
+            if rect is NotARect:
+                continue
+            if fill is None:
+                fill = prevFill
+            else:
+                prevFill = fill
+            fill.inCairo(rect, cr)
+
+    def cairoGroupForRect(self, rect, cr):
+        """
+        Create and return a cairo group for this border as inner border
+        in *rect*, using *cr* as cairo context.
+        """
+        cr.push_group()
+        self.inCairo(rect, cr)
+        return cr.pop_group()

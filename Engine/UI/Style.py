@@ -362,4 +362,9 @@ class Style(object):
         self.Background.geometryForRect(clientRect, faceBuffer)
         clientRect.shrink(self.Padding)
         return clientRect
-        
+
+    def inCairo(self, rect, ctx):
+        clientRect = copy.copy(rect)
+        self.Border.inCairo(rect, ctx)
+        clientRect.shrink(self.Border.getBox())
+        self.Background.inCairo(clientRect, ctx)
