@@ -33,6 +33,7 @@ namespace PyUni {
 
 using namespace boost::python;
 using namespace PyUni::Resources;
+using namespace PyUni::GL;
 
 BOOST_PYTHON_MODULE(_cuni_resources)
 {    

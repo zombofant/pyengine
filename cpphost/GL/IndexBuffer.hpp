@@ -41,8 +41,6 @@ named in the AUTHORS file.
 
 namespace PyUni {
 namespace GL {
-    
-using namespace PyUni;
 
 struct IndexEntry {
     VertexIndex start;

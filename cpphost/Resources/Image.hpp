@@ -35,12 +35,10 @@ named in the AUTHORS file.
 namespace PyUni {
 namespace Resources {
 
-using namespace PyUni::GL;
-
 class Image;
 typedef boost::shared_ptr<Image> ImageHandle;
 
-class Image: public AbstractImage2D
+class Image: public PyUni::GL::AbstractImage2D
 {
     public:
         Image(GLvoid *pixelData,

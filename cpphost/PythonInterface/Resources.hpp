@@ -29,8 +29,6 @@ named in the AUTHORS file.
 
 namespace PyUni {
 
-using namespace PyUni::Resources;
-
 void addResourcesToInittab();
 
 }

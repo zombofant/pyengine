@@ -35,9 +35,7 @@ named in the AUTHORS file.
 namespace PyUni {
 namespace SceneGraph {
 
-using namespace GL;
-
-typedef std::unordered_map<StateGroupHandle, VertexIndexListHandle> VertexMap;
+typedef std::unordered_map<PyUni::GL::StateGroupHandle, PyUni::GL::VertexIndexListHandle> VertexMap;
 typedef boost::shared_ptr<VertexMap> VertexMapHandle;
 
 class Leaf;

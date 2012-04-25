@@ -45,8 +45,6 @@ named in the AUTHORS file.
 
 namespace PyUni {
 namespace GL {
-    
-using namespace PyUni;
 
 typedef float GLVertexFloat;
 typedef GLsizei VertexIndex;

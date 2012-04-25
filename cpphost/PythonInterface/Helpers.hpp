@@ -31,19 +31,19 @@ named in the AUTHORS file.
 
 namespace PyUni {
 
-using namespace boost::python;
+namespace bpy = boost::python;
 
 template <class KeyT>
 void KeyError(const KeyT &key)
 {
     PyErr_SetString(PyExc_KeyError, "Key not found");
-    throw_error_already_set();
+    bpy::throw_error_already_set();
 }
 
 void ValueError(const std::string &message)
 {
     PyErr_SetString(PyExc_ValueError, message.c_str());
-    throw_error_already_set();
+    bpy::throw_error_already_set();
 }
 
 template<class Container, class Iterator>
@@ -66,7 +66,7 @@ class AbstractIteratorWrapper
         void StopIteration()
         {
             PyErr_SetString(PyExc_StopIteration, "No more data.");
-            throw_error_already_set();
+            bpy::throw_error_already_set();
         }
 };
 
@@ -140,11 +140,14 @@ class MapItemsIterator: public AbstractIteratorWrapper<Container, Iterator>
     
         }
     public:
-        tuple next()
+        bpy::tuple next()
         {
             if (this->_it == this->_end)
                 this->StopIteration();
-            tuple result = make_tuple(object(this->_it->first), object(this->_it->second));
+            bpy::tuple result = bpy::make_tuple(
+                bpy::object(this->_it->first),
+                bpy::object(this->_it->second)
+            );
             this->_it++;
             return result;
         }
@@ -156,14 +159,14 @@ struct IteratorRegister
     typedef typename IteratorWrapperT::IteratorT IteratorT;
     typedef typename IteratorWrapperT::ContainerT ContainerT;
     
-    inline static object passThrough(const object &o)
+    inline static bpy::object passThrough(const bpy::object &o)
     {
         return o;
     }
     
     static void wrap(const char* pythonName)
     {
-        class_<IteratorWrapperT>(pythonName, no_init)
+        bpy::class_<IteratorWrapperT>(pythonName, bpy::no_init)
             .def("__iter__", &passThrough)
             .def("next", &IteratorWrapperT::next)
         ;
