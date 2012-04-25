@@ -82,6 +82,7 @@ void EventLoop::run()
             if (fpsInterval >= 1.0) {
                 _currentFPS = (double)(frameCount) / fpsInterval;
                 frameCounterStart = currentUpdate;
+                frameCount = 0;
             }
             
             if (interval >= 0.01) {
