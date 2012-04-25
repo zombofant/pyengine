@@ -27,9 +27,10 @@ named in the AUTHORS file.
 #define _PYUNI_SCENEGRAPH_LEAF_H
 
 #include <unordered_map>
-#include "Spatial.hpp"
+
 #include "GL/GeometryBuffer.hpp"
 #include "GL/StateManagement.hpp"
+#include "Spatial.hpp"
 
 namespace PyUni {
 namespace SceneGraph {

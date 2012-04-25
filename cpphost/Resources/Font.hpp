@@ -30,9 +30,9 @@ named in the AUTHORS file.
 
 #include <ft2build.h>
 #include <freetype/freetype.h>
+#include <boost/weak_ptr.hpp>
 
 #include "IO/Stream.hpp"
-#include <boost/weak_ptr.hpp>
 
 namespace PyUni {
 namespace Resources {

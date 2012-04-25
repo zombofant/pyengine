@@ -25,8 +25,9 @@ named in the AUTHORS file.
 **********************************************************************/
 #include "Resources.hpp"
 
-#include "GL.hpp"
 #include <boost/shared_ptr.hpp>
+
+#include "GL.hpp"
 
 namespace PyUni {
 

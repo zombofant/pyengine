@@ -24,9 +24,10 @@ For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
 #include "Image.hpp"
-#include "IO/PNGIOWrapper.hpp"
 
 #include <cassert>
+
+#include "IO/PNGIOWrapper.hpp"
 
 namespace PyUni {
 namespace Resources {

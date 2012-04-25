@@ -25,10 +25,10 @@ named in the AUTHORS file.
 **********************************************************************/
 #include "RenderGraph.hpp"
 
-#include "RenderGraph/DeferredShading.hpp"
-
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
+
+#include "RenderGraph/DeferredShading.hpp"
 
 namespace PyUni {
 

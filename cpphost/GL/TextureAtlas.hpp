@@ -28,13 +28,12 @@ named in the AUTHORS file.
 
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
-
-#include "Base.hpp"
-#include "GeometryBuffer.hpp"
-#include "AbstractImage.hpp"
 #include "Contrib/BinPack/SkylineBinPack.h"
 
 #include "Misc/Int.hpp"
+#include "Base.hpp"
+#include "GeometryBuffer.hpp"
+#include "AbstractImage.hpp"
 
 namespace PyUni {
 namespace GL {

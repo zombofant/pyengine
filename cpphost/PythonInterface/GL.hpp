@@ -26,8 +26,9 @@ named in the AUTHORS file.
 #ifndef _PYUNI_PYTHON_GL_H
 #define _PYUNI_PYTHON_GL_H
 
-#include <boost/python.hpp>
 #include <string>
+
+#include <boost/python.hpp>
 
 #include "GL/Base.hpp"
 #include "GL/StateManagement.hpp"

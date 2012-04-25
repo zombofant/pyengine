@@ -23,14 +23,15 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#include "CairoHelpers.hpp"
 #include "GL.hpp"
-#include "GL/AbstractImage.hpp"
 
-#include <glew.h>
 #include <iostream>
 
+#include <GL/glew.h>
 #include <boost/python/slice.hpp>
+
+#include "GL/AbstractImage.hpp"
+#include "CairoHelpers.hpp"
 
 namespace PyUni {
 

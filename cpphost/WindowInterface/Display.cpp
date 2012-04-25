@@ -23,11 +23,10 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-
-#include <stdint.h>
-#include <stdio.h>
-
 #include "Display.hpp"
+
+#include <cstdint>
+#include <cstdio>
 
 namespace PyUni {
 

@@ -23,12 +23,12 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-
 #ifndef _PYUNI_MATH_VECTOR_TEMPLATES_H
 #define _PYUNI_MATH_VECTOR_TEMPLATES_H
 
-#include "Vectors.hpp"
 #include <iostream>
+
+#include "Vectors.hpp"
 
 namespace PyUni {
     

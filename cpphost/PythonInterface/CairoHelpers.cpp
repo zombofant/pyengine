@@ -24,8 +24,9 @@ For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
 #include "CairoHelpers.hpp"
-#include <cairo/cairo.h>
+
 #include <Python.h>
+#include <cairo/cairo.h>
 
 namespace PyUni {
 

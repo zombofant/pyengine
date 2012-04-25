@@ -24,9 +24,10 @@ For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
 #include "TextureAtlas.hpp"
-#include "Misc/Exception.hpp"
 
 #include <cstring>
+
+#include "Misc/Exception.hpp"
 
 namespace PyUni {
 namespace GL {

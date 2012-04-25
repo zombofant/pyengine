@@ -23,11 +23,11 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-
 #ifndef _PYUNI_SCENEGRAPH_NODE_H
 #define _PYUNI_SCENEGRAPH_NODE_H
 
 #include <vector>
+
 #include <boost/shared_ptr.hpp>
 
 #include "Spatial.hpp"

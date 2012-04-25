@@ -23,13 +23,14 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
+#include "Window.hpp"
+
 #include <vector>
+
 #include <boost/shared_ptr.hpp>
 
 #include "WindowInterface/X11/X11Display.hpp"
 #include "WindowInterface/X11/X11Window.hpp"
-
-#include "Window.hpp"
 
 using namespace boost::python;
 

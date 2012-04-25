@@ -23,9 +23,10 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#include "Base.hpp"
 #include "CairoUtils.hpp"
+
 #include "Misc/Exception.hpp"
+#include "Base.hpp"
 
 namespace PyUni {
 namespace GL {

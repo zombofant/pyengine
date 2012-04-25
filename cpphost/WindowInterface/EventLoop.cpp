@@ -23,12 +23,14 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-
 #include "EventLoop.hpp"
-#include "Display.hpp"
-#include "Misc/Exception.hpp"
+
 #include <iostream>
+
 #include <boost/python.hpp>
+
+#include "Misc/Exception.hpp"
+#include "Display.hpp"
 
 namespace PyUni {
 

@@ -23,10 +23,9 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-
-#include <assert.h>
-
 #include "Node.hpp"
+
+#include <cassert>
 
 namespace PyUni {
 namespace SceneGraph {

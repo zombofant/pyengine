@@ -26,8 +26,8 @@ named in the AUTHORS file.
 #ifndef _PYUNI_GL_CAIRO_UTILS_H
 #define _PYUNI_GL_CAIRO_UTILS_H
 
+#include <GL/glew.h>
 #include <cairo/cairo.h>
-#include <glew.h>
 
 namespace PyUni {
 namespace GL {

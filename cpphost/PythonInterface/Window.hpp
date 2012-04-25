@@ -26,8 +26,9 @@ named in the AUTHORS file.
 #ifndef _PYUNI_PYTHON_WINDOW_H
 #define _PYUNI_PYTHON_WINDOW_H
 
-#include <boost/python.hpp>
 #include <string>
+
+#include <boost/python.hpp>
 
 #include "WindowInterface/Display.hpp"
 #include "WindowInterface/Window.hpp"

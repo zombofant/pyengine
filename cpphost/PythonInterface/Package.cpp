@@ -31,8 +31,6 @@ named in the AUTHORS file.
 #include "SceneGraph.hpp"
 #include "RenderGraph.hpp"
 
-#include <iostream>
-
 namespace PyUni {
 
 using namespace boost::python;
@@ -152,7 +150,6 @@ sizeuint PyStream::read(void *data, const sizeuint length)
     }
     else
     {
-        std::cerr << bytes << std::endl;
         Py_XDECREF(bytes);
         throw StreamReadError("Read failed: Python did not return a valid object.");
     }

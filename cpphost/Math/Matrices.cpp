@@ -23,11 +23,10 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
+#include <cmath>
+#include <cstring>
 
 #include "Matrices.hpp"
-#include <cmath>
-#include <string.h>
-
 #include "MatrixTemplates.hpp"
 
 namespace PyUni {

@@ -25,13 +25,13 @@ named in the AUTHORS file.
 **********************************************************************/
 #include "AbstractImage.hpp"
 
+#include <cstring>
+#include <iostream>
+
+#include <GL/glew.h>
+
 #include "Misc/Exception.hpp"
 #include "Misc/Int.hpp"
-
-#include <string.h>
-#include <glew.h>
-
-#include <iostream>
 
 namespace PyUni {
 namespace GL {

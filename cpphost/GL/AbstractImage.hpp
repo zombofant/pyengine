@@ -26,9 +26,9 @@ named in the AUTHORS file.
 #ifndef _PYUNI_GL_ABSTRACT_IMAGE_H
 #define _PYUNI_GL_ABSTRACT_IMAGE_H
 
-#include "Base.hpp"
-
 #include <cairo/cairo.h>
+
+#include "Base.hpp"
 
 namespace PyUni {
 namespace GL {

@@ -23,15 +23,14 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-
 #ifndef _PYUNI_X11_WINDOW_H
 #define _PYUNI_X11_WINDOW_H
 
-#include <X11/Xlib.h>
 #include <GL/glx.h>
+#include <X11/Xlib.h>
 #include <X11/extensions/Xinerama.h>
 
-#include "../Window.hpp"
+#include "WindowInterface/Window.hpp"
 
 namespace PyUni {
 class X11Window : public Window {

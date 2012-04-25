@@ -23,15 +23,14 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-
-#include <stdlib.h>
-#include <stdio.h>
-
 #include "X11Display.hpp"
-#include "X11Window.hpp"
-#include "../Display.hpp"
 
+#include <cstdlib>
+#include <cstdio>
 #include <iostream>
+
+#include "WindowInterface/Display.hpp"
+#include "X11Window.hpp"
 
 namespace PyUni {
 

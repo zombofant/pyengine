@@ -27,6 +27,7 @@ named in the AUTHORS file.
 #define _PYUNI_RENDERGRAPH_DEFERRED_SHADING_H
 
 #include <GL/glew.h>
+
 #include "Stage.hpp"
 
 namespace PyUni {

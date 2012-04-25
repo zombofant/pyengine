@@ -27,6 +27,7 @@ named in the AUTHORS file.
 #define _PYUNI_UTILS_BUFFER_MAP_H
 
 #include <cstddef>
+
 #include <boost/shared_ptr.hpp>
 
 namespace PyUni {

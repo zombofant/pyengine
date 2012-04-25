@@ -27,6 +27,7 @@ named in the AUTHORS file.
 #define _PYUNI_PYTHON_RENDER_GRAPH_H
 
 #include <boost/python.hpp>
+
 #include "RenderGraph/Stage.hpp"
 
 namespace PyUni {

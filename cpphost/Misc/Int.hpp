@@ -23,9 +23,10 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-
 #include <cstddef>
 #include <cstdint>
+
+// FIXME: find size_t somewhere else!
 #include <unistd.h>
 
 namespace PyUni {

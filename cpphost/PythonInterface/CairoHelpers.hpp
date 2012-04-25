@@ -26,8 +26,8 @@ named in the AUTHORS file.
 #ifndef _PYUNI_PYTHON_CAIRO_HELPERS_H
 #define _PYUNI_PYTHON_CAIRO_HELPERS_H
 
-#include <pycairo/pycairo.h>
 #include <boost/python.hpp>
+#include <pycairo/pycairo.h>
 
 namespace PyUni {
 
