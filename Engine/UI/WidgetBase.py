@@ -79,7 +79,7 @@ class AbstractWidget(object):
         self._geometry = None
 
     def _relMetricsChanged(self):
-        self._invaliateAlignment()
+        self._invalidateAlignment()
 
     def realign(self):
         if self._invalidatedAlignment:
