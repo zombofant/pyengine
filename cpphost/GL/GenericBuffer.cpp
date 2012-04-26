@@ -69,7 +69,7 @@ void GenericBuffer::doFlushAll() {
 
 void GenericBuffer::doFlushRange(const GLsizei minItem, const GLsizei count) {
     std::cerr << minItem << " " << count << " " << itemSize << std::endl;
-    glBufferSubData(bufferKind, minItem * itemSize, count * itemSize, data);
+    glBufferSubData(bufferKind, minItem * itemSize, count * itemSize, &data[minItem * itemSize]);
     raiseLastGLError();
 }
 
