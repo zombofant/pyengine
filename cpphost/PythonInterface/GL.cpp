@@ -185,6 +185,7 @@ BOOST_PYTHON_MODULE(_cuni_gl)
         .def("bind", &GenericBuffer::bind)
         .def("unbind", &GenericBuffer::unbind)
         .def("flush", &GenericBuffer::flush)
+        .def("readBack", &GenericBuffer::readBack)
     ;
     
 
