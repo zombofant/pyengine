@@ -70,7 +70,7 @@ void GenericBuffer::doFlushAll() {
 
 void GenericBuffer::doFlushRange(const GLsizei minItem, const GLsizei count) {
     std::cerr << minItem << " " << count << " " << itemSize << std::endl;
-    glBufferSubData(bufferKind, minItem * itemSize, count * itemSize, data);
+    glBufferSubData(bufferKind, minItem * itemSize, count * itemSize, &data[minItem * itemSize]);
     raiseLastGLError();
 }
 
@@ -99,11 +99,11 @@ void GenericBuffer::freeBuffer() {
 
 void GenericBuffer::initBuffer() {
     glGenBuffers(1, &glID);
-    std::cout << "initialized buffer " << glID << " capacity is currently " << capacity << std::endl;
+    // std::cout << "initialized buffer " << glID << " capacity is currently " << capacity << std::endl;
     raiseLastGLError();
     if (capacity > 0) {
         glBindBuffer(bufferKind, glID);
-        std::cout << "writing " << capacity * itemSize << " bytes ( = " << capacity << " items) to the buffer as initalization" << std::endl;
+        // std::cout << "writing " << capacity * itemSize << " bytes ( = " << capacity << " items) to the buffer as initalization" << std::endl;
         raiseLastGLError();
         glBufferData(bufferKind, capacity * itemSize, data, bufferPurpose);
         raiseLastGLError();
@@ -149,7 +149,7 @@ void GenericBuffer::readBack() {
         return;
     }
     bind();
-    std::cout << "reading back " << capacity * itemSize << " bytes from GPU buffer #" << glID << std::endl;
+    // std::cout << "reading back " << capacity * itemSize << " bytes from GPU buffer #" << glID << std::endl;
     glGetBufferSubData(bufferKind, 0, capacity * itemSize, data);
 }
 
