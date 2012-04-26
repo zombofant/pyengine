@@ -55,12 +55,12 @@ void GenericIndexBuffer::clear() {
 
 void GenericIndexBuffer::draw(const GLenum mode) {
     glDrawElements(mode, count, GL_UNSIGNED_INT, 0);
-    std::cout << count << std::endl;
+    // std::cout << count << std::endl;
 }
 
 void GenericIndexBuffer::drawUnbound(const GLenum mode) {
     glDrawElements(mode, count, GL_UNSIGNED_INT, data);
-    std::cout << count << std::endl;
+    // std::cout << count << std::endl;
 }
 
 void GenericIndexBuffer::dump() {
@@ -174,7 +174,7 @@ const IndexEntryHandle StaticIndexBuffer::add(const VertexIndexListHandle vertic
     count += entry->count;
     if (glID != 0) {
         glBindBuffer(bufferKind, glID);
-        std::cout << "writethrough" << std::endl;
+        // std::cout << "writethrough" << std::endl;
         glBufferSubData(bufferKind, entry->start * sizeof(GLuint), entry->count * sizeof(GLuint), (unsigned char *)( ((GLuint *)dataptr)+entry->start));
         glBindBuffer(bufferKind, 0);
     }
