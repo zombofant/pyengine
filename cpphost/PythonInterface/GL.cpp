@@ -136,7 +136,7 @@ PyObject *AttributeSlice_get(SliceT *slice)
 }
 
 template <class SliceT>
-PyObject *AttributeSlice_set(SliceT *slice, list bpList)
+void AttributeSlice_set(SliceT *slice, list bpList)
 {
     const GLsizei len = slice->getLength() * slice->getAttributeLength();
     PyObject *pyList = bpList.ptr();
@@ -161,7 +161,6 @@ PyObject *AttributeSlice_set(SliceT *slice, list bpList)
     }
     slice->set(buffer);
     free(buffer);
-    return pyList;
 }
 
 BOOST_PYTHON_MODULE(_cuni_gl)
