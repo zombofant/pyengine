@@ -41,6 +41,13 @@ cmake_minimum_required(VERSION 2.6)
     include_directories(${OpenGL_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS})
     set(LIBS ${LIBS} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} ${GLEW_LIBRARY})
 
+    # glib
+    find_package(glib REQUIRED)
+    include_directories(${glib_INCLUDE_DIRS})
+    set(LIBS ${LIBS}
+        ${glib_LIBRARIES}
+    )
+
     # pango
     find_package(Pango REQUIRED)
     include_directories(${Pango_INCLUDE_DIRS})

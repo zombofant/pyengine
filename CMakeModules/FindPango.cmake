@@ -1,6 +1,6 @@
 
-find_path(Pango_INCLUDE_DIRS pango-1.0
-    PATH_SUFFIXES include
+find_path(Pango_INCLUDE_DIRS pango/pango.h
+    PATH_SUFFIXES include/pango-1.0 include
     PATHS
         /usr
         /usr/local

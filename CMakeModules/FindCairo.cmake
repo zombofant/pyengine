@@ -1,5 +1,5 @@
 
-find_path(Cairo_INCLUDE_DIRS cairo
+find_path(Cairo_INCLUDE_DIRS cairo/cairo.h
     PATH_SUFFIXES include
     PATHS
         /usr
