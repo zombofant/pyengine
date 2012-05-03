@@ -13,8 +13,8 @@ find_path(glib_INCLUDE_DIRS2 glibconfig.h
         /usr/local
 )
 
-find_library(glib_LIBRARY
-    NAMES g
+find_library(glib_LIBRARIES
+    NAMES gobject-2.0
     PATH_SUFFIXES
         lib64 lib
     PATHS
@@ -23,7 +23,7 @@ find_library(glib_LIBRARY
 )
 
 set(glib_FOUND "NO")
-if (glib_INCLUDE_DIRS AND glib_LIBRARY)
+if (glib_INCLUDE_DIRS AND glib_LIBRARIES)
     set(glib_FOUND "YES")
     set(glib_INCLUDE_DIRS ${glib_INCLUDE_DIRS} ${glib_INCLUDE_DIRS2})
-endif (glib_INCLUDE_DIRS AND glib_LIBRARY)
+endif (glib_INCLUDE_DIRS AND glib_LIBRARIES)
