@@ -25,6 +25,7 @@ named in the AUTHORS file.
 **********************************************************************/
 #include "Package.hpp"
 #include "CairoHelpers.hpp"
+#include "Pango.hpp"
 #include "Window.hpp"
 #include "GL.hpp"
 #include "Resources.hpp"
@@ -228,6 +229,7 @@ BOOST_PYTHON_MODULE(_cuni)
 void addCUniToInittab()
 {
     PyImport_AppendInittab("_cuni", &init_cuni);
+    addPangoToInittab();
     addWindowToInittab();
     addGLToInittab();
     addResourcesToInittab();
