@@ -45,7 +45,9 @@ class PangoCairoContext {
         PangoContext *_ctx;
     public:
         PangoContext *getPangoContext();
+        double getResolution();
         void layoutPath(PangoLayoutHandle layout);
+        void setResolution(double dpi);
         void showLayout(PangoLayoutHandle layout);
         void updateContext();
 };
@@ -60,9 +62,11 @@ class PangoLayout {
         ::PangoLayout *_layout;
     public:
         void contextChanged();
-    
+
+        PangoAlignment getAlignment();
         PangoEllipsizeMode getEllipsize();
         int getHeight();
+        bool getJustify();
         ::PangoLayout *getPangoLayout();
         const char *getText();
         int getWidth();
@@ -71,8 +75,10 @@ class PangoLayout {
         bool isWrapped();
         bool isEllipsized();
 
+        void setAlignment(PangoAlignment alignment);
         void setEllipsize(PangoEllipsizeMode ellipsize);
         void setHeight(int height);
+        void setJustify(bool justify);
         void setMarkup(const char *markup, int length);
         void setText(const char *text, int length);
         void setWidth(int width);

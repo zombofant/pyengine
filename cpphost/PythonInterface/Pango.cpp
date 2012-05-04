@@ -53,9 +53,19 @@ PangoContext *PangoCairoContext::getPangoContext()
     return _ctx;
 }
 
+double PangoCairoContext::getResolution()
+{
+    return pango_cairo_context_get_resolution(_ctx);
+}
+
 void PangoCairoContext::layoutPath(PangoLayoutHandle layout)
 {
     pango_cairo_layout_path(_cairoCtx, layout->getPangoLayout());
+}
+
+void PangoCairoContext::setResolution(double dpi)
+{
+    pango_cairo_context_set_resolution(_ctx, dpi);
 }
 
 void PangoCairoContext::showLayout(PangoLayoutHandle layout)
@@ -75,7 +85,7 @@ PangoLayout::PangoLayout(PangoCairoContextHandle ctx):
 {
     PangoFontDescription *descr = pango_font_description_new();
     pango_font_description_set_family(descr, "Cantarell");
-    pango_font_description_set_size(descr, 10*PANGO_SCALE);
+    pango_font_description_set_size(descr, 12*PANGO_SCALE);
     pango_layout_set_font_description(_layout, descr);
     pango_font_description_free(descr);
 }
@@ -90,6 +100,11 @@ void PangoLayout::contextChanged()
     pango_layout_context_changed(_layout);
 }
 
+PangoAlignment PangoLayout::getAlignment()
+{
+    return pango_layout_get_alignment(_layout);
+}
+
 PangoEllipsizeMode PangoLayout::getEllipsize()
 {
     return pango_layout_get_ellipsize(_layout);
@@ -98,6 +113,11 @@ PangoEllipsizeMode PangoLayout::getEllipsize()
 int PangoLayout::getHeight()
 {
     return pango_layout_get_height(_layout);
+}
+
+bool PangoLayout::getJustify()
+{
+    return (pango_layout_get_justify(_layout) == FALSE ? false : true);
 }
 
 ::PangoLayout *PangoLayout::getPangoLayout()
@@ -130,6 +150,11 @@ bool PangoLayout::isEllipsized()
     return pango_layout_is_ellipsized(_layout);
 }
 
+void PangoLayout::setAlignment(PangoAlignment alignment)
+{
+    pango_layout_set_alignment(_layout, alignment);
+}
+
 void PangoLayout::setEllipsize(PangoEllipsizeMode ellipsize)
 {
     pango_layout_set_ellipsize(_layout, ellipsize);
@@ -138,6 +163,11 @@ void PangoLayout::setEllipsize(PangoEllipsizeMode ellipsize)
 void PangoLayout::setHeight(int height)
 {
     pango_layout_set_height(_layout, height);
+}
+
+void PangoLayout::setJustify(bool justify)
+{
+    pango_layout_set_justify(_layout, (justify ? TRUE : FALSE));
 }
 
 void PangoLayout::setMarkup(const char *markup, int length)
@@ -230,18 +260,43 @@ BOOST_PYTHON_MODULE(_cuni_pango)
         .def("layoutPath", &PangoCairoContext::layoutPath)
         .def("showLayout", &PangoCairoContext::showLayout)
         .def("updateContext", &PangoCairoContext::updateContext)
+        .add_property("Resolution", &PangoCairoContext::getResolution, &PangoCairoContext::setResolution)
     ;
 
     class_<PangoLayout, PangoLayoutHandle>("PangoLayout", init<PangoCairoContextHandle>())
         .def("contextChanged", &PangoLayout::contextChanged)
         .def("setMarkup", &bp_PangoLayout_setMarkup)
+        .add_property("Alignment", &PangoLayout::getAlignment, &PangoLayout::setAlignment)
         .add_property("Ellipsize", &PangoLayout::getEllipsize, &PangoLayout::setEllipsize)
         .add_property("Height", &PangoLayout::getHeight, &PangoLayout::setHeight)
+        .add_property("Justify", &PangoLayout::getJustify, &PangoLayout::setJustify)
         .add_property("Text", bp_PangoLayout_getText, bp_PangoLayout_setText)
         .add_property("Width", &PangoLayout::getWidth, &PangoLayout::setWidth)
         .add_property("Wrap", &PangoLayout::getWrap, &PangoLayout::setWrap)
         .add_property("IsEllipsized", &PangoLayout::isEllipsized)
         .add_property("IsWrapped", &PangoLayout::isWrapped)
+    ;
+
+    object module = scope();
+    module.attr("Scale") = PANGO_SCALE;
+
+    enum_<PangoEllipsizeMode>("EllipsizeMode")
+        .value("None", PANGO_ELLIPSIZE_NONE)
+        .value("Start", PANGO_ELLIPSIZE_START)
+        .value("Middle", PANGO_ELLIPSIZE_MIDDLE)
+        .value("End", PANGO_ELLIPSIZE_END)
+    ;
+
+    enum_<PangoWrapMode>("WrapMode")
+        .value("Char", PANGO_WRAP_CHAR)
+        .value("Word", PANGO_WRAP_WORD)
+        .value("WordChar", PANGO_WRAP_WORD_CHAR)
+    ;
+
+    enum_<PangoAlignment>("Alignment")
+        .value("Center", PANGO_ALIGN_CENTER)
+        .value("Left", PANGO_ALIGN_LEFT)
+        .value("Right", PANGO_ALIGN_RIGHT)
     ;
 }
 
