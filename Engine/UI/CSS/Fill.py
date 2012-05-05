@@ -449,3 +449,5 @@ class Image(FakeImage):
             repeatY=self.RepeatY
         )
 
+def isPlainFill(fill):
+    return isinstance(fill, (Colour, __Transparent))

@@ -28,7 +28,7 @@ from our_future import *
 import iterutils
 import copy
 
-from Fill import Fill, Colour, Transparent
+from Fill import Fill, Colour, Transparent, isPlainFill
 from Box import BaseBox
 from Rect import Rect, NotARect
 
@@ -72,8 +72,8 @@ class BorderEdge(BorderComponent):
     def Fill(self, value):
         if self._fill == value:
             return
-        if not isinstance(value, Fill):
-            raise TypeError("Border needs Fill instances as fillers. Got {0} {1}".format(type(value), value))
+        if not isPlainFill(value):
+            raise TypeError("Border needs plain fill instances as fillers (e.g. colour or transparent). Got {0} {1}".format(type(value), value))
         self._fill = value
 
     def __eq__(self, other):
