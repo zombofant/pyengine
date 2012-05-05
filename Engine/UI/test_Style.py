@@ -127,11 +127,11 @@ class StyleRules(unittest.TestCase):
     def test_borderCorner(self):
         rule = Rule([], [
             ("border-left", ("1", "solid", Colour())),
-            ("border-top-left", (Colour(1., 0., 0., 1.),))
+            ("border-top-left-radius", ("8",))
         ])
         self.style._addRule(rule)
-        self.assertEqual(self.style.Border.TopLeft, Colour(1., 0., 0., 1.))
-        self.assertEqual(copy.deepcopy(self.style).Border.TopLeft, Colour(1., 0., 0., 1.))
+        self.assertEqual(self.style.Border.TopLeftRadius, 8)
+        self.assertEqual(copy.deepcopy(self.style).Border.TopLeftRadius, 8)
         
     def test_padding(self):
         rule = Rule([], [

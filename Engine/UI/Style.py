@@ -29,6 +29,8 @@ import itertools
 import iterutils
 import copy
 
+from typeutils import number
+
 import CSS.Literals as Literals
 from CSS.Box import Padding, Margin, BaseBox
 from CSS.Border import Border, BorderEdge
@@ -48,6 +50,7 @@ class Style(object):
         self._flex = 1
         self._textColour = Colour(0., 0., 0., 1.)
         self._width, self._height = None, None
+        self._shear = (0, 0)
         if "padding" in kwargs:
             self.Padding = kwargs.pop("padding")
         if "margin" in kwargs:
@@ -66,6 +69,9 @@ class Style(object):
             self.Height = kwargs.pop("height")
         if "width" in kwargs:
             self.Width = kwargs.pop("width")
+        if "shear" in kwargs:
+            shear = kwargs.pop("shear")
+            self._setShear(shear)
         super(Style, self).__init__(**kwargs)
         for rule in rules:
             self._addRule(rule)
@@ -82,7 +88,8 @@ class Style(object):
             flex=self.Flex,
             textColour=copy.deepcopy(self.TextColour, memo),
             width=self.Width,
-            height=self.Height
+            height=self.Height,
+            shear=(self.ShearLeft, self.ShearRight)
         )
 
     def _addRule(self, rule):
@@ -113,7 +120,8 @@ class Style(object):
             self._flex == other._flex and
             self._textColour == other._textColour and
             self._width == other._width and
-            self._height == other._height
+            self._height == other._height and
+            self._shear == other._shear
         )
 
     def __ne__(self, other):
@@ -162,9 +170,6 @@ class Style(object):
     def _setBorderEdge(self, edge, value):
         setattr(self.Border, edge, BorderEdge(value[0], value[2]))
 
-    def _setBorderCorner(self, corner, value):
-        setattr(self.Border, corner, Literals.BackgroundLiteral(value[0]))
-
     def _setBaseBoxEdge(self, box, edge, value):
         box = getattr(self, box)
         if len(value) != 1:
@@ -191,6 +196,30 @@ class Style(object):
     def _setDimension(self, axis, value):
         dim, = value
         setattr(self, axis, dim)
+
+    def _setShear(self, value, key=None):
+        if key is None:
+            if len(value) == 2:
+                left, right = value
+            else:
+                both, = value
+                left = both
+                right = both
+            self._shear = (left, right)
+        else:
+            if not hasattr(self, "Shear"+key):
+                raise KeyError("shear-{0} is not a valid stylesheet property.".format(value.lower()))
+            else:
+                shear, = value
+                setattr(self, "Shear"+key, shear)
+
+    def _setBorderRadius(self, edgeY, edgeX, value):
+        radius, = value
+        setattr(self._border, "{0}{1}Radius".format(edgeY, edgeX), number(radius))
+
+    def _setBorderRadiusAll(self, value):
+        radius, = value
+        self._border.Radius = number(radius)
 
     @property
     def Background(self):
@@ -310,6 +339,30 @@ class Style(object):
                 raise ValueError("Height must be positive. Got {0} {1}".format(type(value), value))
         self._height = value
 
+    @property
+    def Shear(self):
+        return self._shear
+
+    @Shear.setter
+    def Shear(self, value):
+        self._setShear(value)
+
+    @property
+    def ShearLeft(self):
+        return self._shear[0]
+
+    @ShearLeft.setter
+    def ShearLeft(self, value):
+        self._shear = (number(value), self._shear[1])
+
+    @property
+    def ShearRight(self):
+        return self._shear[1]
+
+    @ShearRight.setter
+    def ShearRight(self, value):
+        self._shear = (self._shear[0], number(value))
+
     _literalSetters = {
         "background": (Literals.BackgroundLiteral, "Background"),
         "padding": (Literals.BoxLiteral, "Padding"),
@@ -329,10 +382,10 @@ class Style(object):
         "border-right": lambda self, value: self._setBorderEdge("Right", value),
         "border-top": lambda self, value: self._setBorderEdge("Top", value),
         "border-bottom": lambda self, value: self._setBorderEdge("Bottom", value),
-        "border-top-left": lambda self, value: self._setBorderCorner("TopLeft", value),
-        "border-top-right": lambda self, value: self._setBorderCorner("TopRight", value),
-        "border-bottom-left": lambda self, value: self._setBorderCorner("BottomLeft", value),
-        "border-bottom-right": lambda self, value: self._setBorderCorner("BottomRight", value),
+        "border-top-left-radius": lambda self, value: self._setBorderRadius("Top", "Left", value),
+        "border-top-right-radius": lambda self, value: self._setBorderRadius("Top", "Right", value),
+        "border-bottom-left-radius": lambda self, value: self._setBorderRadius("Bottom", "Left", value),
+        "border-bottom-right-radius": lambda self, value: self._setBorderRadius("Bottom", "Right", value),
         "padding-left": lambda self, value: self._setBaseBoxEdge("Padding", "Left", value),
         "padding-right": lambda self, value: self._setBaseBoxEdge("Padding", "Right", value),
         "padding-top": lambda self, value: self._setBaseBoxEdge("Padding", "Top", value),
@@ -344,6 +397,9 @@ class Style(object):
         "color": lambda self, value: self._setTextColour(value),
         "width": lambda self, value: self._setDimension("Width", value),
         "height": lambda self, value: self._setDimension("Height", value),
+        "shear-left": lambda self, value: self._setShear(value, "Left"),
+        "shear-right": lambda self, value: self._setShear(value, "Right"),
+        "shear": lambda self, value: self._setShear(value)
     }
 
     def geometryForRect(self, rect, faceBuffer):

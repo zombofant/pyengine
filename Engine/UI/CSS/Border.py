@@ -97,11 +97,12 @@ class Border(BorderComponent):
     
     def __init__(self, width=0, fill=None, **kwargs):
         self._edges = [BorderEdge() for i in range(4)]
-        self._corners = [None for i in range(4)]
+        self._corners = [0] * 4
         super(Border, self).__init__(**kwargs)
         self.Width = width
         if fill is not None:
-            self.Fill = fill    
+            self.Fill = fill
+    
     def assign(self, other):
         if isinstance(other, Border):
             for edgeA, edgeB in zip(self._edges, other._edges):
@@ -112,7 +113,7 @@ class Border(BorderComponent):
             for edgeA in self._edges:
                 edgeA.Width = other.Width
                 edgeA.Fill = other.Fill
-            self._corners = [None] * 4
+            self._corners = [0] * 4
         else:    
             raise TypeError("Can only assign BorderComponents to Border")
 
@@ -120,8 +121,7 @@ class Border(BorderComponent):
         new = Border()
         for i, edge in enumerate(self._edges):
             new._edges[i] = copy.deepcopy(edge, memo)
-        for i, corner in enumerate(self._corners):
-            new._corners[i] = copy.deepcopy(corner, memo)
+        new._corners = list(self._corners)
         return new
 
     @property
@@ -141,7 +141,6 @@ class Border(BorderComponent):
     def Fill(self, value):
         for edge in self._edges:
             edge.Fill = value
-        self._corners = [value] * 4
 
     @property
     def Left(self):
@@ -176,44 +175,39 @@ class Border(BorderComponent):
         self._edges[3].assign(value)
 
 
+    def setRadius(self, value):
+        self._corners = [value] * 4
+    
     @property
-    def TopLeft(self):
+    def TopLeftRadius(self):
         return self._corners[0]
 
-    @TopLeft.setter
-    def TopLeft(self, value):
-        if not isinstance(value, Fill):
-            raise TypeError("TopLeft must be a Fill instance. Got {0} {1}".format(type(value), value))
+    @TopLeftRadius.setter
+    def TopLeftRadius(self, value):
         self._corners[0] = value
 
     @property
-    def TopRight(self):
+    def TopRightRadius(self):
         return self._corners[1]
 
-    @TopRight.setter
-    def TopRight(self, value):
-        if not isinstance(value, Fill):
-            raise TypeError("TopRight must be a Fill instance. Got {0} {1}".format(type(value), value))
+    @TopRightRadius.setter
+    def TopRightRadius(self, value):
         self._corners[1] = value
 
     @property
-    def BottomRight(self):
+    def BottomRightRadius(self):
         return self._corners[2]
 
-    @BottomRight.setter
-    def BottomRight(self, value):
-        if not isinstance(value, Fill):
-            raise TypeError("BottomRight must be a Fill instance. Got {0} {1}".format(type(value), value))
+    @BottomRightRadius.setter
+    def BottomRightRadius(self, value):
         self._corners[2] = value
 
     @property
-    def BottomLeft(self):
+    def BottomLeftRadius(self):
         return self._corners[3]
 
-    @BottomLeft.setter
-    def BottomLeft(self, value):
-        if not isinstance(value, Fill):
-            raise TypeError("BottomLeft must be a Fill instance. Got {0} {1}".format(type(value), value))
+    @BottomLeftRadius.setter
+    def BottomLeftRadius(self, value):
         self._corners[3] = value
 
     def __eq__(self, other):
@@ -222,10 +216,7 @@ class Border(BorderComponent):
         for edgeA, edgeB in zip(self._edges, other._edges):
             if not edgeA == edgeB:
                 return False
-        for cornerA, cornerB in zip(self._corners, other._corners):
-            if not cornerA == cornerB:
-                return False
-        return True
+        return self._corners == other._corners
 
     def __ne__(self, other):
         r = self.__eq__(other)
