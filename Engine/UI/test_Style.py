@@ -127,9 +127,13 @@ class StyleRules(unittest.TestCase):
     def test_borderCorner(self):
         rule = Rule([], [
             ("border-left", ("1", "solid", Colour())),
+            ("border-radius", ("2",)),
             ("border-top-left-radius", ("8",))
         ])
         self.style._addRule(rule)
+        self.assertEqual(self.style.Border.TopRightRadius, 2)
+        self.assertEqual(self.style.Border.BottomLeftRadius, 2)
+        self.assertEqual(self.style.Border.BottomRightRadius, 2)
         self.assertEqual(self.style.Border.TopLeftRadius, 8)
         self.assertEqual(copy.deepcopy(self.style).Border.TopLeftRadius, 8)
         

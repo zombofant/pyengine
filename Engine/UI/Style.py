@@ -219,7 +219,7 @@ class Style(object):
 
     def _setBorderRadiusAll(self, value):
         radius, = value
-        self._border.Radius = number(radius)
+        self._border.setRadius(number(radius))
 
     @property
     def Background(self):
@@ -382,6 +382,7 @@ class Style(object):
         "border-right": lambda self, value: self._setBorderEdge("Right", value),
         "border-top": lambda self, value: self._setBorderEdge("Top", value),
         "border-bottom": lambda self, value: self._setBorderEdge("Bottom", value),
+        "border-radius": lambda self, value: self._setBorderRadiusAll(value),
         "border-top-left-radius": lambda self, value: self._setBorderRadius("Top", "Left", value),
         "border-top-right-radius": lambda self, value: self._setBorderRadius("Top", "Right", value),
         "border-bottom-left-radius": lambda self, value: self._setBorderRadius("Bottom", "Left", value),
