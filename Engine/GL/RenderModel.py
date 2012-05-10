@@ -29,7 +29,6 @@ from CUni.SceneGraph import Leaf
 from Engine.Model import Model
 from OpenGL.GL import *
 from Engine.Resources.Manager import ResourceManager
-#from SceneGraph.Core import Spatial
 
 class RenderModel(Model, Leaf):
     """

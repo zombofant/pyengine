@@ -35,19 +35,6 @@ named in the AUTHORS file.
 
 namespace PyUni {
 
-class SceneGraphWrap: public SceneGraph::SceneGraph, public boost::python::wrapper<SceneGraph::SceneGraph>
-{
-    virtual void update()
-    {
-        this->get_override("update")();
-    }
-
-    virtual void draw()
-    {
-        this->get_override("draw")();
-    }
-};
-
 class LeafWrap;
 typedef boost::shared_ptr<LeafWrap> LeafWrapHandle;
 
