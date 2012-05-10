@@ -34,6 +34,10 @@ SceneGraph::SceneGraph():
     
 }
 
+SceneGraph::~SceneGraph()
+{
+}
+
 void SceneGraph::update()
 {
     _root->updateGeometry();
@@ -43,6 +47,12 @@ void SceneGraph::draw()
 {
     _root->onDraw();
     _root->draw();
+}
+
+SceneGraphHandle SceneGraph::create()
+{
+    SceneGraphHandle tmp(new SceneGraph());
+    return tmp;
 }
 
 }

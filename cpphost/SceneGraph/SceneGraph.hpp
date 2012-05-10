@@ -26,10 +26,16 @@ named in the AUTHORS file.
 #ifndef _PYUNI_SCENEGRAPH_SCENEGRAPH_H
 #define _PYUNI_SCENEGRAPH_SCENEGRAPH_H
 
+#include <boost/shared_ptr.hpp>
+
 #include "Node.hpp"
 
 namespace PyUni {
 namespace SceneGraph {
+
+class SceneGraph;
+
+typedef boost::shared_ptr<SceneGraph> SceneGraphHandle;
 
 class SceneGraph
 {
@@ -40,7 +46,9 @@ class SceneGraph
         void update();
         void draw();
 
-        inline NodeHandle getRoodNode() const { return _root; }
+        inline NodeHandle getRootNode() const { return _root; }
+
+        static SceneGraphHandle create();
 
     protected:
         NodeHandle _root;

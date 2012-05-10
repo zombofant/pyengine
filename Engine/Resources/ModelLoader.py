@@ -28,15 +28,9 @@ from our_future import *
 from Base import ResourceLoader
 from Manager import ResourceManager
 from Engine.Model import Model
+from Engine.GL.RenderModel import RenderModel
 
 import MaterialLoader
-
-# Import will work, *but* if no pyglet is loaded, we must delete the
-# name, as any instanciation will fail
-import Engine.GL.RenderModel
-if hasattr(Engine.GL.RenderModel, "pyglet"):
-    RenderModel = Engine.GL.RenderModel.RenderModel
-    from Engine.GL.Material import Material
 
 class OBJModelLoader(ResourceLoader):
     """

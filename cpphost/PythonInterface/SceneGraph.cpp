@@ -38,10 +38,17 @@ typedef MapHelper<VertexMap, VertexMapHandle> VertexMapHelper;
 
 BOOST_PYTHON_MODULE(_cuni_scenegraph)
 {
+    class_<SceneGraph::SceneGraph, bases<>, SceneGraph::SceneGraphHandle, boost::noncopyable>("SceneGraph", no_init)
+        .def("__init__", make_constructor(&SceneGraph::SceneGraph::create))
+        .def("update", &SceneGraph::SceneGraph::update)
+        .def("draw", &SceneGraph::SceneGraph::draw)
+        .add_property("RootNode", &SceneGraph::SceneGraph::getRootNode)
+    ;
+
     VertexMapHelper::ItemsIteratorRegT::wrap("__VertexMap_IterItems");
     VertexMapHelper::KeysIteratorRegT::wrap("__VertexMap_IterKeys");
     VertexMapHelper::ValuesIteratorRegT::wrap("__VertexMap_IterValues");
-    
+
     class_<VertexMap, VertexMapHandle, boost::noncopyable>("VertexMap", no_init)
         .def("__len__", &VertexMap::size)
         .def("__getitem__", &VertexMapHelper::__getitem__)
@@ -59,6 +66,8 @@ BOOST_PYTHON_MODULE(_cuni_scenegraph)
 
     class_<Node, bases<Spatial>, NodeHandle, boost::noncopyable>("Node", no_init)
         .def("__init__", make_constructor(&Node::create))
+        .def("addChild", &Node::addChild)
+        .def("removeChild", &Node::removeChild)
     ;
 
     class_<LeafWrap, bases<Spatial>, boost::shared_ptr<LeafWrap>, boost::noncopyable>("Leaf", no_init)

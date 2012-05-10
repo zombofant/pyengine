@@ -25,12 +25,13 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
+from CUni.SceneGraph import Leaf
 from Engine.Model import Model
 from OpenGL.GL import *
 from Engine.Resources.Manager import ResourceManager
-from SceneGraph.Core import Spatial
+#from SceneGraph.Core import Spatial
 
-class RenderModel(Model, Spatial):
+class RenderModel(Model, Leaf):
     """
     This class extends the model class with GL methods in order to provide
     a convenient renderable representation of the model.
@@ -95,13 +96,15 @@ class RenderModel(Model, Spatial):
                     data.append(('n3f/static', normals))
                 if len(texCoords) > 0:
                     data.append(('t2f/static', texCoords))
-                self._batch.add(size, GL_TRIANGLES, group, *data)
+                # FIXME
+                #self._batch.add(size, GL_TRIANGLES, group, *data)
                 pos = nextMatSwitchIndex
             if material[0] == '(null)':
                 group = None
             else:
                 mat_filename = '%s.mtl' % material[0]
-                group = ResourceManager().require(mat_filename).stateGroup
+                # FIXME
+                #group = ResourceManager().require(mat_filename).stateGroup
  
     def draw(self):
         """
