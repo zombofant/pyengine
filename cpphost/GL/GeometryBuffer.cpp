@@ -169,8 +169,8 @@ VertexIndexListHandle GeometryBuffer::allocateVertices(const GLsizei count) {
 
 void GeometryBuffer::gc() {
     bool changed = true;
-    std::cerr << "garbage collection in geometry buffer " << glID << " invoked." << std::endl;
-    std::cerr << "  deletions : ";
+    // std::cerr << "garbage collection in geometry buffer " << glID << " invoked." << std::endl;
+    // std::cerr << "  deletions : ";
     while (changed) {
         changed = false;
         for (VertexIndexListHandleList::iterator it = _handles.begin();
@@ -190,14 +190,14 @@ void GeometryBuffer::gc() {
             }
         }
     }
-    std::cerr << std::endl << "  use counts: ";
-    for (VertexIndexListHandleList::iterator it = _handles.begin();
+    // std::cerr << std::endl << "  use counts: ";
+    /*for (VertexIndexListHandleList::iterator it = _handles.begin();
         it != _handles.end();
         it++)
     {
         std::cerr << (*it).use_count() << " ";
     }
-    std::cerr << std::endl;
+    std::cerr << std::endl;*/
 }
 
 /*GeometryBufferDriverHandle GeometryBuffer::createDriver(const VertexFormatHandle handle) 
@@ -211,12 +211,12 @@ BufferMapHandle GeometryBuffer::getMap()
 }
 
 void GeometryBuffer::autoFlush() {
-    std::cout << "auto-flushing geometry buffer " << glID << std::endl;
+    // std::cout << "auto-flushing geometry buffer " << glID << std::endl;
     VertexIndex min, max;
     auto it = _dirtyVertices.begin();
     if (it == _dirtyVertices.end())
     {
-        std::cout << "nothing to flush" << std::endl;
+        // std::cerr << "nothing to flush" << std::endl;
         return;
     }
     min = *it;
