@@ -422,6 +422,19 @@ class Style(object):
 
     def inCairo(self, rect, ctx):
         clientRect = copy.copy(rect)
-        self.Border.inCairo(rect, ctx)
         clientRect.shrink(self.Border.getBox())
-        self.Background.inCairo(clientRect, ctx)
+        
+        # FIXME: calculate the points and pass them on to the inCairo
+        # methods instead of doing homebrew filling here
+
+        widths = (  self._border.Left.Width, self._border.Top.Width,
+                    self._border.Right.Width, self._border.Bottom.Width)
+
+        colours = ( self._border.Left.Fill, self._border.Top.Fill,
+                    self._border.Right.Fill, self._border.Bottom.Fill)
+
+        radii = self._border.getAllRadii()
+
+        corners = [
+            
+        ]

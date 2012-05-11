@@ -241,7 +241,6 @@ class Border(BorderComponent):
     @Bottom.setter
     def Bottom(self, value):
         self._edges[3].assign(value)
-
     
     @property
     def TopLeftRadius(self):
@@ -334,21 +333,7 @@ class Border(BorderComponent):
         Execute all instructions neccessary to draw this border as the
         inner border in *rect* on cairo context *cr*.
         """
-
-        box = self.getBox()
-        rectsAndEdges = zip(
-            rect.cut(box),
-            iterutils.interleave((edge.Fill for edge in self._edges), self._corners)
-        )
-        prevFill = None
-        for rect, fill in rectsAndEdges:
-            if rect is NotARect:
-                continue
-            if fill is None:
-                fill = prevFill
-            else:
-                prevFill = fill
-            fill.inCairo(rect, cr)
+        raise NotImplementedError("this should in fact be done by Style currently")
 
     def cairoGroupForRect(self, rect, cr):
         """
