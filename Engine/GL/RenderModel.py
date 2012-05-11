@@ -102,8 +102,7 @@ class RenderModel(Model, Leaf):
                 group = None
             else:
                 mat_filename = '%s.mtl' % material[0]
-                # FIXME
-                #group = ResourceManager().require(mat_filename).stateGroup
+                group = ResourceManager().require(mat_filename).stateGroup
  
     def draw(self):
         """
