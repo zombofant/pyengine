@@ -74,6 +74,7 @@ class Application(RootWidget, CUni.Window.EventSink):
             self._window = display.createWindow(mode, geometry[0], geometry[1], fullscreen)
             self._window.switchTo()
             self._window.initializeGLEW()
+            self._window._sceneWidgets = []
             #self._window.switchTo()
             self._newScreen(self._window, 0, 0, *geometry)
 

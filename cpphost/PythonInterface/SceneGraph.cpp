@@ -62,13 +62,16 @@ BOOST_PYTHON_MODULE(_cuni_scenegraph)
     ;
 
     class_<Spatial, SpatialHandle, boost::noncopyable>("Spatial", no_init)
+        .def("translate", &Spatial::translate)
+        .def("rotate", &Spatial::rotate)
+        .def("scale", &Spatial::scale)
     ;
 
     class_<Node, bases<Spatial>, NodeHandle, boost::noncopyable>("Node", no_init)
         .def("__init__", make_constructor(&Node::create))
         .def("addChild", &Node::addChild)
         .def("removeChild", &Node::removeChild)
-    ;
+   ;
 
     class_<LeafWrap, bases<Spatial>, boost::shared_ptr<LeafWrap>, boost::noncopyable>("Leaf", no_init)
         .def("__init__", make_constructor(&LeafWrap::create))
