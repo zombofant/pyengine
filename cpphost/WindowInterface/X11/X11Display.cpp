@@ -342,6 +342,15 @@ void X11Display::pullEvents(EventSink *sink) {
         case ConfigureNotify:
             sink->handleResize(event.xconfigure.width, event.xconfigure.height);
             break;
+        case MapNotify:
+            sink->handleShow();
+            break;
+        case UnmapNotify:
+            sink->handleHide();
+            break;
+        case ReparentNotify:
+            // XXX: debug log this, handle this if we are interested in it some day
+            break;
         case ClientMessage:
             if (event.xclient.message_type == _wm_protocols) {
                 if ((Atom)event.xclient.data.l[0] == _wm_quit) {

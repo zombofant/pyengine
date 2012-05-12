@@ -114,6 +114,16 @@ class EventSinkWrap: public EventSink, public boost::python::wrapper<EventSink>
         this->get_override("handleTextInput")(text);
     }
 
+    virtual void handleHide()
+    {
+        this->get_override("handleHide")();
+    }
+
+    virtual void handleShow()
+    {
+        this->get_override("handleShow")();
+    }
+
     virtual void handleWMQuit()
     {
         this->get_override("handleWMQuit")();

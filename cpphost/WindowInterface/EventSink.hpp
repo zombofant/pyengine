@@ -51,6 +51,8 @@ public:
                                    int scrollX, int scrollY) = 0;
     virtual void handleResize(unsigned int w, unsigned int h) = 0;
     virtual void handleTextInput(const char *text) = 0;
+    virtual void handleHide() = 0;
+    virtual void handleShow() = 0;
     virtual void handleWMQuit() = 0;
 };
 
