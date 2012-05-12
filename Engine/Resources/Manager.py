@@ -29,10 +29,9 @@ from our_future import *
 import os
 import sys
 
-from CUni.Log import server, Severity
-log = server.getChannel("resources")
+from CUni.Log import Severity
 
-from Base import ResourceLoader
+from Base import ResourceLoader, log
 from Engine.VFS.FileSystem import FileSystem
 import Engine.VFS.Utils as Utils
 

@@ -25,6 +25,9 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
+from CUni.Log import server, Severity
+log = server.getChannel("resources.obj")
+
 from Base import ResourceLoader
 from Manager import ResourceManager
 from Engine.Model import Model
@@ -80,12 +83,12 @@ class OBJModelLoader(ResourceLoader):
                 if len(face) == 3:
                     faces.append(face)
                 else:
-                    print('FACE IS NOT A TRIANGLE!')
+                    log.log(Severity.Warning, 'Face is not a triangle')
             elif parts[0] == 'usemtl':
                 if len(parts) == 2:
                     materials.append([parts[1],len(faces)])
             else:
-                print("FIXME: Unhandled obj data: %s" % line)
+                log.log(Severity.Hint, "FIXME: Unhandled obj data: {0}".format(line.strip()))
                 pass
         if len(faces) < 1:
             raise Exception('No faces found in geometric data!')
