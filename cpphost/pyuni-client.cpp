@@ -58,11 +58,11 @@ int main(int argc, char** argv) {
         // a module here ;)
         PyUni::setupCairoHelpers();
 
-        boost::python::object cuni_window = boost::python::import("_cuni_window");
-        boost::python::object cuni_window_namespace = cuni_window.attr("__dict__");
+        boost::python::object cuni_window_namespace = boost::python::import("_cuni_window").attr("__dict__");
 
-        boost::python::object main = boost::python::import("__main__");
-        boost::python::object main_namespace = main.attr("__dict__");
+        boost::python::object cuni_log_namespace = boost::python::import("_cuni_log").attr("__dict__");
+
+        boost::python::object main_namespace = boost::python::import("__main__").attr("__dict__");
 
         // FIXME: Is this possible without explizit reference to the
         // platform?
@@ -72,6 +72,7 @@ int main(int argc, char** argv) {
         disp = x11;
 
         cuni_window_namespace["display"] = x11;
+        cuni_log_namespace["server"] = PyUni::logHandle;
 
         std::string str;
         {

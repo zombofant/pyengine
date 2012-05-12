@@ -37,6 +37,8 @@ OpenGL.ERROR_ON_COPY = True
 
 if __name__ == '__main__':
     import CUni.Window
+    import CUni.Log
     from Client.PythonicUniverse import PythonicUniverse
+    CUni.Log.server.log(CUni.Log.Severity.Information, "Python initialized")
     app = PythonicUniverse(CUni.Window.display)
     app.run()

@@ -122,9 +122,12 @@ class LogServer: public LogBase {
     friend class LogChannel;
 };
 
+typedef boost::shared_ptr<LogServer> LogServerHandle;
+
 const char *SeverityName(Severity severity);
 
 extern LogServer *log;
+extern LogServerHandle logHandle;
 
 }
 

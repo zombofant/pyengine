@@ -216,5 +216,6 @@ const char *SeverityName(Severity severity)
 }
 
 LogServer *log = new LogServer();
+LogServerHandle logHandle(log);
 
 }
