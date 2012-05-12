@@ -43,6 +43,7 @@ class Spatial
 {
     protected:
         Spatial();
+
     public:
         virtual ~Spatial();
 
@@ -55,10 +56,15 @@ class Spatial
         SpatialHandle getParent();
         void setParent(SpatialHandle p);
 
+        virtual void translate(double x, double y, double z);
+        virtual void rotate(double x, double y, double z, double angle);
+        virtual void scale(double x, double y, double z);
+
         virtual void onDraw();
         virtual void draw();
 
         static SpatialHandle create();
+
     protected:
         WeakSpatialHandle _parent;
         WeakSpatialHandle _weak;
