@@ -36,10 +36,26 @@ char *vawesomef(const char *message, sizeuint *length, ...)
 
 /* PyUni::IO::LogChannel */
 
-LogChannel::LogChannel(const std::string aName):
-    name(aName)
+LogChannel::LogChannel(LogServer *server, const std::string name):
+    _server(server),
+    _name(name)
 {
     
+}
+
+void LogChannel::log(Severity severity, const char *message)
+{
+    _server->log(severity, this, message);
+}
+
+void LogChannel::logf(Severity severity, const char *message, ...)
+{
+    va_list args;
+    va_start(args, message);
+    char *formatted = awesomef(message, args);
+    va_end(args);
+    _server->log(severity, this, formatted);
+    free(formatted);
 }
 
 /* PyUni::IO::LogSink */
@@ -74,12 +90,7 @@ void LogStreamSink::doLog(TimeFloat timestamp, Severity severity,
 {
     const char *severityName = SeverityName(severity);
     sizeuint length = 0;
-    char *formatted;
-    if (channel) {
-        formatted = vawesomef("[%12.4f] [%s] [%s] %s\n", &length, timestamp, severityName, channel->name.c_str(), message);
-    } else {
-        formatted = vawesomef("[%12.4f] [%s] %s\n", &length, timestamp, severityName, message);
-    }
+    char *formatted = vawesomef("[%12.4f] [%s] [%s] %s\n", &length, timestamp, severityName, channel->getName(), message);
     _stream->write(formatted, length);
     free(formatted);
 }
@@ -112,7 +123,7 @@ void LogXMLSink::doLog(TimeFloat timestamp, Severity severity,
 <severity>%s</severity>\
 <channel>%s</channel>\
 <text><![CDATA[%s]]></text>\
-</message>\n", &length, timestamp, SeverityName(severity), (channel?channel->name.c_str():""), message);
+</message>\n", &length, timestamp, SeverityName(severity), channel->getName(), message);
     _stream->write(formatted, length);
     free(formatted);
     }
@@ -121,9 +132,11 @@ void LogXMLSink::doLog(TimeFloat timestamp, Severity severity,
 
 LogServer::LogServer():
     _startupTime(nanotime()),
-    _sinks()
+    _sinks(),
+    _channels(),
+    _globalChannel(getChannel("global"))
 {
-
+    
 }
 
 void LogServer::addSink(LogSinkHandle sink)
@@ -131,6 +144,13 @@ void LogServer::addSink(LogSinkHandle sink)
     _sinks.push_back(sink);
 }
 
+LogChannelHandle LogServer::getChannel(const std::string &name)
+{
+    LogChannelHandle channel(new LogChannel(this, name));
+    _channels[name] = channel;
+    return channel;
+}
+ 
 void LogServer::removeSink(LogSinkHandle sink)
 {
     _sinks.remove(sink);
@@ -138,7 +158,7 @@ void LogServer::removeSink(LogSinkHandle sink)
 
 void LogServer::log(Severity severity, const char *message)
 {
-    log(severity, 0, message);
+    log(severity, _globalChannel.get(), message);
 }
 
 void LogServer::log(Severity severity, LogChannel *channel, const char *message)
@@ -157,7 +177,7 @@ void LogServer::logf(Severity severity, const char *message, ...)
     va_start(args, message);
     char *formatted = awesomef(message, args);
     va_end(args);
-    log(severity, 0, formatted);
+    log(severity, _globalChannel.get(), formatted);
     free(formatted);
 }
 

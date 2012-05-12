@@ -2,11 +2,25 @@
 #define _PYUNI_IO_LOG_H
 
 #include <list>
+#include <unordered_map>
+#include <string>
 
 #include <boost/shared_ptr.hpp>
+#include <boost/functional/hash.hpp>
 
 #include "Time.hpp"
 #include "Stream.hpp"
+
+namespace std {
+template<>
+struct hash<const std::string>
+{
+    size_t operator() (const std::string &str) const
+    {
+        return (size_t)boost::hash<std::string>()(str);
+    }
+};
+}
 
 namespace PyUni {
 
@@ -23,10 +37,24 @@ typedef uint64 SeverityMask;
 
 const SeverityMask All = 0x3F;
 
-struct LogChannel {
-    LogChannel(const std::string aName);
-    
-    const std::string name;
+class LogServer;
+
+class LogBase {
+    public:
+        virtual void log(Severity severity, const char *message) = 0;
+        virtual void logf(Severity severity, const char *message, ...) = 0;
+};
+
+class LogChannel: public LogBase {
+    public:
+        LogChannel(LogServer *server, const std::string name);
+    private:
+        LogServer *_server;
+        const std::string _name;
+    public:
+        inline const char *getName() { return _name.c_str(); };
+        virtual void log(Severity severity, const char *message);
+        virtual void logf(Severity severity, const char *message, ...);
 };
 
 class LogSink {
@@ -70,20 +98,28 @@ class LogXMLSink: public LogSink {
             LogChannel *channel, const char *message);
 };
 
-class LogServer {
+typedef boost::shared_ptr<LogChannel> LogChannelHandle;
+typedef std::unordered_map<const std::string, LogChannelHandle> LogChannelMap;
+
+class LogServer: public LogBase {
     public:
         LogServer();
     private:
         TimeStamp _startupTime;
         LogSinks _sinks;
+        LogChannelMap _channels;
+        LogChannelHandle _globalChannel;
+    protected:
+        void log(Severity severity, LogChannel *channel, const char *message);
+        void logf(Severity severity, LogChannel *channel, const char *message, ...);
     public:
         void addSink(LogSinkHandle sink);
+        LogChannelHandle getChannel(const std::string &name);
         void removeSink(LogSinkHandle sink);
     public:
-        void log(Severity severity, const char *message);
-        void log(Severity severity, LogChannel *channel, const char *message);
-        void logf(Severity severity, const char *message, ...);
-        void logf(Severity severity, LogChannel *channel, const char *message, ...);
+        virtual void log(Severity severity, const char *message);
+        virtual void logf(Severity severity, const char *message, ...);
+    friend class LogChannel;
 };
 
 const char *SeverityName(Severity severity);
