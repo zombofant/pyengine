@@ -23,12 +23,13 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-
 #include "Stream.hpp"
-#include <boost/format.hpp>
+
+#include <cstring>
 #include <typeinfo>
 #include <limits>
-#include <cstring>
+
+#include <boost/format.hpp>
 
 namespace PyUni {
 

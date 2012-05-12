@@ -23,13 +23,13 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-
 #ifndef _PYUNI_SCENEGRAPH_SPATIAL_H
 #define _PYUNI_SCENEGRAPH_SPATIAL_H
 
-#include "Math/Matrices.hpp"
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
+
+#include "Math/Matrices.hpp"
 
 namespace PyUni {
 namespace SceneGraph {

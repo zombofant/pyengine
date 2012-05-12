@@ -23,13 +23,13 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-
 #include "FileStream.hpp"
+
+#include <cerrno>
+
 #include <unistd.h>
-#include <errno.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-// #include "Log.hpp"
 
 namespace PyUni {
     

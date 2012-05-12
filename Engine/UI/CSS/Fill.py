@@ -33,9 +33,14 @@ import itertools
 import iterutils
 import copy
 
+import abc
+
+import cairo
+
 import Engine.Resources.Manager as Manager
 
 from Rect import Rect
+from Engine.Resources.CairoWrapper import CairoSurface
 
 class RepeatMode(object):
     ValidModes = []
@@ -62,6 +67,8 @@ Tile = Repeat
 RepeatMode.ValidModes += [Repeat, Stretch]
 
 class Fill(object):
+    __metaclass__ = abc.ABCMeta
+    
     def __init__(self, repeatX=Stretch, repeatY=Stretch, **kwargs):
         assert self.__class__ is not Fill
         self._repeatX = Stretch
@@ -69,13 +76,27 @@ class Fill(object):
         super(Fill, self).__init__(**kwargs)
         self.RepeatX = repeatX
         self.RepeatY = repeatY
-    
+
+    # FIXME: use abc.abstractmethod as soon as possible
     def geometryForRect(self, rect, faceBuffer):
         """
         Adds the geometry created by this filler for the given Rect
         *rect* to the FaceBuffer *faceBuffer*.
         """
-        raise NotImplementedError()
+        raise NotImplementedError("geometryForRect not implemented in {0}".format(type(self).__name__))
+
+    # FIXME: use abc.abstractmethod as soon as possible
+    def inCairo(self, rect, ctx):
+        """
+        Execute all calls neccessary to draw this filling in a cairo
+        context *ctx* in *rect*.
+        """
+        raise NotImplementedError("inCairo not implemented in {0}".format(type(self).__name__))
+
+    def cairoGroupForRect(self, rect, ctx):
+        ctx.push_group()
+        self.inCairo(rect, ctx)
+        return ctx.pop_group()
 
     def __ne__(self, other):
         r = self.__eq__(other)
@@ -102,9 +123,6 @@ class Fill(object):
     
 
 class __Transparent(Fill):
-    def geometryForRect(self, rect, faceBuffer):
-        pass
-
     # for fake constructor calls. We just hand out the instance as we
     # do not need to instanciate multiple Transparent fills.
     def __call__(self):
@@ -118,6 +136,12 @@ class __Transparent(Fill):
 
     def __repr__(self):
         return "Transparent"
+        
+    def geometryForRect(self, rect, faceBuffer):
+        pass
+
+    def inCairo(self, rect, ctx):
+        pass
 Transparent = __Transparent()
 
 class Colour(Fill):
@@ -198,6 +222,11 @@ class Colour(Fill):
             None
         )
 
+    def inCairo(self, rect, ctx):
+        ctx.set_source_rgba(self._r, self._g, self._b, self._a)
+        ctx.rectangle(rect.Left, rect.Top, rect.Width, rect.Height)
+        ctx.fill()
+
 class Gradient(Fill):
     __hash__ = None
     
@@ -256,6 +285,7 @@ class FakeImage(Fill):
         super(FakeImage, self).__init__(**kwargs)
         if not hasattr(self, "_resource"):
             self._resource = None
+            self._cairoSurface = None
         self._resourceDimensions = resourceDimensions
         if rect is None:
             self._rect = Rect(0, 0, *self._resourceDimensions)
@@ -386,12 +416,18 @@ class FakeImage(Fill):
             )
             self._addGeometryIterable(self._createQuads(xu, yv), faceBuffer)
 
+    def inCairo(self, rect, ctx):
+        ctx.set_source_surface(self._cairoSurface)
+        ctx.rectangle(rect.Left, rect.Top, rect.Right, rect.Bottom)
+        ctx.fill()
+
 class Image(FakeImage):
     def __init__(self, resource, rect=None, **kwargs):
         if isinstance(resource, unicode):
-            self._resource = Manager.ResourceManager().require(resource)
+            self._resource = Manager.ResourceManager().require(resource, CairoSurface)
         else:
             self._resource = resource
+        self._cairoSurface = self._resource.surface
         super(Image, self).__init__(self._resource.Dimensions, rect, **kwargs)
 
     def __eq__(self, other):
@@ -413,3 +449,5 @@ class Image(FakeImage):
             repeatY=self.RepeatY
         )
 
+def isPlainFill(fill):
+    return isinstance(fill, (Colour, __Transparent))

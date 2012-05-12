@@ -29,12 +29,15 @@ named in the AUTHORS file.
 #include <assert.h>
 
 #include "X11Display.hpp"
-#include "X11Window.hpp"
-#include "../Display.hpp"
 
+#include <cstdlib>
+#include <cstdio>
 #include <iostream>
 
 #define MAXBUTTONS 8
+
+#include "WindowInterface/Display.hpp"
+#include "X11Window.hpp"
 
 namespace PyUni {
 

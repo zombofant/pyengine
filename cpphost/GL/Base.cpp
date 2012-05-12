@@ -23,10 +23,12 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#include <exception>
-#include <glew.h>
 #include "Base.hpp"
+
+#include <exception>
 #include <iostream>
+
+#include <GL/glew.h>
 
 namespace PyUni {
 namespace GL {

@@ -23,12 +23,14 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-
 #include "EventLoop.hpp"
-#include "Display.hpp"
-#include "Misc/Exception.hpp"
+
 #include <iostream>
+
 #include <boost/python.hpp>
+
+#include "Misc/Exception.hpp"
+#include "Display.hpp"
 
 namespace PyUni {
 
@@ -37,7 +39,7 @@ EventLoop::EventLoop(DisplayHandle display, EventSinkHandle eventSink):
     _eventSink(eventSink),
     _deltaT(0.01),
     _terminated(false),
-    _currentFPS(0.0)
+    currentFPS(0.0)
 {
     
 }
@@ -80,7 +82,8 @@ void EventLoop::run()
             const TimeFloat fpsInterval = timeIntervalToDouble(frameCounterStart, currentUpdate);
             
             if (fpsInterval >= 1.0) {
-                _currentFPS = (double)(frameCount) / fpsInterval;
+                currentFPS = (double)(frameCount) / fpsInterval;
+                std::cerr << "fps: " << currentFPS << std::endl;
                 frameCounterStart = currentUpdate;
                 frameCount = 0;
             }
@@ -96,9 +99,9 @@ void EventLoop::run()
                 lastUpdate = currentUpdate;
                 eventSink->frameUnsynced(interval);
                 frameCount++;
+            } else {
+                usleep(1);
             }
-            
-            usleep(1);
         }
     } catch (boost::python::error_already_set) {
         std::cerr << "During mainloop call-in: " << std::endl;

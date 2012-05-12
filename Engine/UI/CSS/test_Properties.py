@@ -145,6 +145,8 @@ class TypeConstraints(unittest.TestCase):
     def test_Border(self):
         self.assertRaises(TypeError, setattr, Border.Border(), "Fill", 10)
         self.assertRaises(TypeError, setattr, Border.Border().Left, "Fill", 10)
+        self.assertRaises(TypeError, setattr, Border.Border(), "Fill", Fill.FakeImage((10, 10)))
+        self.assertRaises(TypeError, setattr, Border.Border().Left, "Fill", Fill.FakeImage((10, 10)))
 
 class BorderTests(unittest.TestCase):
     def test_box(self):

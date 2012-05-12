@@ -24,9 +24,10 @@ For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
 #include "GenericBuffer.hpp"
+
+#include <cstddef>
 #include <exception>
 #include <stdexcept>
-#include <cstddef>
 #include <iostream>
 
 namespace PyUni {

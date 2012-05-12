@@ -27,9 +27,11 @@ named in the AUTHORS file.
 #define _PYUNI_IO_STREAM_H
 
 #include <cstdint>
+
+#include <boost/shared_ptr.hpp>
+
 #include "Misc/Int.hpp"
 #include "Misc/Exception.hpp"
-#include <boost/shared_ptr.hpp>
 
 namespace PyUni {
     

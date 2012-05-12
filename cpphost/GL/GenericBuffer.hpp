@@ -26,15 +26,17 @@ named in the AUTHORS file.
 #ifndef _PYUNI_GL_GENERIC_BUFFERS_H
 #define _PYUNI_GL_GENERIC_BUFFERS_H
 
-#include <glew.h>
-#include "Base.hpp"
 #include <limits>
-#include <boost/static_assert.hpp>
-#include <boost/type_traits.hpp>
 #include <list>
 #include <set>
 #include <vector>
+
+#include <GL/glew.h>
+#include <boost/static_assert.hpp>
+#include <boost/type_traits.hpp>
 #include <boost/shared_ptr.hpp>
+
+#include "Base.hpp"
 
 namespace PyUni {
 namespace GL {

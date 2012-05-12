@@ -23,15 +23,14 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-
 #ifndef _PYUNI_X11_DISPLAY_H
 #define _PYUNI_X11_DISPLAY_H
 
 #include <X11/Xlib.h>
 #include <X11/extensions/Xinerama.h>
 
-#include "../Display.hpp"
-#include "../EventSink.hpp"
+#include "WindowInterface/Display.hpp"
+#include "WindowInterface/EventSink.hpp"
 
 namespace PyUni {
 class X11Display : public Display {

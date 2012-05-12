@@ -5,10 +5,10 @@ cmake_minimum_required(VERSION 2.6)
         add_custom_target(${TARGET_NAME}
         COMMAND sphinx-build -b ${BUILDER} . sphinx/build/${BUILDER}
             WORKING_DIRECTORY docs
+            DEPENDS doxygen
             COMMENT ${COMMENT_STR}
         )
     endmacro(add_sphinx_target)
-
 
 # project setup
     project(pyUniverse CXX C)
@@ -41,6 +41,27 @@ cmake_minimum_required(VERSION 2.6)
     include_directories(${OpenGL_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS})
     set(LIBS ${LIBS} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} ${GLEW_LIBRARY})
 
+    # glib
+    find_package(glib REQUIRED)
+    include_directories(${glib_INCLUDE_DIRS})
+    set(LIBS ${LIBS}
+        ${glib_LIBRARIES}
+    )
+
+    # pango
+    find_package(Pango REQUIRED)
+    include_directories(${Pango_INCLUDE_DIRS})
+    set(LIBS ${LIBS}
+        ${Pango_LIBRARIES}
+    )
+
+    # cairo
+    find_package(Cairo REQUIRED)
+    include_directories(${Cairo_INCLUDE_DIRS})
+    set(LIBS ${LIBS}
+        ${Cairo_LIBRARY}
+    )
+
     # python
     find_package(PythonInterp REQUIRED)
     find_package(PythonLibs REQUIRED)
@@ -48,6 +69,11 @@ cmake_minimum_required(VERSION 2.6)
     set(LIBS ${LIBS}
         ${PYTHON_LIBRARY}
     )
+
+    # pycairo
+    set(PYTHON_EXEC "/usr/bin/python2")
+    find_package(pycairo REQUIRED)
+    include_directories(${pycairo_INCLUDE_DIRS})
 
     # boost
     find_package(Boost COMPONENTS system python REQUIRED)
@@ -100,6 +126,11 @@ cmake_minimum_required(VERSION 2.6)
     target_link_libraries(${EXEC} ${PYUNI_MODULES} ${CONTRIB_MODULES} ${LIBS})
 
 # documentation targets
+    add_custom_target(doxygen
+        COMMAND doxygen docs/doxygen.conf
+        COMMENT "Build doxygen xml files used by sphinx/breathe."
+    )
+
     add_sphinx_target(docs-html
         html
         "Build html documentation"

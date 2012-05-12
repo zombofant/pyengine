@@ -23,7 +23,6 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-
 #ifndef _PYUNI_MATH_MATRICES_H
 #define _PYUNI_MATH_MATRICES_H
 

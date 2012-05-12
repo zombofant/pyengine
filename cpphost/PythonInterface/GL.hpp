@@ -26,19 +26,19 @@ named in the AUTHORS file.
 #ifndef _PYUNI_PYTHON_GL_H
 #define _PYUNI_PYTHON_GL_H
 
-#include <boost/python.hpp>
 #include <string>
+
+#include <boost/python.hpp>
 
 #include "GL/Base.hpp"
 #include "GL/StateManagement.hpp"
 #include "GL/GeometryBuffer.hpp"
 #include "GL/GeometryBufferView.hpp"
+#include "GL/CairoUtils.hpp"
 
 namespace PyUni {
 
-using namespace PyUni::GL;
-
-class StructWrap: public Struct, public boost::python::wrapper<Struct>
+class StructWrap: public GL::Struct, public boost::python::wrapper<GL::Struct>
 {
     public:
         virtual void bind()
@@ -52,7 +52,7 @@ class StructWrap: public Struct, public boost::python::wrapper<Struct>
         }
 };
 
-class ClassWrap: public Class, public boost::python::wrapper<Class>
+class ClassWrap: public GL::Class, public boost::python::wrapper<GL::Class>
 {
     public:
         virtual void bind()
@@ -66,11 +66,11 @@ class ClassWrap: public Class, public boost::python::wrapper<Class>
         }
 };
 
-class GroupWrap: public Group, public boost::python::wrapper<Group>
+class GroupWrap: public GL::Group, public boost::python::wrapper<GL::Group>
 {
     public:
         GroupWrap(int order = 0):
-            Group::Group(order) {}
+            GL::Group::Group(order) {}
     public:
         virtual void execute()
         {
@@ -80,21 +80,21 @@ class GroupWrap: public Group, public boost::python::wrapper<Group>
             }
             else
             {
-                this->Group::execute();
+                this->GL::Group::execute();
             }
         }
 
         void __bp_execute()
         {
-            this->Group::execute();
+            this->GL::Group::execute();
     }
 };
 
-class ParentGroupWrap: public ParentGroup, public boost::python::wrapper<ParentGroup>
+class ParentGroupWrap: public GL::ParentGroup, public boost::python::wrapper<GL::ParentGroup>
 {
     public:
         ParentGroupWrap(int order = 0):
-            ParentGroup::ParentGroup(order) {}
+            GL::ParentGroup::ParentGroup(order) {}
     public:
         virtual void execute()
         {
@@ -104,7 +104,7 @@ class ParentGroupWrap: public ParentGroup, public boost::python::wrapper<ParentG
             }
             else
             {
-                this->ParentGroup::execute();
+                this->GL::ParentGroup::execute();
             }
         }
 
@@ -116,7 +116,7 @@ class ParentGroupWrap: public ParentGroup, public boost::python::wrapper<ParentG
             }
             else
             {
-                this->ParentGroup::setUp();
+                this->GL::ParentGroup::setUp();
             }
         }
 
@@ -128,23 +128,23 @@ class ParentGroupWrap: public ParentGroup, public boost::python::wrapper<ParentG
             }
             else
             {
-                this->ParentGroup::tearDown();
+                this->GL::ParentGroup::tearDown();
             }
         }
 
         void __bp_execute()
         {
-            this->ParentGroup::execute();
+            this->GL::ParentGroup::execute();
         }
 
         void __bp_setUp()
         {
-            this->ParentGroup::setUp();
+            this->GL::ParentGroup::setUp();
         }
 
         void __bp_tearDown()
         {
-            this->ParentGroup::tearDown();
+            this->GL::ParentGroup::tearDown();
         }
 };
 

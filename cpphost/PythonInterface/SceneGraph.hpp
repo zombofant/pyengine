@@ -35,16 +35,14 @@ named in the AUTHORS file.
 
 namespace PyUni {
 
-using namespace SceneGraph;
-
 class LeafWrap;
 typedef boost::shared_ptr<LeafWrap> LeafWrapHandle;
 
-class LeafWrap: public Leaf, public boost::python::wrapper<Leaf>
+class LeafWrap: public SceneGraph::Leaf, public boost::python::wrapper<SceneGraph::Leaf>
 {
     protected:
         LeafWrap():
-            Leaf::Leaf() {};
+            SceneGraph::Leaf::Leaf() {};
     public:
     
         static LeafWrapHandle create()

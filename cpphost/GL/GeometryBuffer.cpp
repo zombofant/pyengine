@@ -24,6 +24,7 @@ For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
 #include "GeometryBuffer.hpp"
+
 #include <cassert>
 
 namespace PyUni {

@@ -26,25 +26,25 @@ named in the AUTHORS file.
 #ifndef _PYUNI_GL_GEOMETRY_BUFFERS_H
 #define _PYUNI_GL_GEOMETRY_BUFFERS_H
 
-#include <glew.h>
-#include "Base.hpp"
+#include <cstring>
 #include <limits>
-#include <boost/static_assert.hpp>
-#include <boost/type_traits.hpp>
 #include <list>
 #include <set>
 #include <vector>
 #include <string>
+
+#include <GL/glew.h>
+#include <boost/static_assert.hpp>
+#include <boost/type_traits.hpp>
 #include <boost/shared_ptr.hpp>
+
+#include "Math/Vectors.hpp"
+#include "Base.hpp"
 #include "BufferMap.hpp"
 #include "GenericBuffer.hpp"
-#include <string.h>
-#include "Math/Vectors.hpp"
 
 namespace PyUni {
 namespace GL {
-    
-using namespace PyUni;
 
 typedef float GLVertexFloat;
 typedef GLsizei VertexIndex;

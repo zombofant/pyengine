@@ -38,6 +38,9 @@ try:
 except ImportError as err:
     __globalError = err
 
+import cairo
+from CairoWrapper import CairoSurface
+
 class PNGTextureLoader(ResourceLoader):
     """
     Implement a loader for png images as OpenGL textures.
@@ -46,15 +49,22 @@ class PNGTextureLoader(ResourceLoader):
     def __init__(self, **kwargs):
         if globals()["__globalError"]:
             self._loaderNotAvailable(globals()["__globalError"])
+        targetClasses = []
         try:
-            super(PNGTextureLoader, self).__init__(
-                [Texture2D],
-                ['png'],
-                relativePathPrefix="/data/textures",
-                **kwargs)
-            # just probe for a NameError
+            targetClasses.append(Texture2D)
         except NameError as err:
             self._loaderNotAvailable(unicode(err))
+        targetClasses.append(CairoSurface)
+        try:
+            CUni
+        except NameError as err:
+            self._loaderNotAvailable(unicode(err))
+        
+        super(PNGTextureLoader, self).__init__(
+            targetClasses,
+            ['png'],
+            relativePathPrefix="/data/textures",
+            **kwargs)
         
  
     def load(self, fileLike, targetClass=None):
@@ -65,13 +75,19 @@ class PNGTextureLoader(ResourceLoader):
         image = CResources.PNGImage(CUni.Stream(fileLike))
         if image is None or not image.IsValid:
             raise ValueError("Not valid PNG data.")
-        texture = Texture2D(
-            width=image.Width,
-            height=image.Height,
-            format=GL_RGBA,
-            data=image)
-        del image
-        return texture
+        
+        if issubclass(targetClass, CairoSurface):
+            return CairoSurface(image.cairoSurface())
+        elif issubclass(targetClass, Texture2D):            
+            texture = Texture2D(
+                width=image.Width,
+                height=image.Height,
+                format=GL_RGBA,
+                data=image)
+            del image
+            return texture
+        else:
+            assert targetClass in self._supportedTargetClasses
 
 # register an instance of TextLoader with the resource manager
 ResourceManager().registerResourceLoader(PNGTextureLoader)

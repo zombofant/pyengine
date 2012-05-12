@@ -24,9 +24,10 @@ For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
 #include "GeometryBufferView.hpp"
-#include "GeometryObject.hpp"
 
 #include <iostream>
+
+#include "GeometryObject.hpp"
 
 namespace PyUni {
 namespace GL {

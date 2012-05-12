@@ -8,5 +8,6 @@ add_library(pyuni_GL
     "GeometryObject.cpp"
     "AbstractImage.cpp"
     "TextureAtlas.cpp"
+    "CairoUtils.cpp"
 )
 add_dependencies(pyuni_GL pyuni_Math pyuni_Misc)

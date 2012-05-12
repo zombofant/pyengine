@@ -25,9 +25,9 @@ named in the AUTHORS file.
 **********************************************************************/
 #include "SceneGraph.hpp"
 
-#include "Helpers.hpp"
-
 #include <boost/python/manage_new_object.hpp>
+
+#include "Helpers.hpp"
 
 namespace PyUni {
 

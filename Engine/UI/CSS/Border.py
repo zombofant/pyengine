@@ -28,18 +28,38 @@ from our_future import *
 import iterutils
 import copy
 
-from Fill import Fill, Colour, Transparent
+from Fill import Fill, Colour, Transparent, isPlainFill
 from Box import BaseBox
 from Rect import Rect, NotARect
 
 class BorderComponent(object):
+    """
+    Base class for border components. This only implements the
+    abstracted assignment and forms a base class to check against in
+    more sophisticated assign procedures.
+    """
+    
     def assign(self, other):
+        """
+        Assign the width and fill of the *other*
+        :class:`BorderComponent` to this instance.
+
+        If *other* is not a :class:`BorderComponent`, a :exc:`TypeError`
+        is raised.
+        """
         if not isinstance(other, BorderComponent):
             raise TypeError("Can only assign BorderComponents to BorderComponents. Got {0} {1}".format(type(other), other))
         self.Width = other.Width
         self.Fill = other.Fill
 
 class BorderEdge(BorderComponent):
+    """
+    Represents the edge of a box border. It can have both a width and
+    a filling assigned. Check for equality and unequality is implemented
+    for :class:`BorderEdge` instances, but as they are mutable, they
+    cannot be hashed.
+    """
+    
     __hash__ = None
     
     def __init__(self, width=0, fill=Transparent, **kwargs):
@@ -50,10 +70,13 @@ class BorderEdge(BorderComponent):
         self.Fill = fill
 
     def __deepcopy__(self, memo):
-        return BorderEdge(self._width, copy.deepcopy(self._fill, memo)) 
+        return BorderEdge(self._width, copy.deepcopy(self._fill, memo))
 
     @property
     def Width(self):
+        """
+        Control the width of a border edge.
+        """
         return self._width
 
     @Width.setter
@@ -66,14 +89,21 @@ class BorderEdge(BorderComponent):
     
     @property
     def Fill(self):
+        """
+        Control the filling of a border edge.
+
+        Border edges can only be filled with plain colour or can be set
+        to :data:`Transparent`. An attempt to assign any other filler to
+        a border will be punished with a :exc:`TypeError`
+        """
         return self._fill
 
     @Fill.setter
     def Fill(self, value):
         if self._fill == value:
             return
-        if not isinstance(value, Fill):
-            raise TypeError("Border needs Fill instances as fillers. Got {0} {1}".format(type(value), value))
+        if not isPlainFill(value):
+            raise TypeError("Border needs plain fill instances as fillers (e.g. colour or transparent). Got {0} {1}".format(type(value), value))
         self._fill = value
 
     def __eq__(self, other):
@@ -93,26 +123,46 @@ class BorderEdge(BorderComponent):
         return "BorderEdge(width={0!r}, fill={1!r})".format(self._width, self._fill)
 
 class Border(BorderComponent):
+    """
+    Represents a complete box border with four edges and radii for each
+    corner to support rounded corners.
+
+    :class:`Border` implements check for equality and inequality, but
+    no hashing.
+    """
+    
     __hash__ = None
     
     def __init__(self, width=0, fill=None, **kwargs):
         self._edges = [BorderEdge() for i in range(4)]
-        self._corners = [None for i in range(4)]
+        self._corners = [0] * 4
         super(Border, self).__init__(**kwargs)
         self.Width = width
         if fill is not None:
-            self.Fill = fill    
+            self.Fill = fill
+    
     def assign(self, other):
+        """
+        Assign the values of another :class:`BorderComponent` to this
+        instance.
+
+        If *other* is a :class:`Border`, each edge is transferred
+        separately using its own assign method. The radii for each
+        corner is also copied.
+
+        If *other* is a :class:`BorderComponent`, *other* is assigned to
+        all edges and the rounded corner radius is reset to `0`.
+
+        If none of the above applies, a :exc:`TypeError` is raised.
+        """
         if isinstance(other, Border):
             for edgeA, edgeB in zip(self._edges, other._edges):
-                edgeA.Width = edgeB.Width
-                edgeA.Fill = edgeB.Fill
+                edgeA.assign(edgeB)
             self._corners = list(other._corners)
         elif isinstance(other, BorderComponent): 
             for edgeA in self._edges:
-                edgeA.Width = other.Width
-                edgeA.Fill = other.Fill
-            self._corners = [None] * 4
+                edgaA.assign(other)
+            self._corners = [0] * 4
         else:    
             raise TypeError("Can only assign BorderComponents to Border")
 
@@ -120,9 +170,29 @@ class Border(BorderComponent):
         new = Border()
         for i, edge in enumerate(self._edges):
             new._edges[i] = copy.deepcopy(edge, memo)
-        for i, corner in enumerate(self._corners):
-            new._corners[i] = copy.deepcopy(corner, memo)
+        new._corners = list(self._corners)
         return new
+
+    def setWidth(self, value):
+        """
+        Set the width of all edges to the given *value*.
+        """
+        for edge in self._edges:
+            edge.Width = value
+
+    def setFill(self, value):
+        """
+        Set the filler for all edges to the given *value*. The same
+        restrictions as for :attr:`BorderEdge.Fill` apply.
+        """
+        for edge in self._edges:
+            edge.Fill = value
+
+    def setRadius(self, value):
+        """
+        Set the rounding radius of each edge to *value*.
+        """
+        self._corners = [value] * 4
 
     @property
     def Width(self):
@@ -130,8 +200,7 @@ class Border(BorderComponent):
 
     @Width.setter
     def Width(self, value):
-        for edge in self._edges:
-            edge.Width = value
+        self.setWidth(value)
     
     @property
     def Fill(self):
@@ -139,9 +208,7 @@ class Border(BorderComponent):
 
     @Fill.setter
     def Fill(self, value):
-        for edge in self._edges:
-            edge.Fill = value
-        self._corners = [value] * 4
+        self.setFill(value)
 
     @property
     def Left(self):
@@ -174,46 +241,37 @@ class Border(BorderComponent):
     @Bottom.setter
     def Bottom(self, value):
         self._edges[3].assign(value)
-
-
+    
     @property
-    def TopLeft(self):
+    def TopLeftRadius(self):
         return self._corners[0]
 
-    @TopLeft.setter
-    def TopLeft(self, value):
-        if not isinstance(value, Fill):
-            raise TypeError("TopLeft must be a Fill instance. Got {0} {1}".format(type(value), value))
+    @TopLeftRadius.setter
+    def TopLeftRadius(self, value):
         self._corners[0] = value
 
     @property
-    def TopRight(self):
+    def TopRightRadius(self):
         return self._corners[1]
 
-    @TopRight.setter
-    def TopRight(self, value):
-        if not isinstance(value, Fill):
-            raise TypeError("TopRight must be a Fill instance. Got {0} {1}".format(type(value), value))
+    @TopRightRadius.setter
+    def TopRightRadius(self, value):
         self._corners[1] = value
 
     @property
-    def BottomRight(self):
+    def BottomRightRadius(self):
         return self._corners[2]
 
-    @BottomRight.setter
-    def BottomRight(self, value):
-        if not isinstance(value, Fill):
-            raise TypeError("BottomRight must be a Fill instance. Got {0} {1}".format(type(value), value))
+    @BottomRightRadius.setter
+    def BottomRightRadius(self, value):
         self._corners[2] = value
 
     @property
-    def BottomLeft(self):
+    def BottomLeftRadius(self):
         return self._corners[3]
 
-    @BottomLeft.setter
-    def BottomLeft(self, value):
-        if not isinstance(value, Fill):
-            raise TypeError("BottomLeft must be a Fill instance. Got {0} {1}".format(type(value), value))
+    @BottomLeftRadius.setter
+    def BottomLeftRadius(self, value):
         self._corners[3] = value
 
     def __eq__(self, other):
@@ -222,10 +280,7 @@ class Border(BorderComponent):
         for edgeA, edgeB in zip(self._edges, other._edges):
             if not edgeA == edgeB:
                 return False
-        for cornerA, cornerB in zip(self._corners, other._corners):
-            if not cornerA == cornerB:
-                return False
-        return True
+        return self._corners == other._corners
 
     def __ne__(self, other):
         r = self.__eq__(other)
@@ -272,3 +327,19 @@ class Border(BorderComponent):
                 prevFill = fill
             fill.geometryForRect(rect, faceBuffer)
         return box
+
+    def inCairo(self, rect, cr):
+        """
+        Execute all instructions neccessary to draw this border as the
+        inner border in *rect* on cairo context *cr*.
+        """
+        raise NotImplementedError("this should in fact be done by Style currently")
+
+    def cairoGroupForRect(self, rect, cr):
+        """
+        Create and return a cairo group for this border as inner border
+        in *rect*, using *cr* as cairo context.
+        """
+        cr.push_group()
+        self.inCairo(rect, cr)
+        return cr.pop_group()

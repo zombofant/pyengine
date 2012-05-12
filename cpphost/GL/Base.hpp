@@ -28,12 +28,13 @@ named in the AUTHORS file.
 
 #include "pyuniConfig.hpp"
 
-#include <glew.h>
 #include <string>
+#include <iostream>
+
+#include <GL/glew.h>
 #include <boost/shared_ptr.hpp>
 
 #include "Misc/Exception.hpp"
-#include <iostream>
 
 namespace PyUni {
 namespace GL {

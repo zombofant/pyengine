@@ -27,6 +27,7 @@ named in the AUTHORS file.
 #define _PYUNI_RESOURCES_PNG_IO_WRAPPER_H
 
 #include <png.h>
+
 #include "Stream.hpp"
 
 namespace PyUni {

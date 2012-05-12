@@ -44,13 +44,14 @@ class EventLoop {
         EventSinkHandle _eventSink;
         TimeFloat _deltaT;
         bool _terminated;
-        double _currentFPS;
     public:
         void terminate();
         void run();
     public:
         double getSyncedFrameLength();
         void setSyncedFrameLength(const TimeFloat deltaT);
+    public:
+        double currentFPS;
 };
 
 /* free functions */

@@ -23,7 +23,6 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-
 #ifndef _PYUNI_MATH_VECTORS_H
 #define _PYUNI_MATH_VECTORS_H
 
@@ -85,10 +84,28 @@ struct Vector2 {
         Vector2(const VectorFloat X, const VectorFloat Y);
         Vector2(const Vector2f &vec2f);
         Vector2(const VectorFloat angle);
-        
+
+        /**
+         * @brief Calculate the length of the vector and return it.
+         */
         VectorFloat length() const;
+
+        /**
+         * @brief Return the normalized vector.
+         *
+         * This does not change the vector instance.
+         */
         Vector2 normalized() const;
+
+        /**
+         * @brief Normalize the vector in place.
+         */
         void normalize();
+
+        /**
+         * @brief Convert the vector to its float instead of VectorFloat
+         * representation.
+         */
         Vector2f toVector2f() const;
         
         void dump() const;
@@ -122,7 +139,13 @@ struct Vector3 {
         Vector3(double X, double Y, double Z);
         Vector3(Vector2 vec2, double Z = 0.);
         Vector3(Vector3f vec3f);
-        
+
+        /**
+          \rst
+          Return the x and y components as
+          :cpp:class:`Vector2 <PyUni::Vector2>` instance.
+          \endrst
+         */
         Vector2 vec2() const;
         
         VectorFloat length() const;
@@ -167,8 +190,21 @@ struct Vector4 {
         Vector4(Vector2 vec2, double Z = 0., double W = 0.);
         Vector4(Vector3 vec3, double W = 0.);
         Vector4(Vector4f vec4f);
-        
+
+        /**
+          \rst
+          Return the x, y components as :cpp:class:`Vector2 <PyUni::Vector2>`
+          instance.
+          \endrst
+         */
         Vector2 vec2() const;
+        
+        /**
+          \rst
+          Return the x, y, z components as :cpp:class:`Vector3 <PyUni::Vector3>`
+          instance.
+          \endrst
+         */
         Vector3 vec3() const;
         
         VectorFloat length() const;

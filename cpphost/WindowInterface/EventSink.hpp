@@ -27,6 +27,7 @@ named in the AUTHORS file.
 #define _PYUNI_EVENTSINK_H
 
 #include <string>
+
 #include <boost/shared_ptr.hpp>
 
 namespace PyUni {

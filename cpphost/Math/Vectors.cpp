@@ -23,11 +23,10 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-
 #include "Vectors.hpp"
-#include <cmath>
-
 #include "VectorTemplates.hpp"
+
+#include <cmath>
 
 namespace PyUni {
 

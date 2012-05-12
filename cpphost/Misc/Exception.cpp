@@ -24,8 +24,9 @@ For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
 #include "Exception.hpp"
-#include <boost/format.hpp>
+
 #include <execinfo.h>
+#include <boost/format.hpp>
 
 namespace PyUni {
     

@@ -26,8 +26,9 @@ named in the AUTHORS file.
 #ifndef _PYUNI_PYTHON_PACKAGE_H
 #define _PYUNI_PYTHON_PACKAGE_H
 
-#include "IO/Stream.hpp"
 #include <boost/python.hpp>
+
+#include "IO/Stream.hpp"
 
 namespace PyUni {
 

@@ -24,13 +24,13 @@ For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
 #include "Package.hpp"
+#include "CairoHelpers.hpp"
+#include "Pango.hpp"
 #include "Window.hpp"
 #include "GL.hpp"
 #include "Resources.hpp"
 #include "SceneGraph.hpp"
 #include "RenderGraph.hpp"
-
-#include <iostream>
 
 namespace PyUni {
 
@@ -151,7 +151,6 @@ sizeuint PyStream::read(void *data, const sizeuint length)
     }
     else
     {
-        std::cerr << bytes << std::endl;
         Py_XDECREF(bytes);
         throw StreamReadError("Read failed: Python did not return a valid object.");
     }
@@ -230,6 +229,7 @@ BOOST_PYTHON_MODULE(_cuni)
 void addCUniToInittab()
 {
     PyImport_AppendInittab("_cuni", &init_cuni);
+    addPangoToInittab();
     addWindowToInittab();
     addGLToInittab();
     addResourcesToInittab();

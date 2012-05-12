@@ -25,10 +25,13 @@ named in the AUTHORS file.
 **********************************************************************/
 #include "GL.hpp"
 
-#include <glew.h>
 #include <iostream>
 
+#include <GL/glew.h>
 #include <boost/python/slice.hpp>
+
+#include "GL/AbstractImage.hpp"
+#include "CairoHelpers.hpp"
 
 namespace PyUni {
 
@@ -161,6 +164,23 @@ void AttributeSlice_set(SliceT *slice, list bpList)
     }
     slice->set(buffer);
     free(buffer);
+}
+
+void __bp_glTexCairoSurfaceSubImage2D(GLenum target,
+    GLint level,
+    GLint xoffset, GLint yoffset,
+    PyObject *surfaceObj)
+{
+    if (!PyObject_IsInstance(surfaceObj, (PyObject *)Pycairo_CAPI->Surface_Type)) {
+        PyErr_SetString(PyExc_TypeError, "Surface required");
+        throw error_already_set();
+    }
+    cairo_surface_t *surface = ((PycairoSurface*)surfaceObj)->surface;
+    glTexCairoSurfaceSubImage2D(target, level, xoffset, yoffset, surface);
+}
+
+PyObject *__bp_AbstractImage2D__cairoSurface(AbstractImage2DHandle image) {
+    return PycairoSurface_FromSurface(image->cairoSurface(), 0);
 }
 
 BOOST_PYTHON_MODULE(_cuni_gl)
@@ -310,6 +330,12 @@ BOOST_PYTHON_MODULE(_cuni_gl)
         .def("setUp", &TransformGroup::setUp)
         .def("tearDown", &TransformGroup::tearDown)
     ;
+
+    class_<AbstractImage2D, AbstractImage2DHandle, boost::noncopyable>("AbstractImage2D", no_init)
+        .def("cairoSurface", &__bp_AbstractImage2D__cairoSurface)
+    ;
+
+    def("glTexCairoSurfaceSubImage2D", &__bp_glTexCairoSurfaceSubImage2D);
 }
 
 void addGLToInittab()

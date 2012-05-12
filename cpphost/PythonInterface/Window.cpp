@@ -23,13 +23,14 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
+#include "Window.hpp"
+
 #include <vector>
+
 #include <boost/shared_ptr.hpp>
 
 #include "WindowInterface/X11/X11Display.hpp"
 #include "WindowInterface/X11/X11Window.hpp"
-
-#include "Window.hpp"
 
 using namespace boost::python;
 
@@ -129,6 +130,7 @@ BOOST_PYTHON_MODULE(_cuni_window)
         .def("run", &EventLoop::run)
         .def("terminate", &EventLoop::terminate)
         .add_property("SyncedFrameLength", &EventLoop::getSyncedFrameLength, &EventLoop::setSyncedFrameLength)
+        .def_readonly("CurrentFPS", &EventLoop::currentFPS)
     ;
 }
 

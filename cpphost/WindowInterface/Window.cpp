@@ -24,7 +24,8 @@ For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
 #include "Window.hpp"
-#include <glew.h>
+
+#include <GL/glew.h>
 
 namespace PyUni {
 
