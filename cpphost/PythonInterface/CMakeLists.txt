@@ -1,5 +1,6 @@
 
 add_library(pyuni_PythonInterface STATIC
+    "Helpers.cpp"
     "CairoHelpers.cpp"
     "Pango.cpp"
     "Package.cpp"
