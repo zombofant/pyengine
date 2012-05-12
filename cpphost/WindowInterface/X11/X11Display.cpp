@@ -67,7 +67,8 @@ X11Display::X11Display(const char *display):
     this->openInputContext();
 
     // FIXME: This should be configurable (or at least discoverable)
-    // ask the pyglet source
+    // ask the pyglet source ... okay they just have scrolly
+    // and it is hardcoded
     _scroll_x = (int *) malloc(sizeof(int) * MAXBUTTONS);
     _scroll_y = (int *) malloc(sizeof(int) * MAXBUTTONS);
 

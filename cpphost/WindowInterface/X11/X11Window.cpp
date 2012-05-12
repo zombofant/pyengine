@@ -39,6 +39,8 @@ X11Window::X11Window(::Display *disp,
     _glx_context = context;
 
     _win = setupWindow(w, h);
+    setTitle("Untitled");
+
     _glx_win = glXCreateWindow(_display, config, _win, NULL);
 }
 
@@ -92,6 +94,36 @@ X11Window::~X11Window() {
     glXWaitGL();
     glXWaitX();
     return win;
+}
+
+void X11Window::setTextProperty(const char *atom, const char *value, bool utf8) {
+    XTextProperty p;
+    Atom atom_ = XInternAtom(_display, atom, False);
+    char *foo = (char *) value;
+    if (utf8) {
+        int status = Xutf8TextListToTextProperty(_display, &foo, 1, XUTF8StringStyle, &p);
+        if (status != 0) {
+            printf("utf8 Property Status %d\n", status);
+            // FIXME: fail loudly
+        }
+    } else {
+        int status = XStringListToTextProperty(&foo, 1, &p);
+        if (status == 0) {
+            printf("Text Property Status %d\n", status);
+            // FIXME: fail loudly
+        }
+    }
+    XSetTextProperty(_display, _win, &p, atom_);
+}
+
+void X11Window::setTitle(const char *title) {
+    // set title -- where do we get our title from?
+    // how do we map the title back to ascii for WM_NAME/WM_ICON_NAME
+    // well we don't ...
+    this->setTextProperty("WM_NAME", title, false);
+    this->setTextProperty("WM_ICON_NAME", title, false);
+    this->setTextProperty("_NET_WM_NAME", title);
+    this->setTextProperty("_NET_WM_ICON_NAME", title);
 }
 
 void X11Window::switchTo() {

@@ -37,6 +37,8 @@ class Window {
 
         virtual void flip() = 0;
         virtual void switchTo() = 0;
+
+        virtual void setTitle(const char *title) = 0;
     private:
         bool _glewInitialized;
     public:
