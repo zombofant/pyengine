@@ -71,7 +71,7 @@ VertexFormat::VertexFormat(const unsigned int aNPosition,
             nVertexAttrib2 + nVertexAttrib3 + (normal?3:0))
 {
     assert((nPosition >= 2) && (nPosition <= 4));
-    assert((nColour >= 3) && (nColour <= 4));
+    assert((nColour >= 3 || nColour == 0) && (nColour <= 4));
     assert((nTexCoord0 <= 4));
     assert((nTexCoord1 <= 4));
     assert((nTexCoord2 <= 4));
