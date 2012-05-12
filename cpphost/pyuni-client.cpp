@@ -29,6 +29,10 @@ named in the AUTHORS file.
 #include <cassert>
 #include <boost/python.hpp>
 
+#include "IO/Log.hpp"
+#include "IO/FileStream.hpp"
+#include "IO/StdIOStream.hpp"
+
 #include "WindowInterface/Display.hpp"
 #include "WindowInterface/Window.hpp"
 #include "WindowInterface/X11/X11Display.hpp"
@@ -39,6 +43,12 @@ named in the AUTHORS file.
 PyUni::Display *disp = 0;
 
 int main(int argc, char** argv) {
+    PyUni::StreamHandle xmlFile(new PyUni::FileStream("log.xml", PyUni::OM_WRITE, PyUni::WM_OVERWRITE));
+    PyUni::log->addSink(PyUni::LogSinkHandle(new PyUni::LogStreamSink(PyUni::All, PyUni::stdout)));
+    PyUni::log->logf(PyUni::Debug, "Set up stdout sink");
+    PyUni::log->addSink(PyUni::LogSinkHandle(new PyUni::LogXMLSink(PyUni::All & (~PyUni::Debug), xmlFile, "log.xsl")));
+    PyUni::log->logf(PyUni::Debug, "Set up xml sink");
+    PyUni::log->logf(PyUni::Information, "Log system started up successfully.");
     try
     {
         PyUni::addCUniToInittab();
@@ -72,9 +82,11 @@ int main(int argc, char** argv) {
             str = std::string(s.str());
         }
         exec(str.c_str(), main_namespace);
+        delete PyUni::log;
     }
     catch (boost::python::error_already_set const&)
     {
+        delete PyUni::log;
         PyErr_Print();
         return 1;
     }

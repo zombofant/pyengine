@@ -29,6 +29,8 @@ named in the AUTHORS file.
 
 #include <boost/python.hpp>
 
+#include "IO/Log.hpp"
+
 #include "Misc/Exception.hpp"
 #include "Display.hpp"
 
@@ -83,7 +85,7 @@ void EventLoop::run()
             
             if (fpsInterval >= 1.0) {
                 currentFPS = (double)(frameCount) / fpsInterval;
-                std::cerr << "fps: " << currentFPS << std::endl;
+                log->logf(Information, "fps: %.2f", currentFPS);
                 frameCounterStart = currentUpdate;
                 frameCount = 0;
             }
