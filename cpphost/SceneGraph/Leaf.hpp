@@ -50,8 +50,6 @@ class Leaf: public Spatial
         VertexMapHandle _vertexMap;
     public:
         VertexMapHandle getVertexMap() { return _vertexMap; };
-    public:
-        static LeafHandle create();
 };
 
 }

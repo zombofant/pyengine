@@ -60,10 +60,7 @@ class Spatial
         virtual void rotate(double x, double y, double z, double angle);
         virtual void scale(double x, double y, double z);
 
-        virtual void onDraw();
-        virtual void draw();
-
-        static SpatialHandle create();
+        virtual void draw() = 0;
 
     protected:
         WeakSpatialHandle _parent;
