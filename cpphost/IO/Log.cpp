@@ -250,7 +250,7 @@ const char *SeverityName(Severity severity)
         "info",
         "hint",
         "warn",
-        "error"
+        "error",
         "panic"
     };
 
