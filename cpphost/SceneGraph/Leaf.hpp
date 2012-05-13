@@ -49,7 +49,7 @@ class Leaf: public Spatial
     protected:
         VertexMapHandle _vertexMap;
     public:
-        virtual void draw();
+        virtual void draw() = 0;
         VertexMapHandle getVertexMap() { return _vertexMap; };
 };
 

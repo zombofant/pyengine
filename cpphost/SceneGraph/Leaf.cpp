@@ -38,9 +38,5 @@ Leaf::Leaf():
 {
 }
 
-void Leaf::draw()
-{
-}
-
 }
 }
