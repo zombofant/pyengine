@@ -36,6 +36,9 @@ except ImportError:
             class EventSink(object):
                 pass
 
+from CUni.Log import server, Severity
+log = server
+
 import time
 from OpenGL.GL import *
 from OpenGL.GL.framebufferobjects import *
@@ -70,10 +73,11 @@ class Application(RootWidget, CUni.Window.EventSink):
             modes = display.DisplayModes
             modes.sort(reverse=True)
             mode = modes[0]
-            print("Creating context with mode: {0}".format(mode))
+            log.log(Severity.Information, "Creating context with mode: {0}".format(mode))
             self._window = display.createWindow(mode, geometry[0], geometry[1], fullscreen)
             self._window.switchTo()
             self._window.initializeGLEW()
+            self._window._sceneWidgets = []
             #self._window.switchTo()
             self._newScreen(self._window, 0, 0, *geometry)
 

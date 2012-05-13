@@ -26,14 +26,12 @@ named in the AUTHORS file.
 #ifndef _PYUNI_WINDOW_EVENTLOOP_H
 #define _PYUNI_WINDOW_EVENTLOOP_H
 
-#include <ctime>
+#include "IO/Time.hpp"
 
 #include "EventSink.hpp"
 #include "Display.hpp"
 
 namespace PyUni {
-
-typedef double TimeFloat;
 
 class EventLoop {
     public:
@@ -53,12 +51,6 @@ class EventLoop {
     public:
         double currentFPS;
 };
-
-/* free functions */
-
-timespec nanotime();
-TimeFloat timeToDouble(const timespec &time);
-TimeFloat timeIntervalToDouble(const timespec &prev, const timespec &curr);
 
 
 }

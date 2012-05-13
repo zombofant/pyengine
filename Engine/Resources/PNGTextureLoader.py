@@ -50,11 +50,11 @@ class PNGTextureLoader(ResourceLoader):
         if globals()["__globalError"]:
             self._loaderNotAvailable(globals()["__globalError"])
         targetClasses = []
-        targetClasses.append(CairoSurface)
         try:
             targetClasses.append(Texture2D)
         except NameError as err:
             self._loaderNotAvailable(unicode(err))
+        targetClasses.append(CairoSurface)
         try:
             CUni
         except NameError as err:

@@ -29,7 +29,9 @@ from our_future import *
 import os
 import sys
 
-from Base import ResourceLoader
+from CUni.Log import Severity
+
+from Base import ResourceLoader, log
 from Engine.VFS.FileSystem import FileSystem
 import Engine.VFS.Utils as Utils
 
@@ -158,7 +160,7 @@ class ResourceManager(object):
         try:
             loader = loaderClass(**kwargs)
         except NotImplementedError as err:
-            print("Loader {0!s} is not available. Reason: {1!s}".format(loaderClass, err), file=sys.stderr)
+            log.log(Severity.Warning, "Loader {0!s} is not available. Reason: {1!s}".format(loaderClass, err))
             return
         for resourceType in loader.ResourceTypes:
             if resourceType in self._resourceLoaders:

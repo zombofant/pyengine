@@ -66,6 +66,21 @@ void Spatial::updateWorldData()
     }
 }
 
+void Spatial::translate(double x, double y, double z)
+{
+    localTransformation.Translation(Vector3(x, y, z));
+}
+
+void Spatial::rotate(double x, double y, double z, double angle)
+{
+    localTransformation.Rotation(Vector3(x, y, z), angle);
+}
+
+void Spatial::scale(double x, double y, double z)
+{
+    localTransformation.Scale(Vector3(x, y, z));
+}
+
 void Spatial::onDraw()
 {
 }

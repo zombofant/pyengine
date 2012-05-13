@@ -13,3 +13,5 @@ pyuni-client
 *.a
 *.o
 cpphost/pyuniConfig.hpp
+log.xml
+log.txt
