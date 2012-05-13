@@ -26,6 +26,8 @@ named in the AUTHORS file.
 #ifndef _PYUNI_RESOURCES_FONT_H
 #define _PYUNI_RESOURCES_FONT_H
 
+#include <string>
+#include <tuple>
 #include <unordered_map>
 
 #include <ft2build.h>
@@ -33,6 +35,20 @@ named in the AUTHORS file.
 #include <boost/weak_ptr.hpp>
 
 #include "IO/Stream.hpp"
+#include "IO/Log.hpp"
+
+namespace std {
+
+template<>
+struct hash<pair<const string, float> > {
+    size_t operator() (pair<const string, float> const &e) const {
+        std::hash<const string> left;
+        std::hash<float> right;
+        return left(e.first) ^ right(e.second);
+    }
+};
+
+} 
 
 namespace PyUni {
 namespace Resources {
@@ -79,7 +95,7 @@ class Font
 };
 
 typedef boost::shared_ptr<Font> FontHandle;
-typedef std::pair<const std::string, const float> FontMapTuple;
+typedef std::pair<const std::string, float> FontMapTuple;
 typedef std::unordered_map<FontMapTuple, FontHandle> FontMap;
 typedef boost::weak_ptr<FontLibrary> WeakFontLibraryHandle;
 
