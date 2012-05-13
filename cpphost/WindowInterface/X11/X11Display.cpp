@@ -92,7 +92,7 @@ WindowHandle X11Display::createWindow(const DisplayMode &mode, int w, int h, boo
     GLXFBConfig *configs = glXChooseFBConfig(_display, DefaultScreen(_display), reqAttribs, &count);
     if (count == 0) {
         // TODO: Raise an error here
-        std::cerr << "No config found for: " << mode << std::endl;
+        _log->log(Error) << "No config found for mode: " << mode << submit;
         return WindowHandle();
     }
 
