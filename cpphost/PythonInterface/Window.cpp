@@ -101,15 +101,15 @@ BOOST_PYTHON_MODULE(_cuni_window)
         .def("switchTo", &X11Window::switchTo)
     ;;
 
-    class_<DisplayWrap, DisplayHandle, boost::noncopyable>("Display", no_init)
+    class_<Display, DisplayHandle, boost::noncopyable>("Display", no_init)
         .add_property("Screens", &Display_screens_get)
         .add_property("DisplayModes", &Display_displayModes_get)
         .def("createWindow", pure_virtual(&Display::createWindow))
     ;
     class_<X11Display, bases<Display> >("X11Display", no_init);
 
-    implicitly_convertible<boost::shared_ptr<DisplayWrap>, DisplayHandle >();
-    
+    implicitly_convertible<boost::shared_ptr<Display>, DisplayHandle >();
+
     class_<EventSinkWrap, boost::shared_ptr<EventSinkWrap>, boost::noncopyable>("EventSink")
         .def("frameSynced", pure_virtual(&EventSink::frameSynced))
         .def("frameUnsynced", pure_virtual(&EventSink::frameUnsynced))
@@ -123,9 +123,9 @@ BOOST_PYTHON_MODULE(_cuni_window)
         .def("handleTextInput", pure_virtual(&EventSink::handleTextInput))
     ;
     // class_<EventSinkWrap, bases<EventSink>, boost::shared_ptr<EventSinkWrap> >("EventSink");
-    
+
     boost::python::implicitly_convertible<boost::shared_ptr<EventSinkWrap>, EventSinkHandle >();
-    
+
     class_<EventLoop, boost::shared_ptr<EventLoop>, boost::noncopyable>("EventLoop", init<DisplayHandle, EventSinkHandle>())
         .def("run", &EventLoop::run)
         .def("terminate", &EventLoop::terminate)
