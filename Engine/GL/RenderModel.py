@@ -121,6 +121,7 @@ class RenderModel(Model, Leaf):
         Draw the RenderModel using OpenGL.
         Call this in your render-loop to render the underlying model.
         """
+        self.applyTransformation()
         for buf, indices in self._batch:
             buf.bind()
             buf.draw(indices, GL_TRIANGLES)
