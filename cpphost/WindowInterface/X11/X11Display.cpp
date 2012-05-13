@@ -30,12 +30,14 @@ named in the AUTHORS file.
 #include <iostream>
 
 #include "WindowInterface/Display.hpp"
+
 #include "X11Window.hpp"
 
 namespace PyUni {
 
 X11Display::X11Display(const char *display):
-    Display::Display()
+    Display::Display(),
+    _log(log->getChannel("x11"))
 {
     if (display == NULL) {
         display = getenv("DISPLAY");
@@ -304,17 +306,17 @@ void X11Display::pullEvents(EventSink *sink) {
                     sink->handleWMQuit();
                 } else {
                     char *name = XGetAtomName(_display, event.xclient.data.l[0]);
-                    fprintf(stderr, "Unknown X WM Protocol message %s!\n", name);
+                    _log->logf(Warning, "Unknown X WM Protocol message %s!\n", name);
                     XFree(name);
                 }
             } else {
                 char *name = XGetAtomName(_display, event.xclient.message_type);
-                fprintf(stderr, "Unknown X ClientMessage type %s!\n", name);
+                _log->logf(Warning, "Unknown X ClientMessage type %s!\n", name);
                 XFree(name);
             }
             break;
         default:
-            fprintf(stderr, "Unknown X Event (type %d)!\n", event.type);
+            _log->logf(Warning, "Unknown X Event (type %d)!", event.type);
             break;
         }
     }

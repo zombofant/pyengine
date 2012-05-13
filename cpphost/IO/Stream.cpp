@@ -213,6 +213,15 @@ void Stream::writeInt64(const int64 value)
     return writeInt<int64>(value);
 }
 
+void Stream::writeNullTerminated(const char *value)
+{
+    const sizeuint length = strlen(value);
+    const sizeuint writtenBytes = write(value, length);
+    if (writtenBytes < length) {
+        raiseWriteError(writtenBytes, length);
+    }
+}
+
 void Stream::writeString(const std::string &value)
 {
     

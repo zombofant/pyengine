@@ -22,4 +22,7 @@
 # For feedback and questions about pyuni please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
-from _cuni import *
+try:
+    from _cuni import *
+except ImportError:
+    pass
