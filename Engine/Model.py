@@ -25,7 +25,42 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 import sys
-from GL.SceneGraph.Core import Geometry
+
+class Geometry(object):
+
+    def __init__(self, **kwargs):
+        super(Geometry, self).__init__(**kwargs)
+
+    @property
+    def Indices(self):
+        return self._indices
+
+    @Indices.setter
+    def Indices(self, value):
+        if value == []: value = None
+        self._indices = value
+
+    @property
+    def Vertices(self):
+        return self._vertices
+
+    @Vertices.setter
+    def Vertices(self, value):
+        if value == []: value = None
+        self._vertices = value
+
+    @property
+    def Normals(self):
+        return self._normals
+
+    @Normals.setter
+    def Normals(self, value):
+        if value == []: value = None
+        self._normals = value
+
+    @property
+    def BoundingVolume(self):
+        return self._boundingVolume
 
 class Model(Geometry):
     """

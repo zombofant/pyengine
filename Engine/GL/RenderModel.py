@@ -58,6 +58,8 @@ class RenderModel(Model, Leaf):
         """
         Clean up all buffers currently loaded for this model.
         """
+        for buf, vertices in self._batch:
+            buf.unbind()
         self._batch = []
 
     @classmethod
@@ -107,6 +109,7 @@ class RenderModel(Model, Leaf):
                     bufView.Normal.set(normals)
                 if len(texCoords) > 0:
                     bufView.TexCoord(0).set(texCoords)
+                buf.bind()
                 self._batch.append((buf, indices))
                 pos = nextMatSwitchIndex
             if material[0] == '(null)':
@@ -121,8 +124,7 @@ class RenderModel(Model, Leaf):
         Draw the RenderModel using OpenGL.
         Call this in your render-loop to render the underlying model.
         """
+        self.applyTransformation()
         for buf, indices in self._batch:
-            buf.bind()
             buf.draw(indices, GL_TRIANGLES)
-            buf.unbind()
 

@@ -63,9 +63,14 @@ BOOST_PYTHON_MODULE(_cuni_scenegraph)
 
     class_<Spatial, SpatialHandle, boost::noncopyable>("Spatial", no_init)
         .def("translate", &Spatial::translate)
+        .def("setTranslation", &Spatial::setTranslation)
         .def("rotate", &Spatial::rotate)
+        .def("setRotation", &Spatial::setRotation)
         .def("scale", &Spatial::scale)
+        .def("setScale", &Spatial::setScale)
         .def("draw", pure_virtual(&Spatial::draw))
+        .def("resetTransformation", &Spatial::resetTransformation)
+        .def("applyTransformation", &Spatial::applyTransformation)
     ;
 
     class_<Node, bases<Spatial>, NodeHandle, boost::noncopyable>("Node", no_init)
@@ -74,8 +79,7 @@ BOOST_PYTHON_MODULE(_cuni_scenegraph)
         .def("removeChild", &Node::removeChild)
    ;
 
-    class_<LeafWrap, boost::shared_ptr<LeafWrap>, boost::noncopyable>("Leaf")
-        .def("draw", pure_virtual(&Leaf::draw))
+    class_<LeafWrap, bases<Spatial>, boost::shared_ptr<LeafWrap>, boost::noncopyable>("Leaf")
         .add_property("VertexMap", &Leaf::getVertexMap)
     ;
     implicitly_convertible<boost::shared_ptr<LeafWrap>, SpatialHandle>();
