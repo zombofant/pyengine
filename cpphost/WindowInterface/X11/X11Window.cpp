@@ -24,6 +24,9 @@ For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
 #include "X11Window.hpp"
+#include <string.h>
+
+#include <X11/Xatom.h>
 
 namespace PyUni {
 
@@ -38,7 +41,9 @@ X11Window::X11Window(::Display *disp,
     _glx_context = context;
 
     _win = setupWindow(w, h);
+
     setTitle("Untitled");
+    fullscreen();
 
     _glx_win = glXCreateWindow(_display, config, _win, NULL);
 }
@@ -130,11 +135,53 @@ void X11Window::switchTo() {
     glXMakeContextCurrent(_display, _glx_win, _glx_win, _glx_context);
 }
 
+void X11Window::fullscreen() {
+    // compare the freedesktop EWMH standard
+    XEvent event;
+
+    // just to be sure ...
+    memset(&event, '\0', sizeof(event));
+    event.xclient.type = ClientMessage;
+    event.xclient.window = _win;
+    event.xclient.message_type =
+        XInternAtom(_display, "_NET_WM_FULLSCREEN_MONITORS", False);
+
+    event.xclient.format = 32;
+    event.xclient.data.l[0] = 0; // top monitor
+    event.xclient.data.l[1] = 0; // bottom monitor
+    event.xclient.data.l[2] = 0; // left monitor
+    event.xclient.data.l[3] = 0; // right monitor
+    event.xclient.data.l[4] = 1; // application: normal
+
+    XSendEvent(_display, RootWindow(_display, 0), False,
+               SubstructureNotifyMask | SubstructureRedirectMask, &event);
+
+    // just to be sure ...
+    memset(&event, '\0', sizeof(event));
+    event.xclient.type = ClientMessage;
+    event.xclient.window = _win;
+    event.xclient.message_type =
+        XInternAtom(_display, "_NET_WM_STATE", False);
+
+    event.xclient.format = 32;
+    // operation _NET_WM_STATE_ADD
+    event.xclient.data.l[0] = 1;
+    // first property
+    event.xclient.data.l[1] =
+        XInternAtom(_display, "_NET_WM_STATE_FULLSCREEN", False);
+    // second property (0 means no second property)
+    event.xclient.data.l[2] = 0;
+    event.xclient.data.l[3] = 1; // application type: normal
+    event.xclient.data.l[4] = 0; // unused
+
+    XSendEvent(_display, RootWindow(_display, 0), False,
+               SubstructureNotifyMask | SubstructureRedirectMask, &event);
+}
+
 void X11Window::flip() {
     // vsync goes here?
     // well better if all windows are flipped in parallel?
     // using one vsync wait in the main loop?
-
     glXSwapBuffers(_display, _glx_win);
 }
 

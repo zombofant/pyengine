@@ -42,6 +42,7 @@ public:
     virtual void switchTo();
 
     virtual void setTitle(const char *title);
+    void fullscreen();
 private:
     ::Window setupWindow(int w, int h);
     void setTextProperty(const char *atom, const char *value, bool utf8=true);
