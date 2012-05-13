@@ -144,7 +144,6 @@ bool DisplayMode::operator!=(const DisplayMode &other) const
 
 Display::Display()
 {
-    printf("glew init");
 }
 
 Display::~Display() {

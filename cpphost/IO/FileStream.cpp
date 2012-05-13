@@ -98,7 +98,7 @@ FileStream::FileStream(const std::string fileName,
         checkFD(open(
             fileName.c_str(),
             (openMode==OM_BOTH?O_RDWR:(openMode==OM_READ?O_RDONLY:O_WRONLY)) |
-            (((openMode!=OM_READ) && ((writeMode==WM_OVERWRITE) || (writeMode==WM_IGNORE)))?O_CREAT:O_APPEND),
+            (((openMode!=OM_READ) && ((writeMode==WM_OVERWRITE) || (writeMode==WM_IGNORE)))?O_TRUNC:O_APPEND) | O_CREAT,
             (S_IRWXU | S_IRWXG | S_IRWXO) & (~(S_IXUSR | S_IXGRP | S_IXOTH))
         )), true),
     _openMode(openMode)

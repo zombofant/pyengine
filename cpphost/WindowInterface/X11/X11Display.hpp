@@ -31,6 +31,7 @@ named in the AUTHORS file.
 
 #include "WindowInterface/Display.hpp"
 #include "WindowInterface/EventSink.hpp"
+#include "IO/Log.hpp"
 
 namespace PyUni {
 class X11Display : public Display {
@@ -54,6 +55,8 @@ private:
     int *_scroll_x,
         *_scroll_y;
     bool _mouse_valid;
+
+    LogChannelHandle _log;
 };
 
 }

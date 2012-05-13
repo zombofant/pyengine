@@ -40,11 +40,7 @@ void KeyError(const KeyT &key)
     bpy::throw_error_already_set();
 }
 
-void ValueError(const std::string &message)
-{
-    PyErr_SetString(PyExc_ValueError, message.c_str());
-    bpy::throw_error_already_set();
-}
+void ValueError(const std::string &message);
 
 template<class Container, class Iterator>
 class AbstractIteratorWrapper
@@ -239,6 +235,9 @@ struct MapHelper
         return ValuesIteratorRegT::__iter__c(map);
     }
 };
+
+PyObject *extractUTF8String(PyObject *text, const char **data, int *len);
+
 
 }
 

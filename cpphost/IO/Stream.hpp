@@ -198,6 +198,7 @@ class Stream {
         void writeInt16(const int16 value);
         void writeInt32(const int32 value);
         void writeInt64(const int64 value);
+        void writeNullTerminated(const char* value);
         void writeString(const std::string &value);
         void writeString(const char* value);
         void writeUInt8(const uint8 value);
