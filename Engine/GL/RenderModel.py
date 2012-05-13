@@ -54,6 +54,12 @@ class RenderModel(Model, Leaf):
         super(RenderModel, self)._copy(other)
         self.update()
 
+    def _cleanup(self):
+        """
+        Clean up all buffers currently loaded for this model.
+        """
+        self._batch = []
+
     @classmethod
     def fromModel(cls, model):
         """
@@ -74,10 +80,10 @@ class RenderModel(Model, Leaf):
         has been changed in order to make the changes known to the renderer.
         """
         if len(self.PackedFaces) < 1: return
+        self._cleanup()
         pos, nextMatSwitchIndex, matCount = 0, 0, 0
         materials = self.Materials
         group = None
-        self._batch = []
         if materials is None: materials = []
         materials.append(['(null)',0])
         for material in materials:
@@ -101,8 +107,6 @@ class RenderModel(Model, Leaf):
                     bufView.Normal.set(normals)
                 if len(texCoords) > 0:
                     bufView.TexCoord(0).set(texCoords)
-                # FIXME
-                #self._batch.add(size, GL_TRIANGLES, group, *data)
                 self._batch.append((buf, indices))
                 pos = nextMatSwitchIndex
             if material[0] == '(null)':
@@ -118,5 +122,7 @@ class RenderModel(Model, Leaf):
         Call this in your render-loop to render the underlying model.
         """
         for buf, indices in self._batch:
-            buf.draw(indices, GL_TRIANGLES);
+            buf.bind()
+            buf.draw(indices, GL_TRIANGLES)
+            buf.unbind()
 
