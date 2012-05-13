@@ -24,6 +24,7 @@ For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
 #include "Window.hpp"
+#include "Helpers.hpp"
 
 #include <vector>
 
@@ -56,6 +57,19 @@ list Display_displayModes_get(const Display &self)
         boostList.append(displayModes[i]);
     }
     return boostList;
+}
+
+// FIXME: Bind this method to window
+// the polymorphy will do the thing we want for subclasses
+// it's magic!
+void bp_X11Window_setTitle(X11Window *win, PyObject *title)
+{
+    const char *utf8title;
+    PyObject *text = extractUTF8String(title, &utf8title, NULL);
+
+    win->setTitle(utf8title);
+
+    Py_DECREF(text);
 }
 
 BOOST_PYTHON_MODULE(_cuni_window)
@@ -94,12 +108,18 @@ BOOST_PYTHON_MODULE(_cuni_window)
     class_<Window, WindowHandle, boost::noncopyable>("Window", no_init)
         .def("flip", pure_virtual(&Window::flip))
         .def("switchTo", pure_virtual(&Window::switchTo))
+        .def("setTitle", pure_virtual(&Window::setTitle))
+        .def("setFullscreen", pure_virtual(&Window::setFullscreen))
+        .def("setWindowed", pure_virtual(&Window::setWindowed))
         .def("initializeGLEW", &Window::initializeGLEW)
     ;
     class_<X11Window, bases<Window> >("X11Window", no_init)
         .def("flip", &X11Window::flip)
         .def("switchTo", &X11Window::switchTo)
-    ;;
+        .def("setTitle", &bp_X11Window_setTitle)
+        .def("setFullscreen", &X11Window::setFullscreen)
+        .def("setWindowed", &X11Window::setWindowed)
+    ;
 
     class_<Display, DisplayHandle, boost::noncopyable>("Display", no_init)
         .add_property("Screens", &Display_screens_get)
@@ -139,3 +159,8 @@ void addWindowToInittab() {
 }
 
 }
+
+// Local Variables:
+// c-file-style: "k&r"
+// c-basic-offset: 4
+// End:

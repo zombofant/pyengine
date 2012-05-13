@@ -67,19 +67,27 @@ class Application(RootWidget, CUni.Window.EventSink):
 
         self._render = super(Application, self).render
 
+        modes = display.DisplayModes
+        modes.sort(reverse=True)
+        mode = modes[0]
+
+        log.log(Severity.Information, "Creating context with mode: {0}".format(mode))
+        self._window = display.createWindow(mode, geometry[0], geometry[1], fullscreen)
+
         if fullscreen:
-            raise NotImplementedError("FIXME: C++ interface does not support fullscreen yet.")
+            self._window.setFullscreen(display.Screens[0].index,
+                                       display.Screens[0].index,
+                                       display.Screens[0].index,
+                                       display.Screens[0].index)
         else:
-            modes = display.DisplayModes
-            modes.sort(reverse=True)
-            mode = modes[0]
-            log.log(Severity.Information, "Creating context with mode: {0}".format(mode))
-            self._window = display.createWindow(mode, geometry[0], geometry[1], fullscreen)
-            self._window.switchTo()
-            self._window.initializeGLEW()
-            self._window._sceneWidgets = []
-            #self._window.switchTo()
-            self._newScreen(self._window, 0, 0, *geometry)
+            self._window.setWindowed(display.Screens[0].index, *geometry)
+
+        self._window.switchTo()
+        self._window.setTitle("PythonicUniverse")
+        self._window.initializeGLEW()
+        self._window._sceneWidgets = []
+        #self._window.switchTo()
+        self._newScreen(self._window, 0, 0, *geometry)
 
         self.realign()
         self._eventLoop = CUni.Window.EventLoop(display, self)

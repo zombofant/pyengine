@@ -43,7 +43,6 @@ X11Window::X11Window(::Display *disp,
     _win = setupWindow(w, h);
 
     setTitle("Untitled");
-    fullscreen();
 
     _glx_win = glXCreateWindow(_display, config, _win, NULL);
 }
@@ -80,8 +79,6 @@ X11Window::~X11Window() {
     protos[0] = XInternAtom(_display, "WM_DELETE_WINDOW", 1);
     XSetWMProtocols(_display, win, protos, 1);
 
-    // TODO: set title, _net title
-
     // select input and map the window
     XSelectInput(_display, win,
                  ButtonPressMask
@@ -105,7 +102,8 @@ void X11Window::setTextProperty(const char *atom, const char *value, bool utf8) 
     Atom atom_ = XInternAtom(_display, atom, False);
     char *foo = (char *) value;
     if (utf8) {
-        int status = Xutf8TextListToTextProperty(_display, &foo, 1, XUTF8StringStyle, &p);
+        int status = Xutf8TextListToTextProperty(_display, &foo, 1,
+                                                 XUTF8StringStyle, &p);
         if (status != 0) {
             printf("utf8 Property Status %d\n", status);
             // FIXME: fail loudly
@@ -135,7 +133,7 @@ void X11Window::switchTo() {
     glXMakeContextCurrent(_display, _glx_win, _glx_win, _glx_context);
 }
 
-void X11Window::fullscreen() {
+void X11Window::setFullscreen(int top, int bottom, int left, int right) {
     // compare the freedesktop EWMH standard
     XEvent event;
 
@@ -147,11 +145,11 @@ void X11Window::fullscreen() {
         XInternAtom(_display, "_NET_WM_FULLSCREEN_MONITORS", False);
 
     event.xclient.format = 32;
-    event.xclient.data.l[0] = 0; // top monitor
-    event.xclient.data.l[1] = 0; // bottom monitor
-    event.xclient.data.l[2] = 0; // left monitor
-    event.xclient.data.l[3] = 0; // right monitor
-    event.xclient.data.l[4] = 1; // application: normal
+    event.xclient.data.l[0] = top;    // top monitor
+    event.xclient.data.l[1] = bottom; // bottom monitor
+    event.xclient.data.l[2] = left;   // left monitor
+    event.xclient.data.l[3] = right;  // right monitor
+    event.xclient.data.l[4] = 1;      // application: normal
 
     XSendEvent(_display, RootWindow(_display, 0), False,
                SubstructureNotifyMask | SubstructureRedirectMask, &event);
@@ -166,6 +164,32 @@ void X11Window::fullscreen() {
     event.xclient.format = 32;
     // operation _NET_WM_STATE_ADD
     event.xclient.data.l[0] = 1;
+    // first property
+    event.xclient.data.l[1] =
+        XInternAtom(_display, "_NET_WM_STATE_FULLSCREEN", False);
+    // second property (0 means no second property)
+    event.xclient.data.l[2] = 0;
+    event.xclient.data.l[3] = 1; // application type: normal
+    event.xclient.data.l[4] = 0; // unused
+
+    XSendEvent(_display, RootWindow(_display, 0), False,
+               SubstructureNotifyMask | SubstructureRedirectMask, &event);
+}
+
+void X11Window::setWindowed(int top, int w, int h) {
+    // FIXME: w and h are ignored currently
+    // compare the freedesktop EWMH standard
+    XEvent event;
+    // just to be sure ...
+    memset(&event, '\0', sizeof(event));
+    event.xclient.type = ClientMessage;
+    event.xclient.window = _win;
+    event.xclient.message_type =
+        XInternAtom(_display, "_NET_WM_STATE", False);
+
+    event.xclient.format = 32;
+    // operation _NET_WM_STATE_REMOVE
+    event.xclient.data.l[0] = 0;
     // first property
     event.xclient.data.l[1] =
         XInternAtom(_display, "_NET_WM_STATE_FULLSCREEN", False);

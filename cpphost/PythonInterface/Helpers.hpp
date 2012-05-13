@@ -73,7 +73,7 @@ class ListIteratorWrapper: public AbstractIteratorWrapper<Container, Iterator>
         ListIteratorWrapper(Iterator *it, Iterator *end):
             AbstractIteratorWrapper<Container, Iterator>::AbstractIteratorWrapper(it, end)
         {
-    
+
         }
     public:
         ResultT next()
@@ -93,7 +93,7 @@ class MapKeyIterator: public AbstractIteratorWrapper<Container, Iterator>
         MapKeyIterator(Iterator it, Iterator end):
             AbstractIteratorWrapper<Container, Iterator>::AbstractIteratorWrapper(it, end)
         {
-    
+
         }
     public:
         ResultT next()
@@ -113,7 +113,7 @@ class MapValueIterator: public AbstractIteratorWrapper<Container, Iterator>
         MapValueIterator(Iterator it, Iterator end):
             AbstractIteratorWrapper<Container, Iterator>::AbstractIteratorWrapper(it, end)
         {
-    
+
         }
     public:
         ResultT next()
@@ -133,7 +133,7 @@ class MapItemsIterator: public AbstractIteratorWrapper<Container, Iterator>
         MapItemsIterator(Iterator it, Iterator end):
             AbstractIteratorWrapper<Container, Iterator>::AbstractIteratorWrapper(it, end)
         {
-    
+
         }
     public:
         bpy::tuple next()
@@ -154,12 +154,12 @@ struct IteratorRegister
 {
     typedef typename IteratorWrapperT::IteratorT IteratorT;
     typedef typename IteratorWrapperT::ContainerT ContainerT;
-    
+
     inline static bpy::object passThrough(const bpy::object &o)
     {
         return o;
     }
-    
+
     static void wrap(const char* pythonName)
     {
         bpy::class_<IteratorWrapperT>(pythonName, bpy::no_init)
@@ -237,7 +237,6 @@ struct MapHelper
 };
 
 PyObject *extractUTF8String(PyObject *text, const char **data, int *len);
-
 
 }
 
