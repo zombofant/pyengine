@@ -74,9 +74,8 @@ BOOST_PYTHON_MODULE(_cuni_scenegraph)
         .def("removeChild", &Node::removeChild)
    ;
 
-    class_<LeafWrap, boost::shared_ptr<LeafWrap>, boost::noncopyable>("Leaf", no_init)
-        .def("__init__", make_constructor(&LeafWrap::create))
-        .def("draw", pure_virtual(&Leaf::draw))
+    class_<LeafWrap, boost::shared_ptr<LeafWrap>, boost::noncopyable>("Leaf")
+        .def("draw", &Leaf::draw)
         .add_property("VertexMap", &Leaf::getVertexMap)
     ;
     implicitly_convertible<boost::shared_ptr<LeafWrap>, SpatialHandle>();

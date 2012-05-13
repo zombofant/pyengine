@@ -26,6 +26,7 @@ named in the AUTHORS file.
 #ifndef _PYUNI_PYTHON_SCENE_GRAPH_H
 #define _PYUNI_PYTHON_SCENE_GRAPH_H
 
+#include <cassert>
 #include <boost/python.hpp>
 
 #include "SceneGraph/Node.hpp"
@@ -40,22 +41,10 @@ typedef boost::shared_ptr<LeafWrap> LeafWrapHandle;
 
 class LeafWrap: public SceneGraph::Leaf, public boost::python::wrapper<SceneGraph::Leaf>
 {
-    protected:
-        LeafWrap():
-            SceneGraph::Leaf::Leaf() {};
-    public:
-    
-        static LeafWrapHandle create()
-        {
-            LeafWrapHandle tmp(new LeafWrap());
-            tmp->_weak = tmp;
-            return tmp;
-        }
-
-        virtual void draw()
-        {
-			this->get_override("draw")();
-        }
+    virtual void draw()
+    {
+        this->get_override("draw")();
+    }
 };
 
 void addSceneGraphToInittab();

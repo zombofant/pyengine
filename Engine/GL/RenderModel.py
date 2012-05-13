@@ -103,7 +103,7 @@ class RenderModel(Model, Leaf):
                     bufView.TexCoord(0).set(texCoords)
                 # FIXME
                 #self._batch.add(size, GL_TRIANGLES, group, *data)
-                self._batch.append(buf)
+                self._batch.append((buf, indices))
                 pos = nextMatSwitchIndex
             if material[0] == '(null)':
                 group = None
@@ -117,9 +117,6 @@ class RenderModel(Model, Leaf):
         Draw the RenderModel using OpenGL.
         Call this in your render-loop to render the underlying model.
         """
-        super(RenderModel, self).draw()
-        print("DRAW")
-        for buf in self._batch:
-            print("Model DRAW")
-            buf.draw();
+        for buf, indices in self._batch:
+            buf.draw(indices, GL_TRIANGLES);
 
