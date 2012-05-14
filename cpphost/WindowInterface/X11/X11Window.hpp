@@ -31,6 +31,7 @@ named in the AUTHORS file.
 #include <X11/extensions/Xinerama.h>
 
 #include "WindowInterface/Window.hpp"
+#include "IO/Log.hpp"
 
 namespace PyUni {
 class X11Window : public Window {
@@ -44,11 +45,13 @@ private:
     ::Window setupWindow(int w, int h);
 
     ::Display *_display;
+    XVisualInfo *_x_visual;
+    GLXContext _glx_context;
     ::Window _win;
     GLXWindow _glx_win;
-    GLXContext _glx_context;
-    XVisualInfo *_x_visual;
     // Colormap _x_colormap;
+
+    LogChannelHandle _log;
 };
 
 }

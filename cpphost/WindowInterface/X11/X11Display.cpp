@@ -30,6 +30,7 @@ named in the AUTHORS file.
 #include <iostream>
 
 #include "WindowInterface/Display.hpp"
+#include "Misc/Int.hpp"
 
 #include "X11Window.hpp"
 

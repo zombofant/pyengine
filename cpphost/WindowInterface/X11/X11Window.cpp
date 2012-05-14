@@ -32,13 +32,16 @@ X11Window::X11Window(::Display *disp,
                      GLXFBConfig config,
                      GLXContext context,
                      int w,
-                     int h) {
-    _display = disp;
-    _x_visual = vinfo;
-    _glx_context = context;
-
-    _win = setupWindow(w, h);
-    _glx_win = glXCreateWindow(_display, config, _win, NULL);
+                     int h):
+    Window(),
+    _display(disp),
+    _x_visual(vinfo),
+    _glx_context(context),
+    _win(setupWindow(w, h)),
+    _glx_win(glXCreateWindow(_display, config, _win, 0)),
+    _log(log->getChannel("x11"))
+{
+    
 }
 
 X11Window::~X11Window() {
