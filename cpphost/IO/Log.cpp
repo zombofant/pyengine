@@ -19,7 +19,7 @@ char *awesomef(const char *message, va_list args, sizeuint *length = 0)
         buffer = (char*)realloc(buffer, actualLength+1);
         assert(vsnprintf(buffer, actualLength+1, message, args) == actualLength);
     } else {
-        buffer = (char*)realloc(buffer, actualLength);
+        buffer = (char*)realloc(buffer, actualLength+1);
     }
     if (length)
         *length = actualLength;
