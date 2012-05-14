@@ -43,7 +43,7 @@ class SceneGraph
         SceneGraph();
         ~SceneGraph();
 
-        void update();
+        void update(double deltaT = 0);
         void draw();
 
         inline NodeHandle getRootNode() const { return _root; }

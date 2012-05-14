@@ -25,6 +25,8 @@ named in the AUTHORS file.
 **********************************************************************/
 #include "Spatial.hpp"
 
+#include <iostream>
+
 namespace PyUni {
 namespace SceneGraph {
 
@@ -81,20 +83,6 @@ void Spatial::scale(double x, double y, double z)
     localTransformation.Scale(Vector3(x, y, z));
 }
 
-void Spatial::onDraw()
-{
-}
-
-void Spatial::draw()
-{
-}
-
-SpatialHandle Spatial::create()
-{
-    SpatialHandle tmp(new Spatial());
-    tmp->_weak = tmp;
-    return tmp;
-}
 
 }
 }

@@ -47,6 +47,19 @@ Node::~Node()
     }
 }
 
+void Node::draw()
+{
+    // FIXME load world transformation
+    std::vector<SpatialHandle>::iterator iter = children.begin();
+    for(/**/; iter != children.end(); ++iter)
+    {
+        if(*iter)
+        {
+            (*iter)->draw();
+        }
+    }
+}
+
 void Node::addChild(SpatialHandle child)
 {
     assert(child);

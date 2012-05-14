@@ -26,6 +26,7 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 from CUni.SceneGraph import Leaf
+from CUni.GL import VertexFormat, GeometryBuffer, GeometryBufferView
 from Engine.Model import Model
 from OpenGL.GL import *
 from Engine.Resources.Manager import ResourceManager
@@ -36,13 +37,14 @@ class RenderModel(Model, Leaf):
     a convenient renderable representation of the model.
     """
 
-    def __init__(self, **args):
+    def __init__(self, **kwargs):
         """
         Initialize a RenderModel.
         """
-        super(RenderModel, self).__init__(**args)
+        super(RenderModel, self).__init__(**kwargs)
         # FIXME/pyglet
-        self._batch = None
+        self._batch = []
+        self._vFormat = VertexFormat("v:3;t0:2;n:3")
         self.update()
  
     def _copy(self, other):
@@ -75,6 +77,7 @@ class RenderModel(Model, Leaf):
         pos, nextMatSwitchIndex, matCount = 0, 0, 0
         materials = self.Materials
         group = None
+        self._batch = []
         if materials is None: materials = []
         materials.append(['(null)',0])
         for material in materials:
@@ -86,17 +89,21 @@ class RenderModel(Model, Leaf):
                 vertices, normals, texCoords = [], [], []
                 for face in self.PackedFaces[pos:nextMatSwitchIndex]:
                     before = len(vertices)
-                    vertices.extend([x for y in face[0:1] for x in y])
-                    normals.extend([x for y in face[1:2] for x in y])
-                    texCoords.extend([x for y in face[2:3] for x in y])
+                    vertices.extend((x for y in face[0:1] for x in y))
+                    normals.extend((x for y in face[1:2] for x in y))
+                    texCoords.extend((x for y in face[2:3] for x in y))
                 size = (nextMatSwitchIndex - pos) * 3
-                data = [('v3f/static', vertices)]
+                buf = GeometryBuffer(self._vFormat, GL_STATIC_DRAW)
+                indices = buf.allocateVertices(size)
+                bufView = GeometryBufferView(buf, indices)
+                bufView.Vertex.set(vertices)
                 if len(normals) > 0:
-                    data.append(('n3f/static', normals))
+                    bufView.Normal.set(normals)
                 if len(texCoords) > 0:
-                    data.append(('t2f/static', texCoords))
+                    bufView.TexCoord(0).set(texCoords)
                 # FIXME
                 #self._batch.add(size, GL_TRIANGLES, group, *data)
+                self._batch.append(buf)
                 pos = nextMatSwitchIndex
             if material[0] == '(null)':
                 group = None
@@ -111,5 +118,8 @@ class RenderModel(Model, Leaf):
         Call this in your render-loop to render the underlying model.
         """
         super(RenderModel, self).draw()
-        self._batch.draw()
+        print("DRAW")
+        for buf in self._batch:
+            print("Model DRAW")
+            buf.draw();
 

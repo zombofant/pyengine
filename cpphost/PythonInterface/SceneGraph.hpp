@@ -51,6 +51,11 @@ class LeafWrap: public SceneGraph::Leaf, public boost::python::wrapper<SceneGrap
             tmp->_weak = tmp;
             return tmp;
         }
+
+        virtual void draw()
+        {
+			this->get_override("draw")();
+        }
 };
 
 void addSceneGraphToInittab();

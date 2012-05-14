@@ -46,6 +46,8 @@ class Node : public Spatial
     public:
         ~Node();
 
+        void draw();
+
         void addChild(SpatialHandle child);
         void removeChild(SpatialHandle child);
 

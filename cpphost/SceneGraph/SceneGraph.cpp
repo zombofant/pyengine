@@ -24,6 +24,7 @@ For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
 #include "SceneGraph.hpp"
+#include <iostream>
 
 namespace PyUni {
 namespace SceneGraph {
@@ -38,14 +39,13 @@ SceneGraph::~SceneGraph()
 {
 }
 
-void SceneGraph::update()
+void SceneGraph::update(double deltaT)
 {
     _root->updateGeometry();
 }
 
 void SceneGraph::draw()
 {
-    _root->onDraw();
     _root->draw();
 }
 

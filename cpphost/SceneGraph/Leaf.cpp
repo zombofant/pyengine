@@ -25,6 +25,8 @@ named in the AUTHORS file.
 **********************************************************************/
 #include "Leaf.hpp"
 
+#include <cassert>
+
 namespace PyUni {
 namespace SceneGraph {
 
@@ -34,15 +36,8 @@ Leaf::Leaf():
     Spatial::Spatial(),
     _vertexMap(new VertexMap())
 {
-
 }
 
-LeafHandle Leaf::create()
-{
-    LeafHandle tmp(new Leaf());
-    tmp->_weak = tmp;
-    return tmp;
-}
 
 }
 }
