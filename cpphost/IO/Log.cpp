@@ -1,6 +1,5 @@
 #include "Log.hpp"
 
-#include <iostream>
 #include <cstdio>
 #include <cstdarg>
 
@@ -9,6 +8,8 @@
 namespace PyUni {
 
 const sizeint AWESOME_BUFFER_SIZE = 512;
+
+using namespace std;
 
 char *awesomef(const char *message, va_list args, sizeuint *length = 0)
 {
@@ -34,6 +35,27 @@ char *vawesomef(const char *message, sizeuint *length, ...)
     return result;
 }
 
+/* PyUni::IO::LogPipe */
+
+LogPipe::LogPipe(LogServer *server, Severity severity, LogChannel *channel):
+    std::ostringstream(ios_base::app | ios_base::out),
+    _server(server),
+    _severity(severity),
+    _channel(channel)
+{
+    
+}
+
+LogPipe::~LogPipe()
+{
+
+}
+
+void LogPipe::submit()
+{
+    _server->log(this);
+}
+
 /* PyUni::IO::LogChannel */
 
 LogChannel::LogChannel(LogServer *server, const std::string name):
@@ -56,6 +78,11 @@ void LogChannel::logf(Severity severity, const char *message, ...)
     va_end(args);
     _server->log(severity, this, formatted);
     free(formatted);
+}
+
+LogPipe &LogChannel::log(Severity severity)
+{
+    return _server->log(severity, this);
 }
 
 /* PyUni::IO::LogSink */
@@ -126,7 +153,7 @@ void LogXMLSink::doLog(TimeFloat timestamp, Severity severity,
 </message>\n", &length, timestamp, SeverityName(severity), channel->getName(), message);
     _stream->write(formatted, length);
     free(formatted);
-    }
+}
 
 /* PyUni::IO::LogServer */
 
@@ -137,6 +164,38 @@ LogServer::LogServer():
     _globalChannel(getChannel("global"))
 {
     
+}
+
+void LogServer::log(Severity severity, LogChannel *channel, const char *message)
+{
+    TimeFloat timestamp = timeIntervalToDouble(_startupTime, nanotime());
+    for (auto it = _sinks.begin(); it != _sinks.end(); it++)
+    {
+        LogSink *sink = (*it).get();
+        sink->log(timestamp, severity, channel, message);
+    }
+}
+
+void LogServer::logf(Severity severity, LogChannel *channel, const char *message, ...)
+{
+    va_list args;
+    va_start(args, message);
+    char *formatted = awesomef(message, args);
+    va_end(args);
+    log(severity, channel, formatted);
+    free(formatted);
+}
+
+LogPipe &LogServer::log(Severity severity, LogChannel *channel)
+{
+    LogPipe *stream = new LogPipe(this, severity, channel);
+    return *stream;
+}
+
+void LogServer::log(LogPipe *stream)
+{
+    log(stream->_severity, stream->_channel, stream->str().c_str());
+    delete stream;
 }
 
 void LogServer::addSink(LogSinkHandle sink)
@@ -161,16 +220,6 @@ void LogServer::log(Severity severity, const char *message)
     log(severity, _globalChannel.get(), message);
 }
 
-void LogServer::log(Severity severity, LogChannel *channel, const char *message)
-{
-    TimeFloat timestamp = timeIntervalToDouble(_startupTime, nanotime());
-    for (auto it = _sinks.begin(); it != _sinks.end(); it++)
-    {
-        LogSink *sink = (*it).get();
-        sink->log(timestamp, severity, channel, message);
-    }
-}
-
 void LogServer::logf(Severity severity, const char *message, ...)
 {
     va_list args;
@@ -181,17 +230,18 @@ void LogServer::logf(Severity severity, const char *message, ...)
     free(formatted);
 }
 
-void LogServer::logf(Severity severity, LogChannel *channel, const char *message, ...)
+LogPipe &LogServer::log(Severity severity)
 {
-    va_list args;
-    va_start(args, message);
-    char *formatted = awesomef(message, args);
-    va_end(args);
-    log(severity, channel, formatted);
-    free(formatted);
+    return log(severity, _globalChannel.get());
 }
 
 /* free functions */
+
+std::ostream &submit(std::ostream &os) {
+    LogPipe *ls = static_cast<LogPipe*>(&os);
+    ls->submit();
+    return os;
+}
 
 const char *SeverityName(Severity severity)
 {
@@ -200,7 +250,7 @@ const char *SeverityName(Severity severity)
         "info",
         "hint",
         "warn",
-        "error"
+        "error",
         "panic"
     };
 

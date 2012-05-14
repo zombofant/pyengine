@@ -59,19 +59,19 @@ struct Screen {
 };
 
 struct DisplayMode {
-    unsigned int redBits, greenBits, blueBits, alphaBits;
-    unsigned int depthBits;
-    unsigned int stencilBits;
-    unsigned int samples;
+    int redBits, greenBits, blueBits, alphaBits;
+    int depthBits;
+    int stencilBits;
+    int samples;
     bool doubleBuffered;
 
-    DisplayMode(unsigned int aRedBits,
-            unsigned int aGreenBits,
-            unsigned int aBlueBits,
-            unsigned int aAlphaBits,
-            unsigned int aDepthBits,
-            unsigned int aStencilBits,
-            unsigned int aSamples,
+    DisplayMode(int aRedBits,
+            int aGreenBits,
+            int aBlueBits,
+            int aAlphaBits,
+            int aDepthBits,
+            int aStencilBits,
+            int aSamples,
             bool aDoubleBuffered):
         redBits(aRedBits),
         greenBits(aGreenBits),

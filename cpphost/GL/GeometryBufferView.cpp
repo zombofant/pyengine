@@ -43,19 +43,19 @@ GeometryBufferView::GeometryBufferView(
     _map(new VertexIndexListMap(indicies)),
     _position(newAttribView(_bufferFormat->posOffset, _bufferFormat->nPosition, _bufferFormat->vertexSize)),
     _colour(newAttribView(_bufferFormat->colourOffset, _bufferFormat->nColour, _bufferFormat->vertexSize)),
-    _texCoord({
+    _texCoord{
         newAttribView(_bufferFormat->texCoord0Offset, _bufferFormat->nTexCoord0, _bufferFormat->vertexSize),
         newAttribView(_bufferFormat->texCoord1Offset, _bufferFormat->nTexCoord1, _bufferFormat->vertexSize),
         newAttribView(_bufferFormat->texCoord2Offset, _bufferFormat->nTexCoord2, _bufferFormat->vertexSize),
         newAttribView(_bufferFormat->texCoord3Offset, _bufferFormat->nTexCoord3, _bufferFormat->vertexSize)
-    }),
+    },
     _normal(newAttribView(_bufferFormat->normalOffset, (_bufferFormat->normal?3:0), _bufferFormat->vertexSize)),
-    _vertexAttrib({
+    _vertexAttrib{
         newAttribView(_bufferFormat->vertexAttrib0Offset, _bufferFormat->nVertexAttrib0, _bufferFormat->vertexSize),
         newAttribView(_bufferFormat->vertexAttrib1Offset, _bufferFormat->nVertexAttrib1, _bufferFormat->vertexSize),
         newAttribView(_bufferFormat->vertexAttrib2Offset, _bufferFormat->nVertexAttrib2, _bufferFormat->vertexSize),
         newAttribView(_bufferFormat->vertexAttrib3Offset, _bufferFormat->nVertexAttrib3, _bufferFormat->vertexSize)
-    })
+    }
 {
     // std::cerr << "uc: " << _indicies.use_count() << std::endl;
 }

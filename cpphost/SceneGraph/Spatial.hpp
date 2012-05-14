@@ -57,8 +57,14 @@ class Spatial
         void setParent(SpatialHandle p);
 
         virtual void translate(double x, double y, double z);
-        virtual void rotate(double x, double y, double z, double angle);
+        virtual void setTranslation(double x, double y, double z);
+        virtual void rotate(double angle, double x, double y, double z);
+        virtual void setRotation(double angle, double x, double y, double z);
         virtual void scale(double x, double y, double z);
+        virtual void setScale(double x, double y, double z);
+
+        virtual void resetTransformation();
+        virtual void applyTransformation();
 
         virtual void draw() = 0;
 

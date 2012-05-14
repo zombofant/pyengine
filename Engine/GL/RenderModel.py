@@ -54,6 +54,14 @@ class RenderModel(Model, Leaf):
         super(RenderModel, self)._copy(other)
         self.update()
 
+    def _cleanup(self):
+        """
+        Clean up all buffers currently loaded for this model.
+        """
+        for buf, vertices in self._batch:
+            buf.unbind()
+        self._batch = []
+
     @classmethod
     def fromModel(cls, model):
         """
@@ -74,10 +82,10 @@ class RenderModel(Model, Leaf):
         has been changed in order to make the changes known to the renderer.
         """
         if len(self.PackedFaces) < 1: return
+        self._cleanup()
         pos, nextMatSwitchIndex, matCount = 0, 0, 0
         materials = self.Materials
         group = None
-        self._batch = []
         if materials is None: materials = []
         materials.append(['(null)',0])
         for material in materials:
@@ -101,9 +109,8 @@ class RenderModel(Model, Leaf):
                     bufView.Normal.set(normals)
                 if len(texCoords) > 0:
                     bufView.TexCoord(0).set(texCoords)
-                # FIXME
-                #self._batch.add(size, GL_TRIANGLES, group, *data)
-                self._batch.append(buf)
+                buf.bind()
+                self._batch.append((buf, indices))
                 pos = nextMatSwitchIndex
             if material[0] == '(null)':
                 group = None
@@ -117,9 +124,7 @@ class RenderModel(Model, Leaf):
         Draw the RenderModel using OpenGL.
         Call this in your render-loop to render the underlying model.
         """
-        super(RenderModel, self).draw()
-        print("DRAW")
-        for buf in self._batch:
-            print("Model DRAW")
-            buf.draw();
+        self.applyTransformation()
+        for buf, indices in self._batch:
+            buf.draw(indices, GL_TRIANGLES)
 

@@ -26,6 +26,7 @@ named in the AUTHORS file.
 #include "Leaf.hpp"
 
 #include <cassert>
+#include <GL/glew.h>
 
 namespace PyUni {
 namespace SceneGraph {
@@ -38,6 +39,10 @@ Leaf::Leaf():
 {
 }
 
+void Leaf::draw()
+{
+    glLoadMatrixd(worldTransformation.coeff);
+}
 
 }
 }
