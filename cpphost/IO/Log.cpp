@@ -120,6 +120,7 @@ void LogStreamSink::doLog(TimeFloat timestamp, Severity severity,
     char *formatted = vawesomef("[%12.4f] [%s] [%s] %s\n", &length, timestamp, severityName, channel->getName(), message);
     _stream->write(formatted, length);
     free(formatted);
+    _stream->flush();
 }
 
 /* PyUni::IO::LogXMLSink */
@@ -139,6 +140,7 @@ LogXMLSink::LogXMLSink(uint64_t mask, StreamHandle stream, const std::string xsl
 LogXMLSink::~LogXMLSink()
 {
     _stream->writeNullTerminated("</log>");
+    _stream->flush();
 }
 
 void LogXMLSink::doLog(TimeFloat timestamp, Severity severity,
@@ -152,6 +154,7 @@ void LogXMLSink::doLog(TimeFloat timestamp, Severity severity,
 <text><![CDATA[%s]]></text>\
 </message>\n", &length, timestamp, SeverityName(severity), channel->getName(), message);
     _stream->write(formatted, length);
+    _stream->flush();
     free(formatted);
 }
 
