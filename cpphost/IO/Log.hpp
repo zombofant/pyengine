@@ -77,6 +77,16 @@ class LogChannel: public LogBase {
         virtual LogPipe &log(Severity severit);
 };
 
+/**
+ * Abstract base class for a log sink.
+ *
+ * You must not (and are unable to) instanciate this class directly. But
+ * you will want to use it as a base class for your own logging sinks.
+ *
+ * For this, you have to override the doLog protected method to do the
+ * logging. You do not need to check for the log mask to match the
+ * severity, this is done on a higher level for you.
+ */
 class LogSink {
     public:
         LogSink(uint64_t mask);
@@ -94,6 +104,14 @@ class LogSink {
 typedef boost::shared_ptr<LogSink> LogSinkHandle;
 typedef std::list<LogSinkHandle> LogSinks;
 
+/**
+ * Log sink which simply writes the log entries as plain text to the
+ * given stream, separated by newlines.
+ *
+ * Each line has the following format:
+ * [%12.4f] [%s] [%s] %s\n
+ * with the arguments: timestamp, severity, channel, message
+ */
 class LogStreamSink: public LogSink {
     public:
         LogStreamSink(uint64_t mask, StreamHandle stream);
@@ -105,6 +123,20 @@ class LogStreamSink: public LogSink {
             LogChannel *channel, const char *message);
 };
 
+/**
+ * Log sink which creates an xml file in the given stream, referring
+ * to the given xslt file.
+ *
+ * Each log message is logged in the following format:
+ * <message>
+ *   <timestamp>%f</timestamp>
+ *   <severity>%s</severity>
+ *   <channel>%s</channel>
+ *   <text>%s</text>
+ * </message>
+ *
+ * The root node is <log />
+ */
 class LogXMLSink: public LogSink {
     public:
         LogXMLSink(uint64_t mask, StreamHandle stream, const std::string xsltFile);
@@ -121,6 +153,19 @@ class LogXMLSink: public LogSink {
 typedef boost::shared_ptr<LogChannel> LogChannelHandle;
 typedef std::unordered_map<const std::string, LogChannelHandle> LogChannelMap;
 
+/**
+ * Log service which allows broadcasting to several different LogSinks
+ * using a standardized simple interface.
+ *
+ * The log server supports multiple useful interfaces for logging: A
+ * simple interface taking just a null terminated utf-8 string, a
+ * sprintf like interface and an interface compatible to stdc++ stream
+ * operators.
+ *
+ * Additionally, one can define multiple log channels whose name will be
+ * added to the log entry for simple grepping. All LogSinks support
+ * masks for which severities will be logged to the specific sink.
+ */
 class LogServer: public LogBase {
     public:
         LogServer();
@@ -190,6 +235,19 @@ class LogServer: public LogBase {
          */
         virtual void logf(Severity severity, const char *message, ...);
 
+        /**
+         * Return a LogPipe with the given severity.
+         *
+         * This creates a LogPipe instance with the given severity which
+         * can be used to use the stdc++ stream interface with
+         * LogServer instances.
+         *
+         * You must pipe submit to the LogPipe to free its resources and
+         * submit the log entry to the LogServer.
+         *
+         * @param severity Severity of the message.
+         * @return New LogPipe instance reference.
+         */
         virtual LogPipe &log(Severity severity);
     friend class LogChannel;
     friend class LogPipe;
