@@ -93,7 +93,12 @@ BOOST_PYTHON_MODULE(_cuni_window)
         .def(self_ns::repr(self))
     ;
 
-    class_<Screen, boost::shared_ptr<Screen> >("Screen", no_init)
+    // must not use shared_ptr here. It might kill our instances. Also,
+    // the exposed interface is immutable, so no problem with handing
+    // over the raw pointer.
+    // XXX: probably, boost python does some arcane magic here which
+    // will duplicate the screen instance anyways. That sucks.
+    class_<Screen, Screen*>("Screen", no_init)
         .def_readonly("index", &Screen::index)
         .def_readonly("primary", &Screen::primary)
         .def_readonly("x", &Screen::x)
@@ -103,10 +108,6 @@ BOOST_PYTHON_MODULE(_cuni_window)
         .def(self_ns::repr(self))
     ;
 
-    /*class_<WindowWrap, WindowHandle, boost::noncopyable>("Window", no_init)
-        .def("flip", pure_virtual(&Window::flip))
-        .def("switchTo", pure_virtual(&Window::switchTo))
-    ;*/
     class_<Window, WindowHandle, boost::noncopyable>("Window", no_init)
         .def("flip", pure_virtual(&Window::flip))
         .def("switchTo", pure_virtual(&Window::switchTo))
@@ -143,8 +144,7 @@ BOOST_PYTHON_MODULE(_cuni_window)
         .def("handleResize", pure_virtual(&EventSink::handleResize))
         .def("handleTextInput", pure_virtual(&EventSink::handleTextInput))
     ;
-    // class_<EventSinkWrap, bases<EventSink>, boost::shared_ptr<EventSinkWrap> >("EventSink");
-
+    
     boost::python::implicitly_convertible<boost::shared_ptr<EventSinkWrap>, EventSinkHandle >();
 
     class_<EventLoop, boost::shared_ptr<EventLoop>, boost::noncopyable>("EventLoop", init<DisplayHandle, EventSinkHandle>())
