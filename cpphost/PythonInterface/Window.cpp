@@ -61,10 +61,9 @@ list Display_displayModes_get(const Display &self)
     return boostList;
 }
 
-// FIXME: Bind this method to window
 // the polymorphy will do the thing we want for subclasses
 // it's magic!
-void bp_X11Window_setTitle(X11Window *win, PyObject *title)
+void bp_Window_setTitle(Window *win, PyObject *title)
 {
     const char *utf8title;
     PyObject *text = extractUTF8String(title, &utf8title, NULL);
@@ -111,7 +110,7 @@ BOOST_PYTHON_MODULE(_cuni_window)
     class_<Window, WindowHandle, boost::noncopyable>("Window", no_init)
         .def("flip", pure_virtual(&Window::flip))
         .def("switchTo", pure_virtual(&Window::switchTo))
-        .def("setTitle", pure_virtual(&Window::setTitle))
+        .def("setTitle", &bp_Window_setTitle)
         .def("setFullscreen", pure_virtual(&Window::setFullscreen))
         .def("setWindowed", pure_virtual(&Window::setWindowed))
         .def("initializeGLEW", &Window::initializeGLEW)
@@ -119,7 +118,6 @@ BOOST_PYTHON_MODULE(_cuni_window)
     class_<X11Window, bases<Window> >("X11Window", no_init)
         .def("flip", &X11Window::flip)
         .def("switchTo", &X11Window::switchTo)
-        .def("setTitle", &bp_X11Window_setTitle)
         .def("setFullscreen", &X11Window::setFullscreen)
         .def("setWindowed", &X11Window::setWindowed)
     ;
