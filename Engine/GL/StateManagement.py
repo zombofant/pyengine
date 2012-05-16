@@ -26,6 +26,7 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 from Base import BindableObject
+from CUni.GL import Group, StateGroup
 from OpenGL.GL import glActiveTexture
 
 class StateContext(object):
@@ -96,7 +97,7 @@ class StateObjectGroup(object):
         # arguments
         if "parent" in kwargs:
             parent = kwargs.pop("parent")
-        super(StateObjectGroup, self).__init__(parent=parent, **kwargs)
+        super(StateObjectGroup, self).__init__(**kwargs)
         setCalls = []
         unsetCalls = []
         for stateObj in args:

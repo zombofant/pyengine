@@ -110,14 +110,13 @@ class RenderModel(Model, Leaf):
                 if len(texCoords) > 0:
                     bufView.TexCoord(0).set(texCoords)
                 buf.bind()
-                self._batch.append((buf, indices))
+                self._batch.append((buf, indices, group))
                 pos = nextMatSwitchIndex
             if material[0] == '(null)':
                 group = None
             else:
                 mat_filename = '%s.mtl' % material[0]
-                # FIXME
-                #group = ResourceManager().require(mat_filename).stateGroup
+                group = ResourceManager().require(mat_filename).stateGroup
  
     def draw(self):
         """
@@ -125,6 +124,9 @@ class RenderModel(Model, Leaf):
         Call this in your render-loop to render the underlying model.
         """
         self.applyTransformation()
-        for buf, indices in self._batch:
+        for buf, indices, group in self._batch:
+            # FIXME move group management to scenegraph(?)
+            group.set_state()
             buf.draw(indices, GL_TRIANGLES)
+            group.unset_state()
 
