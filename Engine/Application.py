@@ -70,7 +70,6 @@ class Application(RootWidget, CUni.Window.EventSink):
         modes = display.DisplayModes
         modes.sort(reverse=True)
         mode = modes[0]
-
         log.log(Severity.Information, "Creating context with mode: {0}".format(mode))
         self._window = display.createWindow(mode, geometry[0], geometry[1], fullscreen)
 
@@ -133,39 +132,7 @@ class Application(RootWidget, CUni.Window.EventSink):
 
     def run(self):
         self._eventLoop.run()
-
-    def update(self, timeDelta):
-        """
-        This method gets called by pyglet on every frame iteration. It
-        dispatches the passed time to *updateSynced* and
-        *updateUnsynced*.
-        """
-        syncedTime = self._aggregatedTime + timeDelta * self.SyncedSpeedFactor
-        frameLength = self.SyncedFrameLength
-        while syncedTime >= frameLength:
-            syncedTime -= frameLength
-            self.updateSynced()
-        self._aggregatedTime = syncedTime
-        self.updateUnsynced(timeDelta)
-        super(Application, self).update(timeDelta)
-        if self.updateRender is not None:
-            self.updateRender()
-
-    def updateUnsynced(self, timeDelta):
-        """
-        This method is called once in every game loop iteration. So an
-        arbitary amount of time may have passed, which is given by the
-        *timeDelta* argument.
-        """
-
-    def updateSynced(self):
-        """
-        This method gets called every *SyncedFrameLength* seconds. It
-        may be called several times in sequence if the previous frame
-        took too long, but each call still represents the guaranteed
-        amount of time specified.
-        """
-
+    
     def render(self):
         self._render()
 
