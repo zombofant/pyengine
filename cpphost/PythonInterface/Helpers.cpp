@@ -12,7 +12,6 @@ void ValueError(const std::string &message)
     bpy::throw_error_already_set();
 }
 
-
 PyObject *extractUTF8String(PyObject *text, const char **data, int *len)
 {
     PyObject *utf8Text = text;
@@ -30,8 +29,17 @@ PyObject *extractUTF8String(PyObject *text, const char **data, int *len)
     }
 
     *data = PyString_AS_STRING(utf8Text);
-    *len = PyString_GET_SIZE(utf8Text);
+
+    if (len != NULL)
+        *len = PyString_GET_SIZE(utf8Text);
+
     return utf8Text;
 }
 
 }
+
+// Local Variables:
+// c-file-style: "k&r"
+// c-basic-offset: 4
+// End:
+

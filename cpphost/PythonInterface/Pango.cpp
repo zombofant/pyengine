@@ -32,6 +32,7 @@ named in the AUTHORS file.
 
 #include "Helpers.hpp"
 #include "CairoHelpers.hpp"
+#include "Helpers.hpp"
 
 namespace PyUni {
 
@@ -41,7 +42,7 @@ PangoCairoContext::PangoCairoContext(cairo_t *cairoCtx):
     _cairoCtx(cairoCtx),
     _ctx(pango_cairo_create_context(cairoCtx))
 {
-    
+
 }
 
 PangoCairoContext::~PangoCairoContext()

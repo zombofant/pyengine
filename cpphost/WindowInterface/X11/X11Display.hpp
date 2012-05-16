@@ -52,6 +52,8 @@ private:
     Atom _wm_quit, _wm_protocols;
     XIC _input_context;
     int _mouse_x, _mouse_y;
+    int *_scroll_x,
+        *_scroll_y;
     bool _mouse_valid;
 
     LogChannelHandle _log;

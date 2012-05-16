@@ -36,6 +36,13 @@ class Window {
 
         virtual void flip() = 0;
         virtual void switchTo() = 0;
+
+        virtual void setTitle(const char *title) = 0;
+        virtual void setFullscreen(int top,
+                                   int bottom,
+                                   int left,
+                                   int right) = 0;
+        virtual void setWindowed(int screen, int w, int h) = 0;
     private:
         bool _glewInitialized;
     public:

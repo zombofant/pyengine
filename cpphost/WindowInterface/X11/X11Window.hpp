@@ -36,13 +36,20 @@ named in the AUTHORS file.
 namespace PyUni {
 class X11Window : public Window {
 public:
-    X11Window(::Display *display, XVisualInfo *vinfo, GLXFBConfig config, GLXContext context, int w, int h);
+    X11Window(::Display *display, XVisualInfo *vinfo,
+              GLXFBConfig config, GLXContext context, int w, int h);
     virtual ~X11Window();
 
     virtual void flip();
     virtual void switchTo();
+
+    virtual void setTitle(const char *title);
+    virtual void setFullscreen(int top, int bottom, int left, int right);
+    virtual void setWindowed(int screen, int w, int h);
+
 private:
     ::Window setupWindow(int w, int h);
+    void setTextProperty(const char *atom, const char *value, bool utf8=true);
 
     ::Display *_display;
     XVisualInfo *_x_visual;
