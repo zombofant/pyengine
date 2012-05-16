@@ -93,38 +93,8 @@ class AbstractWidget(object):
         pass
 
     def render(self):
+        self.realign()
         ctx = self._cairoContext
-        """buffer = self._geometryBuffer
-        if self._invalidatedGeometry:
-            self.realign()
-            faceBuffer = FaceBuffer()
-            self.ComputedStyle.geometryForRect(self.AbsoluteRect, faceBuffer)
-            geoData = ((tex, (len(geometry[0][1])//2, geometry)) for tex, geometry in faceBuffer.getGeometry().iteritems())
-
-            self._geometry = dict()
-            for tex, (length, data) in geoData:
-                allocation = buffer.allocateVertices(length)
-                view = CGL.GeometryBufferView(buffer, allocation)
-                view.Vertex[:].set(data[0][1])
-                view.Colour[:].set(data[1][1])
-                view.TexCoord(0)[:].set(data[2][1])
-                del view
-                self._geometry[tex] = allocation
-                del allocation
-            
-            del geoData
-            del faceBuffer
-            buffer.flush()
-            self._invalidatedGeometry = False
-        
-        for tex, vertexList in self._geometry.iteritems():
-            if tex is not None:
-                self._rootWidget._shader.bind(texturing=True, upsideDown=False).id
-                tex.bind()
-            else:
-                self._rootWidget._shader.bind(texturing=False, upsideDown=False).id
-            buffer.draw(vertexList, GL_TRIANGLES)"""
-
         self.ComputedStyle.inCairo(self.AbsoluteRect, ctx)
 
     def onKeyDown(self, symbol, modifiers):

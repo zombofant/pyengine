@@ -88,6 +88,7 @@ class Application(RootWidget, CUni.Window.EventSink):
         self._window._sceneWidgets = []
         #self._window.switchTo()
         self._newScreen(self._window, 0, 0, *geometry)
+        self.AbsoluteRect = Rect(0, 0, *geometry)
 
         self.realign()
         self._eventLoop = CUni.Window.EventLoop(display, self)
@@ -275,7 +276,11 @@ class Application(RootWidget, CUni.Window.EventSink):
         self.dispatchScroll(x, y, scrollX, scrollY)
 
     def handleResize(self, width, height):
-        pass
+        self.AbsoluteRect = Rect(0, 0, width, height)
+        glViewport(0, 0, width, height)
+        # FIXME: this can be removed when rendering cairo is supported
+        for widget in self.treeDepthFirst():
+            widget.realign()
 
     def handleTextInput(self, text):
         self.dispatchTextInput(text)

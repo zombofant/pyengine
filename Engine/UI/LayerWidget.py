@@ -37,7 +37,9 @@ class LayerWidget(ParentWidget):
     pass
 
 class DesktopLayer(LayerWidget):
-    pass
+    def doAlign(self):
+        for child in self:
+            child.AbsoluteRect = self.AbsoluteRect
 
 class WindowLayer(LayerWidget):
     def __init__(self, parent, **kwargs):
