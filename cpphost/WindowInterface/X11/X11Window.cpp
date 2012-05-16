@@ -119,7 +119,6 @@ void X11Window::setTextProperty(const char *atom, const char *value, bool utf8) 
 }
 
 void X11Window::setTitle(const char *title) {
-    // set title -- where do we get our title from?
     // how do we map the title back to ascii for WM_NAME/WM_ICON_NAME
     // well we don't ...
     this->setTextProperty("WM_NAME", title, false);
