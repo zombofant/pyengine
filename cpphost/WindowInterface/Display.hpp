@@ -85,6 +85,19 @@ struct DisplayMode {
 
     }
 
+    DisplayMode(const DisplayMode &ref):
+        redBits(ref.redBits),
+        greenBits(ref.greenBits),
+        blueBits(ref.blueBits),
+        alphaBits(ref.alphaBits),
+        depthBits(ref.depthBits),
+        stencilBits(ref.stencilBits),
+        samples(ref.samples),
+        doubleBuffered(ref.doubleBuffered)
+    {
+
+    }
+
     bool operator== (const DisplayMode &other) const;
     bool operator> (const DisplayMode &other) const;
     bool operator< (const DisplayMode &other) const;

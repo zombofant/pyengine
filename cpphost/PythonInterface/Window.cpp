@@ -54,7 +54,9 @@ list Display_displayModes_get(const Display &self)
     list boostList = list();
     for (unsigned int i = 0; i < displayModes.size(); i++)
     {
-        boostList.append(displayModes[i]);
+        // explicitly clone the display mode instance here, so that our
+        // list won't be killed by python
+        boostList.append(boost::shared_ptr<DisplayMode>(new DisplayMode(displayModes[i])));
     }
     return boostList;
 }
@@ -82,6 +84,7 @@ BOOST_PYTHON_MODULE(_cuni_window)
         .def_readwrite("depthBits", &DisplayMode::depthBits)
         .def_readwrite("stencilBits", &DisplayMode::stencilBits)
         .def_readwrite("doubleBuffered", &DisplayMode::doubleBuffered)
+        .def_readwrite("samples", &DisplayMode::samples)
         .def(self < other<DisplayMode>())
         .def(self <= other<DisplayMode>())
         .def(self > other<DisplayMode>())
