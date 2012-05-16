@@ -85,6 +85,9 @@ class Application(RootWidget, CUni.Window.EventSink):
         self._window.switchTo()
         self._window.setTitle("PythonicUniverse")
         self._window.initializeGLEW()
+        glClearColor(0., 0., 0., 1.)
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        self._window.flip()
         self._window._sceneWidgets = []
         #self._window.switchTo()
         self._newScreen(self._window, 0, 0, *geometry)
