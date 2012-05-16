@@ -48,8 +48,7 @@ class TextureBase(BindableObject):
         return dataTuple if dataTuple is not None else (GL_LUMINANCE, GL_UNSIGNED_BYTE, None)
         
     def __del__(self):
-        glDeleteTextures(np.array((self.id,)))
-        super(TextureBase, self).__del__()
+        glDeleteTextures(np.array((self.id,), dtype=np.uint32))
         
     def __setitem__(self, key, value):
         if type(value) == int:
