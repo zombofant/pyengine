@@ -93,7 +93,7 @@ void EventLoop::run()
             
             if (fpsInterval >= 1.0) {
                 currentFPS = (double)(frameCount) / fpsInterval;
-                log->logf(Information, "fps: %.2f", currentFPS);
+                std::cout << "fps: " << currentFPS << std::endl;
                 frameCounterStart = currentUpdate;
                 frameCount = 0;
             }
