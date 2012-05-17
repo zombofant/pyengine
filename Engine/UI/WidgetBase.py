@@ -329,7 +329,7 @@ class ParentWidget(Widget, WidgetContainer):
         super(ParentWidget, self).__init__(parent)
 
     def _newChild(self, widget):
-        self._invalidateAlignment()
+        pass
 
     def _parentChanged(self):
         super(ParentWidget, self)._parentChanged()
@@ -338,7 +338,7 @@ class ParentWidget(Widget, WidgetContainer):
 
     def add(self, widget):
         super(ParentWidget, self).add(widget)
-        self._invalidateAlignment()
+        self._newChild(widget)
 
     def bringToFront(self, key):
         child = self._children[key]

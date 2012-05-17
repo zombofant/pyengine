@@ -64,9 +64,6 @@ class Application(RootWidget, CUni.Window.EventSink):
         self._aggregatedTime = 0.
 
         self._geometryBuffer = CGL.GeometryBuffer(CGL.VertexFormat("v:2;t0:2;c:4"), GL_DYNAMIC_DRAW)
-
-        self._render = super(Application, self).render
-
         modes = display.DisplayModes
         modes.sort(reverse=True)
         mode = modes[0]
@@ -132,9 +129,6 @@ class Application(RootWidget, CUni.Window.EventSink):
 
     def run(self):
         self._eventLoop.run()
-    
-    def render(self):
-        self._render()
 
     def frameSynced(self):
         pass
