@@ -425,21 +425,43 @@ class Style(object):
         clientRect = copy.copy(rect)
         clientRect.shrink(self.Border.getBox())
         
-        # FIXME: calculate the points and pass them on to the inCairo
-        # methods instead of doing homebrew filling here
-
         widths = (  self._border.Left.Width, self._border.Top.Width,
                     self._border.Right.Width, self._border.Bottom.Width)
 
         colours = ( self._border.Left.Fill, self._border.Top.Fill,
                     self._border.Right.Fill, self._border.Bottom.Fill)
 
-        equalWidths = not any(widths[0] != width for width in widths)
-        equalColours = not any(colours[0] != colour for colour in colours)
-
-        if (equalWidths and widths[0] == 0 or equalColours and colours[0] is Transparent) and self._background is Transparent:
-            return
-
+        # this is slow like hell
+        # equalWidths = not any(widths[0] != width for width in widths)
+        # equalColours = not any(colours[0] != colour for colour in colours)
+        
+        # this is 15% faster than the above
+        # equalWidths = False
+        # equalColours = False
+        
+        # this is (for equal colours + widths) 3% faster than the
+        # previous and 17% faster than the first
+        # for unequal colours (first is already unequal), we find
+        # that this is still 14% faster than the first solution.
+        equalWidths = (widths[0] == widths[1] and
+                       widths[1] == widths[2] and
+                       widths[2] == widths[3])
+        if equalWidths and self._background is Transparent:            
+            equalColours = (colours[0] == colours[1] and
+                            colours[1] == colours[2] and
+                            colours[2] == colours[3])
+            if equalColours:
+                return
+            bothEqual = False
+        else:
+            # comparing colours is way more expensive than comparing
+            # widths. So we only compare if widths are equal. We only
+            # need both information at the same time anyways
+            bothEqual = (equalWidths and
+                colours[0] == colours[1] and
+                colours[1] == colours[2] and
+                colours[2] == colours[3])
+        
         radii = self._border.getAllRadii()
 
         shears = self._shear
@@ -455,25 +477,30 @@ class Style(object):
             (clientRect.Right + shearBottomRight - radii[2], clientRect.Bottom - radii[2]),
             (clientRect.Left + shearBottomLeft + radii[3], clientRect.Bottom - radii[3])
         ]
+
+        # pulling these in the local namespace gives only 1% speedup,
+        # but we take everything we can get
+        background = self._background
+        backgroundNotTransparent = background is not Transparent
         
         if sum(radii) == 0:
             # optimize for straight borders
-            if self._background is not Transparent or (equalWidths and equalColours):
+            if backgroundNotTransparent or bothEqual:
                 ctx.move_to(*corners[0])
                 ctx.line_to(*corners[1])
                 ctx.line_to(*corners[2])
                 ctx.line_to(*corners[3])
                 ctx.close_path()
 
-            if equalWidths and equalColours:
-                if self._background is not Transparent:
-                    self._background.setSource(ctx)
+            if bothEqual:
+                if backgroundNotTransparent:
+                    background.setSource(ctx)
                     ctx.fill_preserve()
                 ctx.set_line_width(widths[0])
                 colours[0].setSource(ctx)
                 ctx.stroke()
             else:
-                self._background.setSource(ctx)
+                background.setSource(ctx)
                 ctx.fill()
                 
                 for i, (width, fill) in enumerate(itertools.izip(widths, colours)):
@@ -489,34 +516,37 @@ class Style(object):
             rightLessAngle = math.atan(shears[1]/clientRect.Height)
             pi = math.pi
 
-            pathSegments = zip(corners, radii,
-                (
-                    (pi + leftLessAngle, 3*(pi/2)),
-                    (3*(pi/2), 2*pi + rightLessAngle),
-                    (rightLessAngle, (pi/2)),
-                    (pi/2, pi)
-                )
-            )
+            # explicitly put this in a tuple here
+            pathSegments = list(itertools.izip(itertools.izip(*corners), radii,
+                [   # start angles
+                    pi + leftLessAngle,
+                    3*(pi/2),
+                    rightLessAngle,
+                    pi/2
+                ],
+                [   # stop angles
+                    3*(pi/2),
+                    2*pi + rightLessAngle,
+                    pi/2,
+                    pi
+                ]
+            ))
 
-            if self._background is not Transparent or (equalWidths and equalColours):
-                for (x, y), radius, (startAngle, stopAngle) in pathSegments:
-                    ctx.arc(x, y, radius, startAngle, stopAngle)
+            if backgroundNotTransparent or bothEqual:
+                for segment in pathSegments:
+                    ctx.arc(*segment)
                 ctx.close_path()
             
-            if equalWidths and equalColours:
-                if self._background is not Transparent:
-                    self._background.setSource(ctx)
+            if bothEqual:
+                if backgroundNotTransparent:
+                    background.setSource(ctx)
                     ctx.fill_preserve()
                 ctx.set_line_width(widths[0])
                 colours[0].setSource(ctx)
                 ctx.stroke()
             else:
-                self._background.setSource(ctx)
+                background.setSource(ctx)
                 ctx.fill()
-                
-                def unpackArcArguments(segment):
-                    (x, y), radius, (startAngle, stopAngle) = segment
-                    return x, y, radius, startAngle, stopAngle
 
                 for i, (width, fill) in enumerate(itertools.izip(widths, colours)):
                     if width <= 0 or fill is Transparent:
@@ -524,6 +554,6 @@ class Style(object):
                     # FIXME: optimize odd widths
                     ctx.set_line_width(width)
                     fill.setSource(ctx)
-                    ctx.arc(*unpackArcArguments(pathSegments[i-1]))
-                    ctx.arc(*unpackArcArguments(pathSegments[i]))
+                    ctx.arc(*pathSegments[i-1])
+                    ctx.arc(*pathSegments[i])
                     ctx.stroke()
