@@ -53,3 +53,6 @@ class SceneWidget(Widget):
 
     def renderScene(self):
         pass
+
+    def render(self):
+        pass

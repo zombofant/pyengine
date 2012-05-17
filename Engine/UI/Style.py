@@ -461,7 +461,6 @@ class Style(object):
                 colours[0] == colours[1] and
                 colours[1] == colours[2] and
                 colours[2] == colours[3])
-        
         radii = self._border.getAllRadii()
 
         shears = self._shear

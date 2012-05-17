@@ -55,9 +55,7 @@ class AbstractWidget(object):
         self.Visible = True
         self.Enabled = True
         self._relativeRect = Rect(0, 0)
-        self._relativeRect._onChange = self._relMetricsChanged
         self._absoluteRect = Rect(0, 0)
-        self._absoluteRect._onChange = self._absMetricsChanged
         self._styleRule = None
         self._themeStyle = Style()
         self._invalidateComputedStyle()
@@ -65,37 +63,18 @@ class AbstractWidget(object):
         self._rootWidget = None
         self._geometryBuffer = None
         self._cairoContext = None
-        
-    def _absMetricsChanged(self):
-        self._invalidateAlignment()
-
-    def _invalidateAlignment(self):
-        self._invalidatedAlignment = True
 
     def _invalidateComputedStyle(self):
         self._invalidatedComputedStyle = True
-        self._invalidateGeometry()
-        self._invalidateAlignment()
-
-    def _invalidateGeometry(self):
-        self._invalidatedGeometry = True
-        self._geometry = None
-
-    def _relMetricsChanged(self):
-        self._invalidateAlignment()
 
     def realign(self):
-        if self._invalidatedAlignment:
-            self.doAlign()
-            self._invalidatedAlignment = False
+        self.doAlign()
 
     def doAlign(self):
         pass
 
     def render(self):
-        self.realign()
-        ctx = self._cairoContext
-        self.ComputedStyle.inCairo(self.AbsoluteRect, ctx)
+        self.ComputedStyle.inCairo(self.AbsoluteRect, self._cairoContext)
 
     def onKeyDown(self, symbol, modifiers):
         return False

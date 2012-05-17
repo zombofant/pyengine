@@ -46,9 +46,6 @@ class ScreenWidget(ParentWidget):
         for child in self:
             child.AbsoluteRect = self.AbsoluteRect
 
-    def render(self):
-        super(ScreenWidget, self).render()
-
     @property
     def Window(self):
         return self._window

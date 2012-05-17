@@ -122,9 +122,9 @@ class RootWidget(AbstractWidget, WidgetContainer):
             child.realign()
 
     def render(self):
-        self.realign()
-        for child in self:
-            child.render()
+        self._desktopLayer.render()
+        self._windowLayer.render()
+        self._popupLayer.render()
 
     def update(self, timeDelta):
         for child in self:
