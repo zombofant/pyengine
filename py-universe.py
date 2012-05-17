@@ -84,6 +84,7 @@ if __name__ == '__main__':
             if args.profileFrames < 0:
                 raise ValueError("Nice try.")
             app._eventLoop.setFrameCount(args.profileFrames)
+            log.log(Severity.Information, "Will terminate after {0} frames.".format(args.profileFrames))
         if args.profile is not True:
             log.log(Severity.Information, "cProfile output is going to file: {0}".format(args.profile))
             cProfile.run("app.run()", filename=args.profile)
