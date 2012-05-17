@@ -152,6 +152,7 @@ BOOST_PYTHON_MODULE(_cuni_window)
         .def("terminate", &EventLoop::terminate)
         .add_property("SyncedFrameLength", &EventLoop::getSyncedFrameLength, &EventLoop::setSyncedFrameLength)
         .def_readonly("CurrentFPS", &EventLoop::currentFPS)
+        .def("setFrameCount", &EventLoop::setFrameCount)
     ;
 }
 

@@ -40,6 +40,8 @@ EventLoop::EventLoop(DisplayHandle display, EventSinkHandle eventSink):
     _display(display),
     _eventSink(eventSink),
     _deltaT(0.01),
+    _frameCount(0),
+    _currentFrameCount(0),
     _terminated(false),
     currentFPS(0.0)
 {
@@ -59,6 +61,12 @@ double EventLoop::getSyncedFrameLength()
 void EventLoop::setSyncedFrameLength(const TimeFloat deltaT)
 {
     _deltaT = deltaT;
+}
+
+void EventLoop::setFrameCount(const uint64_t frameCount)
+{
+    _frameCount = frameCount;
+    _currentFrameCount = 0;
 }
 
 void EventLoop::terminate()
@@ -101,6 +109,13 @@ void EventLoop::run()
                 lastUpdate = currentUpdate;
                 eventSink->frameUnsynced(interval);
                 frameCount++;
+                if (_frameCount > 0) {
+                    _currentFrameCount++;
+                    if (_currentFrameCount >= _frameCount) {
+                        log->log(Information, "Frame count limit reached, sending WMQuit");
+                        eventSink->handleWMQuit();
+                    }
+                }
             } else {
                 usleep(1);
             }

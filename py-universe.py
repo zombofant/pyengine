@@ -36,9 +36,70 @@ import OpenGL
 OpenGL.ERROR_ON_COPY = True
 
 if __name__ == '__main__':
+    import argparse
+    import sys
     import CUni.Window
-    import CUni.Log
+    from CUni.Log import server as log, Severity
     from Client.PythonicUniverse import PythonicUniverse
-    CUni.Log.server.log(CUni.Log.Severity.Information, "Python initialized")
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-p", "--profile",
+        dest="profile",
+        nargs="?",
+        const=True,
+        default=False,
+        metavar="FILE",
+        help="Run in cProfile mode. If FILE is given, the cProfile\
+ output is sent to that file. If FILE is omitted and --profile-shell is\
+ set, a default of /tmp/pyuniverse-profile is assumed."
+    )
+    parser.add_argument(
+        "-s", "--profile-shell",
+        dest="profileShell",
+        action="store_true",
+        help="In profiling mode, drop into a shell after the\
+ application terminated. In that shell, the profiling data will be\
+ available in a pstats variable called p."
+    )
+    parser.add_argument(
+        "-f", "--frame-count",
+        dest="profileFrames",
+        type=int,
+        default=0,
+        metavar="N",
+        help="Render exactly N frames and stop then."
+    )
+    args = parser.parse_args(sys.argv[1:])
+    
+    log.log(Severity.Information, "Python initialized")
     app = PythonicUniverse(CUni.Window.display)
-    app.run()
+    if args.profile:
+        import cProfile
+        log.log(Severity.Warning, "Running in cProfile mode")
+        if args.profileShell and args.profile is True:
+            log.log(Severity.Warning, "No output file defined but shell requested. Defaulting to /tmp/pyuniverse-profile")
+            args.profile = "/tmp/pyuniverse-profile"
+        if args.profileFrames:
+            if args.profileFrames < 0:
+                raise ValueError("Nice try.")
+            app._eventLoop.setFrameCount(args.profileFrames)
+        if args.profile is not True:
+            log.log(Severity.Information, "cProfile output is going to file: {0}".format(args.profile))
+            cProfile.run("app.run()", filename=args.profile)
+        else:
+            cProfile.run("app.run()")
+        if args.profileShell:
+            import code
+            import pstats
+            import readline
+            p = pstats.Stats(args.profile)
+            def topTimes(n=10):
+                p.sort_stats("cum").print_stats(n)
+            namespace = {}
+            namespace["p"]          = p
+            namespace["app"]        = app
+            namespace["topTimes"]   = topTimes
+            code.InteractiveConsole(namespace).interact("Profiling shell. Stats of the current run are available in the p object. Application state is available in the app object.")
+    else:
+        app.run()

@@ -41,6 +41,8 @@ class EventLoop {
         DisplayHandle _display;
         EventSinkHandle _eventSink;
         TimeFloat _deltaT;
+        uint64_t _frameCount;
+        uint64_t _currentFrameCount;
         bool _terminated;
     public:
         void terminate();
@@ -48,6 +50,12 @@ class EventLoop {
     public:
         double getSyncedFrameLength();
         void setSyncedFrameLength(const TimeFloat deltaT);
+
+        /**
+         * Set a frame count. Until this count of further frames, the
+         * event loop will send a WMQuit event.
+         */
+        void setFrameCount(const uint64_t frameCount);
     public:
         double currentFPS;
 };
