@@ -192,7 +192,12 @@ class Border(BorderComponent):
         """
         Set the rounding radius of each edge to *value*.
         """
-        self._corners = [value] * 4
+        if value < 0:
+            raise ValueError("Border radius must be a non-zero integer number.")
+        self._corners = [int(value)] * 4
+
+    def getAllRadii(self):
+        return tuple(self._corners)
 
     @property
     def Width(self):

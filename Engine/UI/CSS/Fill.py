@@ -98,6 +98,9 @@ class Fill(object):
         self.inCairo(rect, ctx)
         return ctx.pop_group()
 
+    def setSource(self, ctx):
+        raise NotImplementedError("setSource not implemented for {0}".format(type(self).__name__))
+
     def __ne__(self, other):
         r = self.__eq__(other)
         if r is NotImplemented:
@@ -136,13 +139,21 @@ class __Transparent(Fill):
 
     def __repr__(self):
         return "Transparent"
+
+    def __eq__(self, other):
+        return other is self.Transparent
         
     def geometryForRect(self, rect, faceBuffer):
         pass
 
     def inCairo(self, rect, ctx):
         pass
+
+    def setSource(self, ctx):
+        ctx.set_source_rgba(0., 0., 0., 0.)
+    
 Transparent = __Transparent()
+__Transparent.Transparent = Transparent
 
 class Colour(Fill):
     __hash__ = None
@@ -226,6 +237,10 @@ class Colour(Fill):
         ctx.set_source_rgba(self._r, self._g, self._b, self._a)
         ctx.rectangle(rect.Left, rect.Top, rect.Width, rect.Height)
         ctx.fill()
+
+    def setSource(self, ctx):
+        ctx.set_source_rgba(self._r, self._g, self._b, self._a)
+    
 
 class Gradient(Fill):
     __hash__ = None

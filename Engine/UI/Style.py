@@ -28,6 +28,7 @@ from our_future import *
 import itertools
 import iterutils
 import copy
+import math
 
 from typeutils import number
 
@@ -433,8 +434,96 @@ class Style(object):
         colours = ( self._border.Left.Fill, self._border.Top.Fill,
                     self._border.Right.Fill, self._border.Bottom.Fill)
 
+        equalWidths = not any(widths[0] != width for width in widths)
+        equalColours = not any(colours[0] != colour for colour in colours)
+
+        if (equalWidths and widths[0] == 0 or equalColours and colours[0] is Transparent) and self._background is Transparent:
+            return
+
         radii = self._border.getAllRadii()
 
+        shears = self._shear
+
+        shearTopLeft = shears[0] if shears[0] > 0 else 0
+        shearTopRight = -shears[1] if shears[1] > 0 else 0
+        shearBottomLeft = -shears[0] if shears[0] < 0 else 0
+        shearBottomRight = shears[1] if shears[1] < 0 else 0
+
         corners = [
-            
+            (clientRect.Left + shearTopLeft + radii[0], clientRect.Top + radii[0]),
+            (clientRect.Right + shearTopRight - radii[1], clientRect.Top + radii[1]),
+            (clientRect.Right + shearBottomRight - radii[2], clientRect.Bottom - radii[2]),
+            (clientRect.Left + shearBottomLeft + radii[3], clientRect.Bottom - radii[3])
         ]
+        
+        if sum(radii) == 0:
+            # optimize for straight borders
+            if self._background is not Transparent or (equalWidths and equalColours):
+                ctx.move_to(*corners[0])
+                ctx.line_to(*corners[1])
+                ctx.line_to(*corners[2])
+                ctx.line_to(*corners[3])
+                ctx.close_path()
+
+            if equalWidths and equalColours:
+                if self._background is not Transparent:
+                    self._background.setSource(ctx)
+                    ctx.fill_preserve()
+                ctx.set_line_width(widths[0])
+                colours[0].setSource(ctx)
+                ctx.stroke()
+            else:
+                self._background.setSource(ctx)
+                ctx.fill()
+                
+                for i, (width, fill) in enumerate(itertools.izip(widths, colours)):
+                    if width <= 0 or fill is Transparent:
+                        continue
+                    ctx.set_line_width(width)
+                    fill.setSource(ctx)
+                    ctx.move_to(*corners[i-1])
+                    ctx.line_to(*corners[i])
+                    ctx.stroke()
+        else:
+            leftLessAngle = math.atan(shears[0]/clientRect.Height)
+            rightLessAngle = math.atan(shears[1]/clientRect.Height)
+            pi = math.pi
+
+            pathSegments = zip(corners, radii,
+                (
+                    (pi + leftLessAngle, 3*(pi/2)),
+                    (3*(pi/2), 2*pi + rightLessAngle),
+                    (rightLessAngle, (pi/2)),
+                    (pi/2, pi)
+                )
+            )
+
+            if self._background is not Transparent or (equalWidths and equalColours):
+                for (x, y), radius, (startAngle, stopAngle) in pathSegments:
+                    ctx.arc(x, y, radius, startAngle, stopAngle)
+                ctx.close_path()
+            
+            if equalWidths and equalColours:
+                if self._background is not Transparent:
+                    self._background.setSource(ctx)
+                    ctx.fill_preserve()
+                ctx.set_line_width(widths[0])
+                colours[0].setSource(ctx)
+                ctx.stroke()
+            else:
+                self._background.setSource(ctx)
+                ctx.fill()
+                
+                def unpackArcArguments(segment):
+                    (x, y), radius, (startAngle, stopAngle) = segment
+                    return x, y, radius, startAngle, stopAngle
+
+                for i, (width, fill) in enumerate(itertools.izip(widths, colours)):
+                    if width <= 0 or fill is Transparent:
+                        continue
+                    # FIXME: optimize odd widths
+                    ctx.set_line_width(width)
+                    fill.setSource(ctx)
+                    ctx.arc(*unpackArcArguments(pathSegments[i-1]))
+                    ctx.arc(*unpackArcArguments(pathSegments[i]))
+                    ctx.stroke()
