@@ -516,25 +516,25 @@ class Style(object):
             rightLessAngle = math.atan(shears[1]/clientRect.Height)
             pi = math.pi
 
-            # explicitly put this in a tuple here
-            pathSegments = list(itertools.izip(itertools.izip(*corners), radii,
+            # explicitly put this in a list here
+            pathSegments = list(itertools.izip(corners, itertools.izip(radii,
                 [   # start angles
                     pi + leftLessAngle,
                     3*(pi/2),
-                    rightLessAngle,
+                    -rightLessAngle,
                     pi/2
                 ],
                 [   # stop angles
                     3*(pi/2),
-                    2*pi + rightLessAngle,
+                    2*pi - rightLessAngle,
                     pi/2,
-                    pi
+                    pi + leftLessAngle
                 ]
-            ))
+            )))
 
             if backgroundNotTransparent or bothEqual:
-                for segment in pathSegments:
-                    ctx.arc(*segment)
+                for (x, y), segment in pathSegments:
+                    ctx.arc(x, y, *segment)
                 ctx.close_path()
             
             if bothEqual:
@@ -548,12 +548,14 @@ class Style(object):
                 background.setSource(ctx)
                 ctx.fill()
 
-                for i, (width, fill) in enumerate(itertools.izip(widths, colours)):
+                for i, width, fill in itertools.izip(itertools.count(0), widths, colours):
                     if width <= 0 or fill is Transparent:
                         continue
                     # FIXME: optimize odd widths
                     ctx.set_line_width(width)
                     fill.setSource(ctx)
-                    ctx.arc(*pathSegments[i-1])
-                    ctx.arc(*pathSegments[i])
+                    (x, y), segment = pathSegments[i-1]
+                    ctx.arc(x, y, *segment)
+                    (x, y), segment = pathSegments[i]
+                    ctx.arc(x, y, *segment)
                     ctx.stroke()
