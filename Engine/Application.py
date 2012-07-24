@@ -31,11 +31,9 @@ try:
     import Engine.CEngine.GL as CGL
 except ImportError:
     # XXX: make documentation work
-    class Engine(object):
-        class CEngine(object):
-            class Window(object):
-                class EventSink(object):
-                    pass
+    class CWindow(object):
+        class EventSink(object):
+            pass
 
 from Engine.CEngine.Log import server, Severity
 log = server
