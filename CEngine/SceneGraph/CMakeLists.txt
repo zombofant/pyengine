@@ -1,8 +1,8 @@
 
-add_library(pyuni_SceneGraph STATIC
+add_library(pyengine_SceneGraph STATIC
     "Spatial.cpp"
     "Node.cpp"
     "SceneGraph.cpp"
     "Leaf.cpp"
     )
-add_dependencies(pyuni_SceneGraph pyuni_Math pyuni_GL)
+add_dependencies(pyengine_SceneGraph pyengine_Math pyengine_GL)

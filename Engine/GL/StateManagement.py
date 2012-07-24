@@ -26,7 +26,7 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 from Base import BindableObject
-from CUni.GL import Group, StateGroup
+from Engine.CEngine.GL import Group, StateGroup
 from OpenGL.GL import glActiveTexture
 
 class StateContext(object):

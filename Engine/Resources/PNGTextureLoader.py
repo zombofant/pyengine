@@ -33,8 +33,8 @@ try:
     from Engine.GL.Texture import Texture2D
     from OpenGL.GL import GL_RGBA, GL_UNSIGNED_BYTE
 
-    import CUni
-    import CUni.Resources as CResources
+    import Engine.CEngine as CEngine
+    import Engine.CEngine.Resources as CResources
 except ImportError as err:
     __globalError = err
 
@@ -56,7 +56,7 @@ class PNGTextureLoader(ResourceLoader):
             self._loaderNotAvailable(unicode(err))
         targetClasses.append(CairoSurface)
         try:
-            CUni
+            Engine.CEngine
         except NameError as err:
             self._loaderNotAvailable(unicode(err))
         
@@ -70,9 +70,9 @@ class PNGTextureLoader(ResourceLoader):
     def load(self, fileLike, targetClass=None):
         """
         Loads the given fileLike as PNG image. This is done using
-        :cpp:func:`PNGImage` from CUni.
+        :cpp:func:`PNGImage` from CEngine
         """
-        image = CResources.PNGImage(CUni.Stream(fileLike))
+        image = CResources.PNGImage(CEngine.Stream(fileLike))
         if image is None or not image.IsValid:
             raise ValueError("Not valid PNG data.")
         

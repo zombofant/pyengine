@@ -29,7 +29,7 @@ from our_future import *
 import os
 import sys
 
-from CUni.Log import Severity
+from Engine.CEngine.Log import Severity
 
 from Base import ResourceLoader, log
 from Engine.VFS.FileSystem import FileSystem

@@ -30,7 +30,7 @@ from Renderbuffer import RenderbufferBase
 import numpy as np
 
 try:
-    import CUni.Resources as CResources
+    import Engine.CEngine.Resources as CResources
 except ImportError:
     class CResources(object):
         Image = type(None)

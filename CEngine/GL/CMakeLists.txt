@@ -1,4 +1,4 @@
-add_library(pyuni_GL
+add_library(pyengine_GL
     "Base.cpp"
     "GenericBuffer.cpp"
     "GeometryBuffer.cpp"
@@ -10,4 +10,4 @@ add_library(pyuni_GL
     "TextureAtlas.cpp"
     "CairoUtils.cpp"
 )
-add_dependencies(pyuni_GL pyuni_Math pyuni_Misc)
+add_dependencies(pyengine_GL pyengine_Math pyengine_Misc)

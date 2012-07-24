@@ -12,27 +12,27 @@ cmake_minimum_required(VERSION 2.6)
 
 # project setup
     project(pyUniverse CXX C)
-    set(EXEC "pyuni-client")
+    set(EXEC "pyengine-client")
     set(CMAKE_CXX_FLAGS "-g -Wall -std=c++0x")
     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "CMakeModules")
 
 # -I and -l
     # pyUniverse
-    include_directories(${PROJECT_SOURCE_DIR}/cpphost)
+    include_directories(${PROJECT_SOURCE_DIR}/CEngine)
     set(LIBS ${LIBS} ${PYUNI_MODULES})
     set(CONTRIB_MODULES
         "contrib_BinPack"
     )
     set(PYUNI_MODULES
-        "pyuni_PythonInterface"
-        "pyuni_WindowInterface"
-        "pyuni_RenderGraph"
-        "pyuni_SceneGraph"
-        "pyuni_Resources"
-        "pyuni_GL"
-        "pyuni_IO"
-        "pyuni_Math"
-        "pyuni_Misc"
+        "pyengine_PythonInterface"
+        "pyengine_WindowInterface"
+        "pyengine_RenderGraph"
+        "pyengine_SceneGraph"
+        "pyengine_Resources"
+        "pyengine_GL"
+        "pyengine_IO"
+        "pyengine_Math"
+        "pyengine_Misc"
     )
 
     # opengl + glew
@@ -114,15 +114,15 @@ cmake_minimum_required(VERSION 2.6)
     include_directories(${FREETYPE_INCLUDE_DIRS})
 
 # configuration
-    configure_file(cpphost/pyuniConfig.template
-        cpphost/pyuniConfig.hpp
+    configure_file(CEngine/pyengineConfig.template
+        CEngine/pyengineConfig.hpp
         ESCAPE_QUOTES)
 
 # targets
-    add_subdirectory(cpphost)
+    add_subdirectory(CEngine)
 
-    add_executable(pyuni-client cpphost/pyuni-client.cpp)
-    add_dependencies(pyuni-client ${PYUNI_MODULES} ${CONTRIB_MODULES})
+    add_executable(pyengine-client CEngine/pyengine-client.cpp)
+    add_dependencies(pyengine-client ${PYUNI_MODULES} ${CONTRIB_MODULES})
     target_link_libraries(${EXEC} ${PYUNI_MODULES} ${CONTRIB_MODULES} ${LIBS})
 
 # documentation targets

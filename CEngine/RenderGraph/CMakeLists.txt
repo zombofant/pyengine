@@ -1,6 +1,6 @@
 
-add_library(pyuni_RenderGraph STATIC
+add_library(pyengine_RenderGraph STATIC
     "Stage.cpp"
     "DeferredShading.cpp"
 )
-add_dependencies(pyuni_RenderGraph pyuni_SceneGraph pyuni_GL)
+add_dependencies(pyengine_RenderGraph pyengine_SceneGraph pyengine_GL)

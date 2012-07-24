@@ -26,7 +26,7 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 try:
-    import CUni.GL as CGL
+    import Engine.CEngine.GL as CGL
     Struct = CGL.Struct
     Class = CGL.Class
 except ImportError:

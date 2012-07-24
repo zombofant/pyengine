@@ -26,17 +26,18 @@ from __future__ import unicode_literals, print_function, division
 from our_future import *
 
 try:
-    import CUni
-    import CUni.Window
-    import CUni.GL as CGL
+    import Engine.CEngine
+    import Engine.CEngine.Window as CWindow
+    import Engine.CEngine.GL as CGL
 except ImportError:
     # XXX: make documentation work
-    class CUni(object):
-        class Window(object):
-            class EventSink(object):
-                pass
+    class Engine(object):
+        class CEngine(object):
+            class Window(object):
+                class EventSink(object):
+                    pass
 
-from CUni.Log import server, Severity
+from Engine.CEngine.Log import server, Severity
 log = server
 
 import time
@@ -53,7 +54,7 @@ Application and Window base classes.
 This primarily provides for handling of multiple-head setups
 """
 
-class Application(RootWidget, CUni.Window.EventSink):
+class Application(RootWidget, CWindow.EventSink):
     def __init__(self, display, geometry=(800, 600), fullscreen=False, **kwargs):
         super(Application, self).__init__(**kwargs)
         self.fullscreen = fullscreen
@@ -90,7 +91,7 @@ class Application(RootWidget, CUni.Window.EventSink):
         self.AbsoluteRect = Rect(0, 0, *geometry)
 
         self.realign()
-        self._eventLoop = CUni.Window.EventLoop(display, self)
+        self._eventLoop = CWindow.EventLoop(display, self)
 
     def _getWidgetScreen(self, widget):
         p = widget

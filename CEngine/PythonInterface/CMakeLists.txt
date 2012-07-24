@@ -1,5 +1,5 @@
 
-add_library(pyuni_PythonInterface STATIC
+add_library(pyengine_PythonInterface STATIC
     "Helpers.cpp"
     "Log.cpp"
     "CairoHelpers.cpp"
@@ -11,5 +11,5 @@ add_library(pyuni_PythonInterface STATIC
     "RenderGraph.cpp"
     "SceneGraph.cpp"
     )
-add_dependencies(pyuni_PythonInterface pyuni_IO pyuni_WindowInterface pyuni_SceneGraph pyuni_RenderGraph pyuni_GL pyuni_Resources)
+add_dependencies(pyengine_PythonInterface pyengine_IO pyengine_WindowInterface pyengine_SceneGraph pyengine_RenderGraph pyengine_GL pyengine_Resources)
 

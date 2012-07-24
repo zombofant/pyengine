@@ -25,7 +25,7 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-from CUni.Log import server, Severity
+from Engine.CEngine.Log import server, Severity
 log = server.getChannel("resources.obj")
 
 from Base import ResourceLoader

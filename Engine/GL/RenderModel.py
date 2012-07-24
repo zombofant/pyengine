@@ -25,8 +25,8 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-from CUni.SceneGraph import Leaf
-from CUni.GL import VertexFormat, GeometryBuffer, GeometryBufferView
+from Engine.CEngine.SceneGraph import Leaf
+from Engine.CEngine.GL import VertexFormat, GeometryBuffer, GeometryBufferView
 from Engine.Model import Model
 from OpenGL.GL import *
 from Engine.Resources.Manager import ResourceManager

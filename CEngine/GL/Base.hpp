@@ -26,7 +26,7 @@ named in the AUTHORS file.
 #ifndef _PYUNI_GL_BASE_H
 #define _PYUNI_GL_BASE_H
 
-#include "pyuniConfig.hpp"
+#include "pyengineConfig.hpp"
 
 #include <string>
 #include <iostream>

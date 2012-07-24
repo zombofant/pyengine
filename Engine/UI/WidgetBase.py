@@ -37,7 +37,7 @@ from OpenGL.GL import GL_TRIANGLES, glEnable, GL_TEXTURE_2D
 from Engine.GL.Texture import Texture2D
 
 try:
-    import CUni.GL as CGL
+    import Engine.CEngine.GL as CGL
 except ImportError:
     pass
 

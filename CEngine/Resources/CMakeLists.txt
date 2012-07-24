@@ -1,5 +1,5 @@
-add_library(pyuni_Resources
+add_library(pyengine_Resources
     "Image.cpp"
     "Font.cpp"
 )
-add_dependencies(pyuni_Resources pyuni_GL pyuni_IO)
+add_dependencies(pyengine_Resources pyengine_GL pyengine_IO)

@@ -1,4 +1,4 @@
-add_library(pyuni_IO
+add_library(pyengine_IO
     "Time.cpp"
     "Stream.cpp"
     "Log.cpp"

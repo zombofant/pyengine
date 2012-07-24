@@ -9,9 +9,9 @@ CMakeCache.txt
 CMakeFiles
 cmake_install.cmake
 Makefile
-pyuni-client
+pyengine-client
 *.a
 *.o
-cpphost/pyuniConfig.hpp
+CEngine/pyengineConfig.hpp
 log.xml
 log.txt
