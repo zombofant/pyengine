@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: Int.hpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -29,7 +29,7 @@ named in the AUTHORS file.
 // FIXME: find size_t somewhere else!
 #include <unistd.h>
 
-namespace PyUni {
+namespace PyEngine {
 
 typedef uint8_t uint8;
 typedef uint16_t uint16;

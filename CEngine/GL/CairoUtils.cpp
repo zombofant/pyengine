@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: CairoUtils.cpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -28,7 +28,7 @@ named in the AUTHORS file.
 #include "Misc/Exception.hpp"
 #include "Base.hpp"
 
-namespace PyUni {
+namespace PyEngine {
 namespace GL {
 
 void glTexCairoSurfaceSubImage2D(GLenum target,

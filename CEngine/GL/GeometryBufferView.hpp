@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: GeometryBufferView.hpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -23,14 +23,14 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_GL_GEOMETRY_BUFFER_VIEW_H
-#define _PYUNI_GL_GEOMETRY_BUFFER_VIEW_H
+#ifndef _PYE_GL_GEOMETRY_BUFFER_VIEW_H
+#define _PYE_GL_GEOMETRY_BUFFER_VIEW_H
 
 #include <GL/glew.h>
 
 #include "GeometryBuffer.hpp"
 
-namespace PyUni {
+namespace PyEngine {
 namespace GL {
 
 class GeometryBufferView;

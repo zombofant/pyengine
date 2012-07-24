@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: Leaf.hpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -23,8 +23,8 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_SCENEGRAPH_LEAF_H
-#define _PYUNI_SCENEGRAPH_LEAF_H
+#ifndef _PYE_SCENEGRAPH_LEAF_H
+#define _PYE_SCENEGRAPH_LEAF_H
 
 #include <unordered_map>
 
@@ -32,10 +32,10 @@ named in the AUTHORS file.
 #include "GL/StateManagement.hpp"
 #include "Spatial.hpp"
 
-namespace PyUni {
+namespace PyEngine {
 namespace SceneGraph {
 
-typedef std::unordered_map<PyUni::GL::StateGroupHandle, PyUni::GL::VertexIndexListHandle> VertexMap;
+typedef std::unordered_map<PyEngine::GL::StateGroupHandle, PyEngine::GL::VertexIndexListHandle> VertexMap;
 typedef boost::shared_ptr<VertexMap> VertexMapHandle;
 
 class Leaf;
@@ -59,9 +59,9 @@ class Leaf: public Spatial
 namespace std {
 
 template <>
-struct hash<PyUni::GL::StateGroupHandle>
+struct hash<PyEngine::GL::StateGroupHandle>
 {
-    size_t operator() (const PyUni::GL::StateGroupHandle handle) const
+    size_t operator() (const PyEngine::GL::StateGroupHandle handle) const
     {
         return (size_t)handle.get();
     }
@@ -69,9 +69,9 @@ struct hash<PyUni::GL::StateGroupHandle>
 
 
 template <>
-struct hash<PyUni::GL::VertexIndexListHandle>
+struct hash<PyEngine::GL::VertexIndexListHandle>
 {
-    size_t operator() (const PyUni::GL::VertexIndexListHandle handle) const
+    size_t operator() (const PyEngine::GL::VertexIndexListHandle handle) const
     {
         return (size_t)handle.get();
     }

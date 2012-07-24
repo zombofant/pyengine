@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: Helpers.hpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -23,13 +23,13 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_PYTHON_HELPERS_H
-#define _PYUNI_PYTHON_HELPERS_H
+#ifndef _PYE_PYTHON_HELPERS_H
+#define _PYE_PYTHON_HELPERS_H
 
 #include <boost/python.hpp>
 // #include <iostream>
 
-namespace PyUni {
+namespace PyEngine {
 
 namespace bpy = boost::python;
 

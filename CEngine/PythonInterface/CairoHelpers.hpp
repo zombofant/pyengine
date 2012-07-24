@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: CairoHelpers.hpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -23,13 +23,13 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_PYTHON_CAIRO_HELPERS_H
-#define _PYUNI_PYTHON_CAIRO_HELPERS_H
+#ifndef _PYE_PYTHON_CAIRO_HELPERS_H
+#define _PYE_PYTHON_CAIRO_HELPERS_H
 
 #include <boost/python.hpp>
 #include <pycairo/pycairo.h>
 
-namespace PyUni {
+namespace PyEngine {
 
 void setupCairoHelpers();
 

@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: CairoHelpers.cpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -28,7 +28,7 @@ named in the AUTHORS file.
 #include <Python.h>
 #include <cairo/cairo.h>
 
-namespace PyUni {
+namespace PyEngine {
 
 using namespace boost::python;
 

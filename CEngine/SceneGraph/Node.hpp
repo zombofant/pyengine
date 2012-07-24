@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: Node.hpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -23,8 +23,8 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_SCENEGRAPH_NODE_H
-#define _PYUNI_SCENEGRAPH_NODE_H
+#ifndef _PYE_SCENEGRAPH_NODE_H
+#define _PYE_SCENEGRAPH_NODE_H
 
 #include <vector>
 
@@ -32,7 +32,7 @@ named in the AUTHORS file.
 
 #include "Spatial.hpp"
 
-namespace PyUni {
+namespace PyEngine {
 namespace SceneGraph {
 
 class Node;

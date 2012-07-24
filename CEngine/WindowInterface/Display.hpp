@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: Display.hpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -23,8 +23,8 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_DISPLAY_H
-#define _PYUNI_DISPLAY_H
+#ifndef _PYE_DISPLAY_H
+#define _PYE_DISPLAY_H
 
 #include <vector>
 #include <iostream>
@@ -33,7 +33,7 @@ named in the AUTHORS file.
 
 #include "EventSink.hpp"
 
-namespace PyUni {
+namespace PyEngine {
 
 struct Screen {
     unsigned int index;

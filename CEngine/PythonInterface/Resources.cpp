@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: Resources.cpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -29,11 +29,11 @@ named in the AUTHORS file.
 
 #include "GL.hpp"
 
-namespace PyUni {
+namespace PyEngine {
 
 using namespace boost::python;
-using namespace PyUni::Resources;
-using namespace PyUni::GL;
+using namespace PyEngine::Resources;
+using namespace PyEngine::GL;
 
 BOOST_PYTHON_MODULE(_cuni_resources)
 {    

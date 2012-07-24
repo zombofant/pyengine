@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: Matrices.cpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -29,7 +29,7 @@ named in the AUTHORS file.
 #include "Matrices.hpp"
 #include "MatrixTemplates.hpp"
 
-namespace PyUni {
+namespace PyEngine {
     
 static inline VectorFloat sqr(VectorFloat a) {
     return a * a;

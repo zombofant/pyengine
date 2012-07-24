@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: GenericBuffer.hpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -23,8 +23,8 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_GL_GENERIC_BUFFERS_H
-#define _PYUNI_GL_GENERIC_BUFFERS_H
+#ifndef _PYE_GL_GENERIC_BUFFERS_H
+#define _PYE_GL_GENERIC_BUFFERS_H
 
 #include <limits>
 #include <list>
@@ -38,7 +38,7 @@ named in the AUTHORS file.
 
 #include "Base.hpp"
 
-namespace PyUni {
+namespace PyEngine {
 namespace GL {
 
 class GenericBuffer: public Class {

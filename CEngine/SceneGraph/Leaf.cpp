@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: Leaf.cpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -28,10 +28,10 @@ named in the AUTHORS file.
 #include <cassert>
 #include <GL/glew.h>
 
-namespace PyUni {
+namespace PyEngine {
 namespace SceneGraph {
 
-/* PyUni::SceneGraph::Leaf */
+/* PyEngine::SceneGraph::Leaf */
 
 Leaf::Leaf():
     Spatial::Spatial(),

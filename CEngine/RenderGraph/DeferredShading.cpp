@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: DeferredShading.cpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -25,10 +25,10 @@ named in the AUTHORS file.
 **********************************************************************/
 #include "DeferredShading.hpp"
 
-namespace PyUni {
+namespace PyEngine {
 namespace RenderGraph {
 
-/* PyUni::RenderGraph::DeferredShadingStage */
+/* PyEngine::RenderGraph::DeferredShadingStage */
 
 DeferredShadingStage::DeferredShadingStage(StageHandle parent,
         GLuint geometryFBO, GLuint resultFBO, NodeHandle geometryNode):

@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: Image.hpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -23,8 +23,8 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_RESOURCES_IMAGE_H
-#define _PYUNI_RESOURCES_IMAGE_H
+#ifndef _PYE_RESOURCES_IMAGE_H
+#define _PYE_RESOURCES_IMAGE_H
 
 #include <png.h>
 
@@ -32,13 +32,13 @@ named in the AUTHORS file.
 #include "IO/Stream.hpp"
 #include "GL/AbstractImage.hpp"
 
-namespace PyUni {
+namespace PyEngine {
 namespace Resources {
 
 class Image;
 typedef boost::shared_ptr<Image> ImageHandle;
 
-class Image: public PyUni::GL::AbstractImage2D
+class Image: public PyEngine::GL::AbstractImage2D
 {
     public:
         Image(GLvoid *pixelData,

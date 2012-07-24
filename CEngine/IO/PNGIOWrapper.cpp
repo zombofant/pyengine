@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: PNGIOWrapper.cpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -25,7 +25,7 @@ named in the AUTHORS file.
 **********************************************************************/
 #include "PNGIOWrapper.hpp"
 
-namespace PyUni {
+namespace PyEngine {
 
 inline Stream *extractStream(png_structp png_ptr)
 {

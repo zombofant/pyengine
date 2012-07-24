@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: EventSink.cpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -25,7 +25,7 @@ named in the AUTHORS file.
 **********************************************************************/
 #include "EventSink.hpp"
 
-namespace PyUni {
+namespace PyEngine {
 EventSink::~EventSink() {
 }
 }

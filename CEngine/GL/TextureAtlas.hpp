@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: TextureAtlas.hpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -23,8 +23,8 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_GL_TEXTURE_ATLAS_H
-#define _PYUNI_GL_TEXTURE_ATLAS_H
+#ifndef _PYE_GL_TEXTURE_ATLAS_H
+#define _PYE_GL_TEXTURE_ATLAS_H
 
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
@@ -35,7 +35,7 @@ named in the AUTHORS file.
 #include "GeometryBuffer.hpp"
 #include "AbstractImage.hpp"
 
-namespace PyUni {
+namespace PyEngine {
 namespace GL {
 
 class TextureAtlas: public Class

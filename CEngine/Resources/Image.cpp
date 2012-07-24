@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: Image.cpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -29,12 +29,12 @@ named in the AUTHORS file.
 
 #include "IO/PNGIOWrapper.hpp"
 
-namespace PyUni {
+namespace PyEngine {
 namespace Resources {
 
 using namespace std;
 
-/* PyUni::Resources::Image */
+/* PyEngine::Resources::Image */
 
 Image::Image(GLvoid *pixelData, 
         const GLsizei aWidth, const GLsizei aHeight,

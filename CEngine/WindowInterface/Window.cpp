@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: Window.cpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -27,9 +27,9 @@ named in the AUTHORS file.
 
 #include <GL/glew.h>
 
-namespace PyUni {
+namespace PyEngine {
 
-/* PyUni::Window */
+/* PyEngine::Window */
 
 Window::Window():
     _glewInitialized(false)

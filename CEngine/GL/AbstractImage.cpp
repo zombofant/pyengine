@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: AbstractImage.cpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -33,7 +33,7 @@ named in the AUTHORS file.
 #include "Misc/Exception.hpp"
 #include "Misc/Int.hpp"
 
-namespace PyUni {
+namespace PyEngine {
 namespace GL {
 
 static cairo_user_data_key_t destroyHook = {0};
@@ -42,7 +42,7 @@ void destroyBuffer(void *data) {
     free(data);
 }
 
-/* PyUni::GL::AbstractImage2D */
+/* PyEngine::GL::AbstractImage2D */
 
 /**
  * @brief simple alias for memcpy, as this is trivial.

@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: X11Window.hpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -23,8 +23,8 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_X11_WINDOW_H
-#define _PYUNI_X11_WINDOW_H
+#ifndef _PYE_X11_WINDOW_H
+#define _PYE_X11_WINDOW_H
 
 #include <GL/glx.h>
 #include <X11/Xlib.h>
@@ -33,7 +33,7 @@ named in the AUTHORS file.
 #include "WindowInterface/Window.hpp"
 #include "IO/Log.hpp"
 
-namespace PyUni {
+namespace PyEngine {
 
 /**
  * Create and manipulate an X11 window.

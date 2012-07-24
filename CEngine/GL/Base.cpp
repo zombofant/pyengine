@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: Base.cpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -30,10 +30,10 @@ named in the AUTHORS file.
 
 #include <GL/glew.h>
 
-namespace PyUni {
+namespace PyEngine {
 namespace GL {
 
-/* PyUni::GL::Error */
+/* PyEngine::GL::Error */
 
 Error::Error(const std::string aMessage):
     Exception("OpenGL error: "+aMessage)
@@ -41,7 +41,7 @@ Error::Error(const std::string aMessage):
     
 }
 
-/* PyUni::GL::Class */
+/* PyEngine::GL::Class */
 
 Class::Class():
     glID(0)

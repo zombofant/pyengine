@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: BufferMap.hpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -23,14 +23,14 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_UTILS_BUFFER_MAP_H
-#define _PYUNI_UTILS_BUFFER_MAP_H
+#ifndef _PYE_UTILS_BUFFER_MAP_H
+#define _PYE_UTILS_BUFFER_MAP_H
 
 #include <cstddef>
 
 #include <boost/shared_ptr.hpp>
 
-namespace PyUni {
+namespace PyEngine {
 namespace GL {
 
 class BufferMap {

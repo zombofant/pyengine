@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: CairoUtils.hpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -23,13 +23,13 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_GL_CAIRO_UTILS_H
-#define _PYUNI_GL_CAIRO_UTILS_H
+#ifndef _PYE_GL_CAIRO_UTILS_H
+#define _PYE_GL_CAIRO_UTILS_H
 
 #include <GL/glew.h>
 #include <cairo/cairo.h>
 
-namespace PyUni {
+namespace PyEngine {
 namespace GL {
 
 void glTexCairoSurfaceSubImage2D(GLenum target,

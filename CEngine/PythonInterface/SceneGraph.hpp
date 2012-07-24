@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: SceneGraph.hpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -23,8 +23,8 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_PYTHON_SCENE_GRAPH_H
-#define _PYUNI_PYTHON_SCENE_GRAPH_H
+#ifndef _PYE_PYTHON_SCENE_GRAPH_H
+#define _PYE_PYTHON_SCENE_GRAPH_H
 
 #include <cassert>
 #include <boost/python.hpp>
@@ -34,7 +34,7 @@ named in the AUTHORS file.
 #include "SceneGraph/SceneGraph.hpp"
 #include "SceneGraph/Leaf.hpp"
 
-namespace PyUni {
+namespace PyEngine {
 
 class LeafWrap;
 typedef boost::shared_ptr<LeafWrap> LeafWrapHandle;

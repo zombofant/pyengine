@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: GeometryBufferView.cpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -29,10 +29,10 @@ named in the AUTHORS file.
 
 #include "GeometryObject.hpp"
 
-namespace PyUni {
+namespace PyEngine {
 namespace GL {
 
-/* PyUni::GL::GeometryBufferView */
+/* PyEngine::GL::GeometryBufferView */
 
 GeometryBufferView::GeometryBufferView(
         const GeometryBufferHandle buffer,
@@ -96,7 +96,7 @@ GeometryBufferView::AttributeView *GeometryBufferView::getVertexAttribView(const
     return _vertexAttrib[vertexAttribIndex];
 }
 
-/* PyUni::GL::GeometryBufferView::AttributeView */
+/* PyEngine::GL::GeometryBufferView::AttributeView */
 
 GeometryBufferView::AttributeView::AttributeView(
         GeometryBufferView *view,
@@ -149,7 +149,7 @@ void GeometryBufferView::AttributeView::set(const GLVertexFloat *data)
     slice(0, _vertexCount)->set(data);
 }
 
-/* PyUni::GL::GeometryBufferView::AttributeSlice */
+/* PyEngine::GL::GeometryBufferView::AttributeSlice */
 
 GeometryBufferView::AttributeSlice::AttributeSlice(AttributeView *view):
     _view(view),

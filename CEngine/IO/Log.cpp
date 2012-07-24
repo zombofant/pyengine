@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: Log.cpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -30,7 +30,7 @@ named in the AUTHORS file.
 
 #include "Misc/Int.hpp"
 
-namespace PyUni {
+namespace PyEngine {
 
 const sizeint AWESOME_BUFFER_SIZE = 512;
 
@@ -60,7 +60,7 @@ char *vawesomef(const char *message, sizeuint *length, ...)
     return result;
 }
 
-/* PyUni::IO::LogPipe */
+/* PyEngine::IO::LogPipe */
 
 LogPipe::LogPipe(LogServer *server, Severity severity, LogChannel *channel):
     std::ostringstream(ios_base::app | ios_base::out),
@@ -81,7 +81,7 @@ void LogPipe::submit()
     _server->log(this);
 }
 
-/* PyUni::IO::LogChannel */
+/* PyEngine::IO::LogChannel */
 
 LogChannel::LogChannel(LogServer *server, const std::string name):
     _server(server),
@@ -110,7 +110,7 @@ LogPipe &LogChannel::log(Severity severity)
     return _server->log(severity, this);
 }
 
-/* PyUni::IO::LogSink */
+/* PyEngine::IO::LogSink */
 
 LogSink::LogSink(uint64_t mask):
     _mask(mask)
@@ -127,7 +127,7 @@ void LogSink::log(TimeFloat timestamp, Severity severity,
     }
 }
 
-/* PyUni::IO::LogStreamSink */
+/* PyEngine::IO::LogStreamSink */
 
 LogStreamSink::LogStreamSink(uint64_t mask, StreamHandle stream):
     LogSink::LogSink(mask),
@@ -148,7 +148,7 @@ void LogStreamSink::doLog(TimeFloat timestamp, Severity severity,
     _stream->flush();
 }
 
-/* PyUni::IO::LogXMLSink */
+/* PyEngine::IO::LogXMLSink */
 
 LogXMLSink::LogXMLSink(uint64_t mask, StreamHandle stream, const std::string xsltFile):
     LogSink::LogSink(mask),
@@ -183,7 +183,7 @@ void LogXMLSink::doLog(TimeFloat timestamp, Severity severity,
     free(formatted);
 }
 
-/* PyUni::IO::LogServer */
+/* PyEngine::IO::LogServer */
 
 LogServer::LogServer():
     _startupTime(nanotime()),

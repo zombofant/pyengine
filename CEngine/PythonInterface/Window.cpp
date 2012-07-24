@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: Window.cpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -35,7 +35,7 @@ named in the AUTHORS file.
 
 using namespace boost::python;
 
-namespace PyUni {
+namespace PyEngine {
 
 list Display_screens_get(const Display &self)
 {

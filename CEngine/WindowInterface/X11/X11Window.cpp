@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: X11Window.cpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -28,7 +28,7 @@ named in the AUTHORS file.
 
 #include <X11/Xatom.h>
 
-namespace PyUni {
+namespace PyEngine {
 
 X11Window::X11Window(::Display *disp,
                      XVisualInfo *vinfo,

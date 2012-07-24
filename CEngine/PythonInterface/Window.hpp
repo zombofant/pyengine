@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: Window.hpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -23,8 +23,8 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_PYTHON_WINDOW_H
-#define _PYUNI_PYTHON_WINDOW_H
+#ifndef _PYE_PYTHON_WINDOW_H
+#define _PYE_PYTHON_WINDOW_H
 
 #include <string>
 
@@ -35,7 +35,7 @@ named in the AUTHORS file.
 #include "WindowInterface/EventSink.hpp"
 #include "WindowInterface/EventLoop.hpp"
 
-namespace PyUni {
+namespace PyEngine {
 
 class EventSinkWrap: public EventSink, public boost::python::wrapper<EventSink>
 {

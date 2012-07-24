@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: Exception.hpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -23,15 +23,15 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_UTILS_EXCEPTION_H
-#define _PYUNI_UTILS_EXCEPTION_H
+#ifndef _PYE_UTILS_EXCEPTION_H
+#define _PYE_UTILS_EXCEPTION_H
 
 #include <exception>
 #include <string>
 #include <stdlib.h>
 #include <errno.h>
 
-namespace PyUni {
+namespace PyEngine {
  
 class Exception: public std::exception {
     public:

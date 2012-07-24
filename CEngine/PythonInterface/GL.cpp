@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: GL.cpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -33,10 +33,10 @@ named in the AUTHORS file.
 #include "GL/AbstractImage.hpp"
 #include "CairoHelpers.hpp"
 
-namespace PyUni {
+namespace PyEngine {
 
 using namespace boost::python;
-using namespace PyUni::GL;
+using namespace PyEngine::GL;
 
 void parseSlice(slice *slice, GLsizei *start, GLsizei *stop, GLsizei *step, const GLsizei len)
 {

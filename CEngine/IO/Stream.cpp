@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: Stream.cpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -31,9 +31,9 @@ named in the AUTHORS file.
 
 #include <boost/format.hpp>
 
-namespace PyUni {
+namespace PyEngine {
 
-/* PyUni::Stream */
+/* PyEngine::Stream */
 
 void Stream::flush()
 {

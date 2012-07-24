@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: Package.hpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -23,14 +23,14 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_PYTHON_PACKAGE_H
-#define _PYUNI_PYTHON_PACKAGE_H
+#ifndef _PYE_PYTHON_PACKAGE_H
+#define _PYE_PYTHON_PACKAGE_H
 
 #include <boost/python.hpp>
 
 #include "IO/Stream.hpp"
 
-namespace PyUni {
+namespace PyEngine {
 
 class PyStream;
 typedef boost::shared_ptr<PyStream> PyStreamHandle;

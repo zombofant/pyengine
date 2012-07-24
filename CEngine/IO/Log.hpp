@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: Log.hpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -23,8 +23,8 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_IO_LOG_H
-#define _PYUNI_IO_LOG_H
+#ifndef _PYE_IO_LOG_H
+#define _PYE_IO_LOG_H
 
 #include <list>
 #include <unordered_map>
@@ -48,7 +48,7 @@ struct hash<const std::string>
 };
 }
 
-namespace PyUni {
+namespace PyEngine {
 
 enum Severity {
     Debug           = 0x01,

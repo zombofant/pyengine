@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: GeometryObject.cpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -27,10 +27,10 @@ named in the AUTHORS file.
 
 #include <iostream>
 
-namespace PyUni {
+namespace PyEngine {
 namespace GL {
 
-/* PyUni::GL::VertexIndexListMap */
+/* PyEngine::GL::VertexIndexListMap */
 
 VertexIndexListMap::VertexIndexListMap(const VertexIndexListHandle vertices):
     BufferMap(),

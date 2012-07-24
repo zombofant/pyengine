@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: FTIOWrapper.hpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -23,15 +23,15 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_RESOURCES_FTIOWRAPPER_H
-#define _PYUNI_RESOURCES_FTIOWRAPPER_H
+#ifndef _PYE_RESOURCES_FTIOWRAPPER_H
+#define _PYE_RESOURCES_FTIOWRAPPER_H
 
 #include <ft2build.h>
 #include <freetype/freetype.h>
 
 #include "Stream.hpp"
 
-namespace PyUni {
+namespace PyEngine {
 
 FT_Stream fromStream(StreamHandle istream);
 FT_Open_Args *openAsStream(StreamHandle istream);

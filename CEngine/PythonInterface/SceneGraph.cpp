@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: SceneGraph.cpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -29,10 +29,10 @@ named in the AUTHORS file.
 
 #include "Helpers.hpp"
 
-namespace PyUni {
+namespace PyEngine {
 
 using namespace boost::python;
-using namespace PyUni::SceneGraph;
+using namespace PyEngine::SceneGraph;
 
 typedef MapHelper<VertexMap, VertexMapHandle> VertexMapHelper;
 

@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: SceneGraph.hpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -23,14 +23,14 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_SCENEGRAPH_SCENEGRAPH_H
-#define _PYUNI_SCENEGRAPH_SCENEGRAPH_H
+#ifndef _PYE_SCENEGRAPH_SCENEGRAPH_H
+#define _PYE_SCENEGRAPH_SCENEGRAPH_H
 
 #include <boost/shared_ptr.hpp>
 
 #include "Node.hpp"
 
-namespace PyUni {
+namespace PyEngine {
 namespace SceneGraph {
 
 class SceneGraph;

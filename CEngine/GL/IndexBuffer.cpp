@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: IndexBuffer.cpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -25,12 +25,12 @@ named in the AUTHORS file.
 **********************************************************************/
 #include "IndexBuffer.hpp"
 
-namespace PyUni {
+namespace PyEngine {
 namespace GL {
     
-using namespace PyUni;
+using namespace PyEngine;
 
-/* PyUni::GL::IndexEntry */
+/* PyEngine::GL::IndexEntry */
 
 IndexEntry::IndexEntry(const VertexIndex aStart, const VertexIndexListHandle aVertices):
     start(aStart),
@@ -40,7 +40,7 @@ IndexEntry::IndexEntry(const VertexIndex aStart, const VertexIndexListHandle aVe
     
 }
 
-/* PyUni::GL::GenericIndexBuffer */
+/* PyEngine::GL::GenericIndexBuffer */
 
 GenericIndexBuffer::GenericIndexBuffer(const GLenum aPurpose):
     GenericBuffer(sizeof(GLuint), GL_ELEMENT_ARRAY_BUFFER, aPurpose),
@@ -71,7 +71,7 @@ void GenericIndexBuffer::dump() {
     std::cout << std::endl;
 }
 
-/* PyUni::GL::StreamIndexBuffer */
+/* PyEngine::GL::StreamIndexBuffer */
 
 StreamIndexBuffer::StreamIndexBuffer(const GLenum aPurpose):
     GenericIndexBuffer(aPurpose)
@@ -96,7 +96,7 @@ void StreamIndexBuffer::add(const VertexIndexListHandle vertices) {
     }
 }
 
-/* PyUni::GL::StaticIndexBuffer */
+/* PyEngine::GL::StaticIndexBuffer */
 
 StaticIndexBuffer::StaticIndexBuffer(const GLenum aPurpose):
     GenericIndexBuffer(aPurpose),

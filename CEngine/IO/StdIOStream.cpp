@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: StdIOStream.cpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -27,9 +27,9 @@ named in the AUTHORS file.
 
 #include <unistd.h>
 
-namespace PyUni {
+namespace PyEngine {
 
-/* PyUni::StdIOStream */
+/* PyEngine::StdIOStream */
 
 StdIOStream::StdIOStream(const int origFD):
     FDStream::FDStream(checkFD(dup(origFD)), true)
@@ -41,7 +41,7 @@ bool StdIOStream::isSeekable() const {
     return false;
 }
 
-/* PyUni::StdInStream */
+/* PyEngine::StdInStream */
 
 StdInStream::StdInStream():
     StdIOStream::StdIOStream(STDIN_FILENO)
@@ -57,7 +57,7 @@ bool StdInStream::isWritable() const {
     return false;
 }
 
-/* PyUni::StdOutStream */
+/* PyEngine::StdOutStream */
 
 StdOutStream::StdOutStream():
     StdIOStream::StdIOStream(STDOUT_FILENO)
@@ -73,7 +73,7 @@ bool StdOutStream::isWritable() const {
     return true;
 }
 
-/* PyUni::StdErrStream */
+/* PyEngine::StdErrStream */
 
 StdErrStream::StdErrStream():
     StdIOStream::StdIOStream(STDERR_FILENO)

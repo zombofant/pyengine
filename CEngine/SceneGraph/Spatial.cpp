@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: Spatial.cpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -28,7 +28,7 @@ named in the AUTHORS file.
 #include <iostream>
 #include <GL/glew.h>
 
-namespace PyUni {
+namespace PyEngine {
 namespace SceneGraph {
 
 Spatial::Spatial():

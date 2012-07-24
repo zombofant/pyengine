@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: GeometryBuffer.cpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -27,10 +27,10 @@ named in the AUTHORS file.
 
 #include <cassert>
 
-namespace PyUni {
+namespace PyEngine {
 namespace GL {
 
-/* PyUni::GL::VertexFormat */
+/* PyEngine::GL::VertexFormat */
 
 VertexFormat::VertexFormat(const unsigned int aNPosition,
         const unsigned int aNColour,
@@ -100,7 +100,7 @@ VertexFormat *VertexFormat::copy(const VertexFormat *vf)
     );
 }
 
-/* PyUni::GL::GeometryBuffer */
+/* PyEngine::GL::GeometryBuffer */
 
 GeometryBuffer::GeometryBuffer(const VertexFormatHandle vertexFormat, const GLenum aPurpose):
     GenericBuffer(vertexFormat->vertexSize, GL_ARRAY_BUFFER, aPurpose),

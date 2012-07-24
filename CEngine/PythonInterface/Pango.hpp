@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: Pango.hpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -23,14 +23,14 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_PYTHON_INTERFACE_PANGO
-#define _PYUNI_PYTHON_INTERFACE_PANGO
+#ifndef _PYE_PYTHON_INTERFACE_PANGO
+#define _PYE_PYTHON_INTERFACE_PANGO
 
 #include <boost/shared_ptr.hpp>
 #include <pango/pango.h>
 #include <cairo/cairo.h>
 
-namespace PyUni {
+namespace PyEngine {
 
 class PangoLayout;
 

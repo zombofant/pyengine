@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: X11Display.cpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -41,7 +41,7 @@ named in the AUTHORS file.
 
 #include "X11Window.hpp"
 
-namespace PyUni {
+namespace PyEngine {
 
 X11Display::X11Display(const char *display):
     Display::Display(),

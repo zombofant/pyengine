@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: Display.cpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -28,7 +28,7 @@ named in the AUTHORS file.
 #include <cstdint>
 #include <cstdio>
 
-namespace PyUni {
+namespace PyEngine {
 
 template <typename T>
 int compare(const T& x, const T& y)

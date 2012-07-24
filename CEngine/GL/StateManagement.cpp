@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: StateManagement.cpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -25,10 +25,10 @@ named in the AUTHORS file.
 **********************************************************************/
 #include "StateManagement.hpp"
 
-namespace PyUni {
+namespace PyEngine {
 namespace GL {
 
-/* PyUni::GL::Group */
+/* PyEngine::GL::Group */
 
 Group::Group(int order):
     _order(order),
@@ -104,7 +104,7 @@ void Group::execute()
     drawGeometry();
 }
 
-/* PyUni::GL::ParentGroup */
+/* PyEngine::GL::ParentGroup */
 
 ParentGroup::ParentGroup(int order):
     Group::Group(order),
@@ -163,7 +163,7 @@ void ParentGroup::tearDown()
 
 }
 
-/* PyUni::GL::StateGroup */
+/* PyEngine::GL::StateGroup */
 
 StateGroup::StateGroup(StructHandle glObject, int order):
     ParentGroup::ParentGroup(order),
@@ -183,7 +183,7 @@ void StateGroup::tearDown()
     _glObject->unbind();
 }   
 
-/* PyUni::GL::TransformGroup */
+/* PyEngine::GL::TransformGroup */
 
 TransformGroup::TransformGroup(const Matrix4f *matrix, int order):
     ParentGroup::ParentGroup(order),

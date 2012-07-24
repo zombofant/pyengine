@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: Stage.cpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -25,10 +25,10 @@ named in the AUTHORS file.
 **********************************************************************/
 #include "Stage.hpp"
 
-namespace PyUni {
+namespace PyEngine {
 namespace RenderGraph {
 
-/* PyUni::RenderGraph::Node */
+/* PyEngine::RenderGraph::Node */
 
 Node::Node(StageHandle parent):
     _parent(parent)
@@ -46,7 +46,7 @@ StageHandle Node::getParent()
     return _parent.lock();
 }
 
-/* PyUni::RenderGraph::Stage */
+/* PyEngine::RenderGraph::Stage */
 
 Stage::Stage(StageHandle parent):
     Node::Node(parent),

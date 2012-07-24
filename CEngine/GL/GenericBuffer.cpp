@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: GenericBuffer.cpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -30,10 +30,10 @@ named in the AUTHORS file.
 #include <stdexcept>
 #include <iostream>
 
-namespace PyUni {
+namespace PyEngine {
 namespace GL {
 
-/* PyUni::GL::GenericBuffer */
+/* PyEngine::GL::GenericBuffer */
 
 GenericBuffer::GenericBuffer(const GLsizei aItemSize, const GLenum aKind, const GLenum aPurpose):
     Class(),

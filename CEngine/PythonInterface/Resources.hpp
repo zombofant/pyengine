@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: Resources.hpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -27,7 +27,7 @@ named in the AUTHORS file.
 
 #include "Resources/Image.hpp"
 
-namespace PyUni {
+namespace PyEngine {
 
 void addResourcesToInittab();
 

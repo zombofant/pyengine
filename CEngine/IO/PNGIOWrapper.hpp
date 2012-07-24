@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: PNGIOWrapper.hpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -23,14 +23,14 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_RESOURCES_PNG_IO_WRAPPER_H
-#define _PYUNI_RESOURCES_PNG_IO_WRAPPER_H
+#ifndef _PYE_RESOURCES_PNG_IO_WRAPPER_H
+#define _PYE_RESOURCES_PNG_IO_WRAPPER_H
 
 #include <png.h>
 
 #include "Stream.hpp"
 
-namespace PyUni {
+namespace PyEngine {
 
 void pngReadStream(png_structp data, Stream *io);
 void pngWriteStream(png_structp data, Stream *io);

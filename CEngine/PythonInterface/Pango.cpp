@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: Pango.cpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -34,9 +34,9 @@ named in the AUTHORS file.
 #include "CairoHelpers.hpp"
 #include "Helpers.hpp"
 
-namespace PyUni {
+namespace PyEngine {
 
-/* PyUni::PangoCairoContext */
+/* PyEngine::PangoCairoContext */
 
 PangoCairoContext::PangoCairoContext(cairo_t *cairoCtx):
     _cairoCtx(cairoCtx),
@@ -80,7 +80,7 @@ void PangoCairoContext::updateContext()
     pango_cairo_update_context(_cairoCtx, _ctx);
 }
 
-/* PyUni::PangoLayout */
+/* PyEngine::PangoLayout */
 
 PangoLayout::PangoLayout(PangoCairoContextHandle ctx):
     _layout(pango_layout_new(ctx->getPangoContext()))

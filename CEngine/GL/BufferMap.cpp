@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: BufferMap.cpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -25,7 +25,7 @@ named in the AUTHORS file.
 **********************************************************************/
 #include "BufferMap.hpp"
 
-namespace PyUni {
+namespace PyEngine {
 namespace GL {
 
 }

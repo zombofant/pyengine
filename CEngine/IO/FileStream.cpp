@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: FileStream.cpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -31,9 +31,9 @@ named in the AUTHORS file.
 #include <sys/stat.h>
 #include <fcntl.h>
 
-namespace PyUni {
+namespace PyEngine {
     
-/* PyUni::FDStream */
+/* PyEngine::FDStream */
 
 FDStream::FDStream(int fd, bool ownsFD):
     _fd(fd),
@@ -88,7 +88,7 @@ sizeuint FDStream::write(const void *data, const sizeuint length) {
     return writtenBytes;
 }
 
-/* PyUni::FileStream */
+/* PyEngine::FileStream */
 
 // note that throwing the exception on a failed open is done in checkFD
 FileStream::FileStream(const std::string fileName, 

@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: Font.cpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -28,7 +28,7 @@ named in the AUTHORS file.
 #include "IO/FTIOWrapper.hpp"
 #include "Misc/Exception.hpp"
 
-namespace PyUni {
+namespace PyEngine {
 namespace Resources {
 
 inline void catchFTError(FT_Error err)
@@ -39,7 +39,7 @@ inline void catchFTError(FT_Error err)
     }
 }
 
-/* PyUni::Resources::FontFace */
+/* PyEngine::Resources::FontFace */
 
 FontFace::FontFace(FT_Face face):
     _face(face),
@@ -53,7 +53,7 @@ FontFace::~FontFace()
     FT_Done_Face(_face);
 }
 
-/* PyUni::Resources::Font */
+/* PyEngine::Resources::Font */
 
 Font::Font(FontLibraryHandle fontLibrary, const float size):
     _library(fontLibrary),
@@ -92,7 +92,7 @@ FontFaceHandle Font::load(StreamHandle input, int faceIndex)
     return handle;
 }
 
-/* PyUni::Resources::FontLibrary */
+/* PyEngine::Resources::FontLibrary */
 
 FontLibrary::FontLibrary(FT_Library lib):
     _lib(lib),

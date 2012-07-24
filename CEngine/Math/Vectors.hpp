@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: Vectors.hpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -23,13 +23,13 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_MATH_VECTORS_H
-#define _PYUNI_MATH_VECTORS_H
+#ifndef _PYE_MATH_VECTORS_H
+#define _PYE_MATH_VECTORS_H
 
 #include <vector>
 #include <ostream>
 
-namespace PyUni {
+namespace PyEngine {
     
 typedef double VectorFloat;
 
@@ -143,7 +143,7 @@ struct Vector3 {
         /**
           \rst
           Return the x and y components as
-          :cpp:class:`Vector2 <PyUni::Vector2>` instance.
+          :cpp:class:`Vector2 <PyEngine::Vector2>` instance.
           \endrst
          */
         Vector2 vec2() const;
@@ -193,7 +193,7 @@ struct Vector4 {
 
         /**
           \rst
-          Return the x, y components as :cpp:class:`Vector2 <PyUni::Vector2>`
+          Return the x, y components as :cpp:class:`Vector2 <PyEngine::Vector2>`
           instance.
           \endrst
          */
@@ -201,7 +201,7 @@ struct Vector4 {
         
         /**
           \rst
-          Return the x, y, z components as :cpp:class:`Vector3 <PyUni::Vector3>`
+          Return the x, y, z components as :cpp:class:`Vector3 <PyEngine::Vector3>`
           instance.
           \endrst
          */

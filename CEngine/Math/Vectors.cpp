@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: Vectors.cpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -28,7 +28,7 @@ named in the AUTHORS file.
 
 #include <cmath>
 
-namespace PyUni {
+namespace PyEngine {
 
 Vector2::Vector2():
     x(0),

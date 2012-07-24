@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: SceneGraph.cpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -26,7 +26,7 @@ named in the AUTHORS file.
 #include "SceneGraph.hpp"
 #include <iostream>
 
-namespace PyUni {
+namespace PyEngine {
 namespace SceneGraph {
 
 SceneGraph::SceneGraph():

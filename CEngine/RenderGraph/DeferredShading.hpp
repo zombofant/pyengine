@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: DeferredShading.hpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -23,14 +23,14 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_RENDERGRAPH_DEFERRED_SHADING_H
-#define _PYUNI_RENDERGRAPH_DEFERRED_SHADING_H
+#ifndef _PYE_RENDERGRAPH_DEFERRED_SHADING_H
+#define _PYE_RENDERGRAPH_DEFERRED_SHADING_H
 
 #include <GL/glew.h>
 
 #include "Stage.hpp"
 
-namespace PyUni {
+namespace PyEngine {
 namespace RenderGraph {
 
 class DeferredShadingStage: public Stage

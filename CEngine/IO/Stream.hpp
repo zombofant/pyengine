@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: Stream.hpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -23,8 +23,8 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_IO_STREAM_H
-#define _PYUNI_IO_STREAM_H
+#ifndef _PYE_IO_STREAM_H
+#define _PYE_IO_STREAM_H
 
 #include <cstdint>
 
@@ -33,7 +33,7 @@ named in the AUTHORS file.
 #include "Misc/Int.hpp"
 #include "Misc/Exception.hpp"
 
-namespace PyUni {
+namespace PyEngine {
     
 /**
  * Just that we can be sure these two are equivalent.

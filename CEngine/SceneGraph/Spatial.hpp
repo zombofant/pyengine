@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: Spatial.hpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -23,15 +23,15 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_SCENEGRAPH_SPATIAL_H
-#define _PYUNI_SCENEGRAPH_SPATIAL_H
+#ifndef _PYE_SCENEGRAPH_SPATIAL_H
+#define _PYE_SCENEGRAPH_SPATIAL_H
 
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 
 #include "Math/Matrices.hpp"
 
-namespace PyUni {
+namespace PyEngine {
 namespace SceneGraph {
 
 class Spatial;

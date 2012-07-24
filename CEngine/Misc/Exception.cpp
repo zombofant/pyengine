@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: Exception.cpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -28,9 +28,9 @@ named in the AUTHORS file.
 #include <execinfo.h>
 #include <boost/format.hpp>
 
-namespace PyUni {
+namespace PyEngine {
     
-/* PyUni::Utils::Exception */
+/* PyEngine::Utils::Exception */
 
 Exception::Exception(const std::string message):
     _message(message),
@@ -48,7 +48,7 @@ Exception::Exception(const char *message):
     _tracebackLength = backtrace(_traceback, 16);
 }
 
-/* PyUni::Utils::IndexError */
+/* PyEngine::Utils::IndexError */
 
 IndexError::IndexError(const int given, const int min, const int max):
     Exception::Exception((boost::format("Index (%d) out of range (%d..%d).") % given % min % max).str())
@@ -62,7 +62,7 @@ IndexError::IndexError(const int given):
     
 }
 
-/* PyUni::Utils::ExternalError */
+/* PyEngine::Utils::ExternalError */
 ExternalError::ExternalError(const char *libraryName):
     Exception::Exception((boost::format("External error in %s.") % libraryName).str())
 {
@@ -75,7 +75,7 @@ ExternalError::ExternalError(const char *libraryName, const char *externalMsg):
     
 }
 
-/* PyUni::Utils::OSError */
+/* PyEngine::Utils::OSError */
 OSError::OSError(const std::string message):
     Exception::Exception((boost::format("OS error: %s.") % message).str())
 {

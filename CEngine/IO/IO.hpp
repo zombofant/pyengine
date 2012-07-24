@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: IO.hpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -23,12 +23,12 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_RESOURCES_IO_H
-#define _PYUNI_RESOURCES_IO_H
+#ifndef _PYE_RESOURCES_IO_H
+#define _PYE_RESOURCES_IO_H
 
 #include <boost/shared_ptr.hpp>
 
-namespace PyUni {
+namespace PyEngine {
 
 template <class HandleT>
 struct KeepAlive {

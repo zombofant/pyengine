@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: TextureAtlas.cpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -29,10 +29,10 @@ named in the AUTHORS file.
 
 #include "Misc/Exception.hpp"
 
-namespace PyUni {
+namespace PyEngine {
 namespace GL {
 
-/* PyUni::GL::TextureAtlas */
+/* PyEngine::GL::TextureAtlas */
 
 TextureAtlas::TextureAtlas(const GLuint textureID,
         const GLsizei initialWidth, const GLsizei initialHeight):
@@ -205,7 +205,7 @@ bool operator == (const Rect &a, const Rect &b)
             (a.height == b.height);
 }
 
-/* PyUni::GL::TextureAtlas::Allocation */
+/* PyEngine::GL::TextureAtlas::Allocation */
 
 TextureAtlas::Allocation::Allocation(Rect aRect,
         bool aRotated,

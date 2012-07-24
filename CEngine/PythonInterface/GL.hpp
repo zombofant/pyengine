@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: GL.hpp
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -23,8 +23,8 @@ FEEDBACK & QUESTIONS
 For feedback and questions about pyuni please e-mail one of the authors
 named in the AUTHORS file.
 **********************************************************************/
-#ifndef _PYUNI_PYTHON_GL_H
-#define _PYUNI_PYTHON_GL_H
+#ifndef _PYE_PYTHON_GL_H
+#define _PYE_PYTHON_GL_H
 
 #include <string>
 
@@ -36,7 +36,7 @@ named in the AUTHORS file.
 #include "GL/GeometryBufferView.hpp"
 #include "GL/CairoUtils.hpp"
 
-namespace PyUni {
+namespace PyEngine {
 
 class StructWrap: public GL::Struct, public boost::python::wrapper<GL::Struct>
 {
