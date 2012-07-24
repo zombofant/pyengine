@@ -28,7 +28,7 @@ named in the AUTHORS file.
 
 #include <boost/python.hpp>
 
-#include "IO/Stream.hpp"
+#include "CEngine/IO/Stream.hpp"
 
 namespace PyEngine {
 

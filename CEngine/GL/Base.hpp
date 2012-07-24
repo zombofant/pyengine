@@ -26,7 +26,7 @@ named in the AUTHORS file.
 #ifndef _PYE_GL_BASE_H
 #define _PYE_GL_BASE_H
 
-#include "pyengineConfig.hpp"
+#include "CEngine/pyengineConfig.hpp"
 
 #include <string>
 #include <iostream>
@@ -34,7 +34,7 @@ named in the AUTHORS file.
 #include <GL/glew.h>
 #include <boost/shared_ptr.hpp>
 
-#include "Misc/Exception.hpp"
+#include "CEngine/Misc/Exception.hpp"
 
 namespace PyEngine {
 namespace GL {

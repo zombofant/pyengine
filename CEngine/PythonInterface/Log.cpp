@@ -28,7 +28,7 @@ named in the AUTHORS file.
 #include <boost/python.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include "IO/Log.hpp"
+#include "CEngine/IO/Log.hpp"
 
 #include "Helpers.hpp"
 

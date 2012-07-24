@@ -25,7 +25,7 @@ named in the AUTHORS file.
 **********************************************************************/
 #include "CairoUtils.hpp"
 
-#include "Misc/Exception.hpp"
+#include "CEngine/Misc/Exception.hpp"
 #include "Base.hpp"
 
 namespace PyEngine {

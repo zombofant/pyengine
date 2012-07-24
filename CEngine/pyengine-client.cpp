@@ -29,16 +29,16 @@ named in the AUTHORS file.
 #include <cassert>
 #include <boost/python.hpp>
 
-#include "IO/Log.hpp"
-#include "IO/FileStream.hpp"
-#include "IO/StdIOStream.hpp"
+#include "CEngine/IO/Log.hpp"
+#include "CEngine/IO/FileStream.hpp"
+#include "CEngine/IO/StdIOStream.hpp"
 
-#include "WindowInterface/Display.hpp"
-#include "WindowInterface/Window.hpp"
-#include "WindowInterface/X11/X11Display.hpp"
+#include "CEngine/WindowInterface/Display.hpp"
+#include "CEngine/WindowInterface/Window.hpp"
+#include "CEngine/WindowInterface/X11/X11Display.hpp"
 
-#include "PythonInterface/Package.hpp"
-#include "PythonInterface/CairoHelpers.hpp"
+#include "CEngine/PythonInterface/Package.hpp"
+#include "CEngine/PythonInterface/CairoHelpers.hpp"
 
 PyEngine::Display *disp = 0;
 

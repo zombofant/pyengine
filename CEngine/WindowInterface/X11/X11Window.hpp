@@ -30,8 +30,8 @@ named in the AUTHORS file.
 #include <X11/Xlib.h>
 #include <X11/extensions/Xinerama.h>
 
-#include "WindowInterface/Window.hpp"
-#include "IO/Log.hpp"
+#include "CEngine/WindowInterface/Window.hpp"
+#include "CEngine/IO/Log.hpp"
 
 namespace PyEngine {
 

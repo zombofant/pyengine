@@ -29,7 +29,7 @@ named in the AUTHORS file.
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 
-#include "Math/Matrices.hpp"
+#include "CEngine/Math/Matrices.hpp"
 
 namespace PyEngine {
 namespace SceneGraph {

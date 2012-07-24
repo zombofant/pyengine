@@ -30,11 +30,11 @@ named in the AUTHORS file.
 
 #include <boost/python.hpp>
 
-#include "GL/Base.hpp"
-#include "GL/StateManagement.hpp"
-#include "GL/GeometryBuffer.hpp"
-#include "GL/GeometryBufferView.hpp"
-#include "GL/CairoUtils.hpp"
+#include "CEngine/GL/Base.hpp"
+#include "CEngine/GL/StateManagement.hpp"
+#include "CEngine/GL/GeometryBuffer.hpp"
+#include "CEngine/GL/GeometryBufferView.hpp"
+#include "CEngine/GL/CairoUtils.hpp"
 
 namespace PyEngine {
 

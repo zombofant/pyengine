@@ -28,7 +28,7 @@ named in the AUTHORS file.
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 
-#include "RenderGraph/DeferredShading.hpp"
+#include "CEngine/RenderGraph/DeferredShading.hpp"
 
 namespace PyEngine {
 

@@ -28,7 +28,7 @@ named in the AUTHORS file.
 #include <cstdio>
 #include <cstdarg>
 
-#include "Misc/Int.hpp"
+#include "CEngine/Misc/Int.hpp"
 
 namespace PyEngine {
 

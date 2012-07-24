@@ -30,8 +30,8 @@ named in the AUTHORS file.
 
 #include <boost/shared_ptr.hpp>
 
-#include "Misc/Int.hpp"
-#include "Misc/Exception.hpp"
+#include "CEngine/Misc/Int.hpp"
+#include "CEngine/Misc/Exception.hpp"
 
 namespace PyEngine {
     

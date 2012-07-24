@@ -28,7 +28,7 @@ named in the AUTHORS file.
 
 #include <boost/python.hpp>
 
-#include "RenderGraph/Stage.hpp"
+#include "CEngine/RenderGraph/Stage.hpp"
 
 namespace PyEngine {
 

@@ -29,9 +29,9 @@ named in the AUTHORS file.
 
 #include <boost/python.hpp>
 
-#include "IO/Log.hpp"
+#include "CEngine/IO/Log.hpp"
 
-#include "Misc/Exception.hpp"
+#include "CEngine/Misc/Exception.hpp"
 #include "Display.hpp"
 
 namespace PyEngine {

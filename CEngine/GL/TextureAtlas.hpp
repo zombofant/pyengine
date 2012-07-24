@@ -28,9 +28,9 @@ named in the AUTHORS file.
 
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
-#include "Contrib/BinPack/SkylineBinPack.h"
+#include "CEngine/Contrib/BinPack/SkylineBinPack.h"
 
-#include "Misc/Int.hpp"
+#include "CEngine/Misc/Int.hpp"
 #include "Base.hpp"
 #include "GeometryBuffer.hpp"
 #include "AbstractImage.hpp"

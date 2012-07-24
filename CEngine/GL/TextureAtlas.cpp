@@ -27,7 +27,7 @@ named in the AUTHORS file.
 
 #include <cstring>
 
-#include "Misc/Exception.hpp"
+#include "CEngine/Misc/Exception.hpp"
 
 namespace PyEngine {
 namespace GL {

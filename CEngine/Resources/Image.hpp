@@ -28,9 +28,9 @@ named in the AUTHORS file.
 
 #include <png.h>
 
-#include "IO/IO.hpp"
-#include "IO/Stream.hpp"
-#include "GL/AbstractImage.hpp"
+#include "CEngine/IO/IO.hpp"
+#include "CEngine/IO/Stream.hpp"
+#include "CEngine/GL/AbstractImage.hpp"
 
 namespace PyEngine {
 namespace Resources {

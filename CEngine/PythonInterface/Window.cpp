@@ -30,8 +30,8 @@ named in the AUTHORS file.
 
 #include <boost/shared_ptr.hpp>
 
-#include "WindowInterface/X11/X11Display.hpp"
-#include "WindowInterface/X11/X11Window.hpp"
+#include "CEngine/WindowInterface/X11/X11Display.hpp"
+#include "CEngine/WindowInterface/X11/X11Window.hpp"
 
 using namespace boost::python;
 

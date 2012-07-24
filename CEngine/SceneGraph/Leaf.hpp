@@ -28,8 +28,8 @@ named in the AUTHORS file.
 
 #include <unordered_map>
 
-#include "GL/GeometryBuffer.hpp"
-#include "GL/StateManagement.hpp"
+#include "CEngine/GL/GeometryBuffer.hpp"
+#include "CEngine/GL/StateManagement.hpp"
 #include "Spatial.hpp"
 
 namespace PyEngine {

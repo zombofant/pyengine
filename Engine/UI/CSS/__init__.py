@@ -48,14 +48,14 @@ def buildCSSParser():
         try:
             mtime = __mktimestamp()
         except OSError:
-            return False
+            mtime = None
         try:
             import GeneratedParser
         except SyntaxError as err:
             raise ImportError(err)
         if not hasattr(GeneratedParser, "__version__"):
             raise TooOld()
-        if GeneratedParser.__version__ != unicode(mtime):
+        if mtime is not None and GeneratedParser.__version__ != unicode(mtime):
             raise TooOld()
         return True
     except TooOld as err:

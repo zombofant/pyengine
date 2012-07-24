@@ -34,8 +34,8 @@ named in the AUTHORS file.
 #include <freetype/freetype.h>
 #include <boost/weak_ptr.hpp>
 
-#include "IO/Stream.hpp"
-#include "IO/Log.hpp"
+#include "CEngine/IO/Stream.hpp"
+#include "CEngine/IO/Log.hpp"
 
 namespace std {
 

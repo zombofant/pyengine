@@ -27,7 +27,7 @@ named in the AUTHORS file.
 
 #include <cassert>
 
-#include "IO/PNGIOWrapper.hpp"
+#include "CEngine/IO/PNGIOWrapper.hpp"
 
 namespace PyEngine {
 namespace Resources {

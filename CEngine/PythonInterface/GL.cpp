@@ -30,7 +30,7 @@ named in the AUTHORS file.
 #include <GL/glew.h>
 #include <boost/python/slice.hpp>
 
-#include "GL/AbstractImage.hpp"
+#include "CEngine/GL/AbstractImage.hpp"
 #include "CairoHelpers.hpp"
 
 namespace PyEngine {

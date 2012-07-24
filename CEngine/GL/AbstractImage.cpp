@@ -30,8 +30,8 @@ named in the AUTHORS file.
 
 #include <GL/glew.h>
 
-#include "Misc/Exception.hpp"
-#include "Misc/Int.hpp"
+#include "CEngine/Misc/Exception.hpp"
+#include "CEngine/Misc/Int.hpp"
 
 namespace PyEngine {
 namespace GL {

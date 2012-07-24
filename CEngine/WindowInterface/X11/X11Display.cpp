@@ -36,8 +36,8 @@ named in the AUTHORS file.
 
 #define MAXBUTTONS 8
 
-#include "WindowInterface/Display.hpp"
-#include "Misc/Int.hpp"
+#include "CEngine/WindowInterface/Display.hpp"
+#include "CEngine/Misc/Int.hpp"
 
 #include "X11Window.hpp"
 

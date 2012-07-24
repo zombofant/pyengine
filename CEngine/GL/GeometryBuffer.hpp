@@ -38,7 +38,7 @@ named in the AUTHORS file.
 #include <boost/type_traits.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include "Math/Vectors.hpp"
+#include "CEngine/Math/Vectors.hpp"
 #include "Base.hpp"
 #include "BufferMap.hpp"
 #include "GenericBuffer.hpp"

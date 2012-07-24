@@ -26,7 +26,7 @@ named in the AUTHORS file.
 #ifndef _PYE_WINDOW_EVENTLOOP_H
 #define _PYE_WINDOW_EVENTLOOP_H
 
-#include "IO/Time.hpp"
+#include "CEngine/IO/Time.hpp"
 
 #include "EventSink.hpp"
 #include "Display.hpp"

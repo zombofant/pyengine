@@ -25,7 +25,7 @@ named in the AUTHORS file.
 **********************************************************************/
 #include <boost/python.hpp>
 
-#include "Resources/Image.hpp"
+#include "CEngine/Resources/Image.hpp"
 
 namespace PyEngine {
 

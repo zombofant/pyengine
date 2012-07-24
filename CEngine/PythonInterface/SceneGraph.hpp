@@ -29,10 +29,10 @@ named in the AUTHORS file.
 #include <cassert>
 #include <boost/python.hpp>
 
-#include "SceneGraph/Node.hpp"
-#include "SceneGraph/Spatial.hpp"
-#include "SceneGraph/SceneGraph.hpp"
-#include "SceneGraph/Leaf.hpp"
+#include "CEngine/SceneGraph/Node.hpp"
+#include "CEngine/SceneGraph/Spatial.hpp"
+#include "CEngine/SceneGraph/SceneGraph.hpp"
+#include "CEngine/SceneGraph/Leaf.hpp"
 
 namespace PyEngine {
 

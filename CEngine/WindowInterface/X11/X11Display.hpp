@@ -29,9 +29,9 @@ named in the AUTHORS file.
 #include <X11/Xlib.h>
 #include <X11/extensions/Xinerama.h>
 
-#include "WindowInterface/Display.hpp"
-#include "WindowInterface/EventSink.hpp"
-#include "IO/Log.hpp"
+#include "CEngine/WindowInterface/Display.hpp"
+#include "CEngine/WindowInterface/EventSink.hpp"
+#include "CEngine/IO/Log.hpp"
 
 namespace PyEngine {
 class X11Display : public Display {

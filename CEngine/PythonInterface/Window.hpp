@@ -30,10 +30,10 @@ named in the AUTHORS file.
 
 #include <boost/python.hpp>
 
-#include "WindowInterface/Display.hpp"
-#include "WindowInterface/Window.hpp"
-#include "WindowInterface/EventSink.hpp"
-#include "WindowInterface/EventLoop.hpp"
+#include "CEngine/WindowInterface/Display.hpp"
+#include "CEngine/WindowInterface/Window.hpp"
+#include "CEngine/WindowInterface/EventSink.hpp"
+#include "CEngine/WindowInterface/EventLoop.hpp"
 
 namespace PyEngine {
 

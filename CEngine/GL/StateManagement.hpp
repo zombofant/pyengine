@@ -28,7 +28,7 @@ named in the AUTHORS file.
 
 #include <boost/shared_ptr.hpp>
 
-#include "Math/Matrices.hpp"
+#include "CEngine/Math/Matrices.hpp"
 #include "Base.hpp"
 #include "IndexBuffer.hpp"
 

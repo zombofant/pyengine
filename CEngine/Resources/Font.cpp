@@ -25,8 +25,8 @@ named in the AUTHORS file.
 **********************************************************************/
 #include "Font.hpp"
 
-#include "IO/FTIOWrapper.hpp"
-#include "Misc/Exception.hpp"
+#include "CEngine/IO/FTIOWrapper.hpp"
+#include "CEngine/Misc/Exception.hpp"
 
 namespace PyEngine {
 namespace Resources {
