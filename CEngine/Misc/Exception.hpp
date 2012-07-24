@@ -28,6 +28,8 @@ named in the AUTHORS file.
 
 #include <exception>
 #include <string>
+#include <stdlib.h>
+#include <errno.h>
 
 namespace PyUni {
  

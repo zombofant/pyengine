@@ -10,20 +10,17 @@ cmake_minimum_required(VERSION 2.6)
         )
     endmacro(add_sphinx_target)
 
-# project setup
-    project(pyUniverse CXX C)
-    set(EXEC "pyengine-client")
-    set(CMAKE_CXX_FLAGS "-g -Wall -std=c++0x")
-    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "CMakeModules")
+# environment
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules")
 
 # -I and -l
-    # pyUniverse
-    include_directories(${PROJECT_SOURCE_DIR}/CEngine)
-    set(LIBS ${LIBS} ${PYUNI_MODULES})
+    # engine source
+    set(PYENGINE_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/CEngine)
+    set(LIBS ${LIBS} ${PYENGINE_MODULES})
     set(CONTRIB_MODULES
         "contrib_BinPack"
     )
-    set(PYUNI_MODULES
+    set(PYENGINE_MODULES
         "pyengine_PythonInterface"
         "pyengine_WindowInterface"
         "pyengine_RenderGraph"
@@ -38,26 +35,26 @@ cmake_minimum_required(VERSION 2.6)
     # opengl + glew
     find_package(OpenGL REQUIRED)
     find_package(GLEW REQUIRED)
-    include_directories(${OpenGL_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS})
+    set(PYENGINE_INCLUDE_DIRS ${PYENGINE_INCLUDE_DIRS} ${OpenGL_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS})
     set(LIBS ${LIBS} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} ${GLEW_LIBRARY})
 
     # glib
     find_package(glib REQUIRED)
-    include_directories(${glib_INCLUDE_DIRS})
+    set(PYENGINE_INCLUDE_DIRS ${PYENGINE_INCLUDE_DIRS} ${glib_INCLUDE_DIRS})
     set(LIBS ${LIBS}
         ${glib_LIBRARIES}
     )
 
     # pango
     find_package(Pango REQUIRED)
-    include_directories(${Pango_INCLUDE_DIRS})
+    set(PYENGINE_INCLUDE_DIRS ${PYENGINE_INCLUDE_DIRS} ${Pango_INCLUDE_DIRS})
     set(LIBS ${LIBS}
         ${Pango_LIBRARIES}
     )
 
     # cairo
     find_package(Cairo REQUIRED)
-    include_directories(${Cairo_INCLUDE_DIRS})
+    set(PYENGINE_INCLUDE_DIRS ${PYENGINE_INCLUDE_DIRS} ${Cairo_INCLUDE_DIRS})
     set(LIBS ${LIBS}
         ${Cairo_LIBRARY}
     )
@@ -65,7 +62,7 @@ cmake_minimum_required(VERSION 2.6)
     # python
     find_package(PythonInterp REQUIRED)
     find_package(PythonLibs REQUIRED)
-    include_directories(${PYTHON_INCLUDE_DIR})
+    set(PYENGINE_INCLUDE_DIRS ${PYENGINE_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIR})
     set(LIBS ${LIBS}
         ${PYTHON_LIBRARY}
     )
@@ -73,11 +70,11 @@ cmake_minimum_required(VERSION 2.6)
     # pycairo
     set(PYTHON_EXEC "/usr/bin/python2")
     find_package(pycairo REQUIRED)
-    include_directories(${pycairo_INCLUDE_DIRS})
+    set(PYENGINE_INCLUDE_DIRS ${PYENGINE_INCLUDE_DIRS} ${pycairo_INCLUDE_DIRS})
 
     # boost
     find_package(Boost COMPONENTS system python REQUIRED)
-    include_directories(${Boost_INCLUDE_DIRS})
+    set(PYENGINE_INCLUDE_DIRS ${PYENGINE_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
     set(LIBS ${LIBS}
     #    ${Boost_THREAD_LIBRARY}
     #    ${Boost_REGEX_LIBRARY}
@@ -105,13 +102,13 @@ cmake_minimum_required(VERSION 2.6)
     # libpng
     find_package(PNG REQUIRED)
     set(LIBS ${LIBS} ${PNG_LIBRARIES})
-    include_directories(${PNG_INCLUDE_DIRS})
-    add_definitions(${PNG_DEFINITIONS})
+    set(PYENGINE_INCLUDE_DIRS ${PYENGINE_INCLUDE_DIRS} ${PNG_INCLUDE_DIRS})
+    set(PYENGINE_DEFINITIONS ${PNG_DEFINITIONS})
 
     # freetype
     find_package(Freetype REQUIRED)
     set(LIBS ${LIBS} ${FREETYPE_LIBRARIES})
-    include_directories(${FREETYPE_INCLUDE_DIRS})
+    set(PYENGINE_INCLUDE_DIRS ${PYENGINE_INCLUDE_DIRS} ${FREETYPE_INCLUDE_DIRS})
 
 # configuration
     configure_file(CEngine/pyengineConfig.template
@@ -119,12 +116,16 @@ cmake_minimum_required(VERSION 2.6)
         ESCAPE_QUOTES)
 
 # targets
+    include_directories(${PYENGINE_INCLUDE_DIRS})
+    add_definitions(${PYENGINE_DEFINITIONS})
+
     add_subdirectory(CEngine)
-
-    add_executable(pyengine-client CEngine/pyengine-client.cpp)
-    add_dependencies(pyengine-client ${PYUNI_MODULES} ${CONTRIB_MODULES})
-    target_link_libraries(${EXEC} ${PYUNI_MODULES} ${CONTRIB_MODULES} ${LIBS})
-
+    set_property(DIRECTORY PROPERTY PYENGINE_INCLUDE_DIRS ${PYENGINE_INCLUDE_DIRS})
+    set_property(DIRECTORY PROPERTY PYENGINE_DEFINITIONS ${PYENGINE_DEFINITIONS})
+    set_property(DIRECTORY PROPERTY PYENGINE_DEPENDENCIES ${PYENGINE_MODULES} ${CONTRIB_MODULES})
+    set_property(DIRECTORY PROPERTY PYENGINE_LINK_TARGETS ${PYENGINE_MODULES} ${CONTRIB_MODULES} ${LIBS})
+    
+    
 # documentation targets
     add_custom_target(doxygen
         COMMAND doxygen docs/doxygen.conf
