@@ -164,12 +164,12 @@ class LogStreamSink: public LogSink {
  */
 class LogXMLSink: public LogSink {
     public:
-        LogXMLSink(uint64_t mask, StreamHandle stream, const std::string xsltFile);
+        LogXMLSink(uint64_t mask, StreamHandle stream,
+            const std::string xsltFile = "log.xsl", const std::string branding = "");
         virtual ~LogXMLSink();
     private:
         StreamHandle _streamHandle;
         Stream *_stream;
-        const std::string _xsltFile;
     public:
         virtual void doLog(TimeFloat timestamp, Severity severity,
             LogChannel *channel, const char *message);

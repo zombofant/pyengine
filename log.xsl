@@ -9,7 +9,7 @@
     <xsl:template match="log">
         <html>
             <head>
-                <title>Pythonic Universe logfile</title>
+                <title><xsl:value-of select="branding/application-name" /> logfile</title>
                 <style type="text/css">
 body {
     font-family: Cantarell;
@@ -89,8 +89,8 @@ ul.legend li {
                 </style>
             </head>
             <body>
-                <h1>Pythonic Universe logfile</h1>
-                <p>This is a log file belonging to <a href="http://pyuniverse.org">Pythonic Universe</a>.</p>
+                <h1><xsl:value-of select="branding/application-name" /> execution log</h1>
+                <p>This is a log file belonging to an <a href="http://pyuniverse.org">Pythonic Engine</a> application.</p>
                 <ul class="legend">
                     <li class="debug">debug</li>
                     <li class="info">info</li>

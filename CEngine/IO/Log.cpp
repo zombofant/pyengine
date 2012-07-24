@@ -150,7 +150,8 @@ void LogStreamSink::doLog(TimeFloat timestamp, Severity severity,
 
 /* PyEngine::IO::LogXMLSink */
 
-LogXMLSink::LogXMLSink(uint64_t mask, StreamHandle stream, const std::string xsltFile):
+LogXMLSink::LogXMLSink(uint64_t mask, StreamHandle stream,
+        const std::string xsltFile, const std::string branding):
     LogSink::LogSink(mask),
     _streamHandle(stream),
     _stream(stream.get())
@@ -159,7 +160,10 @@ LogXMLSink::LogXMLSink(uint64_t mask, StreamHandle stream, const std::string xsl
 <?xml-stylesheet type=\"text/xsl\" href=\"");
     _stream->writeNullTerminated(xsltFile.c_str());
     _stream->writeNullTerminated("\"?>\n\
-<log>\n");
+<log>\
+<branding><application-name>");
+    _stream->writeNullTerminated(branding.c_str());
+    _stream->writeNullTerminated("</application-name></branding>\n");
 }
 
 LogXMLSink::~LogXMLSink()
