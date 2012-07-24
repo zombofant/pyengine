@@ -1,7 +1,3 @@
-[submodule "docs"]
-	path = docs
-	url = ssh://git.sotecware.net/PythonicUniverse-docs
-	branch = devel
 [submodule "utils/pyLR1"]
 	path = utils/pyLR1
 	url = https://github.com/pyuniverse/pyLR1
