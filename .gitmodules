@@ -2,6 +2,3 @@
 	path = utils/pyLR1
 	url = https://github.com/pyuniverse/pyLR1
 	branch = master
-[submodule "cpphost/Contrib/BinPack"]
-	path = cpphost/Contrib/BinPack
-	url = https://github.com/pyuniverse/RectangleBinPack
