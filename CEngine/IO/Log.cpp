@@ -321,12 +321,12 @@ const char *SeverityName(Severity severity)
 const char *SeverityANSI(Severity severity)
 {
     static const char* names[6] = {
-        "\033[30;47m",
-        "\033[37;44m",
-        "\033[37;45m",
-        "\033[30;43m",
-        "\033[30;41m",
-        "\033[1;30;41m"
+        "\033[38;5;240m",
+        "\033[38;5;33m",
+        "\033[38;5;55m",
+        "\033[38;5;214m",
+        "\033[38;5;202m",
+        "\033[1;38;5;196m"
     };
 
     uint64_t bitmask = 1;
