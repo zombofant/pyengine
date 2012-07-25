@@ -63,7 +63,7 @@ tr.panic td {
 }
 
 tr:hover td {
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: rgba(255, 255, 255, 0.3);
 }
 
 ul.legend {
@@ -85,6 +85,41 @@ ul.legend li {
     padding: 0;
     padding-left: 0.2em;
     padding-right: 0.2em;
+}
+
+.exception div.what:before {
+    content: 'Exception: ';
+}
+
+.exception div.type {
+    display: none;
+    font-weight: normal;
+    font-size: 80%;
+    height: 1.1em;
+}
+
+.exception:hover div.type {
+    display: block;
+}
+
+.exception div.placeholder {
+    display: block;
+    font-size: 80%;
+    height: 1.1em;
+}
+
+.exception:hover div.placeholder {
+    display: none;
+}
+
+div.traceback-header {
+    font-weight: normal;
+    margin-top: 1em;
+}
+
+ul.traceback {
+    margin-top: 0;
+    font-weight: normal;
 }
                 </style>
             </head>
@@ -118,7 +153,24 @@ ul.legend li {
                                 <td class="timestamp"><xsl:value-of select="timestamp" /></td>
                                 <td class="severity"><xsl:value-of select="severity" /></td>
                                 <td class="channel"><xsl:value-of select="channel" /></td>
-                                <td class="text"><xsl:value-of select="text" /></td>
+                                <xsl:choose>
+                                    <xsl:when test="@is-exception">
+                                        <td class="text exception">
+                                            <div class="what"><xsl:value-of select="what" /></div>
+                                            <div class="type">(<xsl:value-of select="type" />)</div>
+                                            <div class="placeholder"></div>
+                                            <div class="traceback-header">Traceback: (most recent call first)</div>
+                                            <ul class="traceback">
+                                                <xsl:for-each select="traceback/symbol">
+                                                    <li class="symbol"><xsl:value-of select="." /></li>
+                                                </xsl:for-each>
+                                            </ul>
+                                        </td>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <td class="text"><xsl:value-of select="text" /></td>
+                                    </xsl:otherwise>
+                                </xsl:choose>
                             </tr>
                         </xsl:for-each>
                     </tbody>

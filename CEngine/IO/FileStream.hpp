@@ -76,6 +76,7 @@ class FDStream: public Stream {
         bool _ownsFD;
     public:
         virtual void flush();
+        inline int fileno() const { return _fd; };
         virtual sizeuint read(void *data, const sizeuint length);
         virtual sizeuint seek(const int whence, const sizeint offset);
         virtual const sizeuint size() const;

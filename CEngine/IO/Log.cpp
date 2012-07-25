@@ -27,8 +27,12 @@ named in the AUTHORS file.
 
 #include <cstdio>
 #include <cstdarg>
+#include <unistd.h>
+#include <execinfo.h>
+#include <typeinfo>
 
 #include "CEngine/Misc/Int.hpp"
+#include "StdIOStream.hpp"
 
 namespace PyEngine {
 
@@ -110,6 +114,11 @@ LogPipe &LogChannel::log(Severity severity)
     return _server->log(severity, this);
 }
 
+void LogChannel::logException(const Exception &exception, Severity severity)
+{
+    return _server->logException(severity, this, exception);
+}
+
 /* PyEngine::IO::LogSink */
 
 LogSink::LogSink(uint64_t mask):
@@ -124,6 +133,15 @@ void LogSink::log(TimeFloat timestamp, Severity severity,
     if ((severity & _mask) != 0)
     {
         doLog(timestamp, severity, channel, message);
+    }
+}
+
+void LogSink::logException(TimeFloat timestamp, Severity severity,
+    LogChannel *channel, const Exception &exception)
+{
+    if ((severity & _mask) != 0)
+    {
+        doLogException(timestamp, severity, channel, exception);
     }
 }
 
@@ -148,6 +166,27 @@ void LogStreamSink::doLog(TimeFloat timestamp, Severity severity,
     _stream->flush();
 }
 
+void LogStreamSink::doLogException(TimeFloat timestamp, Severity severity,
+    LogChannel *channel, const Exception &exception)
+{
+    const char *severityName = SeverityName(severity);
+    sizeuint length = 0;
+    char *formatted = vawesomef("[%12.4f] [%s] [%s] Exception occured: %s -- %s\n", &length, timestamp, severityName, channel->getName(), typeid(exception).name(), exception.what());
+    _stream->write(formatted, length);
+    free(formatted);
+
+    unsigned int tracebackCount;
+    void * const* traceback = exception.traceback(&tracebackCount);
+    _stream->writeNullTerminated("Traceback: (most recent call first)\n");
+    char **tracebackSymbols = backtrace_symbols(traceback, tracebackCount);
+    for (unsigned int i = 0; i < tracebackCount; i++) {
+        _stream->writeNullTerminated(tracebackSymbols[i]);
+        _stream->writeEndl();
+    }
+    free(tracebackSymbols);
+    _stream->flush();
+}
+
 /* PyEngine::IO::LogTTYSink */
 
 LogTTYSink::LogTTYSink(uint64_t mask, StreamHandle stream):
@@ -165,6 +204,28 @@ void LogTTYSink::doLog(TimeFloat timestamp, Severity severity,
     char *formatted = vawesomef("%s[%12.4f] [%5s]\033[0m [%s] %s\n", &length, severityANSI, timestamp, severityName, channel->getName(), message);
     _stream->write(formatted, length);
     free(formatted);
+    _stream->flush();
+}
+
+void LogTTYSink::doLogException(TimeFloat timestamp, Severity severity,
+    LogChannel *channel, const Exception &exception)
+{
+    const char *severityName = SeverityName(severity);
+    const char *severityANSI = SeverityANSI(severity);
+    sizeuint length = 0;
+    char *formatted = vawesomef("%s[%12.4f] [%5s]\033[0m [%s] Exception occured: %s -- %s\n", &length, severityANSI, timestamp, severityName, channel->getName(), typeid(exception).name(), exception.what());
+    _stream->write(formatted, length);
+    free(formatted);
+
+    unsigned int tracebackCount;
+    void * const* traceback = exception.traceback(&tracebackCount);
+    _stream->writeNullTerminated("Traceback: (most recent call first)\n");
+    char **tracebackSymbols = backtrace_symbols(traceback, tracebackCount);
+    for (unsigned int i = 0; i < tracebackCount; i++) {
+        _stream->writeNullTerminated(tracebackSymbols[i]);
+        _stream->writeEndl();
+    }
+    free(tracebackSymbols);
     _stream->flush();
 }
     
@@ -208,6 +269,33 @@ void LogXMLSink::doLog(TimeFloat timestamp, Severity severity,
     free(formatted);
 }
 
+void LogXMLSink::doLogException(TimeFloat timestamp, Severity severity,
+    LogChannel *channel, const Exception &exception)
+{
+    sizeuint length = 0;
+    char *formatted = vawesomef("<message is-exception=\"true\">\
+<timestamp>%f</timestamp>\
+<severity>%s</severity>\
+<channel>%s</channel>\
+<type><![CDATA[%s]]></type>\
+<what><![CDATA[%s]]></what>\
+<traceback>", &length, timestamp, SeverityName(severity), channel->getName(), typeid(exception).name(), exception.what());
+    _stream->write(formatted, length);
+    free(formatted);
+
+    unsigned int tracebackCount;
+    void * const* traceback = exception.traceback(&tracebackCount);
+    char **tracebackSymbols = backtrace_symbols(traceback, tracebackCount);
+    for (unsigned int i = 0; i < tracebackCount; i++) {
+        _stream->writeNullTerminated("<symbol>");
+        _stream->writeNullTerminated(tracebackSymbols[i]);
+        _stream->writeNullTerminated("</symbol>");
+    }
+    free(tracebackSymbols);
+    _stream->writeNullTerminated("</traceback></message>");
+    _stream->flush();
+}
+
 /* PyEngine::IO::LogServer */
 
 LogServer::LogServer():
@@ -243,6 +331,16 @@ LogPipe &LogServer::log(Severity severity, LogChannel *channel)
 {
     LogPipe *stream = new LogPipe(this, severity, channel);
     return *stream;
+}
+
+void LogServer::logException(Severity severity, LogChannel *channel, const Exception &exception)
+{
+    TimeFloat timestamp = timeIntervalToDouble(_startupTime, nanotime());
+    for (auto it = _sinks.begin(); it != _sinks.end(); it++)
+    {
+        LogSink *sink = (*it).get();
+        sink->logException(timestamp, severity, channel, exception);
+    }
 }
 
 void LogServer::log(LogPipe *stream)
@@ -288,12 +386,28 @@ LogPipe &LogServer::log(Severity severity)
     return log(severity, _globalChannel.get());
 }
 
+void LogServer::logException(const Exception &exception, Severity severity)
+{
+    return logException(severity, _globalChannel.get(), exception);
+}
+
 /* free functions */
 
-std::ostream &submit(std::ostream &os) {
+std::ostream &submit(std::ostream &os)
+{
     LogPipe *ls = static_cast<LogPipe*>(&os);
     ls->submit();
     return os;
+}
+
+LogSinkHandle LogStdOutSink(uint16_t mask)
+{
+    const FDStream *stdoutStream = static_cast<const FDStream*>(stdout.get());
+    if (isatty(stdoutStream->fileno())) {
+        return LogSinkHandle(new LogTTYSink(mask, stdout));
+    } else {
+        return LogSinkHandle(new LogStreamSink(mask, stdout));
+    }
 }
 
 const char *SeverityName(Severity severity)

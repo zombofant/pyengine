@@ -34,6 +34,8 @@ named in the AUTHORS file.
 #include <boost/shared_ptr.hpp>
 #include <boost/functional/hash.hpp>
 
+#include "CEngine/Misc/Exception.hpp"
+
 #include "Time.hpp"
 #include "Stream.hpp"
 
@@ -87,6 +89,7 @@ class LogBase {
         virtual void log(Severity severity, const char *message) = 0;
         virtual void logf(Severity severity, const char *message, ...) = 0;
         virtual LogPipe &log(Severity severity) = 0;
+        virtual void logException(const Exception &exception, Severity severity = Error) = 0;
 };
 
 class LogChannel: public LogBase {
@@ -99,7 +102,8 @@ class LogChannel: public LogBase {
         inline const char *getName() { return _name.c_str(); };
         virtual void log(Severity severity, const char *message);
         virtual void logf(Severity severity, const char *message, ...);
-        virtual LogPipe &log(Severity severit);
+        virtual LogPipe &log(Severity severity);
+        virtual void logException(const Exception &exception, Severity severity = Error);
 };
 
 /**
@@ -121,9 +125,13 @@ class LogSink {
     protected:
         virtual void doLog(TimeFloat timestamp, Severity severity,
             LogChannel *channel, const char *message) = 0;
+        virtual void doLogException(TimeFloat timestamp, Severity severity,
+            LogChannel *channel, const Exception &exception) = 0;
     public:
         void log(TimeFloat timestamp, Severity severity,
             LogChannel *channel, const char *message);
+        void logException(TimeFloat timestamp, Severity severity,
+            LogChannel *channel, const Exception &exception);
 };
 
 typedef boost::shared_ptr<LogSink> LogSinkHandle;
@@ -146,9 +154,11 @@ class LogStreamSink: public LogSink {
     protected:
         void logFmt(TimeFloat timestamp, const char *severityName,
             const char *channelName, const char *message);
-    public:
+    protected:
         virtual void doLog(TimeFloat timestamp, Severity severity,
             LogChannel *channel, const char *message);
+        virtual void doLogException(TimeFloat timestamp, Severity severity,
+            LogChannel *channel, const Exception &exception);
 };
 
 /**
@@ -161,6 +171,8 @@ class LogTTYSink: public LogStreamSink {
     public:
         virtual void doLog(TimeFloat timestamp, Severity severity,
             LogChannel *channel, const char *message);
+        virtual void doLogException(TimeFloat timestamp, Severity severity,
+            LogChannel *channel, const Exception &exception);
 };
 
 /**
@@ -188,6 +200,8 @@ class LogXMLSink: public LogSink {
     public:
         virtual void doLog(TimeFloat timestamp, Severity severity,
             LogChannel *channel, const char *message);
+        virtual void doLogException(TimeFloat timestamp, Severity severity,
+            LogChannel *channel, const Exception &exception);
 };
 
 typedef boost::shared_ptr<LogChannel> LogChannelHandle;
@@ -218,6 +232,7 @@ class LogServer: public LogBase {
         void log(Severity severity, LogChannel *channel, const char *message);
         void logf(Severity severity, LogChannel *channel, const char *message, ...);
         LogPipe &log(Severity severity, LogChannel *channel);
+        void logException(Severity severity, LogChannel *channel, const Exception &exception);
         void log(LogPipe *stream);
     public:
         /**
@@ -289,11 +304,30 @@ class LogServer: public LogBase {
          * @return New LogPipe instance reference.
          */
         virtual LogPipe &log(Severity severity);
+
+        /**
+         * Log an exception with the given severity. When using this function,
+         * the traceback stored in the exception will be inserted into the
+         * log stream in an appropriate manner. What this means generally
+         * depends on the logging sink.
+         *
+         * @param exception Exception which is to be logged.
+         * @param severity Severity for the message (defaults to Error)
+         */
+        virtual void logException(const Exception &exception, Severity severity = Error);
     friend class LogChannel;
     friend class LogPipe;
 };
 
 typedef boost::shared_ptr<LogServer> LogServerHandle;
+
+/**
+ * Creates a sink which will output to stdout and return a handle to it.
+ *
+ * This will create a LogTTYSink if stdout is a tty and a LogStreamSink
+ * otherwise.
+ */
+LogSinkHandle LogStdOutSink(uint16_t mask);
 
 const char *SeverityName(Severity severity);
 const char *SeverityANSI(Severity severity);
