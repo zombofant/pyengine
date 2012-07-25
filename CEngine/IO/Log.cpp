@@ -148,6 +148,27 @@ void LogStreamSink::doLog(TimeFloat timestamp, Severity severity,
     _stream->flush();
 }
 
+/* PyEngine::IO::LogTTYSink */
+
+LogTTYSink::LogTTYSink(uint64_t mask, StreamHandle stream):
+    LogStreamSink::LogStreamSink(mask, stream)
+{
+
+}
+
+void LogTTYSink::doLog(TimeFloat timestamp, Severity severity,
+    LogChannel *channel, const char *message)
+{
+    const char *severityName = SeverityName(severity);
+    const char *severityANSI = SeverityANSI(severity);
+    sizeuint length = 0;
+    char *formatted = vawesomef("%s[%12.4f] [%5s]\033[0m [%s] %s\n", &length, severityANSI, timestamp, severityName, channel->getName(), message);
+    _stream->write(formatted, length);
+    free(formatted);
+    _stream->flush();
+}
+    
+
 /* PyEngine::IO::LogXMLSink */
 
 LogXMLSink::LogXMLSink(uint64_t mask, StreamHandle stream,
@@ -284,6 +305,28 @@ const char *SeverityName(Severity severity)
         "warn",
         "error",
         "panic"
+    };
+
+    uint64_t bitmask = 1;
+    for (unsigned int i = 0; i < sizeof(names)/sizeof(const char *); i++)
+    {
+        if ((severity & bitmask) != 0) {
+            return names[i];
+        }
+        bitmask <<= 1;
+    }
+    return 0;
+}
+
+const char *SeverityANSI(Severity severity)
+{
+    static const char* names[6] = {
+        "\033[30;47m",
+        "\033[37;44m",
+        "\033[37;45m",
+        "\033[30;43m",
+        "\033[30;41m",
+        "\033[1;30;41m"
     };
 
     uint64_t bitmask = 1;

@@ -140,9 +140,24 @@ typedef std::list<LogSinkHandle> LogSinks;
 class LogStreamSink: public LogSink {
     public:
         LogStreamSink(uint64_t mask, StreamHandle stream);
-    private:
+    protected:
         StreamHandle _streamHandle;
         Stream *_stream;
+    protected:
+        void logFmt(TimeFloat timestamp, const char *severityName,
+            const char *channelName, const char *message);
+    public:
+        virtual void doLog(TimeFloat timestamp, Severity severity,
+            LogChannel *channel, const char *message);
+};
+
+/**
+ * Log sink which behaves simlar to LogStreamSink, but provides additionally
+ * colouring of the output using ANSI colour codes.
+ */
+class LogTTYSink: public LogStreamSink {
+    public:
+        LogTTYSink(uint64_t mask, StreamHandle stream);
     public:
         virtual void doLog(TimeFloat timestamp, Severity severity,
             LogChannel *channel, const char *message);
@@ -281,6 +296,7 @@ class LogServer: public LogBase {
 typedef boost::shared_ptr<LogServer> LogServerHandle;
 
 const char *SeverityName(Severity severity);
+const char *SeverityANSI(Severity severity);
 
 std::ostream &submit(std::ostream &os);
 
