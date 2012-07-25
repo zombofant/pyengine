@@ -55,12 +55,14 @@ X11Display::X11Display(const char *display):
         display = ":0";
     }
 
+    _log->logf(Debug, "Connecting to X11 display %s.", display);
     _display = XOpenDisplay(display);
 
     _mouse_x = 0;
     _mouse_y = 0;
     _mouse_valid = false;
 
+    _log->logf(Debug, "Caching atoms");
     _wm_quit = XInternAtom(_display, "WM_DELETE_WINDOW", False);
     _wm_protocols = XInternAtom(_display, "WM_PROTOCOLS", False);
 
@@ -86,6 +88,8 @@ X11Display::X11Display(const char *display):
     _scroll_y[5] = -1;
     _scroll_x[6] = 1;
     _scroll_x[7] = -1;
+
+    _log->logf(Information, "X11 interface set up successfully.");
 }
 
 X11Display::~X11Display() {
@@ -141,6 +145,7 @@ void X11Display::detectScreens() {
                                &event_base_return,
                                &error_base_return)
         && XineramaIsActive(_display)) {
+        _log->logf(Information, "Xinerama available");
         int number;
         XineramaScreenInfo *screens = XineramaQueryScreens(_display,
                                                            &number);
@@ -154,6 +159,7 @@ void X11Display::detectScreens() {
         }
         XFree(screens);
     } else {
+        _log->logf(Warning, "Xinerama not supported. No proper multi-screen support will be available");
         // anyone without xinerama should have only one screen
         // therefore x,y = 0,0
         // should we assert that, if not: how do we define
@@ -172,6 +178,7 @@ void X11Display::detectScreens() {
                                       i == defaultScreen));
         }
     }
+    _log->logf(Information, "Detected %d screens", _screens.size());
 }
 
 void X11Display::detectDisplayModes() {
@@ -188,6 +195,7 @@ void X11Display::detectDisplayModes() {
         GLX_DEPTH_SIZE      , 16,
         None
     };
+    _log->logf(Debug, "Enumerating display modes");
     GLXFBConfig *configs = glXChooseFBConfig(_display, DefaultScreen(_display), reqAttribs, &count);
 
     _displayModes.clear();
@@ -213,13 +221,17 @@ void X11Display::detectDisplayModes() {
                                             stencilBits,
                                             samples,
                                             doubleBuffered);
-        if (!hasDisplayMode(instance))
+        if (!hasDisplayMode(instance)) {
             _displayModes.push_back(instance);
+            _log->log(Debug) << "Display mode: " << instance << submit;
+        }
     }
+    _log->logf(Information, "Found %d display modes", _displayModes.size());
     XFree(configs);
 }
 
 void X11Display::openInputContext() {
+    _log->logf(Information, "Opening input context");
     // default input method for now
     XIM im = XOpenIM(_display, NULL, NULL, NULL);
     _input_context = XCreateIC(im,
