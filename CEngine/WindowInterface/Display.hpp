@@ -31,9 +31,17 @@ named in the AUTHORS file.
 
 #include <boost/shared_ptr.hpp>
 
+#include "CEngine/Misc/Exception.hpp"
+
 #include "EventSink.hpp"
 
 namespace PyEngine {
+
+class DisplayError: public Exception {
+public:
+    DisplayError(const std::string message): Exception(message) {};
+    DisplayError(const char *message): Exception(message) {};
+};
 
 struct Screen {
     unsigned int index;

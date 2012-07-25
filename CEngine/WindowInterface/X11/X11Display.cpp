@@ -55,8 +55,12 @@ X11Display::X11Display(const char *display):
         display = ":0";
     }
 
-    _log->logf(Debug, "Connecting to X11 display %s.", display);
     _display = XOpenDisplay(display);
+    if (!_display) {
+        _log->logf(Error, "X11 Display connection failed to display \"%s\".", display);
+        throw DisplayError("Could not connect to X11 display.");
+    }
+    _log->logf(Information, "Connected to X11 display \"%s\".", display);
 
     _mouse_x = 0;
     _mouse_y = 0;
