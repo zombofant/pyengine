@@ -147,7 +147,7 @@ void LogSink::logException(TimeFloat timestamp, Severity severity,
 
 /* PyEngine::IO::LogStreamSink */
 
-LogStreamSink::LogStreamSink(uint64_t mask, StreamHandle stream):
+LogStreamSink::LogStreamSink(SeverityMask mask, StreamHandle stream):
     LogSink::LogSink(mask),
     _streamHandle(stream),
     _stream(stream.get())
@@ -189,7 +189,7 @@ void LogStreamSink::doLogException(TimeFloat timestamp, Severity severity,
 
 /* PyEngine::IO::LogTTYSink */
 
-LogTTYSink::LogTTYSink(uint64_t mask, StreamHandle stream):
+LogTTYSink::LogTTYSink(SeverityMask mask, StreamHandle stream):
     LogStreamSink::LogStreamSink(mask, stream)
 {
 
@@ -232,7 +232,7 @@ void LogTTYSink::doLogException(TimeFloat timestamp, Severity severity,
 
 /* PyEngine::IO::LogXMLSink */
 
-LogXMLSink::LogXMLSink(uint64_t mask, StreamHandle stream,
+LogXMLSink::LogXMLSink(SeverityMask mask, StreamHandle stream,
         const std::string xsltFile, const std::string branding):
     LogSink::LogSink(mask),
     _streamHandle(stream),
@@ -400,7 +400,7 @@ std::ostream &submit(std::ostream &os)
     return os;
 }
 
-LogSinkHandle LogStdOutSink(uint16_t mask)
+LogSinkHandle LogStdOutSink(SeverityMask mask)
 {
     const FDStream *stdoutStream = static_cast<const FDStream*>(stdout.get());
     if (isatty(stdoutStream->fileno())) {

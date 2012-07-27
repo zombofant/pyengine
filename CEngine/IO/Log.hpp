@@ -118,7 +118,7 @@ class LogChannel: public LogBase {
  */
 class LogSink {
     public:
-        LogSink(uint64_t mask);
+        LogSink(SeverityMask mask);
         virtual ~LogSink() {};
     private:
         uint64_t _mask;
@@ -147,7 +147,7 @@ typedef std::list<LogSinkHandle> LogSinks;
  */
 class LogStreamSink: public LogSink {
     public:
-        LogStreamSink(uint64_t mask, StreamHandle stream);
+        LogStreamSink(SeverityMask mask, StreamHandle stream);
     protected:
         StreamHandle _streamHandle;
         Stream *_stream;
@@ -167,7 +167,7 @@ class LogStreamSink: public LogSink {
  */
 class LogTTYSink: public LogStreamSink {
     public:
-        LogTTYSink(uint64_t mask, StreamHandle stream);
+        LogTTYSink(SeverityMask mask, StreamHandle stream);
     public:
         virtual void doLog(TimeFloat timestamp, Severity severity,
             LogChannel *channel, const char *message);
@@ -191,7 +191,7 @@ class LogTTYSink: public LogStreamSink {
  */
 class LogXMLSink: public LogSink {
     public:
-        LogXMLSink(uint64_t mask, StreamHandle stream,
+        LogXMLSink(SeverityMask mask, StreamHandle stream,
             const std::string xsltFile = "log.xsl", const std::string branding = "");
         virtual ~LogXMLSink();
     private:
@@ -327,7 +327,7 @@ typedef boost::shared_ptr<LogServer> LogServerHandle;
  * This will create a LogTTYSink if stdout is a tty and a LogStreamSink
  * otherwise.
  */
-LogSinkHandle LogStdOutSink(uint16_t mask);
+LogSinkHandle LogStdOutSink(SeverityMask mask);
 
 const char *SeverityName(Severity severity);
 const char *SeverityANSI(Severity severity);
