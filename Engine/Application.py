@@ -78,7 +78,7 @@ class Application(RootWidget, CWindow.EventSink):
             self._window.setWindowed(display.Screens[0].index, *geometry)
 
         self._window.switchTo()
-        self._window.setTitle("PythonicUniverse")
+        self._window.setTitle("PythonicEngine application")
         self._window.initializeGLEW()
         glClearColor(0., 0., 0., 1.)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
