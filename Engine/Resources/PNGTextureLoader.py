@@ -56,7 +56,7 @@ class PNGTextureLoader(ResourceLoader):
             self._loaderNotAvailable(unicode(err))
         targetClasses.append(CairoSurface)
         try:
-            Engine.CEngine
+            CEngine
         except NameError as err:
             self._loaderNotAvailable(unicode(err))
         
