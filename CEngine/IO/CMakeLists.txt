@@ -6,4 +6,5 @@ add_library(pyengine_IO
     "StdIOStream.cpp"
     "FTIOWrapper.cpp"
     "PNGIOWrapper.cpp"
+    "Thread.cpp"
 )
