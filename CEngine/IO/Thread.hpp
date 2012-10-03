@@ -60,6 +60,9 @@ private:
     Semaphore _resume;
     pthread_t _thread;
     bool _deleteOnTerminate;
+private:
+    static bool _hardwareThreadCountKnown;
+    static unsigned int _hardwareThreadCount;
 protected:
     void suspend();
 public:

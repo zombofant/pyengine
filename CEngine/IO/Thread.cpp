@@ -51,7 +51,7 @@ void cleanup(void *thread)
 PThreadError::PThreadError(const char *functionName, const int error):
     ExternalError::ExternalError("pthread", (boost::format("%s returned error code %d") % functionName % error).str().c_str())
 {
-    
+
 }
 
 /* PyEngine::Thread */
@@ -103,16 +103,27 @@ void Thread::resume()
 
 unsigned int Thread::getHardwareThreadCount()
 {
-    unsigned int stdValue = std::thread::hardware_concurrency();
-    if (stdValue == 0) {
+    if (_hardwareThreadCountKnown)
+        return _hardwareThreadCount;
+
+    unsigned int count = std::thread::hardware_concurrency();
+    if (count == 0) {
         // lets fall back to platform-dependent shit
         // TODO: win & macos stuff, see source here:
         // http://stackoverflow.com/questions/150355/programmatically-find-the-number-of-cores-on-a-machine
         log->getChannel("system")->logf(Hint, "Falling back to custom methods for hardware thread count detection");
-        return sysconf(_SC_NPROCESSORS_ONLN);
-    } else {
-        return stdValue;
+        count = sysconf(_SC_NPROCESSORS_ONLN);
     }
+
+    if (count == 0) {
+        log->getChannel("system")->logf(Warning, "Unknown amount of hardware threads, falling back to 1.");
+        count = 1;
+    }
+
+    _hardwareThreadCountKnown = true;
+    _hardwareThreadCount = count;
+    log->getChannel("system")->log(Information) << "Detected " << count << " hardware threads." << submit;
+    return count;
 }
 
 /* PyEngine::Mutex */
@@ -192,5 +203,9 @@ void Semaphore::wait()
 {
     assert(sem_wait(&_sem) == 0);
 }
+
+
+bool Thread::_hardwareThreadCountKnown = false;
+unsigned int Thread::_hardwareThreadCount = 0;
 
 }
