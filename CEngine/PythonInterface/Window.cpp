@@ -144,14 +144,16 @@ BOOST_PYTHON_MODULE(_cuni_window)
         .def("handleResize", pure_virtual(&EventSink::handleResize))
         .def("handleTextInput", pure_virtual(&EventSink::handleTextInput))
     ;
-    
+
     boost::python::implicitly_convertible<boost::shared_ptr<EventSinkWrap>, EventSinkHandle >();
 
     class_<EventLoop, boost::shared_ptr<EventLoop>, boost::noncopyable>("EventLoop", init<DisplayHandle, EventSinkHandle>())
         .def("run", &EventLoop::run)
         .def("terminate", &EventLoop::terminate)
         .add_property("SyncedFrameLength", &EventLoop::getSyncedFrameLength, &EventLoop::setSyncedFrameLength)
-        .def_readonly("CurrentFPS", &EventLoop::currentFPS)
+        .def_readonly("CurrentFPS", &EventLoop::displayFPS)
+        .def_readonly("DisplayFPS", &EventLoop::displayFPS)
+        .def_readonly("SyncedFPS", &EventLoop::syncedFPS)
         .def("setFrameCount", &EventLoop::setFrameCount)
     ;
 }

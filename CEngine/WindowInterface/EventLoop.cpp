@@ -43,9 +43,10 @@ EventLoop::EventLoop(DisplayHandle display, EventSinkHandle eventSink):
     _frameCount(0),
     _currentFrameCount(0),
     _terminated(false),
-    currentFPS(0.0)
+    displayFPS(0.0),
+    syncedFPS(0.0)
 {
-    
+
 }
 
 EventLoop::~EventLoop()
@@ -79,40 +80,42 @@ void EventLoop::run()
     timespec lastUpdate, frameCounterStart;
     Display *display = _display.get();
     EventSink *eventSink = _eventSink.get();
-    uint32_t frameCount = 0;
+    uint32_t frameCount = 0, syncedFrameCount = 0;
     TimeFloat accumulatedTime = 0.;
     try {
         lastUpdate = nanotime();
         frameCounterStart = lastUpdate;
         while (!_terminated) {
             display->pullEvents(eventSink);
-            
+
             const timespec currentUpdate = nanotime();
             const TimeFloat interval = timeIntervalToDouble(lastUpdate, currentUpdate);
             const TimeFloat fpsInterval = timeIntervalToDouble(frameCounterStart, currentUpdate);
-            
+
             if (fpsInterval >= 1.0) {
-                currentFPS = (double)(frameCount) / fpsInterval;
-                std::cout << "fps: " << currentFPS << std::endl;
+                displayFPS = (double)(frameCount) / fpsInterval;
+                syncedFPS = (double)(syncedFrameCount) / fpsInterval;
                 frameCounterStart = currentUpdate;
                 frameCount = 0;
+                syncedFrameCount = 0;
             }
-            
+
             if (interval >= 0.01) {
                 accumulatedTime += interval;
                 const TimeFloat frameLength = _deltaT;
                 while (accumulatedTime >= frameLength) {
                     accumulatedTime -= frameLength;
                     eventSink->frameSynced();
+                    syncedFrameCount++;
                 }
-                
+
                 lastUpdate = currentUpdate;
                 eventSink->frameUnsynced(interval);
                 frameCount++;
                 if (_frameCount > 0) {
                     _currentFrameCount++;
                     if (_currentFrameCount >= _frameCount) {
-                        log->log(Information, "Frame count limit reached, sending WMQuit");
+                        log->log(Information, "Frame count limit reached, injecting WMQuit event");
                         eventSink->handleWMQuit();
                     }
                 }

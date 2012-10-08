@@ -41,8 +41,7 @@ class EventLoop {
         DisplayHandle _display;
         EventSinkHandle _eventSink;
         TimeFloat _deltaT;
-        uint64_t _frameCount;
-        uint64_t _currentFrameCount;
+        uint64_t _frameCount, _currentFrameCount;
         bool _terminated;
     public:
         void terminate();
@@ -57,7 +56,7 @@ class EventLoop {
          */
         void setFrameCount(const uint64_t frameCount);
     public:
-        double currentFPS;
+        double displayFPS, syncedFPS;
 };
 
 
