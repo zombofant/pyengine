@@ -10,6 +10,15 @@ cmake_minimum_required(VERSION 2.6)
         )
     endmacro(add_sphinx_target)
 
+# we have problems with gcc 4.7.0, see
+# issue <http://gcc.gnu.org/bugzilla/show_bug.cgi?id=53455>
+
+    if (CMAKE_COMPILER_IS_GNUCXX)
+        if (CMAKE_CXX_COMPILER_VERSION EQUAL "4.7.0")
+            message(FATAL_ERROR "GCC version 4.7.0 is broken with boost::python. See <http://gcc.gnu.org/bugzilla/show_bug.cgi?id=53455>")
+        endif (CMAKE_CXX_COMPILER_VERSION EQUAL "4.7.0")
+    endif (CMAKE_COMPILER_IS_GNUCXX)
+
 # environment
     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules")
 
@@ -124,8 +133,8 @@ cmake_minimum_required(VERSION 2.6)
     set_property(DIRECTORY PROPERTY PYENGINE_DEFINITIONS ${PYENGINE_DEFINITIONS})
     set_property(DIRECTORY PROPERTY PYENGINE_DEPENDENCIES ${PYENGINE_MODULES} ${CONTRIB_MODULES})
     set_property(DIRECTORY PROPERTY PYENGINE_LINK_TARGETS ${PYENGINE_MODULES} ${CONTRIB_MODULES} ${LIBS})
-    
-    
+
+
 # documentation targets
     add_custom_target(doxygen
         COMMAND doxygen docs/doxygen.conf
