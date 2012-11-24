@@ -24,7 +24,7 @@ cmake_minimum_required(VERSION 2.6)
 
 # -I and -l
     # engine source
-    set(PYENGINE_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR})
+    set(PYENGINE_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
     set(LIBS ${LIBS} ${PYENGINE_MODULES})
     set(CONTRIB_MODULES
         "contrib_BinPack"
