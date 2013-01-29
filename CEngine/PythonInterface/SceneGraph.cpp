@@ -38,11 +38,11 @@ typedef MapHelper<VertexMap, VertexMapHandle> VertexMapHelper;
 
 BOOST_PYTHON_MODULE(_cuni_scenegraph)
 {
-    class_<SceneGraph::SceneGraph, bases<>, SceneGraph::SceneGraphHandle, boost::noncopyable>("SceneGraph", no_init)
-        .def("__init__", make_constructor(&SceneGraph::SceneGraph::create))
-        .def("update", &SceneGraph::SceneGraph::update)
-        .def("draw", &SceneGraph::SceneGraph::draw)
-        .add_property("RootNode", &SceneGraph::SceneGraph::getRootNode)
+    class_<PyEngine::SceneGraph::SceneGraph, bases<>, PyEngine::SceneGraph::SceneGraphHandle, boost::noncopyable>("SceneGraph", no_init)
+        .def("__init__", make_constructor(&PyEngine::SceneGraph::SceneGraph::create))
+        .def("update", &PyEngine::SceneGraph::SceneGraph::update)
+        .def("draw", &PyEngine::SceneGraph::SceneGraph::draw)
+        .add_property("RootNode", &PyEngine::SceneGraph::SceneGraph::getRootNode)
     ;
 
     VertexMapHelper::ItemsIteratorRegT::wrap("__VertexMap_IterItems");
