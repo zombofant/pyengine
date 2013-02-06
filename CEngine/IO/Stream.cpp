@@ -118,6 +118,20 @@ void Stream::readBytes(void *data, const sizeuint length)
     }
 }
 
+float Stream::readFloat()
+{
+    float val = 0;
+    readBytes(&val, sizeof(float));
+    return val;
+}
+
+double Stream::readDouble()
+{
+    double val = 0;
+    readBytes(&val, sizeof(double));
+    return val;
+}
+
 int8 Stream::readInt8()
 {
     return readInt<int8>();
@@ -191,6 +205,24 @@ void Stream::writeEndl()
         #endif
     #endif
     write(lineEnding, length);
+}
+
+void Stream::writeFloat(const float value)
+{
+    const sizeuint writtenBytes = write(&value, sizeof(float));
+    if (writtenBytes < sizeof(float))
+    {
+        raiseWriteError(writtenBytes, sizeof(float));
+    }
+}
+
+void Stream::writeDouble(const double value)
+{
+    const sizeuint writtenBytes = write(&value, sizeof(double));
+    if (writtenBytes < sizeof(double))
+    {
+        raiseWriteError(writtenBytes, sizeof(double));
+    }
 }
 
 void Stream::writeInt8(const int8 value)

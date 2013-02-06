@@ -178,6 +178,8 @@ class Stream {
         template <class _T> void writeInt(const _T value);
     public:
         void readBytes(void *data, const sizeuint length);
+        float readFloat();
+        double readDouble();
         int8 readInt8();
         int16 readInt16();
         int32 readInt32();
@@ -194,6 +196,8 @@ class Stream {
          * ending to the stream.
          */
         void writeEndl();
+        void writeFloat(const float value);
+        void writeDouble(const double value);
         void writeInt8(const int8 value);
         void writeInt16(const int16 value);
         void writeInt32(const int32 value);
