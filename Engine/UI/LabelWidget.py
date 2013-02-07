@@ -33,6 +33,8 @@ try:
 except (ImportError, NameError):
     pass
 
+import Engine.CEngine.Pango as Pango
+
 import Engine.Resources.Manager as Manager
 import Engine.Resources.FontLoader
 
@@ -44,26 +46,33 @@ class LabelWidget(Widget):
         # font = Manager.ResourceManager().require('/data/fonts/Cantarell-Regular.otf', fontFamily="Cantarell", size=10)
         # self._text = pyglet.text.Label(text, font_name="Cantarell", font_size=10, bold=True, italic=False, anchor_y='top')
         super(LabelWidget, self).__init__(parent, **kwargs)
+        self._layout = Pango.PangoLayout(self._pangoContext)
+        self._text = None
         self.Text = text
 
     def doAlign(self):
         # self._text.x = self.AbsoluteRect.Left
         # self._text.y = self._rootWidget.AbsoluteRect.Height - self.AbsoluteRect.Top
-        pass
+        self._layout.Width = self.AbsoluteRect.Width
+        # self._layout.Height = self.AbsoluteRect.Height
 
     def render(self):
         # Shader.unbind()
         # FIXME/pyglet
         # self._text.draw()
+        ctx = self._cairoContext
+        ctx.translate(self.AbsoluteRect.Left, self.AbsoluteRect.Top)
+        self._pangoContext.showLayout(self._layout)
+        ctx.translate(-self.AbsoluteRect.Left, -self.AbsoluteRect.Top)
         pass
 
     @property
     def Text(self):
-        # return self._text.text
-        pass
+        return self._text
 
     @Text.setter
     def Text(self, value):
-        # self._text.text = value
-        pass
-        
+        if self._text == value:
+            return
+        self._text = value
+        self._layout.Text = self._text

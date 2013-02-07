@@ -63,6 +63,7 @@ class AbstractWidget(object):
         self._rootWidget = None
         self._geometryBuffer = None
         self._cairoContext = None
+        self._pangoContext = None
 
     def _invalidateComputedStyle(self):
         self._invalidatedComputedStyle = True
@@ -175,6 +176,7 @@ class Widget(AbstractWidget):
         self._rootWidget = parent._rootWidget
         self._geometryBuffer = self._rootWidget._geometryBuffer
         self._cairoContext = self._rootWidget._cairoContext
+        self._pangoContext = self._rootWidget._pangoContext
 
     def _requireParent(self):
         if self._parent is None:
@@ -186,10 +188,12 @@ class Widget(AbstractWidget):
             self._rootWidget = self._parent.getRootWidget()
             self._geometryBuffer = self._rootWidget._geometryBuffer
             self._cairoContext = self._rootWidget._cairoContext
+            self._pangoContext = self._rootWidget._pangoContext
         else:
             self._rootWidget = None
             self._geometryBuffer = None
             self._cairoContext = None
+            self._pangoContext = None
 
     def hitTest(self, p):
         return self if p in self.AbsoluteRect else None
