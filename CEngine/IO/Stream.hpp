@@ -34,7 +34,7 @@ named in the AUTHORS file.
 #include "CEngine/Misc/Exception.hpp"
 
 namespace PyEngine {
-    
+
 /**
  * Just that we can be sure these two are equivalent.
  */
@@ -76,15 +76,15 @@ class StreamWriteError: public StreamError {
         virtual ~StreamWriteError() throw() {};
 };
 
-/** 
+/**
  * Class to replace the std::[io]?[f]?stream classes. The rationale for
  * that can be... uh... requested at some of the developers.
- * 
+ *
  * These streams are binary only. If you want to write human-readable
  * data, you are supposed to format it to a string and use the write
  * string operator.
- * 
- * However, we do not provide a >> operator for strings, as any 
+ *
+ * However, we do not provide a >> operator for strings, as any
  * behaviour we could supply would not be satisfactory for all purposes.
  * If you want to read strings, you should use the supplied methods on
  * your own.
@@ -95,77 +95,77 @@ class Stream {
          * Make sure the stream is synchronized with any low-level,
          * hardware or file system primitives. The meaning of this call
          * is dependent on the actual stream type.
-         * 
+         *
          * A flush call should generally be made before switching
          * from reading to writing and vice versa or when itsk neccessary
-         * to be sure that data is actually stored (or sent, if its a 
+         * to be sure that data is actually stored (or sent, if its a
          * network stream for example).
          */
         virtual void flush();
-    
+
         /**
-         * Attempts to read length bytes from the stream and stores 
+         * Attempts to read length bytes from the stream and stores
          * these in data. Returns the amount of bytes read. This might
-         * be less than length if an error occured. The contents of 
-         * data behind the last position where data was written to 
+         * be less than length if an error occured. The contents of
+         * data behind the last position where data was written to
          * should be considered as uninitialized.
-         * 
-         * This may throw an exception if it is not possible to read 
+         *
+         * This may throw an exception if it is not possible to read
          * from the stream.
-         * 
+         *
          * You may check for reading ability by calling isReadable.
          */
         sizeuint read(char *data, const sizeuint length);
-        
+
         virtual sizeuint read(void *data, const sizeuint length);
-        
+
         /**
          * Change the read/write pointer position of the stream. For
          * documentation of whence and offset, see lseek(2).
-         * 
+         *
          * This may throw an exception if it is not possible to seek
          * in the stream.
-         * 
+         *
          * You may check for seeking ability by calling isSeekable.
          */
         virtual sizeuint seek(const int whence, const sizeint offset);
-        
+
         /**
          * Returns the size of the stream in bytes. This may throw an
          * exception if seeking is not supported. You can check for
          * seek support by calling isSeekable.
-         * 
+         *
          * A similar effect can be achived by calling seek(SEEK_END, 0),
-         * but this does not change the current reading/writing 
+         * but this does not change the current reading/writing
          * position.
          */
         virtual const sizeuint size() const;
-        
+
         /**
          * This has the same effect as seek(SEEK_CUR, 0), except that it
-         * should also work on non-seekable streams and constant 
-         * references. 
-         * 
-         * Return value: absolute position of the read/write pointer 
+         * should also work on non-seekable streams and constant
+         * references.
+         *
+         * Return value: absolute position of the read/write pointer
          * from the beginning of the stream.
-         * 
-         * You may check for seeking/telling ability by calling 
+         *
+         * You may check for seeking/telling ability by calling
          * isSeekable. If a stream is seekable, it must be able to tell
          * the current position.
-         * 
-         * tell must never throw an exception. At may return 0 if 
+         *
+         * tell must never throw an exception. At may return 0 if
          * telling the position/bytecount is not supported.
          */
         virtual const sizeuint tell() const;
-        
+
         /**
          * Write length bytes read from data to the stream. Returns the
          * amount of bytes actually written which might be less than
          * length in case of an error.
-         * 
+         *
          * This may throw an exception if its not possible to write to
          * the stream.
-         * 
+         *
          * You may check for writing ability by calling isWritable.
          */
         virtual sizeuint write(const void *data, const sizeuint length);
@@ -195,8 +195,8 @@ class Stream {
         uint16 readUInt16();
         uint32 readUInt32();
         uint64 readUInt64();
-        
-        /** 
+
+        /**
          * a convenience function to overcome the need to write an \n
          * or \r or both to a char buffer. Writes the current OS:s line
          * ending to the stream.
