@@ -177,6 +177,12 @@ class Stream {
         template <class _T> _T readInt();
         template <class _T> void writeInt(const _T value);
     public:
+        template <class _T>
+        inline _T readT() {
+	    _T val;
+	    readBytes(&val, sizeof(_T));
+	    return val;
+	}
         void readBytes(void *data, const sizeuint length);
         float readFloat();
         double readDouble();
@@ -196,6 +202,14 @@ class Stream {
          * ending to the stream.
          */
         void writeEndl();
+        template <class _T>
+	inline void writeT(const _T value) {
+	    const sizeuint length = sizeof(_T);
+	    sizeuint writtenBytes = write(&value, length);
+	    if (writtenBytes < length) {
+		raiseWriteError(writtenBytes, length);
+	    }
+	}
         void writeFloat(const float value);
         void writeDouble(const double value);
         void writeInt8(const int8 value);
