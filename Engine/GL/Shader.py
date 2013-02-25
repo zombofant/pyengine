@@ -35,7 +35,7 @@ class Shader(BindableObject):
     def __init__(self, **kwargs):
         super(Shader, self).__init__(**kwargs)
         self.uniformMap = {}
-        
+
     def _compileShader(self, kind, source):
         shader = glCreateShader(kind)
         glShaderSource(shader, source)
@@ -47,12 +47,12 @@ class Shader(BindableObject):
             glDeleteShader(shader)
             raise ValueError("Failed to compile {0}.\nCompiler log: \n{2}\nSource: \n{1}".format(kind, Utils.lineNumbering(source), log))
         return shader
-            
+
     def _loadUniform(self, name):
         location = glGetUniformLocation(self.id, str(name))
         self.uniformMap[name] = location
         return location
-        
+
     def loadShader(self, vs, fs):
         if self.id != 0:
             self.unloadShader()
@@ -72,9 +72,13 @@ class Shader(BindableObject):
             glDeleteShader(vsObj)
             glDeleteShader(fsObj)
 
+            if glGetProgramiv(program, GL_LINK_STATUS) != GL_TRUE:
+                log = glGetProgramInfoLog(program)
+                raise ValueError("Shader program did not link: {0}".format(log))
+
             glValidateProgram(program)
             if glGetProgramiv(program, GL_VALIDATE_STATUS) != GL_TRUE:
-                raise ValueError("Program did not validate.")
+                raise ValueError("Shader program did not validate.")
             
             self.id = program
         except:
@@ -85,7 +89,7 @@ class Shader(BindableObject):
             glDeleteProgram(program)
             self.id = 0
             raise
-            
+
     def loadFromFile(self, vsName, fsName, uniforms):
         f = open(fsName, 'r')
         fs = f.read()
@@ -94,7 +98,7 @@ class Shader(BindableObject):
         vs = f.read()
         f.close()
         self.loadShader(vs, fs, uniforms)
-            
+
     def unloadShader(self):
         glDeleteProgram(program)
         self.id = 0
@@ -112,11 +116,11 @@ class Shader(BindableObject):
         if value < 0:
             raise KeyError("Unknown uniform in program object: {0}".format(name))
         return value
-        
+
     def bind(self):
         if Shader.bound != self.id:
             glUseProgram(self.id)
-        
+
     @staticmethod
     def unbind():
         Shader.bound = None
