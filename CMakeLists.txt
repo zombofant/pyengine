@@ -14,9 +14,9 @@ cmake_minimum_required(VERSION 2.6)
 # issue <http://gcc.gnu.org/bugzilla/show_bug.cgi?id=53455>
 
     if (CMAKE_COMPILER_IS_GNUCXX)
-        if (CMAKE_CXX_COMPILER_VERSION EQUAL "4.7.0")
+        if (CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL "4.7.0")
             message(FATAL_ERROR "GCC version 4.7.0 is broken with boost::python. See <http://gcc.gnu.org/bugzilla/show_bug.cgi?id=53455>")
-        endif (CMAKE_CXX_COMPILER_VERSION EQUAL "4.7.0")
+        endif (CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL "4.7.0")
     endif (CMAKE_COMPILER_IS_GNUCXX)
 
 # environment
