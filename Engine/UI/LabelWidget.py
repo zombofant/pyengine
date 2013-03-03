@@ -33,7 +33,10 @@ try:
 except (ImportError, NameError):
     pass
 
-import Engine.CEngine.Pango as Pango
+try:
+    import Engine.CEngine.Pango as Pango
+except (ImportError):
+    Pango = None
 
 import Engine.Resources.Manager as Manager
 import Engine.Resources.FontLoader
@@ -42,6 +45,7 @@ from WidgetBase import Widget
 
 class LabelWidget(Widget):
     def __init__(self, parent, text="", **kwargs):
+        assert Pango
         # FIXME: Font rendering
         # font = Manager.ResourceManager().require('/data/fonts/Cantarell-Regular.otf', fontFamily="Cantarell", size=10)
         # self._text = pyglet.text.Label(text, font_name="Cantarell", font_size=10, bold=True, italic=False, anchor_y='top')
