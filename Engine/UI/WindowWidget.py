@@ -33,11 +33,14 @@ from WidgetBase import ParentWidget
 from LabelWidget import LabelWidget
 from BoxWidget import VBox
 
+import Flags
+
 class WindowWidget(VBox):
     def __init__(self, parent, **kwargs):
         super(WindowWidget, self).__init__(parent, **kwargs)
         self.AbsoluteRect.Width = 256
         self.AbsoluteRect.Height = 128
         self.Title = LabelWidget(self)
+        self._flags.add(Flags.Focusable)
 
 CSS.Minilanguage.ElementNames().registerWidgetClass(WindowWidget)

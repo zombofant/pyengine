@@ -63,7 +63,9 @@ class RootWidget(AbstractWidget, WidgetContainer):
              if hitChain is not None else self._hitTest((x, y)))
         return (target, x - target.AbsoluteRect.Left, y - target.AbsoluteRect.Top)
 
-    def _updateHoverState(self, hitChain):
+    def _updateHoverState(self, hitChain=None, p=None):
+        if hitChain is None:
+            hitChain = self._hitTestWithChain(p)
         hitChain = frozenset(hitChain)
         oldHitChain = self._oldHitChain
         if hitChain != oldHitChain:
@@ -74,6 +76,25 @@ class RootWidget(AbstractWidget, WidgetContainer):
                 hovered._isHovered = True
                 hovered._invalidateComputedStyle()
             self._oldHitChain = hitChain
+
+    def _focusAndCapture(self, hitChain, button):
+        target = None
+        for candidate in hitChain:
+            if Focusable in candidate._flags:
+                target = candidate
+                break
+        else:
+            return
+
+        if self._focused is not None:
+            self._focused._isFocused = False
+            self._focused._invalidateComputedStyle()
+        self._focused = target
+        target._isFocused = True
+        target._invalidateComputedStyle()
+
+        self._mouseCapture = target
+        self._mouseCaptureButton = button
 
     def doAlign(self):
         assert len(self) == 3
@@ -95,19 +116,25 @@ class RootWidget(AbstractWidget, WidgetContainer):
             self.onKeyUp(*args)
 
     def dispatchMouseDown(self, x, y, button, modifiers):
-        target, x, y = self._mapMouseEvent(x, y)
+        if self._mouseCapture is None:
+            hitChain = self._hitTestWithChain((x, y))
+        else:
+            hitChain = None
+        target, x, y = self._mapMouseEvent(x, y, hitChain)
         target.onMouseDown(x, y, button, modifiers)
-        if target is not self._mouseCapture and button & self.ActiveButtonMask:
-            if Focusable in target._flags:
-                self._focused = target
-            self._mouseCapture = target
+        if self._mouseCapture is None and button & self.ActiveButtonMask:
+            self._focusAndCapture(hitChain, button)
 
     def dispatchMouseMove(self, x, y, dx, dy, button, modifiers):
-        hitChain = self._hitTestWithChain((x, y))
+        if self._mouseCapture is None:
+            hitChain = self._hitTestWithChain((x, y))
+        else:
+            hitChain = None
         target, x, y = self._mapMouseEvent(x, y, hitChain)
         target.onMouseMove(x, y, dx, dy, button, modifiers)
 
-        self._updateHoverState(hitChain)
+        if self._mouseCapture is None:
+            self._updateHoverState(hitChain)
 
     def dispatchMouseUp(self, x, y, button, modifiers):
         target, x, y = self._mapMouseEvent(x, y)
@@ -115,6 +142,7 @@ class RootWidget(AbstractWidget, WidgetContainer):
         if target is self._mouseCapture and button & self._mouseCaptureButton:
             self._mouseCapture = None
             self._mouseCaptureButton = 0
+            self._updateHoverState(p=(x,y))
 
     def dispatchScroll(self, x, y, scrollX, scrollY):
         target, x, y = self._mapMouseEvent(x, y)
