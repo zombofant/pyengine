@@ -53,7 +53,12 @@ This primarily provides for handling of multiple-head setups
 """
 
 class Application(RootWidget, CWindow.EventSink):
-    def __init__(self, display, geometry=(800, 600), fullscreen=False, **kwargs):
+    def __init__(self, display,
+                 geometry=(800, 600),
+                 fullscreen=False,
+                 displayMode=None,
+                 eventLoop=None,
+                 **kwargs):
         super(Application, self).__init__(**kwargs)
         self.fullscreen = fullscreen
         self._primaryWidget = None
@@ -62,12 +67,15 @@ class Application(RootWidget, CWindow.EventSink):
         self.SyncedSpeedFactor = 1.
         self._aggregatedTime = 0.
 
-        self._geometryBuffer = CGL.GeometryBuffer(CGL.VertexFormat("v:2;t0:2;c:4"), GL_DYNAMIC_DRAW)
-        modes = display.DisplayModes
-        modes.sort(reverse=True)
-        mode = modes[0]
-        log.log(Severity.Information, "Creating context with mode: {0}".format(mode))
-        self._window = display.createWindow(mode, geometry[0], geometry[1], fullscreen)
+        if displayMode is None:
+            modes = display.DisplayModes
+            modes.sort(reverse=True)
+            displayMode = modes[0]
+        log.log(Severity.Information,
+                "Creating context with mode: {0}".format(displayMode))
+        self._window = display.createWindow(displayMode,
+                                            geometry[0], geometry[1],
+                                            fullscreen)
 
         if fullscreen:
             self._window.setFullscreen(display.Screens[0].index,
@@ -84,12 +92,14 @@ class Application(RootWidget, CWindow.EventSink):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         self._window.flip()
         self._window._sceneWidgets = []
-        #self._window.switchTo()
+
         self._newScreen(self._window, 0, 0, *geometry)
         self.AbsoluteRect = Rect(0, 0, *geometry)
 
         self.realign()
-        self._eventLoop = CWindow.EventLoop(display, self)
+        if eventLoop is None:
+            eventLoop = CWindow.EventLoop(display, self)
+        self._eventLoop = eventLoop
 
     def _getWidgetScreen(self, widget):
         p = widget
