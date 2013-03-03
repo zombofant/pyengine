@@ -41,6 +41,8 @@ except (ImportError):
 import Engine.Resources.Manager as Manager
 import Engine.Resources.FontLoader
 
+import CSS.Minilanguage
+
 from WidgetBase import Widget
 
 class LabelWidget(Widget):
@@ -80,3 +82,5 @@ class LabelWidget(Widget):
             return
         self._text = value
         self._layout.Text = self._text
+
+CSS.Minilanguage.ElementNames().registerWidgetClass(LabelWidget)
