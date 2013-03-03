@@ -34,7 +34,17 @@ from ScreenWidget import ScreenWidget
 from WindowWidget import WindowWidget
 
 class LayerWidget(ParentWidget):
-    pass
+    def hitTest(self, p):
+        self.realign()
+        if not p in self.AbsoluteRect:
+            return None
+        return self._hitTest(p)
+
+    def hitTestWithChain(self, p):
+        self.realign()
+        if not p in self.AbsoluteRect:
+            return False
+        return self._hitTestWithChain(p)
 
 class DesktopLayer(LayerWidget):
     def doAlign(self):

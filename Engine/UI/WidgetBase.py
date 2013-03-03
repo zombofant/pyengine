@@ -205,6 +205,9 @@ class Widget(AbstractWidget):
             self._cairoContext = None
             self._pangoContext = None
 
+    def hitTestWithChain(self, p):
+        return [self] if p in self.AbsoluteRect else False
+
     def hitTest(self, p):
         return self if p in self.AbsoluteRect else None
 
@@ -283,6 +286,13 @@ class WidgetContainer(object):
                 return hit
         return None
 
+    def _hitTestWithChain(self, p):
+        for child in self:
+            hit = child.hitTestWithChain(p)
+            if hit is not False:
+                return hit
+        return False
+
     def _newChild(self, widget):
         pass
 
@@ -340,6 +350,17 @@ class ParentWidget(Widget, WidgetContainer):
 
     def getRootWidget(self):
         return self._rootWidget
+
+    def hitTestWithChain(self, p):
+        self.realign()
+        if not p in self.AbsoluteRect:
+            return False
+        chain = self._hitTestWithChain(p)
+        if chain is not False:
+            chain.append(self)
+            return chain
+        else:
+            return [self]
 
     def hitTest(self, p):
         self.realign()

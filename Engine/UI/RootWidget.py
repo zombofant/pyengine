@@ -48,17 +48,32 @@ class RootWidget(AbstractWidget, WidgetContainer):
         self._focused = None
         self._flags = frozenset()
         self._childClasses = LayerWidget
-        self._desktopLayer = DesktopLayer(self)
-        self._windowLayer = WindowLayer(self)
         self._popupLayer = PopupLayer(self)
+        self._windowLayer = WindowLayer(self)
+        self._desktopLayer = DesktopLayer(self)
+        self._oldHitChain = frozenset()
         self.ActiveButtonMask = mouse.LEFT | mouse.MIDDLE | mouse.RIGHT
 
     def _findKeyEventTarget(self):
         return self._focused or self
 
-    def _mapMouseEvent(self, x, y):
-        target = self._mouseCapture or self.hitTest((x, y))
+    def _mapMouseEvent(self, x, y, hitChain=None):
+        target = self._mouseCapture or \
+            ((hitChain[0] if hitChain is not False else None)
+             if hitChain is not None else self._hitTest((x, y)))
         return (target, x - target.AbsoluteRect.Left, y - target.AbsoluteRect.Top)
+
+    def _updateHoverState(self, hitChain):
+        hitChain = frozenset(hitChain)
+        oldHitChain = self._oldHitChain
+        if hitChain != oldHitChain:
+            for non_hovered in oldHitChain - hitChain:
+                non_hovered._isHovered = False
+                non_hovered._invalidateComputedStyle()
+            for hovered in hitChain - oldHitChain:
+                hovered._isHovered = True
+                hovered._invalidateComputedStyle()
+            self._oldHitChain = hitChain
 
     def doAlign(self):
         assert len(self) == 3
@@ -88,8 +103,11 @@ class RootWidget(AbstractWidget, WidgetContainer):
             self._mouseCapture = target
 
     def dispatchMouseMove(self, x, y, dx, dy, button, modifiers):
-        target, x, y = self._mapMouseEvent(x, y)
+        hitChain = self._hitTestWithChain((x, y))
+        target, x, y = self._mapMouseEvent(x, y, hitChain)
         target.onMouseMove(x, y, dx, dy, button, modifiers)
+
+        self._updateHoverState(hitChain)
 
     def dispatchMouseUp(self, x, y, button, modifiers):
         target, x, y = self._mapMouseEvent(x, y)
