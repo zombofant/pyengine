@@ -135,6 +135,7 @@ cmake_minimum_required(VERSION 2.6)
     set_property(DIRECTORY PROPERTY PYENGINE_LINK_TARGETS ${PYENGINE_MODULES} ${CONTRIB_MODULES} ${LIBS})
 
 
+if (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
 # documentation targets
     add_custom_target(doxygen
         COMMAND doxygen docs/doxygen.conf
@@ -164,3 +165,4 @@ cmake_minimum_required(VERSION 2.6)
         WORKING_DIRECTORY docs/sphinx
         COMMENT "Clean all generated documentation"
     )
+endif (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
