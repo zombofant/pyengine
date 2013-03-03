@@ -62,6 +62,16 @@ constrainedToken:
         $$.sem = HasAttributes(*$3.sem, chained=$1.sem)
     constrainedToken "." TOKEN:
         $$.sem = HasAttributes(AttributeClass($3.sem), chained=$1.sem)
+    constrainedToken ":" stateSuffix:
+        $$.sem = State($3.sem, chained=$1.sem)
+
+stateSuffix:
+    "hover":
+        $$.sem = "hover"
+    "active":
+        $$.sem = "active"
+    "focused":
+        $$.sem = "focused"
 
 attributes:
     attributes "," attribute:

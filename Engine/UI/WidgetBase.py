@@ -31,7 +31,7 @@ from CSS.Rect import Rect
 from CSS.Rules import Rule
 from CSS.FaceBuffer import FaceBuffer
 from CSS.ClassSet import ClassSet
-from Style import Style
+from Style import Style, WidgetStyle
 
 from OpenGL.GL import GL_TRIANGLES, glEnable, GL_TEXTURE_2D
 from Engine.GL.Texture import Texture2D
@@ -64,6 +64,9 @@ class AbstractWidget(object):
         self._geometryBuffer = None
         self._cairoContext = None
         self._pangoContext = None
+        self._hovered = False
+        self._active = False
+        self._focused = False
 
     def _invalidateComputedStyle(self):
         self._invalidatedComputedStyle = True
@@ -126,15 +129,20 @@ class AbstractWidget(object):
     def ThemeStyle(self, value):
         if self._themeStyle == value:
             return
-        if not isinstance(value, Style):
-            raise TypeError("ThemeStyle must be a Style instance. Got {0} {1}".format(type(value), value))
+        if not isinstance(value, WidgetStyle):
+            raise TypeError("ThemeStyle must be a WidgetStyle instance. Got {0} {1}".format(type(value), value))
         self._themeStyle = value
         self._invalidateComputedStyle()
 
     @property
     def ComputedStyle(self):
         if self._invalidatedComputedStyle:
-            self._computedStyle = self._themeStyle + self._styleRule
+            style = self._themeStyle.getStyle(
+                self._hovered,
+                self._active,
+                self._focused)
+            style += self._styleRule
+            self._computedStyle = style
             self._invalidatedComputedStyle = False
         return self._computedStyle
 

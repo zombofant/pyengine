@@ -558,3 +558,32 @@ class Style(object):
                     (x, y), segment = pathSegments[i]
                     ctx.arc(x, y, *segment)
                     ctx.stroke()
+
+class WidgetStyle(object):
+    def __init__(self, normal, hovered=None, active=None, focused=None):
+        if normal is None:
+            raise ValueError("normal style must not be None.")
+        self._normalStyle = normal
+        self._hoveredStyle = hovered
+        self._activeStyle = active
+        self._focusedStyle = focused
+        self._styleCache = {}
+
+    def _calculateStyle(self, hovered, active, focused):
+        style = self._normalStyle
+        if hovered and self._hoveredStyle:
+            style += self._hoveredStyle
+        if active and self._activeStyle:
+            style += self._activeStyle
+        if focused and self._focusedStyle:
+            style += self._focusedStyle
+        return style
+
+    def getStyle(self, hovered, active, focused):
+        state = (hovered, active, focused)
+        try:
+            return self._styleCache[state]
+        except KeyError:
+            style = self._calculateStyle(*state)
+            self._styleCache[state] = style
+            return style

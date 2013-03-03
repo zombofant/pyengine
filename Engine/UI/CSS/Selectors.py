@@ -61,12 +61,12 @@ class Selector(object):
     def __init__(self, chained=None, **kwargs):
         super(Selector, self).__init__(**kwargs)
         self._chained = chained
-    
-    def testWidget(self, other):
+
+    def testWidget(self, widget, state=None):
         if self._chained is not None:
-            other = self._chained.testWidget(other)
-        if other is not None:
-            return self._testWidget(other)
+            widget = self._chained.testWidget(widget)
+        if widget is not None:
+            return self._testWidget(widget, state=state)
         else:
             return None
 
@@ -113,9 +113,8 @@ class ParentSelector(Selector):
         specifity += Specifity(0, 0, 0, 1)
         return specifity
 
-
 class ChildOf(ParentSelector):
-    def _testWidget(self, widget):
+    def _testWidget(self, widget, state=None):
         p = widget.Parent
         while p is not None:
             if self._parentSelector.testWidget(p):
@@ -129,9 +128,8 @@ class ChildOf(ParentSelector):
     def __unicode__(self):
         return "{0} {1}".format(self._parentSelector, self._chained)
 
-
 class DirectChildOf(ParentSelector):
-    def _testWidget(self, widget):
+    def _testWidget(self, widget, state=None):
         if not hasattr(widget, "Parent"):
             return None
         p = widget.Parent
@@ -143,13 +141,12 @@ class DirectChildOf(ParentSelector):
     def __unicode__(self):
         return "{0} > {1}".format(self._parentSelector, self._chained)
 
-
 class Is(Selector):
     def __init__(self, testClass, **kwargs):
         super(Is, self).__init__(**kwargs)
         self._testClass = testClass
-    
-    def _testWidget(self, widget):
+
+    def _testWidget(self, widget, state=None):
         if isinstance(widget, self._testClass):
             return widget
         else:
@@ -258,8 +255,8 @@ class HasAttributes(Selector):
         if chainedAttrs is not None:
             self._attrs |= chainedAttrs
         self._attrs = frozenset(self._attrs)
-    
-    def _testWidget(self, widget):
+
+    def _testWidget(self, widget, state=None):
         for attr in self._attrs:
             if not attr.testWidget(widget):
                 return None
@@ -278,3 +275,13 @@ class HasAttributes(Selector):
         specifity = super(HasAttributes, self).specifity()
         specifity += Specifity(0, 0, len(self._attrs), 0)
         return specifity
+
+class State(Selector):
+    def __init__(self, state, **kwargs):
+        super(State, self).__init__(**kwargs)
+        self._state = state
+
+    def _testWidget(self, widget, state=None):
+        if state != self._state:
+            return None
+        return widget
