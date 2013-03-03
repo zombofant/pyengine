@@ -48,12 +48,18 @@ selectors:
         $$.sem = [$1.sem]
 
 selector:
+    constrainedTokenWithState:
+        $$.sem = $1.sem
+    constrainedTokenWithState ">" selector:
+        $$.sem = DirectChildOf($1.sem, chained=$3.sem)
+    constrainedTokenWithState selector:
+        $$.sem = ChildOf($1.sem, chained=$2.sem)
+
+constrainedTokenWithState:
     constrainedToken:
         $$.sem = $1.sem
-    constrainedToken ">" selector:
-        $$.sem = DirectChildOf($1.sem, chained=$3.sem)
-    constrainedToken selector:
-        $$.sem = ChildOf($1.sem, chained=$2.sem)
+    constrainedTokenWithState ":" TOKEN:
+        $$.sem = State($3.sem, chained=$1.sem)
 
 constrainedToken:
     TOKEN:
@@ -62,16 +68,7 @@ constrainedToken:
         $$.sem = HasAttributes(*$3.sem, chained=$1.sem)
     constrainedToken "." TOKEN:
         $$.sem = HasAttributes(AttributeClass($3.sem), chained=$1.sem)
-    constrainedToken ":" stateSuffix:
-        $$.sem = State($3.sem, chained=$1.sem)
 
-stateSuffix:
-    "hover":
-        $$.sem = "hover"
-    "active":
-        $$.sem = "active"
-    "focused":
-        $$.sem = "focused"
 
 attributes:
     attributes "," attribute:

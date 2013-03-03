@@ -29,7 +29,7 @@ import itertools
 import functools
 import operator
 
-from Style import Style, WidgetStyle
+from Style import Style
 from WidgetBase import WidgetContainer
 
 class SelectorTuple(tuple):
@@ -77,21 +77,22 @@ class Theme(object):
         if resort:
             self._sort()
 
-    def getStyleForWidgetState(self, widget, state):
-        matchingRules = [rule for _, _, selector, rule in self._rules
-                         if selector.testWidget(widget, state=state) is not None]
-        if len(matchingRules) == 0:
-            return None
-        matchingRules.insert(0, Style())
-        return functools.reduce(operator.__iadd__, matchingRules)
-
     def getWidgetStyle(self, widget):
-        normal = self.getStyleForWidgetState(widget, None) or Style()
-        hovered = self.getStyleForWidgetState(widget, "hover")
-        active = self.getStyleForWidgetState(widget, "active")
-        focused = self.getStyleForWidgetState(widget, "focused")
-        return WidgetStyle(normal, hovered, active, focused)
+        matchingRules = [(selector, rule) for _, _, selector, rule in self._rules
+                         if selector.testWidget(widget) is not None]
+        if len(matchingRules) == 0:
+            return Style()
+
+        selectors, rules = zip(*matchingRules)
+        selectors = SelectorTuple(selectors)
+        if selectors in self._cache:
+            style = self._cache[selectors]
+        else:
+            style = Style(*rules)
+            self._cache[selectors] = style
+        return style
+
 
     def applyStyles(self, rootWidget):
         for widget in rootWidget.treeDepthFirst():
-            widget.ThemeStyle = self.getWidgetStyle(widget)
+            widget.Theme = self

@@ -38,12 +38,13 @@ from CSS.Border import Border, BorderEdge
 from CSS.Fill import Fill, Colour, Transparent, Image
 from CSS.Rules import Rule
 from CSS.Rect import Rect
+from CSS.Selectors import State
 
 class Style(object):
     __hash__ = None
 
     def __init__(self, *rules, **kwargs):
-        self._background = kwargs.pop("background") if "background" in kwargs else Transparent
+        self._background = kwargs.pop("background", Transparent)
         self._padding = Padding()
         self._margin = Margin()
         self._border = Border()
@@ -98,16 +99,21 @@ class Style(object):
             self._applyProperty(key, value)
 
     def __add__(self, rules):
-        if isinstance(rules, Rule):
-            new = copy.deepcopy(self)
-            new._addRule(rules)
-        else:
-            new = copy.deepcopy(self)
-            if rules is None:
-                return new
-            for rule in rules:
-                new._addRule(rules)
+        new = copy.deepcopy(self)
+        new += rules
         return new
+
+    def __iadd__(self, rules):
+        if isinstance(rules, Rule):
+            self._addRule(rules)
+            return self
+        else:
+            if rules is None:
+                return self
+            for rule in rules:
+                self._addRule(rule)
+            return self
+        return NotImplemented
 
     def __eq__(self, other):
         if not isinstance(other, Style):
@@ -558,32 +564,3 @@ class Style(object):
                     (x, y), segment = pathSegments[i]
                     ctx.arc(x, y, *segment)
                     ctx.stroke()
-
-class WidgetStyle(object):
-    def __init__(self, normal, hovered=None, active=None, focused=None):
-        if normal is None:
-            raise ValueError("normal style must not be None.")
-        self._normalStyle = normal
-        self._hoveredStyle = hovered
-        self._activeStyle = active
-        self._focusedStyle = focused
-        self._styleCache = {}
-
-    def _calculateStyle(self, hovered, active, focused):
-        style = self._normalStyle
-        if hovered and self._hoveredStyle:
-            style += self._hoveredStyle
-        if active and self._activeStyle:
-            style += self._activeStyle
-        if focused and self._focusedStyle:
-            style += self._focusedStyle
-        return style
-
-    def getStyle(self, hovered, active, focused):
-        state = (hovered, active, focused)
-        try:
-            return self._styleCache[state]
-        except KeyError:
-            style = self._calculateStyle(*state)
-            self._styleCache[state] = style
-            return style

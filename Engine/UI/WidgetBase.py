@@ -31,7 +31,7 @@ from CSS.Rect import Rect
 from CSS.Rules import Rule
 from CSS.FaceBuffer import FaceBuffer
 from CSS.ClassSet import ClassSet
-from Style import Style, WidgetStyle
+from Style import Style
 
 from OpenGL.GL import GL_TRIANGLES, glEnable, GL_TEXTURE_2D
 from Engine.GL.Texture import Texture2D
@@ -57,16 +57,16 @@ class AbstractWidget(object):
         self._relativeRect = Rect(0, 0)
         self._absoluteRect = Rect(0, 0)
         self._styleRule = None
-        self._themeStyle = Style()
         self._invalidateComputedStyle()
         self._styleClasses = ClassSet()
         self._rootWidget = None
         self._geometryBuffer = None
         self._cairoContext = None
         self._pangoContext = None
-        self._hovered = False
-        self._active = False
-        self._focused = False
+        self._isHovered = False
+        self._isActive = False
+        self._isFocused = False
+        self._theme = None
 
     def _invalidateComputedStyle(self):
         self._invalidatedComputedStyle = True
@@ -122,25 +122,12 @@ class AbstractWidget(object):
         self._invalidateComputedStyle()
 
     @property
-    def ThemeStyle(self):
-        return self._themeStyle
-
-    @ThemeStyle.setter
-    def ThemeStyle(self, value):
-        if self._themeStyle == value:
-            return
-        if not isinstance(value, WidgetStyle):
-            raise TypeError("ThemeStyle must be a WidgetStyle instance. Got {0} {1}".format(type(value), value))
-        self._themeStyle = value
-        self._invalidateComputedStyle()
-
-    @property
     def ComputedStyle(self):
         if self._invalidatedComputedStyle:
-            style = self._themeStyle.getStyle(
-                self._hovered,
-                self._active,
-                self._focused)
+            if self._theme:
+                style = self._theme.getWidgetStyle(self)
+            else:
+                style = Style()
             style += self._styleRule
             self._computedStyle = style
             self._invalidatedComputedStyle = False
@@ -165,6 +152,21 @@ class AbstractWidget(object):
     @property
     def StyleClasses(self):
         return self._styleClasses
+
+    @property
+    def CSSState(self):
+        return (self._isHovered, self._isActive, self._isFocused)
+
+    @property
+    def Theme(self):
+        return self._theme
+
+    @Theme.setter
+    def Theme(self, value):
+        if value == self._theme:
+            return
+        self._theme = value
+        self._invalidateComputedStyle()
 
 class Widget(AbstractWidget):
     """

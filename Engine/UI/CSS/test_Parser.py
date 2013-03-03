@@ -133,6 +133,17 @@ class ParseSelectors(ParserInstanceTest):
             )], [])
         )
 
+    def test_state(self):
+        self._testRule(
+            """
+            test1:hover {
+
+            }
+            """,
+            Rules.Rule([Selectors.State("hover",
+                                        chained=Selectors.Is("test1"))], [])
+        )
+
     def test_complex(self):
         self._testRule(
             """

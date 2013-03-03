@@ -25,8 +25,8 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-__all__ = ["ChildOf", "DirectChildOf", "Is", 
-    "HasAttributes"]
+__all__ = ["ChildOf", "DirectChildOf", "Is",
+    "HasAttributes", "State"]
 
 class Specifity(object):
     def __init__(self, *args):
@@ -62,11 +62,11 @@ class Selector(object):
         super(Selector, self).__init__(**kwargs)
         self._chained = chained
 
-    def testWidget(self, widget, state=None):
+    def testWidget(self, widget):
         if self._chained is not None:
             widget = self._chained.testWidget(widget)
         if widget is not None:
-            return self._testWidget(widget, state=state)
+            return self._testWidget(widget)
         else:
             return None
 
@@ -113,7 +113,7 @@ class ParentSelector(Selector):
         return specifity
 
 class ChildOf(ParentSelector):
-    def _testWidget(self, widget, state=None):
+    def _testWidget(self, widget):
         p = widget.Parent
         while p is not None:
             if self._parentSelector.testWidget(p):
@@ -128,7 +128,7 @@ class ChildOf(ParentSelector):
         return "{0} {1}".format(self._parentSelector, self._chained)
 
 class DirectChildOf(ParentSelector):
-    def _testWidget(self, widget, state=None):
+    def _testWidget(self, widget):
         if not hasattr(widget, "Parent"):
             return None
         p = widget.Parent
@@ -145,7 +145,7 @@ class Is(Selector):
         super(Is, self).__init__(**kwargs)
         self._testClass = testClass
 
-    def _testWidget(self, widget, state=None):
+    def _testWidget(self, widget):
         if isinstance(widget, self._testClass):
             return widget
         else:
@@ -254,7 +254,7 @@ class HasAttributes(Selector):
             self._attrs |= chainedAttrs
         self._attrs = frozenset(self._attrs)
 
-    def _testWidget(self, widget, state=None):
+    def _testWidget(self, widget):
         for attr in self._attrs:
             if not attr.testWidget(widget):
                 return None
@@ -275,11 +275,35 @@ class HasAttributes(Selector):
         return specifity
 
 class State(Selector):
-    def __init__(self, state, **kwargs):
-        super(State, self).__init__(**kwargs)
-        self._state = state
+    state_map = {
+        "hover": 0,
+        "active": 1,
+        "focused": 2,
+    }
 
-    def _testWidget(self, widget, state=None):
-        if state != self._state:
+    def __init__(self, statestr, chained=None, **kwargs):
+        if isinstance(chained, State):
+            state = list(chained._state)
+            chained = chained._chained
+        else:
+            state = [False]*len(self.state_map)
+        state[self.state_map[statestr.lower()]] = True
+
+        super(State, self).__init__(chained=chained, **kwargs)
+
+        self._state = tuple(state)
+
+    def _testWidget(self, widget):
+        if widget.CSSState != self._state:
             return None
         return widget
+
+    def __unicode__(self):
+        return "{0}:{1}".format(self._chained, ":".join(
+                name
+                for name, i in self.state_map.items()
+                if self._state[i]
+                ))
+
+    def _hash(self):
+        return hash(self._state)

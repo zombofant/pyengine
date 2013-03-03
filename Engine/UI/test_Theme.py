@@ -53,20 +53,25 @@ ParentWidget {
     border-right: 1 solid rgba(0.1, 0.2, 0.3);
 }
 
-RootWidget ParentWidget {
+DesktopLayer ParentWidget {
     padding: 3;
 }
 
-RootWidget > ParentWidget {
+DesktopLayer > ParentWidget {
     background: rgba(1.0, 1.0, 1.0, 1.0);
     border: 1 solid rgba(0.1, 0.2, 0.3);
 }
+
+DesktopLayer:hover {
+    background: rgba(1.0, 0.0, 0.0, 1.0);
+}
 """
-    
+
     def setUp(self):
+        self._old_element_names = dict(Minilanguage.elementNames)
         Minilanguage.elementNames.update({
             "ParentWidget": ParentWidget,
-            "RootWidget": DesktopLayer
+            "DesktopLayer": DesktopLayer,
         })
         self.theme = Theme()
         self.theme.addRules(Parser().parse(StringIO.StringIO(self.css)))
@@ -75,6 +80,7 @@ RootWidget > ParentWidget {
 
     def tearDown(self):
         Minilanguage.elementNames.clear()
+        Minilanguage.elementNames.update(self._old_element_names)
         del self.theme
 
 class ThemeCascading(ThemeTest):
@@ -136,3 +142,27 @@ class ThemeCascading(ThemeTest):
                 border=self.referenceBorder
             )
         )
+
+
+class States(ThemeTest):
+    def test_states(self):
+        root = RootWidget()._desktopLayer
+        self.theme.applyStyles(root)
+        self.assertEqual(
+            root.ComputedStyle,
+            Style(
+                background=Colour(1., 1., 1., 1.),
+                padding=Padding(1),
+                border=self.referenceBorder
+                )
+            )
+        root._isHovered = True
+        root._invalidateComputedStyle()
+        self.assertEqual(
+            root.ComputedStyle,
+            Style(
+                padding=Padding(1),
+                border=self.referenceBorder,
+                background=Colour(1., 0., 0., 1.)
+                )
+            )

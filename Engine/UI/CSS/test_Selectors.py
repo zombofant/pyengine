@@ -47,6 +47,9 @@ def buildSetup(cls):
     elif issubclass(cls, Selectors.HasAttributes):
         def setup():
             return cls(Selectors.AttributeExists("test"), Selectors.AttributeValue("test2", "value"), Selectors.AttributeClass("testclass2"))
+    elif issubclass(cls, Selectors.State):
+        def setup():
+            return cls("hover")
     else:
         raise NotImplementedError("Don't know how to setup a test for {0}".format(cls))
     return setup
