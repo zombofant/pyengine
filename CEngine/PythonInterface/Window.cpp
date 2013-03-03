@@ -76,6 +76,7 @@ void bp_Window_setTitle(Window *win, PyObject *title)
 BOOST_PYTHON_MODULE(_cuni_window)
 {
     class_<DisplayMode, boost::shared_ptr<DisplayMode> >("DisplayMode", init<unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, bool>())
+        .def(init<const DisplayMode&>())
         .def_readwrite("redBits", &DisplayMode::redBits)
         .def_readwrite("greenBits", &DisplayMode::greenBits)
         .def_readwrite("blueBits", &DisplayMode::blueBits)
