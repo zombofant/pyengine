@@ -47,12 +47,35 @@ from GL import Framebuffer, Texture2D, Renderbuffer, makePOT
 
 __docformat__ = "restructuredtext"
 
-"""
-Application and Window base classes.
-This primarily provides for handling of multiple-head setups
-"""
-
 class Application(RootWidget, CWindow.EventSink):
+    """
+    This is the core class for any PyEngine application. It manages
+    the display and handles fullscreen / windowed / multi-head setup.
+
+    *display* must be a :class:`CWindow.Display` instance, whose
+    subclass will be platform-specific. *geometry* must be a 2-tuple
+    giving the width and height of the desired viewport. *fullscreen*
+    is a boolean indicating whether a fullscreen context shall be
+    created.
+
+    .. note:: Using *fullscreen* will make PyEngine ignore the
+        geometry option. It will span over all available output
+        devices instead. This behaviour will be extended in the
+        future, allowing the user to pick which monitors to span over.
+
+    *displayMode* must be either :data:`None` or a
+    :class:`~Engine.CEngine.Window.DisplayMode` instance which
+    reflects the desired display mode.
+
+    .. warning:: The display mode *must* be included in the return
+        value of ``display.DisplayModes``, otherwise its use is
+        invalid and undefined behaviour ensues!
+
+    *eventLoop* must be either :data:`None` or a valid EventLoop,
+    which usually is an instance of a subclass of
+    :class:`~Engine.CEngine.Window.EventLoop`.
+    """
+
     def __init__(self, display,
                  geometry=(800, 600),
                  fullscreen=False,
