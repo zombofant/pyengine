@@ -304,7 +304,7 @@ class Border(BorderComponent):
     TopRight={5!r},
     BottomRight={6!r},
     BottomLeft={7!r}>""".format(self.Left, self.Top, self.Right, self.Bottom,
-            self.TopLeft, self.TopRight, self.BottomRight, self.BottomLeft)
+            self.TopLeftRadius, self.TopRightRadius, self.BottomRightRadius, self.BottomLeftRadius)
 
     def getBox(self):
         return BaseBox(self.Left.Width, self.Top.Width,
