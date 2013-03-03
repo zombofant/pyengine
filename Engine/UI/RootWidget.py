@@ -32,13 +32,14 @@ from WidgetBase import AbstractWidget, WidgetContainer
 from LayerWidget import LayerWidget, DesktopLayer, WindowLayer, PopupLayer
 from Flags import *
 
-"""
-This widget implements dispatching of events and can work as a parent
-for other widgets. It also handles focus and mouse capturing. For this
-it respects the *Focusable* flag, which must be set by a widget which
-wants to recieve the focus.
-"""
 class RootWidget(AbstractWidget, WidgetContainer):
+    """
+    This widget implements dispatching of events and can work as a parent
+    for other widgets. It also handles focus and mouse capturing. For this
+    it respects the *Focusable* flag, which must be set by a widget which
+    wants to recieve the focus.
+    """
+
     def __init__(self, **kwargs):
         super(RootWidget, self).__init__(**kwargs)
         self._rootWidget = self
@@ -51,7 +52,7 @@ class RootWidget(AbstractWidget, WidgetContainer):
         self._windowLayer = WindowLayer(self)
         self._popupLayer = PopupLayer(self)
         self.ActiveButtonMask = mouse.LEFT | mouse.MIDDLE | mouse.RIGHT
-    
+
     def _findKeyEventTarget(self):
         return self._focused or self
 
@@ -65,13 +66,13 @@ class RootWidget(AbstractWidget, WidgetContainer):
         self._desktopLayer.AbsoluteRect = myRect
         self._windowLayer.AbsoluteRect = myRect
         self._popupLayer.AbsoluteRect = myRect
-    
+
     def dispatchKeyDown(self, *args):
         target = self._findKeyEventTarget()
         handled = target.onKeyDown(*args)
         if not handled and target is not self:
             self.onKeyDown(*args)
-    
+
     def dispatchKeyUp(self, *args):
         target = self._findKeyEventTarget()
         handled = target.onKeyUp(*args)
@@ -112,7 +113,7 @@ class RootWidget(AbstractWidget, WidgetContainer):
     def dispatchCaretMotionSelect(self, motion):
         target = self._findKeyEventTarget()
         target.onCaretMotionSelect(motion)
-        
+
     def getRootWidget(self):
         return self
 
