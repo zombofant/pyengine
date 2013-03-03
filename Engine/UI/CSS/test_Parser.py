@@ -46,7 +46,7 @@ class ParserInstanceTest(unittest.TestCase):
             self.assertEqual(parsedRule, reference)
         except:
             raise
-    
+
     def setUp(self):
         self._parser = _Parser.Parser()
         Minilanguage.elementNames["test"] = "test"
@@ -63,7 +63,7 @@ class ParseSelectors(ParserInstanceTest):
         super(ParseSelectors, self)._testRule(src, reference)
         parsedRule = self._parseCSS(unicode(reference))[0]
         self.assertEqual(parsedRule, reference)
-    
+
     def test_emptyRule(self):
         self._testRule(
             """
@@ -118,7 +118,7 @@ class ParseSelectors(ParserInstanceTest):
                 chained=Selectors.Is("test2")
             )], [])
         )
-        
+
 
     def test_nesting2(self):
         self._testRule(
@@ -167,13 +167,13 @@ class ParseProperties(ParserInstanceTest):
             """test {{ {0} }}""".format(propsrc),
             Rules.Rule([Selectors.Is("test")], props)
         )
-        
+
     def _testBox(self, boxprop, boxkw):
         self._testRule(
             """{0}: 1 2 3 4;""".format(boxprop),
             [(boxkw, (1, 2, 3, 4))]
         )
-    
+
     def test_backgroundColour(self):
         self._testRule(
             """background: rgba(0.1, 0.2, 0.3, 0.4);""",

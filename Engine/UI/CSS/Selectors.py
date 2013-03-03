@@ -96,7 +96,6 @@ class Selector(object):
         else:
             return Specifity(0, 0, 0, 0)
 
-
 class ParentSelector(Selector):
     def __init__(self, parentSelector, **kwargs):
         super(ParentSelector, self).__init__(**kwargs)
@@ -233,7 +232,6 @@ class AttributeValue(AttributeExists):
 
     def __unicode__(self):
         return '[{0}="{1}"]'.format(self._attrName, self._attrValue)
-
 
 class HasAttributes(Selector):
     def __init__(self, *attrs, **kwargs):

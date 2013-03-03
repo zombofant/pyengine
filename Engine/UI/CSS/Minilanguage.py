@@ -75,7 +75,7 @@ class StylesheetNamespace(object):
 
 class ElementNames(dict):
     __singleton = None
-    
+
     def __new__(cls, *args, **kwargs):
         if cls.__singleton is None:
             cls.__singleton = dict.__new__(cls, *args, **kwargs)
@@ -106,4 +106,3 @@ class ElementNames(dict):
 
 elementNames = ElementNames()
 namespace = StylesheetNamespace()
-    

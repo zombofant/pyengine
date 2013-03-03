@@ -38,7 +38,7 @@ class BorderComponent(object):
     abstracted assignment and forms a base class to check against in
     more sophisticated assign procedures.
     """
-    
+
     def assign(self, other):
         """
         Assign the width and fill of the *other*
@@ -59,9 +59,9 @@ class BorderEdge(BorderComponent):
     for :class:`BorderEdge` instances, but as they are mutable, they
     cannot be hashed.
     """
-    
+
     __hash__ = None
-    
+
     def __init__(self, width=0, fill=Transparent, **kwargs):
         self._width = None
         self._fill = None
@@ -86,7 +86,7 @@ class BorderEdge(BorderComponent):
         if value < 0:
             raise ValueError("Border width must be non-negative")
         self._width = value
-    
+
     @property
     def Fill(self):
         """
@@ -130,9 +130,9 @@ class Border(BorderComponent):
     :class:`Border` implements check for equality and inequality, but
     no hashing.
     """
-    
+
     __hash__ = None
-    
+
     def __init__(self, width=0, fill=None, **kwargs):
         self._edges = [BorderEdge() for i in range(4)]
         self._corners = [0] * 4
@@ -140,7 +140,7 @@ class Border(BorderComponent):
         self.Width = width
         if fill is not None:
             self.Fill = fill
-    
+
     def assign(self, other):
         """
         Assign the values of another :class:`BorderComponent` to this
@@ -159,11 +159,11 @@ class Border(BorderComponent):
             for edgeA, edgeB in zip(self._edges, other._edges):
                 edgeA.assign(edgeB)
             self._corners = list(other._corners)
-        elif isinstance(other, BorderComponent): 
+        elif isinstance(other, BorderComponent):
             for edgeA in self._edges:
                 edgaA.assign(other)
             self._corners = [0] * 4
-        else:    
+        else:
             raise TypeError("Can only assign BorderComponents to Border")
 
     def __deepcopy__(self, memo):
@@ -206,7 +206,7 @@ class Border(BorderComponent):
     @Width.setter
     def Width(self, value):
         self.setWidth(value)
-    
+
     @property
     def Fill(self):
         raise NotImplementedError("Cannot read global border colour.")
@@ -246,7 +246,7 @@ class Border(BorderComponent):
     @Bottom.setter
     def Bottom(self, value):
         self._edges[3].assign(value)
-    
+
     @property
     def TopLeftRadius(self):
         return self._corners[0]

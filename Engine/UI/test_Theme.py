@@ -82,7 +82,7 @@ class ThemeCascading(ThemeTest):
         root = RootWidget()._desktopLayer
         child1 = ParentWidget(root)
         child2 = ParentWidget(child1)
-        
+
 
         self.assertEqual(self.theme.getWidgetStyle(child2),
             Style(
@@ -127,7 +127,7 @@ class ThemeCascading(ThemeTest):
         )
 
         self.theme.applyStyles(root)
-        
+
         self.assertEqual(child2.ComputedStyle,
             Style(
                 background=Transparent,

@@ -117,7 +117,7 @@ class SelectorChainFolding(unittest.TestCase):
         instanceA = Selectors.HasAttributes(attr2, chained=instanceB)
         self.assertIs(instanceA._chained, instanceC)
         self.assertEqual(instanceA._attrs, set((attr1, attr2)))
-        
+
     def test_HasCSSClasses(self):
         attr1 = Selectors.AttributeClass("test")
         attr2 = Selectors.AttributeClass("test2")

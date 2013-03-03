@@ -41,7 +41,7 @@ from CSS.Rect import Rect
 
 class Style(object):
     __hash__ = None
-    
+
     def __init__(self, *rules, **kwargs):
         self._background = kwargs.pop("background") if "background" in kwargs else Transparent
         self._padding = Padding()
@@ -138,7 +138,7 @@ class Style(object):
     Margin={1!r},
     Background={2!r},
     Border={3!r}>""".format(self._padding, self._margin, self._background, self._border)
-        
+
     def _applyProperty(self, key, value):
         if key in self._literalSetters:
             if not isinstance(value, tuple):
@@ -424,7 +424,7 @@ class Style(object):
     def inCairo(self, rect, ctx):
         clientRect = copy.copy(rect)
         clientRect.shrink(self.Border.getBox())
-        
+
         widths = (  self._border.Left.Width, self._border.Top.Width,
                     self._border.Right.Width, self._border.Bottom.Width)
 
@@ -434,11 +434,11 @@ class Style(object):
         # this is slow like hell
         # equalWidths = not any(widths[0] != width for width in widths)
         # equalColours = not any(colours[0] != colour for colour in colours)
-        
+
         # this is 15% faster than the above
         # equalWidths = False
         # equalColours = False
-        
+
         # this is (for equal colours + widths) 3% faster than the
         # previous and 17% faster than the first
         # for unequal colours (first is already unequal), we find
@@ -446,7 +446,7 @@ class Style(object):
         equalWidths = (widths[0] == widths[1] and
                        widths[1] == widths[2] and
                        widths[2] == widths[3])
-        if equalWidths and self._background is Transparent:            
+        if equalWidths and self._background is Transparent:
             equalColours = (colours[0] == colours[1] and
                             colours[1] == colours[2] and
                             colours[2] == colours[3])
@@ -481,7 +481,7 @@ class Style(object):
         # but we take everything we can get
         background = self._background
         backgroundNotTransparent = background is not Transparent
-        
+
         if sum(radii) == 0:
             # optimize for straight borders
             if backgroundNotTransparent or bothEqual:
@@ -501,7 +501,7 @@ class Style(object):
             else:
                 background.setSource(ctx)
                 ctx.fill()
-                
+
                 for i, (width, fill) in enumerate(itertools.izip(widths, colours)):
                     if width <= 0 or fill is Transparent:
                         continue
@@ -535,7 +535,7 @@ class Style(object):
                 for (x, y), segment in pathSegments:
                     ctx.arc(x, y, *segment)
                 ctx.close_path()
-            
+
             if bothEqual:
                 if backgroundNotTransparent:
                     background.setSource(ctx)

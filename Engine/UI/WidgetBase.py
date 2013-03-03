@@ -173,7 +173,7 @@ class Widget(AbstractWidget):
 
     See *ParentWidget* for parents, *AbstractWidget* for root widgets.
     """
-    
+
     def __init__(self, parent, **kwargs):
         if not isinstance(parent, WidgetContainer):
             raise ValueError("Widget parent must be an instance of WidgetContainer (e.g. ParentWidget).")
@@ -189,7 +189,7 @@ class Widget(AbstractWidget):
     def _requireParent(self):
         if self._parent is None:
             raise ValueError("This operation on {0} requires it to have a parent.".format(self))
-        
+
     def _parentChanged(self):
         assert self._parent is None or isinstance(self._parent, WidgetContainer)
         if self._parent is not None:
@@ -227,7 +227,7 @@ class Widget(AbstractWidget):
         return self._flags
 
 
-class WidgetContainer(object):    
+class WidgetContainer(object):
     """
     Abstraction of a container which can contain widgets. It is list based
     (thus ordered) and implements a basic typecheck.
@@ -236,7 +236,7 @@ class WidgetContainer(object):
     root widgets, see *AbstractWidget*, for normal widgets which may contain
     other widgets see *ParentWidget*.
     """
-    
+
     def __init__(self, **kwargs):
         super(WidgetContainer, self).__init__(**kwargs)
         self._childClasses = Widget
@@ -315,7 +315,7 @@ class ParentWidget(Widget, WidgetContainer):
     Base class for widgets which contain other widgets. This derives from
     Widget and WidgetContainer, so all of the benefits apply here.
     """
-    
+
     def __init__(self, parent, **kwargs):
         super(ParentWidget, self).__init__(parent)
 

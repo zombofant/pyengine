@@ -79,7 +79,7 @@ attributes:
         $$.sem.append($3.sem)
     attribute:
         $$.sem = [$1.sem]
-    
+
 attribute:
     TOKEN "=" STRLITERAL:
         $$.sem = AttributeValue($1.sem, $3.sem[1:-1])
@@ -138,4 +138,3 @@ argument:
 #        $$.sem = $1.sem + "=" + $3.sem
     value:
         $$.sem = $1.sem
-
