@@ -68,6 +68,7 @@ class LabelWidget(Widget):
         # self._text.draw()
         ctx = self._cairoContext
         ctx.translate(self.AbsoluteRect.Left, self.AbsoluteRect.Top)
+        self.ComputedStyle.TextColour.setSource(ctx)
         self._pangoContext.showLayout(self._layout)
         ctx.translate(-self.AbsoluteRect.Left, -self.AbsoluteRect.Top)
         pass
