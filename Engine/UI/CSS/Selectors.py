@@ -294,7 +294,9 @@ class State(Selector):
         self._state = tuple(state)
 
     def _testWidget(self, widget):
-        if widget.CSSState != self._state:
+        if any(my_state and not widget_state
+               for widget_state, my_state
+               in zip(widget.CSSState, self._state)):
             return None
         return widget
 
