@@ -29,6 +29,28 @@ from Fill import Image, Colour, Transparent, Fill
 from Border import Border
 from Box import BaseBox
 
+try:
+    import Engine.CEngine.Pango as Pango
+except ImportError:
+    class Pango(object):
+        class Alignment(object):
+            Left = 0
+            Right = 1
+            Center = 2
+
+        class Weight(object):
+            Thin = 0
+            UltraLight = 1
+            Light = 2
+            Book = 3
+            Normal = 4
+            Medium = 5
+            SemiBold = 6
+            Bold = 7
+            UltraBold = 8
+            Heavy = 9
+            UltraHeavy = 10
+
 def URLLiteral(self, url):
     return unicode(url)
 
