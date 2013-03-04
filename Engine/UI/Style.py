@@ -109,6 +109,7 @@ class Style(object):
             verticalAlign=self._verticalAlign
         )
         new._fontdesc_cache = self._fontdesc_cache
+        return new
 
     def _addRule(self, rule):
         for key, value in rule._properties:
