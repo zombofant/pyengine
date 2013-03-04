@@ -1,4 +1,4 @@
-# File name: __init__.py
+# File name: ButtonWidget.py
 # This file is part of: pyengine
 #
 # LICENSE
@@ -22,12 +22,24 @@
 # For feedback and questions about pyengine please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
-from CSS.Rect import *
-from WidgetBase import *
-from LabelWidget import *
-from BoxWidget import *
-from WindowWidget import *
-from ScreenWidget import *
-from RootWidget import *
-from SceneWidget import *
-from ButtonWidget import *
+from __future__ import unicode_literals, print_function, division
+from our_future import *
+
+__all__ = ["ButtonWidget"]
+
+import CSS.Minilanguage
+
+from WidgetBase import ParentWidget
+from BoxWidget import VBox
+from LabelWidget import LabelledWidget
+
+import Flags
+import Label
+
+class ButtonWidget(LabelledWidget):
+    def __init__(self, parent, caption="", **kwargs):
+        super(ButtonWidget, self).__init__(parent, **kwargs)
+        self._label.Text = caption
+
+
+CSS.Minilanguage.ElementNames().registerWidgetClass(ButtonWidget)
