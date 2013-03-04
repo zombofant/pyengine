@@ -60,4 +60,4 @@ class Rule(object):
         )
 
     def __repr__(self):
-        return "<{0} selectors={1}>".format(self.__class__.__name__, len(self._selectors))
+        return "<{0} {1}>".format(self.__class__.__name__, unicode(self))
