@@ -84,7 +84,7 @@ class BoxWidget(ParentWidget):
             left_space = getterA(myStyle.Padding) if left is None else getterB(left.ComputedStyle.Margin)
             if left_space < 0:
                 left_space = baseSpacing + left_space
-            else:
+            elif left is not None and this is not None:
                 left_space = max(baseSpacing, left_space)
 
             # right_space = getterB(myStyle.Padding) if right is None else getterA(right.Margin)
