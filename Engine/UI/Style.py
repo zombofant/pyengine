@@ -59,6 +59,8 @@ class Style(object):
         self._fontWeight = kwargs.pop("fontWeight", Literals.Pango.Weight.NORMAL)
         # FIXME: inheritance should go here!
         self._fontSize = kwargs.pop("fontSize", 12)
+        self._fontFamily = kwargs.pop("fontFamily", "sans")
+        self._verticalAlign = kwargs.pop("verticalAlign", Literals.VerticalAlign.Top)
         if "padding" in kwargs:
             self.Padding = kwargs.pop("padding")
         if "margin" in kwargs:
@@ -101,7 +103,9 @@ class Style(object):
             shear=(self.ShearLeft, self.ShearRight),
             textAlign=self._textAlign,
             fontWeight=self._fontWeight,
-            fontSize=self._fontSize
+            fontSize=self._fontSize,
+            fontFamily=self._fontFamily,
+            verticalAlign=self._verticalAlign
         )
         new._fontdesc_cache = self._fontdesc_cache
 
@@ -145,7 +149,9 @@ class Style(object):
             self._shear == other._shear and
             self._textAlign == other._textAlign and
             self._fontWeight == other._fontWeight and
-            self._fontSize == other._fontSize
+            self._fontSize == other._fontSize and
+            self._verticalAlign == other._verticalAlign and
+            self._fontFamily == other._fontFamily
         )
 
     def __ne__(self, other):
@@ -418,6 +424,23 @@ class Style(object):
         self._fontSize = float(value)
         self._invalidateFontdescCache()
 
+    @property
+    def FontFamily(self):
+        return self._fontFamily
+
+    @FontFamily.setter
+    def FontFamily(self, value):
+        self._fontFamily = value
+        self._invalidateFontdescCache()
+
+    @property
+    def VerticalAlign(self):
+        return self._verticalAlign
+
+    @VerticalAlign.setter
+    def VerticalAlign(self, value):
+        self._verticalAlign = value
+
     _literalSetters = {
         "background": (Literals.BackgroundLiteral, "Background"),
         "padding": (Literals.BoxLiteral, "Padding"),
@@ -462,6 +485,8 @@ class Style(object):
         "text-align": ("TextAlign",),
         "font-weight": ("FontWeight",),
         "font-size": ("FontSize",),
+        "vertical-align": ("VerticalAlign",),
+        "font-family": ("FontFamily",)
     }
 
     @property

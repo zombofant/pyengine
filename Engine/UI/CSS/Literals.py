@@ -115,3 +115,17 @@ def BoxLiteral(*args):
 
 def IntLiteral(value):
     return int(value)
+
+
+class VerticalAlign(object):
+    @staticmethod
+    def Top(object_h, outer_h):
+        return 0
+
+    @staticmethod
+    def Bottom(object_h, outer_h):
+        return outer_h - object_h
+
+    @staticmethod
+    def Middle(object_h, outer_h):
+        return outer_h / 2 - object_h / 2

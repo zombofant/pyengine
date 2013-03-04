@@ -76,6 +76,9 @@ class StylesheetNamespace(object):
         if not hasattr(self, "_initialized"):
             super(StylesheetNamespace, self).__init__()
             self._initialized = True
+            self.top = VerticalAlign.Top
+            self.middle = VerticalAlign.Middle
+            self.bottom = VerticalAlign.Bottom
 
     def evaluateCall(self, call, *args):
         call = self.get(call)
