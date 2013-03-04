@@ -71,6 +71,10 @@ class LabelledWidget(Widget):
         self._label.render(self._label_rect)
 
 class LabelWidget(LabelledWidget):
+    def __init__(self, parent, text="", **kwargs):
+        super(LabelWidget, self).__init__(parent, **kwargs)
+        self.Text = text
+
     @property
     def Text(self):
         return self._text

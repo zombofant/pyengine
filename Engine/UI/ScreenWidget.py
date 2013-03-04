@@ -30,6 +30,7 @@ __all__ = ["ScreenWidget"]
 import copy
 
 import CSS.Minilanguage
+import CSS.Rect as Rect
 
 from WidgetBase import ParentWidget
 
@@ -47,11 +48,21 @@ class ScreenWidget(ParentWidget):
     def doAlign(self):
         for child in self:
             rect = copy.copy(self.AbsoluteRect)
+            rect.shrink(self.ComputedStyle.Padding)
+
             childStyle = child.ComputedStyle
-            rect.Left += childStyle.Margin.Left
-            rect.Right -= childStyle.Margin.Right
-            rect.Top += childStyle.Margin.Top
-            rect.Bottom -= childStyle.Margin.Bottom
+            margin = copy.copy(childStyle.Margin)
+            margin.deautoify(
+                Rect.Rect(0, 0,
+                     child.ComputedStyle.Width, child.ComputedStyle.Height
+                     ),
+                rect
+                )
+
+            rect.Left += margin.Left
+            rect.Right -= margin.Right
+            rect.Top += margin.Top
+            rect.Bottom -= margin.Bottom
             child.AbsoluteRect = rect
 
     @property

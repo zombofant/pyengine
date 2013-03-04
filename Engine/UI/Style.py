@@ -35,6 +35,7 @@ from typeutils import number
 import Engine.CEngine.Pango as Pango
 
 import CSS.Literals as Literals
+import CSS.Box as Box
 from CSS.Box import Padding, Margin, BaseBox
 from CSS.Border import Border, BorderEdge
 from CSS.Fill import Fill, Colour, Transparent, Image
@@ -443,8 +444,8 @@ class Style(object):
 
     _literalSetters = {
         "background": (Literals.BackgroundLiteral, "Background"),
-        "padding": (Literals.BoxLiteral, "Padding"),
-        "margin": (Literals.BoxLiteral, "Margin"),
+        "padding": (Box.Padding, "Padding"),
+        "margin": (Box.Margin, "Margin"),
         "border": (Literals.BorderLiteral, "Border"),
         "box-spacing-x": (Literals.IntLiteral, "BoxSpacingX"),
         "box-spacing-y": (Literals.IntLiteral, "BoxSpacingY"),

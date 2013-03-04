@@ -46,7 +46,7 @@ class StylesheetNamespace(object):
     url = URLLiteral
     transparent = Transparent
     solid = "solid"
-    auto = None
+    auto = Auto
     left = Pango.Alignment.LEFT
     right = Pango.Alignment.RIGHT
     center = Pango.Alignment.CENTER
