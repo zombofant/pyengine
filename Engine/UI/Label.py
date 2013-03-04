@@ -89,7 +89,6 @@ class Label(object):
 
         # TODO: read these values from the ComputedStyle
         style = self._widget.ComputedStyle
-        print(style.TextAlign)
         self._layout.set_alignment(style.TextAlign)
         self._layout.set_ellipsize(Pango.EllipsizeMode.NONE)
         self._layout.set_justify(False)

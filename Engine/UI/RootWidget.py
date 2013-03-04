@@ -73,7 +73,6 @@ class RootWidget(AbstractWidget, WidgetContainer):
                 non_hovered.IsHovered = False
 
             for hovered in hitChain - oldHitChain:
-                print("{} is hovered".format(hovered))
                 hovered.IsHovered = True
 
             self._oldHitChain = hitChain
