@@ -77,7 +77,7 @@ cmake_minimum_required(VERSION 2.6)
     )
 
     # pycairo
-    set(PYTHON_EXEC "/usr/bin/python2")
+    set(PYTHON_EXEC ${PYTHON_EXECUTABLE})
     find_package(pycairo REQUIRED)
     set(PYENGINE_INCLUDE_DIRS ${PYENGINE_INCLUDE_DIRS} ${pycairo_INCLUDE_DIRS})
 
