@@ -42,4 +42,4 @@ class ButtonWidget(LabelledWidget):
         self._label.Text = caption
 
 
-CSS.Minilanguage.ElementNames().registerWidgetClass(ButtonWidget)
+CSS.Minilanguage.ElementNames().registerWidgetClass(ButtonWidget, "Button")

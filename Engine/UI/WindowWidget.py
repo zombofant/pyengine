@@ -43,4 +43,4 @@ class WindowWidget(VBox):
         self.Title = LabelWidget(self)
         self._flags.add(Flags.Focusable)
 
-CSS.Minilanguage.ElementNames().registerWidgetClass(WindowWidget)
+CSS.Minilanguage.ElementNames().registerWidgetClass(WindowWidget, "Window")

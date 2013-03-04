@@ -79,4 +79,4 @@ class LabelWidget(LabelledWidget):
     def Text(self, value):
         self._label.Text = value
 
-CSS.Minilanguage.ElementNames().registerWidgetClass(LabelWidget)
+CSS.Minilanguage.ElementNames().registerWidgetClass(LabelWidget, "Label")

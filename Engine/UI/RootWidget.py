@@ -27,6 +27,8 @@ from our_future import *
 
 __all__ = ["RootWidget"]
 
+import CSS.Minilanguage
+
 from Engine.pygletHeadless import mouse
 from WidgetBase import AbstractWidget, WidgetContainer
 from LayerWidget import LayerWidget, DesktopLayer, WindowLayer, PopupLayer
@@ -188,3 +190,5 @@ class RootWidget(AbstractWidget, WidgetContainer):
     @property
     def PopupLayer(self):
         return self._popupLayer
+
+CSS.Minilanguage.ElementNames().registerWidgetClass(RootWidget, "Root")

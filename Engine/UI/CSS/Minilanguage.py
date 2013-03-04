@@ -118,8 +118,10 @@ class ElementNames(dict):
         for key, value in otherdict.iteritems():
             self[key] = value
 
-    def registerWidgetClass(self, widgetClass):
-        self[widgetClass.__name__] = widgetClass
+    def registerWidgetClass(self, widgetClass, asName=None):
+        if asName is None:
+            asName = widgetClass.__name__
+        self[asName] = widgetClass
 
 elementNames = ElementNames()
 namespace = StylesheetNamespace()

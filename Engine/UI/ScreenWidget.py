@@ -58,4 +58,4 @@ class ScreenWidget(ParentWidget):
     def Window(self):
         return self._window
 
-CSS.Minilanguage.ElementNames().registerWidgetClass(ScreenWidget)
+CSS.Minilanguage.ElementNames().registerWidgetClass(ScreenWidget, "Screen")
