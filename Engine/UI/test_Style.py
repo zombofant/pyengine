@@ -31,6 +31,7 @@ import copy
 from CSS.Box import Padding
 from CSS.Fill import Colour
 from CSS.Rules import Rule
+import CSS.Literals as Literals
 
 from Style import Style
 
@@ -66,7 +67,8 @@ class StyleIdentity(unittest.TestCase):
             ("color", (Colour(1., 0., 0., 1.),)),
             ("margin", ("1",)),
             ("flex", ("2",)),
-            ("box-spacing", ("4",))
+            ("box-spacing", ("4",)),
+            ("text-align", (Literals.Pango.Alignment.Center,))
         ])
         self.style._addRule(rule)
         self.assertEqual(self.style, copy.deepcopy(self.style))

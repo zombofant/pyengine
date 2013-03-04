@@ -53,6 +53,10 @@ class Style(object):
         self._textColour = Colour(0., 0., 0., 1.)
         self._width, self._height = None, None
         self._shear = (0, 0)
+        self._textAlign = kwargs.pop("textAlign", Literals.Pango.Alignment.Left)
+        self._fontWeight = kwargs.pop("fontWeight", Literals.Pango.Weight.Normal)
+        # FIXME: inheritance should go here!
+        self._fontSize = kwargs.pop("fontSize", 12)
         if "padding" in kwargs:
             self.Padding = kwargs.pop("padding")
         if "margin" in kwargs:
@@ -91,7 +95,10 @@ class Style(object):
             textColour=copy.deepcopy(self.TextColour, memo),
             width=self.Width,
             height=self.Height,
-            shear=(self.ShearLeft, self.ShearRight)
+            shear=(self.ShearLeft, self.ShearRight),
+            textAlign=self._textAlign,
+            fontWeight=self._fontWeight,
+            fontSize=self._fontSize
         )
 
     def _addRule(self, rule):
@@ -128,7 +135,10 @@ class Style(object):
             self._textColour == other._textColour and
             self._width == other._width and
             self._height == other._height and
-            self._shear == other._shear
+            self._shear == other._shear and
+            self._textAlign == other._textAlign and
+            self._fontWeight == other._fontWeight and
+            self._fontSize == other._fontSize
         )
 
     def __ne__(self, other):
@@ -154,6 +164,11 @@ class Style(object):
             return
         if key in self._propertySetters:
             self._propertySetters[key](self, value)
+            return
+        if key in self._trivialSetters:
+            propname, = self._trivialSetters[key]
+            actual_value, = value
+            setattr(self, propname, actual_value)
             return
         raise KeyError("{0} is not a valid stylesheet property".format(key))
 
@@ -370,6 +385,30 @@ class Style(object):
     def ShearRight(self, value):
         self._shear = (self._shear[0], number(value))
 
+    @property
+    def TextAlign(self):
+        return self._textAlign
+
+    @TextAlign.setter
+    def TextAlign(self, value):
+        self._textAlign = value
+
+    @property
+    def FontWeight(self):
+        return self._fontWeight
+
+    @FontWeight.setter
+    def FontWeight(self, value):
+        self._fontWeight = value
+
+    @property
+    def FontSize(self):
+        return self._fontSize
+
+    @FontWeight.setter
+    def FontSize(self, value):
+        self._fontSize = float(value)
+
     _literalSetters = {
         "background": (Literals.BackgroundLiteral, "Background"),
         "padding": (Literals.BoxLiteral, "Padding"),
@@ -407,7 +446,13 @@ class Style(object):
         "height": lambda self, value: self._setDimension("Height", value),
         "shear-left": lambda self, value: self._setShear(value, "Left"),
         "shear-right": lambda self, value: self._setShear(value, "Right"),
-        "shear": lambda self, value: self._setShear(value)
+        "shear": lambda self, value: self._setShear(value),
+    }
+
+    _trivialSetters = {
+        "text-align": ("TextAlign",),
+        "font-weight": ("FontWeight",),
+        "font-size": ("FontSize",),
     }
 
     def geometryForRect(self, rect, faceBuffer):
