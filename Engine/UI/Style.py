@@ -169,10 +169,36 @@ class Style(object):
 
     def __repr__(self):
         return """<Style
-    Padding={0!r},
-    Margin={1!r},
-    Background={2!r},
-    Border={3!r}>""".format(self._padding, self._margin, self._background, self._border)
+    Padding={!r},
+    Margin={!r},
+    Background={!r},
+    Border={!r},
+    BoxSpacing={!r},
+    Flex={!r},
+    TextColour={!r},
+    Width={!r},
+    Height={!r},
+    Shear={!r},
+    TextAlign={!r},
+    FontWeight={!r},
+    FontSize={!r},
+    FontFamily={!r},
+    VerticalAlign={!r}>""".format(
+            self._padding,
+            self._margin,
+            self._background,
+            self._border,
+            self._boxSpacing,
+            self._flex,
+            self._textColour,
+            self._width,
+            self._height,
+            self._shear,
+            self._textAlign,
+            self._fontWeight,
+            self._fontSize,
+            self._fontFamily,
+            self._verticalAlign)
 
     def _applyProperty(self, key, value):
         if key in self._literalSetters:
