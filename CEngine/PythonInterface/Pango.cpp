@@ -237,6 +237,21 @@ void bp_PangoLayout_setMarkup(PangoLayoutHandle layout, PyObject *rawText)
     Py_DECREF(text);
 }
 
+PyObject *bp_PangoLayout_getLogicalExtents(PangoLayoutHandle layout)
+{
+    PangoRectangle extents;
+
+    pango_layout_get_pixel_extents(layout.get()->getPangoLayout(), 0, &extents);
+
+    PyObject *tpl = PyTuple_New(4);
+    PyTuple_SetItem(tpl, 0, PyInt_FromLong(extents.x));
+    PyTuple_SetItem(tpl, 1, PyInt_FromLong(extents.y));
+    PyTuple_SetItem(tpl, 2, PyInt_FromLong(extents.width));
+    PyTuple_SetItem(tpl, 3, PyInt_FromLong(extents.height));
+
+    return tpl;
+}
+
 
 BOOST_PYTHON_MODULE(_cuni_pango)
 {
@@ -251,6 +266,7 @@ BOOST_PYTHON_MODULE(_cuni_pango)
     class_<PangoLayout, PangoLayoutHandle>("PangoLayout", init<PangoCairoContextHandle>())
         .def("contextChanged", &PangoLayout::contextChanged)
         .def("setMarkup", &bp_PangoLayout_setMarkup)
+        .def("getLogicalExtents", &bp_PangoLayout_getLogicalExtents)
         .add_property("Alignment", &PangoLayout::getAlignment, &PangoLayout::setAlignment)
         .add_property("Ellipsize", &PangoLayout::getEllipsize, &PangoLayout::setEllipsize)
         .add_property("Height", &PangoLayout::getHeight, &PangoLayout::setHeight)
