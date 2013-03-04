@@ -177,3 +177,15 @@ class RootWidget(AbstractWidget, WidgetContainer):
     def update(self, timeDelta):
         for child in self:
             child.update(timeDelta)
+
+    @property
+    def WindowLayer(self):
+        return self._windowLayer
+
+    @property
+    def DesktopLayer(self):
+        return self._desktopLayer
+
+    @property
+    def PopupLayer(self):
+        return self._popupLayer
