@@ -27,6 +27,8 @@ from our_future import *
 
 __all__ = ["ScreenWidget"]
 
+import copy
+
 import CSS.Minilanguage
 
 from WidgetBase import ParentWidget
@@ -37,14 +39,20 @@ class ScreenWidget(ParentWidget):
 
     This is used by the RootWidget *Application* to manage windows.
     """
-    
+
     def __init__(self, parent, window, **kwargs):
         super(ScreenWidget, self).__init__(parent, **kwargs)
         self._window = window
 
     def doAlign(self):
         for child in self:
-            child.AbsoluteRect = self.AbsoluteRect
+            rect = copy.copy(self.AbsoluteRect)
+            childStyle = child.ComputedStyle
+            rect.Left += childStyle.Margin.Left
+            rect.Right -= childStyle.Margin.Right
+            rect.Top += childStyle.Margin.Top
+            rect.Bottom -= childStyle.Margin.Bottom
+            child.AbsoluteRect = rect
 
     @property
     def Window(self):
