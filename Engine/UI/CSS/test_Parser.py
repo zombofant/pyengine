@@ -28,6 +28,7 @@ from our_future import *
 import unittest
 import StringIO
 
+import Literals
 import Selectors
 import Rules
 import Box
@@ -196,3 +197,9 @@ class ParseProperties(ParserInstanceTest):
 
     def test_margin(self):
         self._testBox("margin", "margin")
+
+    def test_textAlign(self):
+        self._testRule(
+            """text-align: center;""",
+            [("text-align", (Literals.Pango.Alignment.Center,))]
+        )
