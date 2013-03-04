@@ -221,30 +221,30 @@ class Widget(AbstractWidget):
     """
 
     def __init__(self, parent, **kwargs):
-        if not isinstance(parent, WidgetContainer):
-            raise ValueError("Widget parent must be an instance of WidgetContainer (e.g. ParentWidget).")
         super(Widget, self).__init__(**kwargs)
         self._parent = None
         self._flags = set()
-        parent.add(self)
-        self._rootWidget = parent._rootWidget
-        self._geometryBuffer = self._rootWidget._geometryBuffer
-        self._cairoContext = self._rootWidget._cairoContext
-        self._pangoContext = self._rootWidget._pangoContext
+        self._rootWidget = None
+        self._geometryBuffer = None
+        self._cairoContext = None
+        self._pangoContext = None
+        if parent is not None:
+            parent.add(self)
 
     def _requireParent(self):
         if self._parent is None:
             raise ValueError("This operation on {0} requires it to have a parent.".format(self))
 
     def _parentChanged(self):
-        assert self._parent is None or isinstance(self._parent, WidgetContainer)
         if self._parent is not None:
             self._rootWidget = self._parent.getRootWidget()
+        else:
+            self._rootWidget = None
+        if self._rootWidget is not None:
             self._geometryBuffer = self._rootWidget._geometryBuffer
             self._cairoContext = self._rootWidget._cairoContext
             self._pangoContext = self._rootWidget._pangoContext
         else:
-            self._rootWidget = None
             self._geometryBuffer = None
             self._cairoContext = None
             self._pangoContext = None
