@@ -61,6 +61,9 @@ class StylesheetNamespace(object):
     ultrabold = Pango.Weight.ULTRABOLD
     heavy = Pango.Weight.HEAVY
     ultraheavy = Pango.Weight.ULTRAHEAVY
+    top = staticmethod(VerticalAlign.Top)
+    middle = staticmethod(VerticalAlign.Middle)
+    bottom = staticmethod(VerticalAlign.Bottom)
 
     _tokenBlacklist = ["evaluateCall", "get"]
 
@@ -76,9 +79,6 @@ class StylesheetNamespace(object):
         if not hasattr(self, "_initialized"):
             super(StylesheetNamespace, self).__init__()
             self._initialized = True
-            self.top = VerticalAlign.Top
-            self.middle = VerticalAlign.Middle
-            self.bottom = VerticalAlign.Bottom
 
     def evaluateCall(self, call, *args):
         call = self.get(call)
