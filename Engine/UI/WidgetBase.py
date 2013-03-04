@@ -58,6 +58,7 @@ class AbstractWidget(object):
         self._absoluteRect = Rect(0, 0)
         self._styleRule = None
         self._invalidateComputedStyle()
+        self._invalidateAlignment()
         self._styleClasses = ClassSet()
         self._rootWidget = None
         self._geometryBuffer = None
@@ -71,8 +72,13 @@ class AbstractWidget(object):
     def _invalidateComputedStyle(self):
         self._invalidatedComputedStyle = True
 
+    def _invalidateAlignment(self):
+        self._invalidatedAlignment = True
+
     def realign(self):
-        self.doAlign()
+        if self._invalidatedAlignment:
+            self._invalidatedAlignment = False
+            self.doAlign()
 
     def doAlign(self):
         pass
@@ -140,6 +146,7 @@ class AbstractWidget(object):
     @RelativeRect.setter
     def RelativeRect(self, value):
         self._relativeRect.assign(value)
+        self._invalidateAlignment()
 
     @property
     def AbsoluteRect(self):
@@ -148,6 +155,7 @@ class AbstractWidget(object):
     @AbsoluteRect.setter
     def AbsoluteRect(self, value):
         self._absoluteRect.assign(value)
+        self._invalidateAlignment()
 
     @property
     def StyleClasses(self):
@@ -339,9 +347,16 @@ class WidgetContainer(object):
         child._parent = self
         child._parentChanged()
         self._newChild(child)
+        self._invalidateAlignment()
 
     def index(self, child):
         return self._children.index(child)
+
+    def remove(self, child):
+        self._children.remove(child)
+        child._parent = None
+        child._parentChanged()
+        self._invalidateAlignment()
 
     def treeDepthFirst(self):
         yield self
