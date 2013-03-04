@@ -32,6 +32,8 @@ import math
 
 from typeutils import number
 
+import Engine.CEngine.Pango as Pango
+
 import CSS.Literals as Literals
 from CSS.Box import Padding, Margin, BaseBox
 from CSS.Border import Border, BorderEdge
@@ -78,13 +80,14 @@ class Style(object):
         if "shear" in kwargs:
             shear = kwargs.pop("shear")
             self._setShear(shear)
+        self._fontdesc_cache = None
         super(Style, self).__init__(**kwargs)
         for rule in rules:
             self._addRule(rule)
 
     def __deepcopy__(self, memo):
         # FIXME: implement pickle interface
-        return Style(
+        new = Style(
             background=copy.deepcopy(self.Background, memo),
             padding=copy.deepcopy(self.Padding, memo),
             margin=copy.deepcopy(self.Margin, memo),
@@ -100,10 +103,14 @@ class Style(object):
             fontWeight=self._fontWeight,
             fontSize=self._fontSize
         )
+        new._fontdesc_cache = self._fontdesc_cache
 
     def _addRule(self, rule):
         for key, value in rule._properties:
             self._applyProperty(key, value)
+
+    def _invalidateFontdescCache(self):
+        self._fontdesc_cache = None
 
     def __add__(self, rules):
         new = copy.deepcopy(self)
@@ -400,14 +407,16 @@ class Style(object):
     @FontWeight.setter
     def FontWeight(self, value):
         self._fontWeight = value
+        self._invalidateFontdescCache()
 
     @property
     def FontSize(self):
         return self._fontSize
 
-    @FontWeight.setter
+    @FontSize.setter
     def FontSize(self, value):
         self._fontSize = float(value)
+        self._invalidateFontdescCache()
 
     _literalSetters = {
         "background": (Literals.BackgroundLiteral, "Background"),
@@ -454,6 +463,18 @@ class Style(object):
         "font-weight": ("FontWeight",),
         "font-size": ("FontSize",),
     }
+
+    @property
+    def FontDescription(self):
+        if self._fontdesc_cache is not None:
+            return self._fontdesc_cache
+
+        fontdesc = Pango.FontDescription()
+        fontdesc.set_weight(self._fontWeight)
+        fontdesc.set_size(self._fontSize * Pango.SCALE)
+        fontdesc.set_family(self._fontFamily)
+        self._fontdesc_cache = fontdesc
+        return fontdesc
 
     def geometryForRect(self, rect, faceBuffer):
         """

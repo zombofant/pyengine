@@ -87,13 +87,12 @@ class Label(object):
         self._layout.set_width(width)
         self._layout.set_height(height)
 
-        # TODO: read these values from the ComputedStyle
         style = self._widget.ComputedStyle
         self._layout.set_alignment(style.TextAlign)
         self._layout.set_ellipsize(Pango.EllipsizeMode.NONE)
         self._layout.set_justify(False)
         self._layout.set_wrap(Pango.WrapMode.WORD)
-        # TODO: pick font + size using ComputedStyle
+        self._layout.set_font_description(style.FontDescription)
 
         self._layout.set_text(self._text, len(self._text))
 
