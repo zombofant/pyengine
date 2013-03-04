@@ -57,7 +57,10 @@ selector:
 
 constrainedToken:
     TOKEN:
-        $$.sem = Is(elementNames[$1.sem])
+        try:
+            $$.sem = Is(elementNames[$1.sem])
+        except KeyError:
+            raise ValueError("No such widget: {}".format($1.sem))
     constrainedToken "[" attributes "]":
         $$.sem = HasAttributes(*$3.sem, chained=$1.sem)
     constrainedToken "." TOKEN:
