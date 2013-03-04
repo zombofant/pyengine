@@ -101,8 +101,12 @@ class Label(object):
         ctx = self._cairo
         lx, ly, lw, lh = self._layout.getLogicalExtents()
 
-        x = inBox.Left + lx
-        y = inBox.Top + ly
+        # XXX: Pango docs say, we shall take into account the x and y
+        # values of the extent. If we do, however, layout positioning
+        # gets all wrong!! WTF?
+        # <http://developer.gnome.org/pango/stable/pango-Layout-Objects.html#pango-layout-get-pixel-extents>
+        x = inBox.Left # + lx
+        y = inBox.Top # + ly
 
         ctx.translate(x, y)
         self._widget.ComputedStyle.TextColour.setSource(ctx)
