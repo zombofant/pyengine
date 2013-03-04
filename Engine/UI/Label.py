@@ -101,6 +101,7 @@ class Label(object):
     def render(self, inBox):
         self._updateLayout()
         ctx = self._cairo
+        style = self._widget.ComputedStyle
         _, logical = self._layout.get_pixel_extents()
         lx = logical.x
         ly = logical.y
@@ -112,10 +113,10 @@ class Label(object):
         # gets all wrong!! WTF?
         # <http://developer.gnome.org/pango/stable/pango-Layout-Objects.html#pango-layout-get-pixel-extents>
         x = inBox.Left # + lx
-        y = inBox.Top # + ly
+        y = inBox.Top + style.VerticalAlign(logical.height, inBox.Height) # + ly
 
         ctx.translate(x, y)
-        self._widget.ComputedStyle.TextColour.setSource(ctx)
+        style.TextColour.setSource(ctx)
         Pango.PangoCairo.show_layout(ctx, self._layout)
         ctx.translate(-x, -y)
 
