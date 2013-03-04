@@ -36,32 +36,36 @@ import Engine.CEngine.Pango as Pango
 
 import CSS.Literals as Literals
 import CSS.Box as Box
+import CSS.Border
 from CSS.Box import Padding, Margin, BaseBox
 from CSS.Border import Border, BorderEdge
 from CSS.Fill import Fill, Colour, Transparent, Image
 from CSS.Rules import Rule
 from CSS.Rect import Rect
 from CSS.Selectors import State
+from CSS.Utils import css_inheritable, Inheritables, css_inheritance_recurse
 
 class Style(object):
+    __metaclass__ = Inheritables
     __hash__ = None
 
     def __init__(self, *rules, **kwargs):
+        inherit = Literals.Inherit
+
         self._background = kwargs.pop("background", Transparent)
         self._padding = Padding()
         self._margin = Margin()
         self._border = Border()
         self._boxSpacing = (0, 0)
         self._flex = 1
-        self._textColour = Colour(0., 0., 0., 1.)
+        self._textColour = inherit
         self._width, self._height = None, None
         self._shear = (0, 0)
-        self._textAlign = kwargs.pop("textAlign", Literals.Pango.Alignment.LEFT)
-        self._fontWeight = kwargs.pop("fontWeight", Literals.Pango.Weight.NORMAL)
-        # FIXME: inheritance should go here!
-        self._fontSize = kwargs.pop("fontSize", 12)
-        self._fontFamily = kwargs.pop("fontFamily", "sans")
-        self._verticalAlign = kwargs.pop("verticalAlign", Literals.VerticalAlign.Top)
+        self._textAlign = kwargs.pop("textAlign", inherit)
+        self._fontWeight = kwargs.pop("fontWeight", inherit)
+        self._fontSize = kwargs.pop("fontSize", inherit)
+        self._fontFamily = kwargs.pop("fontFamily", inherit)
+        self._verticalAlign = kwargs.pop("verticalAlign", inherit)
         if "padding" in kwargs:
             self.Padding = kwargs.pop("padding")
         if "margin" in kwargs:
@@ -258,7 +262,7 @@ class Style(object):
         radius, = value
         self._border.setRadius(number(radius))
 
-    @property
+    @css_inheritable
     def Background(self):
         return self._background
 
@@ -268,7 +272,7 @@ class Style(object):
             raise TypeError("Background must be a Fill instance. Got {0} {1}".format(type(value), value))
         self._background = value
 
-    @property
+    @css_inheritance_recurse(Box.Padding)
     def Padding(self):
         return self._padding
 
@@ -278,7 +282,7 @@ class Style(object):
             raise TypeError("Padding must be a BaseBox instance. Got {0} {1}".format(type(value), value))
         self._padding.assign(value)
 
-    @property
+    @css_inheritance_recurse(Box.Margin)
     def Margin(self):
         return self._margin
 
@@ -288,7 +292,7 @@ class Style(object):
             raise TypeError("Margin must be a BaseBox instance. Got {0} {1}".format(type(value), value))
         self._margin.assign(value)
 
-    @property
+    @css_inheritance_recurse(CSS.Border.Border)
     def Border(self):
         return self._border
 
@@ -310,7 +314,7 @@ class Style(object):
             raise ValueError("BoxSpacing must be non-negative.")
         self._boxSpacing = x, y
 
-    @property
+    @css_inheritable
     def BoxSpacingX(self):
         return self._boxSpacing[0]
 
@@ -321,7 +325,7 @@ class Style(object):
             raise ValueError("BoxSpacing must be non-negative.")
         self._boxSpacing = x, self._boxSpacing[1]
 
-    @property
+    @css_inheritable
     def BoxSpacingY(self):
         return self._boxSpacing[1]
 
@@ -332,7 +336,7 @@ class Style(object):
             raise ValueError("BoxSpacing must be non-negative.")
         self._boxSpacing = self._boxSpacing[0], y
 
-    @property
+    @css_inheritable
     def Flex(self):
         return self._flex
 
@@ -342,17 +346,15 @@ class Style(object):
             raise ValueError("Flex must be at least one or undefined.")
         self._flex = value
 
-    @property
+    @css_inheritable
     def TextColour(self):
         return self._textColour
 
     @TextColour.setter
     def TextColour(self, value):
-        if not isinstance(value, Colour):
-            raise TypeError("TextColour must be a Colour instance. Got {0} {1}".format(type(value), value))
         self._textColour = value
 
-    @property
+    @css_inheritable
     def Width(self):
         return self._width
 
@@ -364,7 +366,7 @@ class Style(object):
                 raise ValueError("Width must be positive. Got {0} {1}".format(type(value), value))
         self._width = value
 
-    @property
+    @css_inheritable
     def Height(self):
         return self._height
 
@@ -384,7 +386,7 @@ class Style(object):
     def Shear(self, value):
         self._setShear(value)
 
-    @property
+    @css_inheritable
     def ShearLeft(self):
         return self._shear[0]
 
@@ -392,7 +394,7 @@ class Style(object):
     def ShearLeft(self, value):
         self._shear = (number(value), self._shear[1])
 
-    @property
+    @css_inheritable
     def ShearRight(self):
         return self._shear[1]
 
@@ -400,7 +402,7 @@ class Style(object):
     def ShearRight(self, value):
         self._shear = (self._shear[0], number(value))
 
-    @property
+    @css_inheritable
     def TextAlign(self):
         return self._textAlign
 
@@ -408,7 +410,7 @@ class Style(object):
     def TextAlign(self, value):
         self._textAlign = value
 
-    @property
+    @css_inheritable
     def FontWeight(self):
         return self._fontWeight
 
@@ -417,16 +419,16 @@ class Style(object):
         self._fontWeight = value
         self._invalidateFontdescCache()
 
-    @property
+    @css_inheritable
     def FontSize(self):
         return self._fontSize
 
     @FontSize.setter
     def FontSize(self, value):
-        self._fontSize = float(value)
+        self._fontSize = float(value) if value is not Literals.Inherit else value
         self._invalidateFontdescCache()
 
-    @property
+    @css_inheritable
     def FontFamily(self):
         return self._fontFamily
 
@@ -435,7 +437,7 @@ class Style(object):
         self._fontFamily = value
         self._invalidateFontdescCache()
 
-    @property
+    @css_inheritable
     def VerticalAlign(self):
         return self._verticalAlign
 
@@ -657,3 +659,14 @@ class Style(object):
                     (x, y), segment = pathSegments[i]
                     ctx.arc(x, y, *segment)
                     ctx.stroke()
+
+class BaseStyle(Style):
+    def __init__(self):
+        super(BaseStyle, self).__init__(
+            fontFamily="sans",
+            fontSize=12,
+            textColour=Colour(0, 0, 0, 1),
+            fontWeight=Literals.Pango.Weight.NORMAL,
+            textAlign=Literals.Pango.Alignment.LEFT,
+            verticalAlign=Literals.VerticalAlign.Top
+            )

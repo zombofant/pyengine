@@ -27,11 +27,13 @@ from our_future import *
 
 __all__ = ["AbstractWidget", "ParentWidget", "Widget"]
 
+import copy
+
 from CSS.Rect import Rect
 from CSS.Rules import Rule
 from CSS.FaceBuffer import FaceBuffer
 from CSS.ClassSet import ClassSet
-from Style import Style
+from Style import Style, BaseStyle
 
 from OpenGL.GL import GL_TRIANGLES, glEnable, GL_TEXTURE_2D
 from Engine.GL.Texture import Texture2D
@@ -134,10 +136,14 @@ class AbstractWidget(object):
     def ComputedStyle(self):
         if self._invalidatedComputedStyle:
             if self._theme:
-                style = self._theme.getWidgetStyle(self)
+                style = copy.copy(self._theme.getWidgetStyle(self))
             else:
                 style = Style()
             style += self._styleRule
+            if self.Parent:
+                style.solveInheritance(self.Parent.ComputedStyle)
+            else:
+                style.solveInheritance(BaseStyle())
             self._computedStyle = style
             self._invalidatedComputedStyle = False
         return self._computedStyle

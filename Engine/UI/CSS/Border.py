@@ -28,6 +28,8 @@ from our_future import *
 import iterutils
 import copy
 
+from Utils import css_inheritable, css_inheritance_recurse
+
 from Fill import Fill, Colour, Transparent, isPlainFill
 from Box import BaseBox
 from Rect import Rect, NotARect
@@ -72,7 +74,7 @@ class BorderEdge(BorderComponent):
     def __deepcopy__(self, memo):
         return BorderEdge(self._width, copy.deepcopy(self._fill, memo))
 
-    @property
+    @css_inheritable
     def Width(self):
         """
         Control the width of a border edge.
@@ -87,7 +89,7 @@ class BorderEdge(BorderComponent):
             raise ValueError("Border width must be non-negative")
         self._width = value
 
-    @property
+    @css_inheritable
     def Fill(self):
         """
         Control the filling of a border edge.
@@ -215,7 +217,7 @@ class Border(BorderComponent):
     def Fill(self, value):
         self.setFill(value)
 
-    @property
+    @css_inheritance_recurse(BorderEdge)
     def Left(self):
         return self._edges[0]
 
@@ -223,7 +225,7 @@ class Border(BorderComponent):
     def Left(self, value):
         self._edges[0].assign(value)
 
-    @property
+    @css_inheritance_recurse(BorderEdge)
     def Top(self):
         return self._edges[1]
 
@@ -231,7 +233,7 @@ class Border(BorderComponent):
     def Top(self, value):
         self._edges[1].assign(value)
 
-    @property
+    @css_inheritance_recurse(BorderEdge)
     def Right(self):
         return self._edges[2]
 
@@ -239,7 +241,7 @@ class Border(BorderComponent):
     def Right(self, value):
         self._edges[2].assign(value)
 
-    @property
+    @css_inheritance_recurse(BorderEdge)
     def Bottom(self):
         return self._edges[3]
 
@@ -247,7 +249,7 @@ class Border(BorderComponent):
     def Bottom(self, value):
         self._edges[3].assign(value)
 
-    @property
+    @css_inheritable
     def TopLeftRadius(self):
         return self._corners[0]
 
@@ -255,7 +257,7 @@ class Border(BorderComponent):
     def TopLeftRadius(self, value):
         self._corners[0] = value
 
-    @property
+    @css_inheritable
     def TopRightRadius(self):
         return self._corners[1]
 
@@ -263,7 +265,7 @@ class Border(BorderComponent):
     def TopRightRadius(self, value):
         self._corners[1] = value
 
-    @property
+    @css_inheritable
     def BottomRightRadius(self):
         return self._corners[2]
 
@@ -271,7 +273,7 @@ class Border(BorderComponent):
     def BottomRightRadius(self, value):
         self._corners[2] = value
 
-    @property
+    @css_inheritable
     def BottomLeftRadius(self):
         return self._corners[3]
 

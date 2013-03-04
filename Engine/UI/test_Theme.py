@@ -114,13 +114,18 @@ class ThemeCascading(ThemeTest):
             [("margin", ("1",))]
         )
 
-        self.assertEqual(self.theme.getWidgetStyle(child2),
-            Style(
-                background=Transparent,
-                padding=Padding(3),
-                margin=Margin(0),
-                border=self.referenceBorder
+        self.theme.applyStyles(root)
+
+        refStyle = Style(
+            background=Transparent,
+            padding=Padding(3),
+            margin=Margin(1),
+            border=self.referenceBorder
             )
+        refStyle.solveInheritance(child1.ComputedStyle)
+        self.assertEqual(
+            child2.ComputedStyle,
+            refStyle
         )
 
     def test_applyStyles(self):
@@ -134,13 +139,16 @@ class ThemeCascading(ThemeTest):
 
         self.theme.applyStyles(root)
 
-        self.assertEqual(child2.ComputedStyle,
-            Style(
-                background=Transparent,
-                padding=Padding(3),
-                margin=Margin(1),
-                border=self.referenceBorder
+        refStyle = Style(
+            background=Transparent,
+            padding=Padding(3),
+            margin=Margin(1),
+            border=self.referenceBorder
             )
+        refStyle.solveInheritance(child1.ComputedStyle)
+        self.assertEqual(
+            child2.ComputedStyle,
+            refStyle
         )
 
 class States(ThemeTest):

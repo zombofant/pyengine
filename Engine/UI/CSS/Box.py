@@ -27,6 +27,8 @@ from our_future import *
 
 import copy
 
+from Utils import css_inheritable
+
 import Constants
 
 class BaseBox(object):
@@ -68,7 +70,7 @@ class BaseBox(object):
             raise ValueError("Box value must be non negative.")
         return v
 
-    @property
+    @css_inheritable
     def Left(self):
         return self._left
 
@@ -78,7 +80,7 @@ class BaseBox(object):
             return
         self._left = self._checkValue(value)
 
-    @property
+    @css_inheritable
     def Right(self):
         return self._right
 
@@ -88,7 +90,7 @@ class BaseBox(object):
             return
         self._right = self._checkValue(value)
 
-    @property
+    @css_inheritable
     def Top(self):
         return self._top
 
@@ -98,7 +100,7 @@ class BaseBox(object):
             return
         self._top = self._checkValue(value)
 
-    @property
+    @css_inheritable
     def Bottom(self):
         return self._bottom
 

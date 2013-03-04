@@ -191,4 +191,8 @@ class RootWidget(AbstractWidget, WidgetContainer):
     def PopupLayer(self):
         return self._popupLayer
 
+    @property
+    def Parent(self):
+        return None
+
 CSS.Minilanguage.ElementNames().registerWidgetClass(RootWidget, "Root")

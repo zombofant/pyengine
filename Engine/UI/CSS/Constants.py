@@ -39,5 +39,44 @@ class VerticalAlign(object):
         return outer_h / 2 - object_h / 2
 
 
-class Auto(object):
-    pass
+class auto(object):
+    class __metaclass__(type):
+        def __str__(self):
+            return str(unicode(self))
+
+        def __unicode__(self):
+            return "auto"
+
+        def __repr__(self):
+            return "<css auto>"
+
+    def __str__(self):
+        return str(unicode(self.__class__))
+
+    def __repr__(self):
+        return repr(self.__class__)
+
+class inherit(object):
+    class __metaclass__(type):
+        def __str__(self):
+            return str(unicode(self))
+
+        def __unicode__(self):
+            return "inherit"
+
+        def __repr__(self):
+            return "<css inherit>"
+
+    def __str__(self):
+        return str(unicode(self.__class__))
+
+    def __repr__(self):
+        return repr(self.__class__)
+
+_Auto = auto
+del auto
+_Inherit = inherit
+del inherit
+
+Auto = _Auto()
+Inherit = _Inherit()

@@ -163,3 +163,21 @@ class StyleRules(unittest.TestCase):
         ])
         self.style._addRule(rule)
         self.assertEqual(self.style.Width, 100)
+
+class StyleInheritance(unittest.TestCase):
+    def test_basic(self):
+        parent = Style(fontFamily="Helvetica")
+        child = Style(fontFamily=Literals.Inherit)
+        self.assertIs(child.FontFamily, Literals.Inherit)
+        child.solveInheritance(parent)
+        self.assertEqual(child.FontFamily, parent.FontFamily)
+
+    def test_default(self):
+        inherit = Literals.Inherit
+        style = Style()
+
+        self.assertIs(style.FontFamily, inherit)
+        self.assertIs(style.FontWeight, inherit)
+        self.assertIs(style.FontSize, inherit)
+        self.assertIs(style.VerticalAlign, inherit)
+        self.assertIs(style.TextAlign, inherit)
