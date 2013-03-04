@@ -68,4 +68,3 @@ PyObject *extractUTF8String(PyObject *text, const char **data, int *len)
 // c-file-style: "k&r"
 // c-basic-offset: 4
 // End:
-

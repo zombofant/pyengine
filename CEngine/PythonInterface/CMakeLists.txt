@@ -11,4 +11,3 @@ add_library(pyengine_PythonInterface STATIC
     "SceneGraph.cpp"
     )
 add_dependencies(pyengine_PythonInterface pyengine_IO pyengine_WindowInterface pyengine_SceneGraph pyengine_RenderGraph pyengine_GL pyengine_Resources)
-
