@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: StreamOperators.cpp.inc
-This file is part of: Pythonic Universe
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -20,8 +20,8 @@ provisions of GPL License are applicable instead of those above.
 
 FEEDBACK & QUESTIONS
 
-For feedback and questions about pyuni please e-mail one of the authors
-named in the AUTHORS file.
+For feedback and questions about pyengine please e-mail one of the
+authors named in the AUTHORS file.
 **********************************************************************/
 
 /* tt3d Stream operators */

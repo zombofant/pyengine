@@ -1,5 +1,5 @@
 # File name: Texture.py
-# This file is part of: pyuni
+# This file is part of: pyengine
 #
 # LICENSE
 #
@@ -19,7 +19,7 @@
 #
 # FEEDBACK & QUESTIONS
 #
-# For feedback and questions about pyuni please e-mail one of the
+# For feedback and questions about pyengine please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
 from __future__ import unicode_literals, print_function, division

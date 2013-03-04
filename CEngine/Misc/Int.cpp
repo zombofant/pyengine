@@ -20,7 +20,7 @@ provisions of GPL License are applicable instead of those above.
 
 FEEDBACK & QUESTIONS
 
-For feedback and questions about pyuni please e-mail one of the authors
-named in the AUTHORS file.
+For feedback and questions about pyengine please e-mail one of the
+authors named in the AUTHORS file.
 **********************************************************************/
 #include "Int.hpp"
