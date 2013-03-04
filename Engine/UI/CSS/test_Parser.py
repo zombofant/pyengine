@@ -201,5 +201,5 @@ class ParseProperties(ParserInstanceTest):
     def test_textAlign(self):
         self._testRule(
             """text-align: center;""",
-            [("text-align", (Literals.Pango.Alignment.Center,))]
+            [("text-align", (Literals.Pango.Alignment.CENTER,))]
         )

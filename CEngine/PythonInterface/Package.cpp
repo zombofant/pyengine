@@ -27,7 +27,6 @@ authors named in the AUTHORS file.
 
 #include "Log.hpp"
 #include "CairoHelpers.hpp"
-#include "Pango.hpp"
 #include "Window.hpp"
 #include "GL.hpp"
 #include "Resources.hpp"
@@ -232,7 +231,6 @@ void addCUniToInittab()
 {
     PyImport_AppendInittab("_cuni", &init_cuni);
     addLogToInittab();
-    addPangoToInittab();
     addWindowToInittab();
     addGLToInittab();
     addResourcesToInittab();

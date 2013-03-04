@@ -53,8 +53,8 @@ class Style(object):
         self._textColour = Colour(0., 0., 0., 1.)
         self._width, self._height = None, None
         self._shear = (0, 0)
-        self._textAlign = kwargs.pop("textAlign", Literals.Pango.Alignment.Left)
-        self._fontWeight = kwargs.pop("fontWeight", Literals.Pango.Weight.Normal)
+        self._textAlign = kwargs.pop("textAlign", Literals.Pango.Alignment.LEFT)
+        self._fontWeight = kwargs.pop("fontWeight", Literals.Pango.Weight.NORMAL)
         # FIXME: inheritance should go here!
         self._fontSize = kwargs.pop("fontSize", 12)
         if "padding" in kwargs:

@@ -68,7 +68,7 @@ class StyleIdentity(unittest.TestCase):
             ("margin", ("1",)),
             ("flex", ("2",)),
             ("box-spacing", ("4",)),
-            ("text-align", (Literals.Pango.Alignment.Center,))
+            ("text-align", (Literals.Pango.Alignment.CENTER,))
         ])
         self.style._addRule(rule)
         self.assertEqual(self.style, copy.deepcopy(self.style))

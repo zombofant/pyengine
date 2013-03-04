@@ -3,7 +3,6 @@ add_library(pyengine_PythonInterface STATIC
     "Helpers.cpp"
     "Log.cpp"
     "CairoHelpers.cpp"
-    "Pango.cpp"
     "Package.cpp"
     "Window.cpp"
     "GL.cpp"

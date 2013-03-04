@@ -47,20 +47,20 @@ class StylesheetNamespace(object):
     transparent = Transparent
     solid = "solid"
     auto = None
-    left = Pango.Alignment.Left
-    right = Pango.Alignment.Right
-    center = Pango.Alignment.Center
-    thin = Pango.Weight.Thin
-    ultralight = Pango.Weight.UltraLight
-    light = Pango.Weight.Light
-    book = Pango.Weight.Book
-    normal = Pango.Weight.Normal
-    medium = Pango.Weight.Medium
-    semibold = Pango.Weight.SemiBold
-    bold = Pango.Weight.Bold
-    ultrabold = Pango.Weight.UltraBold
-    heavy = Pango.Weight.Heavy
-    ultraheavy = Pango.Weight.UltraHeavy
+    left = Pango.Alignment.LEFT
+    right = Pango.Alignment.RIGHT
+    center = Pango.Alignment.CENTER
+    thin = Pango.Weight.THIN
+    ultralight = Pango.Weight.ULTRALIGHT
+    light = Pango.Weight.LIGHT
+    book = Pango.Weight.BOOK
+    normal = Pango.Weight.NORMAL
+    medium = Pango.Weight.MEDIUM
+    semibold = Pango.Weight.SEMIBOLD
+    bold = Pango.Weight.BOLD
+    ultrabold = Pango.Weight.ULTRABOLD
+    heavy = Pango.Weight.HEAVY
+    ultraheavy = Pango.Weight.ULTRAHEAVY
 
     _tokenBlacklist = ["evaluateCall", "get"]
 

@@ -25,6 +25,7 @@ authors named in the AUTHORS file.
 **********************************************************************/
 #include "Helpers.hpp"
 
+#include <Python.h>
 #include <boost/python.hpp>
 
 namespace PyEngine {

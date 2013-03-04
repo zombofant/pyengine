@@ -22,4 +22,58 @@
 # For feedback and questions about pyengine please e-mail one of the
 # authors named in the AUTHORS file.
 ########################################################################
-from _cuni_pango import *
+import itertools
+
+from gi.repository import Pango
+from gi.repository import PangoCairo
+
+def import_namespace(from_gi_module):
+    globals_dict = globals()
+    names = dir(from_gi_module)
+    for name in names:
+        try:
+            globals_dict[name] = getattr(from_gi_module, name)
+        except AttributeError:
+            pass
+
+import_namespace(Pango)
+import_namespace(PangoCairo)
+
+# _EllipsizeMode = EllipsizeMode
+# _WrapMode = WrapMode
+# _Alignment = Alignment
+# _Weight = Weight
+
+# class GObjectEnum(type):
+#     def __new__(mcls, name, bases, dct):
+#         enum = dct.pop("__enum__")
+#         iterator = dct.pop("__index_iter__", itertools.count(0))
+#         for index in iterator:
+#             try:
+#                 value = enum(index)
+#             except ValueError:
+#                 break
+#             v, k = mcls.parseEnum(enum(index))
+#             dct[k] = v
+
+#         return type.__new__(mcls, name, bases, dct)
+
+# class EllipsizeMode(object):
+#     __metaclass__ = GObjectEnum
+#     __enum__ = _EllipsizeMode
+
+
+# class WrapMode(object):
+#     __metaclass__ = GObjectEnum
+#     __enum__ = _WrapMode
+
+
+# class Alignment(object):
+#     __metaclass__ = GObjectEnum
+#     __enum__ = _Alignment
+
+
+# class Weight(object):
+#     __metaclass__ = GObjectEnum
+#     __enum__ = _Weight
+#     __index_iter__ = [100, 200, 300, 380,
