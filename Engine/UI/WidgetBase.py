@@ -54,8 +54,8 @@ class AbstractWidget(object):
         super(AbstractWidget, self).__init__(**kwargs)
         self.Visible = True
         self.Enabled = True
-        self._relativeRect = Rect(0, 0)
-        self._absoluteRect = Rect(0, 0)
+        self._relativeRect = Rect(0, 0, onChange=self.onResize)
+        self._absoluteRect = Rect(0, 0, onChange=self.onResize)
         self._styleRule = None
         self._invalidateComputedStyle()
         self._invalidateAlignment()
@@ -70,9 +70,13 @@ class AbstractWidget(object):
 
     def _invalidateComputedStyle(self):
         self._invalidatedComputedStyle = True
+        self._invalidateAlignment()
 
     def _invalidateAlignment(self):
         self._invalidatedAlignment = True
+
+    def invalidateContext(self):
+        pass
 
     def realign(self):
         if self._invalidatedAlignment:
@@ -244,6 +248,7 @@ class Widget(AbstractWidget):
         else:
             self._cairoContext = None
             self._pangoContext = None
+        self.invalidateContext()
 
     def hitTestWithChain(self, p):
         return [self] if p in self.AbsoluteRect else False
@@ -366,6 +371,8 @@ class WidgetContainer(object):
     def updateRenderingContext(self):
         for widget in self.treeDepthFirst():
             widget._cairoContext = widget._rootWidget._cairoContext
+            widget._pangoContext = widget._rootWidget._pangoContext
+            widget.invalidateContext()
 
 
 class ParentWidget(Widget, WidgetContainer):
