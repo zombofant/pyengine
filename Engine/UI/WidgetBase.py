@@ -168,6 +168,42 @@ class AbstractWidget(object):
         self._theme = value
         self._invalidateComputedStyle()
 
+    @property
+    def IsHovered(self):
+        return self._isHovered
+
+    @IsHovered.setter
+    def IsHovered(self, value):
+        value = bool(value)
+        if value == self._isHovered:
+            return
+        self._isHovered = value
+        self._invalidateComputedStyle()
+
+    @property
+    def IsFocused(self):
+        return self._isFocused
+
+    @IsFocused.setter
+    def IsFocused(self, value):
+        value = bool(value)
+        if value == self._isFocused:
+            return
+        self._isFocused = value
+        self._invalidateComputedStyle()
+
+    @property
+    def IsActive(self):
+        return self._isActive
+
+    @IsHovered.setter
+    def IsActive(self, value):
+        value = bool(value)
+        if value == self._isActive:
+            return
+        self._isActive = value
+        self._invalidateComputedStyle()
+
 class Widget(AbstractWidget):
     """
     Base class for non-parent widgets. Use this for any widget which will

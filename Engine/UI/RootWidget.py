@@ -70,11 +70,12 @@ class RootWidget(AbstractWidget, WidgetContainer):
         oldHitChain = self._oldHitChain
         if hitChain != oldHitChain:
             for non_hovered in oldHitChain - hitChain:
-                non_hovered._isHovered = False
-                non_hovered._invalidateComputedStyle()
+                non_hovered.IsHovered = False
+
             for hovered in hitChain - oldHitChain:
-                hovered._isHovered = True
-                hovered._invalidateComputedStyle()
+                print("{} is hovered".format(hovered))
+                hovered.IsHovered = True
+
             self._oldHitChain = hitChain
 
     def _focusAndCapture(self, hitChain, button):
