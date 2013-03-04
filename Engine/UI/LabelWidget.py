@@ -33,10 +33,7 @@ try:
 except (ImportError, NameError):
     pass
 
-try:
-    import Engine.CEngine.Pango as Pango
-except (ImportError):
-    Pango = None
+import copy
 
 import Engine.Resources.Manager as Manager
 import Engine.Resources.FontLoader
@@ -44,44 +41,38 @@ import Engine.Resources.FontLoader
 import CSS.Minilanguage
 
 from WidgetBase import Widget
+import Label
 
-class LabelWidget(Widget):
-    def __init__(self, parent, text="", **kwargs):
-        assert Pango
-        # FIXME: Font rendering
-        # font = Manager.ResourceManager().require('/data/fonts/Cantarell-Regular.otf', fontFamily="Cantarell", size=10)
-        # self._text = pyglet.text.Label(text, font_name="Cantarell", font_size=10, bold=True, italic=False, anchor_y='top')
-        super(LabelWidget, self).__init__(parent, **kwargs)
-        self._layout = Pango.PangoLayout(self._pangoContext)
-        self._text = None
-        self.Text = text
+class LabelledWidget(Widget):
+    def __init__(self, parent, **kwargs):
+        self._label = Label.Label(self)
+        super(LabelledWidget, self).__init__(parent, **kwargs)
+
+    def _parentChanged(self):
+        super(LabelledWidget, self)._parentChanged()
+        self._label.invalidateContext()
+
+    def _invalidateComputedStyle(self):
+        super(LabelledWidget, self)._invalidateComputedStyle()
+        self._label.invalidateLayout()
 
     def doAlign(self):
-        # self._text.x = self.AbsoluteRect.Left
-        # self._text.y = self._rootWidget.AbsoluteRect.Height - self.AbsoluteRect.Top
-        self._layout.Width = self.AbsoluteRect.Width
-        # self._layout.Height = self.AbsoluteRect.Height
+        self._label.Width = self.AbsoluteRect.Width
+        self._label.Height = self.AbsoluteRect.Height
 
     def render(self):
-        # Shader.unbind()
-        # FIXME/pyglet
-        # self._text.draw()
-        ctx = self._cairoContext
-        ctx.translate(self.AbsoluteRect.Left, self.AbsoluteRect.Top)
-        self.ComputedStyle.TextColour.setSource(ctx)
-        self._pangoContext.showLayout(self._layout)
-        ctx.translate(-self.AbsoluteRect.Left, -self.AbsoluteRect.Top)
-        pass
+        super(LabelledWidget, self).render()
+        label_rect = copy.copy(self.AbsoluteRect)
+        label_rect.shrink(self.ComputedStyle.Padding)
+        self._label.render(label_rect)
 
+class LabelWidget(LabelledWidget):
     @property
     def Text(self):
         return self._text
 
     @Text.setter
     def Text(self, value):
-        if self._text == value:
-            return
-        self._text = value
-        self._layout.Text = self._text
+        self._label.Text = value
 
 CSS.Minilanguage.ElementNames().registerWidgetClass(LabelWidget)
