@@ -69,6 +69,7 @@ class Label(object):
         self._cairo = self._widget._cairoContext
         self._pango = self._widget._pangoContext
         self._layout = None
+        self._contextInvalidated = False
         self.invalidateLayout()
 
     def _updateLayout(self):
@@ -91,6 +92,8 @@ class Label(object):
         # TODO: pick font + size using ComputedStyle
 
         self._layout.Text = self._text
+
+        # self._layoutInvalidated = False
 
     def render(self, inBox):
         self._updateLayout()
