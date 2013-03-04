@@ -134,7 +134,11 @@ const char *PangoLayout::getText()
 
 int PangoLayout::getWidth()
 {
-    return pango_layout_get_width(_layout);
+    int width = pango_layout_get_width(_layout);
+    if (width != -1) {
+        return width / PANGO_SCALE;
+    }
+    return -1;
 }
 
 PangoWrapMode PangoLayout::getWrap()
@@ -184,7 +188,7 @@ void PangoLayout::setText(const char *text, int length)
 
 void PangoLayout::setWidth(int width)
 {
-    pango_layout_set_width(_layout, width);
+    pango_layout_set_width(_layout, (width != -1 ? width*PANGO_SCALE : -1));
 }
 
 void PangoLayout::setWrap(PangoWrapMode mode)
