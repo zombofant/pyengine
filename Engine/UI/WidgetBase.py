@@ -61,7 +61,6 @@ class AbstractWidget(object):
         self._invalidateAlignment()
         self._styleClasses = ClassSet()
         self._rootWidget = None
-        self._geometryBuffer = None
         self._cairoContext = None
         self._pangoContext = None
         self._isHovered = False
@@ -225,7 +224,6 @@ class Widget(AbstractWidget):
         self._parent = None
         self._flags = set()
         self._rootWidget = None
-        self._geometryBuffer = None
         self._cairoContext = None
         self._pangoContext = None
         if parent is not None:
@@ -241,11 +239,9 @@ class Widget(AbstractWidget):
         else:
             self._rootWidget = None
         if self._rootWidget is not None:
-            self._geometryBuffer = self._rootWidget._geometryBuffer
             self._cairoContext = self._rootWidget._cairoContext
             self._pangoContext = self._rootWidget._pangoContext
         else:
-            self._geometryBuffer = None
             self._cairoContext = None
             self._pangoContext = None
 
@@ -369,7 +365,6 @@ class WidgetContainer(object):
 
     def updateRenderingContext(self):
         for widget in self.treeDepthFirst():
-            widget._geometryBuffer = widget._rootWidget._geometryBuffer
             widget._cairoContext = widget._rootWidget._cairoContext
 
 
