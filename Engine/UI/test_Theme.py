@@ -143,7 +143,6 @@ class ThemeCascading(ThemeTest):
             )
         )
 
-
 class States(ThemeTest):
     def test_states(self):
         root = RootWidget()._desktopLayer

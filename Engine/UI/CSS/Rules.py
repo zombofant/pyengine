@@ -32,7 +32,7 @@ import Literals
 
 class Rule(object):
     __hash__ = None
-    
+
     def __init__(self, selectors, properties, **kwargs):
         super(Rule, self).__init__(**kwargs)
         self._selectors = selectors

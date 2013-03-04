@@ -31,7 +31,7 @@ from Box import BaseBox
 
 class _NotARect(object):
     __hash__ = None
-    
+
     def __eq__(self, other):
         if isinstance(other, _NotARect):
             return True
@@ -418,7 +418,7 @@ class Rect(object):
         """
         Does not execute the :func:``Rect.shrink`` operation but
         returns the rects which are cut-off during a shrink.
-        
+
         Returns eight rects, corresponding to left edge, top-left
         corner, top edge, top-right corner, right edge, bottom-right
         corner, bottom edge, bottom-left corner.
@@ -431,14 +431,14 @@ class Rect(object):
             left = NotARect
             topLeft = NotARect
             bottomLeft = NotARect
-        
+
         if box.Right > 0:
             right = Rect(self._right - box.Right, self._y + box.Top, self._right, self._bottom - box.Bottom)
         else:
             right = NotARect
             topRight = NotARect
             bottomRight = NotARect
-        
+
         if box.Top > 0:
             top = Rect(self._x + box.Left, self._y, self._right - box.Right, self._y + box.Top)
             if left is not NotARect:
@@ -449,7 +449,7 @@ class Rect(object):
             top = NotARect
             topLeft = NotARect
             topRight = NotARect
-        
+
         if box.Bottom > 0:
             bottom = Rect(self._x + box.Left, self._bottom - box.Bottom, self._right - box.Right, self._bottom)
             if right is not NotARect:

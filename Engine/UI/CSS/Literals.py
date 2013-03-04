@@ -71,7 +71,7 @@ def BackgroundLiteral(*args):
             return first
         else:
             raise TypeError("Invalid first argument to BackgroundLiteral: {0} {1}".format(type(first), first))
-        
+
     if len(args) >= 1:
         second = args.pop(0)
         if isinstance(second, Image):
@@ -89,7 +89,7 @@ def BackgroundLiteral(*args):
                 image.RepeatY = third
         else:
             raise TypeError("Invalid third argument to BackgroundLiteral: {0} {1}".format(type(first), first))
-    
+
     if len(args) > 0:
         raise TypeError("Too many arguments to BackgroundLiteral.")
 

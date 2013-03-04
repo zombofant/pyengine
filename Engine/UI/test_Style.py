@@ -85,21 +85,21 @@ class StyleRules(unittest.TestCase):
     def test_boxSpacing(self):
         self.assertEqual(self.style.BoxSpacingX, 0)
         self.assertEqual(self.style.BoxSpacingY, 0)
-        
+
         rule = Rule([], [
             ("box-spacing", ("1",))
         ])
         self.style._addRule(rule)
         self.assertEqual(self.style.BoxSpacingX, 1)
         self.assertEqual(self.style.BoxSpacingY, 1)
-        
+
         rule = Rule([], [
             ("box-spacing-y", ("2",))
         ])
         self.style._addRule(rule)
         self.assertEqual(self.style.BoxSpacingX, 1)
         self.assertEqual(self.style.BoxSpacingY, 2)
-        
+
         rule = Rule([], [
             ("box-spacing-x", ("2",))
         ])
@@ -136,7 +136,7 @@ class StyleRules(unittest.TestCase):
         self.assertEqual(self.style.Border.BottomRightRadius, 2)
         self.assertEqual(self.style.Border.TopLeftRadius, 8)
         self.assertEqual(copy.deepcopy(self.style).Border.TopLeftRadius, 8)
-        
+
     def test_padding(self):
         rule = Rule([], [
             ("padding", ("1",)),
@@ -144,18 +144,18 @@ class StyleRules(unittest.TestCase):
         ])
         self.style._addRule(rule)
         self.assertEqual(self.style.Padding, Padding(2, 1, 1, 1))
-        
+
     def test_background(self):
         rule = Rule([], [
             ("background", (Colour(1., 0., 1., 1.),)),
         ])
         self.style._addRule(rule)
         self.assertEqual(self.style.Background, Colour(1, 0, 1, 1))
-        
+
     def test_dimensions(self):
         self.assertEqual(self.style.Width, None)
         self.assertEqual(self.style.Height, None)
-        
+
         rule = Rule([], [
             ("width", ("100",)),
         ])
