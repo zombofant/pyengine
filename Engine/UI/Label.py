@@ -85,7 +85,8 @@ class Label(object):
         self._layout.Height = self._height
 
         # TODO: read these values from the ComputedStyle
-        self._layout.Alignment = Pango.Alignment.Left
+        style = self._widget.ComputedStyle
+        self._layout.Alignment = style.TextAlign
         self._layout.Ellipsize = Pango.EllipsizeMode.NoEllipsis
         self._layout.Justify = False
         self._layout.Wrap = Pango.WrapMode.Word
