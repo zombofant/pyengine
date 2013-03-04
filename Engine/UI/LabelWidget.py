@@ -48,23 +48,23 @@ class LabelledWidget(Widget):
         self._label = Label.Label(self)
         super(LabelledWidget, self).__init__(parent, **kwargs)
 
-    def _parentChanged(self):
-        super(LabelledWidget, self)._parentChanged()
-        self._label.invalidateContext()
-
     def _invalidateComputedStyle(self):
         super(LabelledWidget, self)._invalidateComputedStyle()
         self._label.invalidateLayout()
 
+    def invalidateContext(self):
+        super(LabelledWidget, self).invalidateContext()
+        self._label.invalidateContext()
+
     def doAlign(self):
-        self._label.Width = self.AbsoluteRect.Width
-        self._label.Height = self.AbsoluteRect.Height
+        self._label_rect = copy.copy(self.AbsoluteRect)
+        self._label_rect.shrink(self.ComputedStyle.Padding)
+        self._label.Width = self._label_rect.Width
+        self._label.Height = self._label_rect.Height
 
     def render(self):
         super(LabelledWidget, self).render()
-        label_rect = copy.copy(self.AbsoluteRect)
-        label_rect.shrink(self.ComputedStyle.Padding)
-        self._label.render(label_rect)
+        self._label.render(self._label_rect)
 
 class LabelWidget(LabelledWidget):
     @property
