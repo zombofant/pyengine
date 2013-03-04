@@ -138,21 +138,21 @@ class Margin(BaseBox):
         vspace = outerRect.Height - objRect.Height
         if self.Left is Auto and self.Right is Auto:
             # center horizontally
-            self.Left = int(hspace / 2)
-            self.Right = hspace - self.Left
+            self.Left = max(0, int(hspace / 2))
+            self.Right = max(0, hspace - self.Left)
         elif self.Left is Auto:
-            self.Left = hspace - self.Right
+            self.Left = max(0, hspace - self.Right)
         elif self.Right is Auto:
-            self.Right = hspace - self.Left
+            self.Right = max(0, hspace - self.Left)
 
         if self.Top is Auto and self.Bottom is Auto:
             # center vertically
-            self.Top = int(vspace / 2)
-            self.Bottom = vspace - self.Top
+            self.Top = max(0, int(vspace / 2))
+            self.Bottom = max(0, vspace - self.Top)
         elif self.Top is Auto:
-            self.Top = vspace - self.Bottom
+            self.Top = max(0, vspace - self.Bottom)
         elif self.Bottom is Auto:
-            self.Bottom = vspace - self.Top
+            self.Bottom = max(0, vspace - self.Top)
 
 class Padding(BaseBox):
     pass
