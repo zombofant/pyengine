@@ -241,7 +241,7 @@ PyObject *bp_PangoLayout_getLogicalExtents(PangoLayoutHandle layout)
 {
     PangoRectangle extents;
 
-    pango_layout_get_pixel_extents(layout.get()->getPangoLayout(), 0, &extents);
+    pango_layout_get_pixel_extents(layout->getPangoLayout(), 0, &extents);
 
     PyObject *tpl = PyTuple_New(4);
     PyTuple_SetItem(tpl, 0, PyInt_FromLong(extents.x));
@@ -299,6 +299,19 @@ BOOST_PYTHON_MODULE(_cuni_pango)
         .value("Left", PANGO_ALIGN_LEFT)
         .value("Right", PANGO_ALIGN_RIGHT)
     ;
+
+    enum_<PangoWeight>("Weight")
+        .value("Thin", PANGO_WEIGHT_THIN)
+        .value("UltraLight", PANGO_WEIGHT_ULTRALIGHT)
+        .value("Light", PANGO_WEIGHT_LIGHT)
+        .value("Book", PANGO_WEIGHT_BOOK)
+        .value("Normal", PANGO_WEIGHT_NORMAL)
+        .value("Medium", PANGO_WEIGHT_MEDIUM)
+        .value("SemiBold", PANGO_WEIGHT_SEMIBOLD)
+        .value("Bold", PANGO_WEIGHT_BOLD)
+        .value("UltraBold", PANGO_WEIGHT_ULTRABOLD)
+        .value("Heavy", PANGO_WEIGHT_HEAVY)
+        .value("UltraHeavy", PANGO_WEIGHT_ULTRAHEAVY);
 }
 
 void addPangoToInittab()
