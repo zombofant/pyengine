@@ -547,7 +547,7 @@ class Style(object):
             equalColours = (colours[0] == colours[1] and
                             colours[1] == colours[2] and
                             colours[2] == colours[3])
-            if equalColours:
+            if equalColours and widths[0] == 0:
                 return
             bothEqual = False
         else:
