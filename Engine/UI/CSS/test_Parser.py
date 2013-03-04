@@ -203,3 +203,9 @@ class ParseProperties(ParserInstanceTest):
             """text-align: center;""",
             [("text-align", (Literals.Pango.Alignment.CENTER,))]
         )
+
+    def test_negativeMargin(self):
+        self._testRule(
+            """margin: -1;""",
+            [("margin", (-1,))]
+        )

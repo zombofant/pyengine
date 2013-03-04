@@ -132,7 +132,7 @@ class Margin(BaseBox):
     def _checkValue(self, v):
         if v is Constants.Auto:
             return v
-        return super(Margin, self)._checkValue(v)
+        return int(v)
 
     def deautoify(self, objRect, outerRect):
         Auto = Constants.Auto

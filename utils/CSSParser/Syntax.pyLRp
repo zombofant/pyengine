@@ -7,8 +7,8 @@ from Minilanguage import *
 "([^"]|\\")+" STRLITERAL
 \s+ %restart
 \#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8}) LCOLOURLITERAL
-([0-9]*\.[0-9]+|[0-9]+\.[0-9]*) FLOATLITERAL
-([0-9]+) INTLITERAL
+[+\-]?([0-9]*\.[0-9]+|[0-9]+\.[0-9]*) FLOATLITERAL
+[+\-]?([0-9]+) INTLITERAL
 
 %parser
 
