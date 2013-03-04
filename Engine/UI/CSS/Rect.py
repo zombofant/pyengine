@@ -65,16 +65,16 @@ NotARect = _NotARect()
 
 class Rect(object):
     __hash__ = None
-    
+
     @staticmethod
     def _checkDimension(value):
         if value < 0:
             raise ValueError("Rect dimensions must be non negative.")
         return value
-        
+
     _onChange = None
-        
-    def __init__(self, *args):
+
+    def __init__(self, *args, **kwargs):
         """
         Takes zero, two or four integer (castable) arguments.
 
@@ -99,6 +99,7 @@ class Rect(object):
             self.X, self.Y, self.Right, self.Bottom = args
         elif len(args) != 0:
             raise ValueError("Rect takes 0, 2 or 4 int arguments.")
+        self._onChange = kwargs.pop("onChange", None)
 
     def _recalcRB(self):
         self._right = self._x + self._width
