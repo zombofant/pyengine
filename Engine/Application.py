@@ -116,7 +116,7 @@ class Application(RootWidget, CWindow.EventSink):
         self._window.flip()
         self._window._sceneWidgets = []
 
-        self._newScreen(self._window, 0, 0, *geometry)
+        self.mainWindow, self.mainScreen = self._newScreen(self._window, 0, 0, *geometry)
         self.AbsoluteRect = Rect(0, 0, *geometry)
 
         self.realign()
