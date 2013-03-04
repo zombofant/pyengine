@@ -79,27 +79,35 @@ class Label(object):
             return
 
         if not self._layout:
-            self._layout = Pango.PangoLayout(self._pango)
+            self._layout = Pango.Layout(self._pango)
 
-        self._layout.Width = self._width
-        self._layout.Height = self._height
+        width = self._width if self._width == -1 else self._width * Pango.SCALE
+        height = self._height if self._height == -1 else self._height * Pango.SCALE
+
+        self._layout.set_width(width)
+        self._layout.set_height(height)
 
         # TODO: read these values from the ComputedStyle
         style = self._widget.ComputedStyle
-        self._layout.Alignment = style.TextAlign
-        self._layout.Ellipsize = Pango.EllipsizeMode.NoEllipsis
-        self._layout.Justify = False
-        self._layout.Wrap = Pango.WrapMode.Word
+        print(style.TextAlign)
+        self._layout.set_alignment(style.TextAlign)
+        self._layout.set_ellipsize(Pango.EllipsizeMode.NONE)
+        self._layout.set_justify(False)
+        self._layout.set_wrap(Pango.WrapMode.WORD)
         # TODO: pick font + size using ComputedStyle
 
-        self._layout.Text = self._text
+        self._layout.set_text(self._text, len(self._text))
 
-        # self._layoutInvalidated = False
+        self._layoutInvalidated = False
 
     def render(self, inBox):
         self._updateLayout()
         ctx = self._cairo
-        lx, ly, lw, lh = self._layout.getLogicalExtents()
+        _, logical = self._layout.get_pixel_extents()
+        lx = logical.x
+        ly = logical.y
+        lw = logical.width
+        lh = logical.height
 
         # XXX: Pango docs say, we shall take into account the x and y
         # values of the extent. If we do, however, layout positioning
@@ -110,7 +118,7 @@ class Label(object):
 
         ctx.translate(x, y)
         self._widget.ComputedStyle.TextColour.setSource(ctx)
-        self._pango.showLayout(self._layout)
+        Pango.PangoCairo.show_layout(ctx, self._layout)
         ctx.translate(-x, -y)
 
     @property
@@ -143,11 +151,11 @@ class Label(object):
 
     @property
     def Text(self):
-        return self._text
+        return self._text.decode("utf-8")
 
     @Text.setter
     def Text(self, value):
-        self._text = unicode(value)
+        self._text = unicode(value).encode("utf-8")
 
     @property
     def Widget(self):
