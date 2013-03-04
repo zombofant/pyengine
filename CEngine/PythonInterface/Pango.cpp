@@ -282,7 +282,7 @@ BOOST_PYTHON_MODULE(_cuni_pango)
     module.attr("Scale") = PANGO_SCALE;
 
     enum_<PangoEllipsizeMode>("EllipsizeMode")
-        .value("None", PANGO_ELLIPSIZE_NONE)
+        .value("NoEllipsis", PANGO_ELLIPSIZE_NONE)
         .value("Start", PANGO_ELLIPSIZE_START)
         .value("Middle", PANGO_ELLIPSIZE_MIDDLE)
         .value("End", PANGO_ELLIPSIZE_END)
