@@ -36,8 +36,8 @@ def import_namespace(from_gi_module):
         except AttributeError:
             pass
 
-import_namespace(Pango)
 import_namespace(PangoCairo)
+import_namespace(Pango)
 
 # _EllipsizeMode = EllipsizeMode
 # _WrapMode = WrapMode
