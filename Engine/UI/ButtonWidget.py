@@ -39,6 +39,7 @@ import Label
 class ButtonWidget(LabelledWidget):
     def __init__(self, parent, caption="", **kwargs):
         super(ButtonWidget, self).__init__(parent, **kwargs)
+        self._flags = {Flags.Focusable}
         self._label.Text = caption
 
 
