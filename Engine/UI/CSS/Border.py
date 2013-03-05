@@ -210,6 +210,10 @@ class Border(BorderComponent):
         self.setWidth(value)
 
     @property
+    def Widths(self):
+        return [edge.Width for edge in self._edges]
+
+    @property
     def Fill(self):
         raise NotImplementedError("Cannot read global border colour.")
 
@@ -311,6 +315,10 @@ class Border(BorderComponent):
     def getBox(self):
         return BaseBox(self.Left.Width, self.Top.Width,
             self.Right.Width, self.Bottom.Width)
+
+    def getHalfBox(self):
+        return BaseBox(self.Left.Width / 2, self.Top.Width / 2,
+            self.Right.Width / 2, self.Bottom.Width / 2)
 
     def geometryForRect(self, rect, faceBuffer):
         """

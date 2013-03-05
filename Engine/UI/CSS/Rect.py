@@ -268,6 +268,10 @@ class Rect(object):
             self._onChange()
 
     @property
+    def LRTB(self):
+        return self._x, self._right, self._y, self._bottom
+
+    @property
     def LeftRight(self):
         return self._left, self._right
 
