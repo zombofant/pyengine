@@ -286,15 +286,6 @@ void X11Display::pullEvents(EventSink *sink) {
         case ButtonRelease:
             assert(event.xbutton.button < MAXBUTTONS);
 
-            // only report release events for non-scroll
-            if (_scroll_x[event.xbutton.button] == 0
-             && _scroll_y[event.xbutton.button] == 0) {
-                sink->handleMouseUp(event.xbutton.x,
-                                    event.xbutton.y,
-                                    event.xbutton.button,
-                                    event.xbutton.state);
-            }
-
             if (event.xbutton.button <= MAX_MULTICLICK_BUTTON) {
                 assert(event.xbutton.button != 0);
                 TimeStamp &previous = _last_mouse_down[event.xbutton.button-1];
@@ -324,6 +315,15 @@ void X11Display::pullEvents(EventSink *sink) {
                     event.xbutton.button,
                     event.xbutton.state,
                     nclick);
+            }
+
+            // only report release events for non-scroll
+            if (_scroll_x[event.xbutton.button] == 0
+             && _scroll_y[event.xbutton.button] == 0) {
+                sink->handleMouseUp(event.xbutton.x,
+                                    event.xbutton.y,
+                                    event.xbutton.button,
+                                    event.xbutton.state);
             }
             break;
         case MotionNotify:
