@@ -102,13 +102,13 @@ class AbstractWidget(object):
     def onKeyUp(self, symbol, modifiers):
         return False
 
-    def onMouseDown(self, x, y, buttons, modifiers):
+    def onMouseDown(self, x, y, button, modifiers):
         return False
 
     def onMouseMove(self, x, y, dx, dy, buttons, modifiers):
         return False
 
-    def onMouseUp(self, x, y, buttons, modifiers):
+    def onMouseUp(self, x, y, button, modifiers):
         return False
 
     def onResize(self):
