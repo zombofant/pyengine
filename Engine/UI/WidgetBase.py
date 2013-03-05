@@ -221,6 +221,12 @@ class AbstractWidget(object):
         self._isActive = value
         self._invalidateComputedStyle()
 
+    @property
+    def ClientRect(self):
+        rect = copy.copy(self.AbsoluteRect)
+        rect.shrink(self.ComputedStyle.Border.getBox())
+        return rect
+
 class Widget(AbstractWidget):
     """
     Base class for non-parent widgets. Use this for any widget which will
