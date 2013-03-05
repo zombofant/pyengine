@@ -30,10 +30,15 @@ __all__ = ["VBox", "HBox", "Grid"]
 import itertools
 from operator import attrgetter
 import functools
+import math
 
 import CSS.Minilanguage
+import CSS.Rect as Rect
 
 from WidgetBase import ParentWidget
+
+from Engine.CEngine.Log import server, Severity
+log = server.getChannel("ui")
 
 def opSetattr(attr):
     def _setattr(obj, val):
@@ -69,25 +74,40 @@ class BoxWidget(ParentWidget):
         self._aaSizeGetter = aaSizeGetter # e.g. attrgetter("Width")
 
     def _getSpacingList(self, baseSpacing):
+        """
+        Calculate the space to the left (top) for each child widget
+        and the space of the last widget to the right (bottom).
+
+        *baseSpacing* must be the box-spacing-x (box-spacing-y) value
+        of the widget.
+
+        Return value is an iterable which consists of tuples of the
+        following form::
+
+             widget, space, widget_flex, widget_size
+
+        where ``widget_flex`` is the flex value of the computed style
+        of the widget and ``widget_size`` is the size the widget
+        demands (currently the width (height) in the widgets computed
+        style).
+
+        Takes into account margin collapse, box spacing and negative
+        margins properly.
+        """
         getterA, getterB = self._aaBoxEdges
         myStyle = self.ComputedStyle
-        widgets = list(self)
+        visible_widgets = [widget for widget in self if widget.Visible]
 
-        widgets_r = widgets[1:] + [None]
-        widgets_l = [None] + widgets
-
-#        for left, this, right in zip(widgets_l, widgets, widgets_r):
+        widgets_l = [None] + visible_widgets
 
         results = []
-        for left, this in zip(widgets_l, widgets + [None]):
+        for left, this in zip(widgets_l, visible_widgets + [None]):
 
             left_space = getterA(myStyle.Padding) if left is None else getterB(left.ComputedStyle.Margin)
             if left_space < 0:
                 left_space = baseSpacing + left_space
             elif left is not None and this is not None:
                 left_space = max(baseSpacing, left_space)
-
-            # right_space = getterB(myStyle.Padding) if right is None else getterA(right.Margin)
 
             if this is not None:
                 this_style = this.ComputedStyle
@@ -121,19 +141,20 @@ class BoxWidget(ParentWidget):
         faPositionSetter = self._faPositionSetter
         faBoxEdgeA, faBoxEdgeB = self._faBoxEdges
 
-        totalSpace, totalFlex, totalStaticWidth = BoxWidget.getSpaceFlexWidth(spacingList)
+        totalSpace, totalFlex, totalStaticWidth = self.getSpaceFlexWidth(spacingList)
         widgetWidthPerFlex = (myAASize - (totalSpace+totalStaticWidth)) / totalFlex
 
-        if int(widgetWidthPerFlex) <= 0:
+        if math.ceil(widgetWidthPerFlex) <= 0:
             for widget in self:
-                widget.Visible = False
-            # TODO: Print this warning to a log
-            print("Warning: {0} has not enough space for {1} flexes (totalSpace={2},size={3},staticSize={4}).".format(self, totalFlex, totalSpace, myAASize, totalStaticWidth))
+                # this makes them implicitly invisible for any tests
+                widget.AbsoluteRect = Rect.Rect(0, 0, 0, 0)
+            log.log(Severity.Warning, "{0} has not enough space for {1} flexes (totalSpace={2},size={3},staticSize={4})".format(self, totalFlex, totalSpace, myAASize, totalStaticWidth))
             return
 
-        aaPosA = spacingList[0][1] + myAAFAPos[0]
         faPosA = myAAFAPos[1]
         faPosB = faPosA + myFASize
+
+        aaPosA = spacingList[0][1] + myAAFAPos[0]
 
         for widget, space, flex, width in spacingList[:-1]:
             #print("{0} aligning {1}:".format(self, widget))
@@ -147,14 +168,19 @@ class BoxWidget(ParentWidget):
                 widgetWidth = flex * widgetWidthPerFlex
             else:
                 widgetWidth = width
-            widgetMargin = widget.ComputedStyle.Margin
-            aaPositionSetter(widget.AbsoluteRect, (round(aaPosA), round(aaPosA+widgetWidth)))
 
+            widgetMargin = widget.ComputedStyle.Margin
             faSpacingA = max(myFAPadding[0], faBoxEdgeA(widgetMargin))
             faSpacingB = max(myFAPadding[1], faBoxEdgeB(widgetMargin))
-            faPositionSetter(widget.AbsoluteRect, (faPosA + faSpacingA, faPosB - faSpacingB))
 
-            widget.Visible = True
+            if faPosA + faSpacingA < faPosB - faSpacingB:
+                faPositionSetter(widget.AbsoluteRect, (faPosA + faSpacingA, faPosB - faSpacingB))
+                aaPositionSetter(widget.AbsoluteRect, (round(aaPosA), round(aaPosA+widgetWidth)))
+                if widget.ClientRect.Area <= 0:
+                    widget.AbsoluteRect = Rect.Rect(0, 0, 0, 0)
+            else:
+                widget.AbsoluteRect = Rect.Rect(0, 0, 0, 0)
+
             aaPosA += widgetWidth
 
 class VBox(BoxWidget):
