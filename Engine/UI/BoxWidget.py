@@ -31,6 +31,7 @@ import itertools
 from operator import attrgetter
 import functools
 import math
+import copy
 
 import CSS.Minilanguage
 import CSS.Rect as Rect
@@ -222,7 +223,9 @@ class HBox(BoxWidget):
             return
         myStyle = self.ComputedStyle
         spacingList = self._getSpacingList(self.ComputedStyle.BoxSpacingX)
-        x, y, w, h = self.AbsoluteRect.XYWH
+        rect = copy.copy(self.AbsoluteRect)
+        rect.shrink(myStyle.Border.getBox())
+        x, y, w, h = rect.XYWH
         self._doAlign(spacingList, (x, y), w, h, (myStyle.Padding.Top, myStyle.Padding.Bottom))
 
 class Grid(ParentWidget):
