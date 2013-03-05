@@ -27,12 +27,17 @@ from our_future import *
 
 __all__ = ["RootWidget"]
 
+import cairo
+import Engine.CEngine.Pango as Pango
+
 import CSS.Minilanguage
 
 from Engine.pygletHeadless import mouse
 from WidgetBase import AbstractWidget, WidgetContainer
 from LayerWidget import LayerWidget, DesktopLayer, WindowLayer, PopupLayer
 from Flags import *
+
+from Engine.GL import makePOT
 
 class RootWidget(AbstractWidget, WidgetContainer):
     """
@@ -54,6 +59,9 @@ class RootWidget(AbstractWidget, WidgetContainer):
         self._windowLayer = WindowLayer(self)
         self._desktopLayer = DesktopLayer(self)
         self._oldHitChain = frozenset()
+        self._cairoSurface = None
+        self._cairoContext = None
+        self._pangoContext = None
         self.ActiveButtonMask = mouse.LEFT | mouse.MIDDLE | mouse.RIGHT
 
     def _findKeyEventTarget(self):
@@ -97,12 +105,31 @@ class RootWidget(AbstractWidget, WidgetContainer):
         self._mouseCapture = target
         self._mouseCaptureButton = button
 
+    def _recreateCairoContext(self, width, height):
+        self._cairoSurface = cairo.ImageSurface(
+            cairo.FORMAT_ARGB32,
+            width, height)
+        self._cairoContext = cairo.Context(self._cairoSurface)
+        self._pangoContext = Pango.PangoCairo.create_context(self._cairoContext)
+        self.updateRenderingContext()
+
+    def _requireCairoContext(self):
+        myRect = self.AbsoluteRect
+        w, h = myRect.Width, myRect.Height
+
+        if not (self._cairoSurface and
+                w == self._cairoSurface.get_width() and
+                h == self._cairoSurface.get_height()):
+            self._recreateCairoContext(w, h)
+
     def doAlign(self):
         assert len(self) == 3
         myRect = self.AbsoluteRect
         self._desktopLayer.AbsoluteRect = myRect
         self._windowLayer.AbsoluteRect = myRect
         self._popupLayer.AbsoluteRect = myRect
+
+        self._requireCairoContext()
 
     def dispatchKeyDown(self, *args):
         target = self._findKeyEventTarget()
@@ -169,7 +196,16 @@ class RootWidget(AbstractWidget, WidgetContainer):
         for child in self:
             child.realign()
 
+    def clearCairoSurface(self):
+        ctx = self._cairoContext
+        ctx.set_source_rgba(0., 0., 0., 0.)
+        ctx.set_operator(cairo.OPERATOR_SOURCE)
+        ctx.paint()
+        ctx.set_operator(cairo.OPERATOR_OVER)
+        ctx.set_line_cap(cairo.LINE_CAP_SQUARE)
+
     def render(self):
+        self.clearCairoSurface()
         self._desktopLayer.render()
         self._windowLayer.render()
         self._popupLayer.render()
