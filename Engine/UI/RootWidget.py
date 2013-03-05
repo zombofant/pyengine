@@ -92,8 +92,7 @@ class RootWidget(AbstractWidget, WidgetContainer):
             self._focused._isFocused = False
             self._focused._invalidateComputedStyle()
         self._focused = target
-        target._isFocused = True
-        target._invalidateComputedStyle()
+        target.IsFocused = True
 
         self._mouseCapture = target
         self._mouseCaptureButton = button
@@ -139,8 +138,8 @@ class RootWidget(AbstractWidget, WidgetContainer):
             self._updateHoverState(hitChain)
 
     def dispatchMouseUp(self, x, y, button, modifiers):
-        target, x, y = self._mapMouseEvent(x, y)
-        target.onMouseUp(x, y, button, modifiers)
+        target, cx, cy = self._mapMouseEvent(x, y)
+        target.onMouseUp(cx, cy, button, modifiers)
         if target is self._mouseCapture and button & self._mouseCaptureButton:
             self._mouseCapture = None
             self._mouseCaptureButton = 0
