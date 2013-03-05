@@ -235,6 +235,10 @@ class Rect(object):
         if self._onChange is not None:
             self._onChange()
 
+    @property
+    def Area(self):
+        return (self._bottom - self._y) * (self._right - self._x)
+
     def transpose(self, byX, byY):
         self.X = self._x + byX
         self.Y = sefl._y + byY
