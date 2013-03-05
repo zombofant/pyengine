@@ -26,15 +26,22 @@ authors named in the AUTHORS file.
 #ifndef _PYE_IO_TIME_H
 #define _PYE_IO_TIME_H
 
-#include <ctime>
+#include <chrono>
 
 namespace PyEngine {
 
+// XXX: libstdc++ uses system_clock for this one, which I dislike,
+// because especially on linux we have monotonic high-performance
+// clocks -- but I cannot even switch, because on fedora 18,
+// steady_clock is _not_ compiled into the libstdc++ (JWI)
+typedef std::chrono::high_resolution_clock clock_to_use;
+
 typedef double TimeFloat;
-typedef timespec TimeStamp;
+typedef std::chrono::time_point<clock_to_use> TimeStamp;
 
 /* free functions */
 
+void check_clock();
 TimeStamp nanotime();
 TimeFloat timeToDouble(const TimeStamp &time);
 TimeFloat timeIntervalToDouble(const TimeStamp &prev, const TimeStamp &curr);

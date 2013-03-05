@@ -25,24 +25,44 @@ authors named in the AUTHORS file.
 **********************************************************************/
 #include "Time.hpp"
 
+#include "CEngine/IO/Log.hpp"
+
 namespace PyEngine {
+
+#ifdef _GLIBCXX_USE_CLOCK_MONOTONIC
+// libstdc++ uses, for an unknown reason, clock_gettime(CLOCK_REALTIME)
+// instead of clock_gettime(CLOCK_MONOTONIC) for the
+// high_resolution_clock.
+typedef std::chrono::steady_clock clock_to_use;
+#else
+typedef std::chrono::high_resolution_clock clock_to_use;
+#endif
+
+typedef std::chrono::duration<double> HiResDuration;
+
 
 /* free functions */
 
-timespec nanotime() {
-    timespec result;
-    clock_gettime(CLOCK_MONOTONIC_RAW, &result);
-    return result;
+void check_clock() {
+    if (!clock_to_use::is_steady) {
+        log->getChannel("time")->log(Warning) << "clock_to_use is not monotonous." << submit;
+    }
 }
 
-TimeFloat timeToDouble(const timespec &time) {
-    return TimeFloat(time.tv_sec) + TimeFloat(time.tv_nsec) / 1000000000.;
+TimeStamp nanotime() {
+    return clock_to_use::now();
 }
 
-TimeFloat timeIntervalToDouble(const timespec &prev, const timespec &curr) {
-    TimeFloat result = (curr.tv_sec - prev.tv_sec);
-    result += TimeFloat(curr.tv_nsec - prev.tv_nsec) / (1000000000.);
-    return result;
+TimeFloat timeToDouble(const TimeStamp &time) {
+    return std::chrono::duration_cast<HiResDuration>(
+        time.time_since_epoch()
+        ).count();
+}
+
+TimeFloat timeIntervalToDouble(const TimeStamp &prev, const TimeStamp &curr) {
+    return std::chrono::duration_cast<HiResDuration>(
+        curr - prev
+        ).count();
 }
 
 }

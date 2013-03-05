@@ -46,7 +46,7 @@ EventLoop::EventLoop(DisplayHandle display, EventSinkHandle eventSink):
     displayFPS(0.0),
     syncedFPS(0.0)
 {
-
+    check_clock();
 }
 
 EventLoop::~EventLoop()
