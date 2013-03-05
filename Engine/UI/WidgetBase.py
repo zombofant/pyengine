@@ -441,7 +441,7 @@ class ParentWidget(Widget, WidgetContainer):
     def render(self):
         super(ParentWidget, self).render()
         for child in self:
-            if child.Visible:
+            if child.Visible and child.AbsoluteRect.Area > 0:
                 child.render()
 
     def sendToBack(self, key):
