@@ -53,9 +53,11 @@ class ScreenWidget(ParentWidget):
             childStyle = child.ComputedStyle
             margin = copy.copy(childStyle.Margin)
             margin.deautoify(
-                Rect.Rect(0, 0,
-                     child.ComputedStyle.Width, child.ComputedStyle.Height
-                     ),
+                Rect.Rect(
+                    0, 0,
+                    child.ComputedStyle.Width or rect.Width,
+                    child.ComputedStyle.Height or rect.Height
+                    ),
                 rect
                 )
 
