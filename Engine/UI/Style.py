@@ -581,8 +581,15 @@ class Style(object):
         return clientRect
 
     def inCairo(self, rect, ctx):
-        clientRect = copy.copy(rect)
-        clientRect.shrink(self.Border.getBox())
+        cl, cr, ct, cb = rect.LRTB
+        bl, br, bt, bb = self.Border.Widths
+
+        cl += bl / 2
+        cr -= br / 2
+        ct += bt / 2
+        cb -= bb / 2
+        ch = cb - ct
+        cw = cr - cl
 
         widths = (  self._border.Left.Width, self._border.Top.Width,
                     self._border.Right.Width, self._border.Bottom.Width)
@@ -630,10 +637,10 @@ class Style(object):
         shearBottomRight = shears[1] if shears[1] < 0 else 0
 
         corners = [
-            (clientRect.Left + shearTopLeft + radii[0], clientRect.Top + radii[0]),
-            (clientRect.Right + shearTopRight - radii[1], clientRect.Top + radii[1]),
-            (clientRect.Right + shearBottomRight - radii[2], clientRect.Bottom - radii[2]),
-            (clientRect.Left + shearBottomLeft + radii[3], clientRect.Bottom - radii[3])
+            (cl + shearTopLeft + radii[0], ct + radii[0]),
+            (cr + shearTopRight - radii[1], ct + radii[1]),
+            (cr + shearBottomRight - radii[2], cb - radii[2]),
+            (cl + shearBottomLeft + radii[3], cb - radii[3])
         ]
 
         # pulling these in the local namespace gives only 1% speedup,
@@ -670,8 +677,8 @@ class Style(object):
                     ctx.line_to(*corners[i])
                     ctx.stroke()
         else:
-            leftLessAngle = math.atan(shears[0]/clientRect.Height)
-            rightLessAngle = math.atan(shears[1]/clientRect.Height)
+            leftLessAngle = math.atan(shears[0]/ch)
+            rightLessAngle = math.atan(shears[1]/ch)
             pi = math.pi
 
             # explicitly put this in a list here
