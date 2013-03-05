@@ -212,21 +212,27 @@ class RootWidget(AbstractWidget, WidgetContainer):
         ctx.set_operator(cairo.OPERATOR_OVER)
         ctx.set_line_cap(cairo.LINE_CAP_SQUARE)
 
+    def _setupClipping(self):
+        ctx = self._cairoContext
+        for rect in self._invalidatedRects:
+            ctx.rectangle(*rect.XYWH)
+        ctx.clip()
+
     def render(self):
         self.realign()
         if not (self._invalidatedRects or self._resized):
             # no dirty regions, nothing to do \o/
             return
-        if self._invalidatedRects:
-            print(self._invalidatedRects)
-        else:
-            print("global repaint")
+        if not self._resized:
+            # set up clipping regions
+            self._setupClipping()
         self.clearCairoSurface()
         self._desktopLayer.render()
         self._windowLayer.render()
         self._popupLayer.render()
         self._invalidatedRects = []
         self._resized = False
+        self._cairoContext.reset_clip()
 
     def update(self, timeDelta):
         for child in self:
