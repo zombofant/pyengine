@@ -64,6 +64,11 @@ class EventSinkWrap: public EventSink, public boost::python::wrapper<EventSink>
         this->get_override("handleMouseDown")(x, y, buttons, modifiers);
     }
 
+    virtual void handleMouseClick(unsigned int x, unsigned int y, unsigned int buttons, unsigned int modifiers, unsigned int nth)
+    {
+        this->get_override("handleMouseClick")(x, y, buttons, modifiers, nth);
+    }
+
     virtual void handleMouseMove(unsigned int x, unsigned int y, int dx, int dy, unsigned int buttons, unsigned int modifiers)
     {
         this->get_override("handleMouseMove")(x, y, dx, dy, buttons, modifiers);

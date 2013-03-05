@@ -177,6 +177,9 @@ class Application(RootWidget, CWindow.EventSink):
     def handleMouseDown(self, x, y, button, modifiers):
         self.dispatchMouseDown(x, y, button, modifiers)
 
+    def handleMouseClick(self, x, y, button, modifiers, nth):
+        self.dispatchMouseClick(x, y, button, modifiers, nth)
+
     def handleMouseMove(self, x, y, dx, dy, buttons, modifiers):
         self.dispatchMouseMove(x, y, dx, dy, buttons, modifiers)
 

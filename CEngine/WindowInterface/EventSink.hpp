@@ -43,6 +43,9 @@ public:
                              unsigned int modifiers) = 0;
     virtual void handleMouseDown(unsigned int x, unsigned int y,
                                  unsigned int buttons, unsigned int modifiers) = 0;
+    virtual void handleMouseClick(unsigned int x, unsigned int y,
+                                  unsigned int buttons, unsigned int modifiers,
+                                  unsigned int nth) = 0;
     virtual void handleMouseMove(unsigned int x, unsigned int y,
                                  int dx, int dy, unsigned int buttons,
                                  unsigned int modifiers) = 0;
