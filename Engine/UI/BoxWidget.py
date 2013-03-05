@@ -142,7 +142,11 @@ class BoxWidget(ParentWidget):
         faBoxEdgeA, faBoxEdgeB = self._faBoxEdges
 
         totalSpace, totalFlex, totalStaticWidth = self.getSpaceFlexWidth(spacingList)
-        widgetWidthPerFlex = (myAASize - (totalSpace+totalStaticWidth)) / totalFlex
+        if totalFlex > 0:
+            widgetWidthPerFlex = (myAASize - (totalSpace+totalStaticWidth)) / totalFlex
+        else:
+            # value doesn't matter, won't be used
+            widgetWidthPerFlex = 1
 
         if math.ceil(widgetWidthPerFlex) <= 0:
             for widget in self:
