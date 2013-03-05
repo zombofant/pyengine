@@ -72,7 +72,7 @@ LogPipe::LogPipe(LogServer *server, Severity severity, LogChannel *channel):
     _severity(severity),
     _channel(channel)
 {
-    
+
 }
 
 LogPipe::~LogPipe()
@@ -91,7 +91,7 @@ LogChannel::LogChannel(LogServer *server, const std::string name):
     _server(server),
     _name(name)
 {
-    
+
 }
 
 void LogChannel::log(Severity severity, const char *message)
@@ -152,7 +152,7 @@ LogStreamSink::LogStreamSink(SeverityMask mask, StreamHandle stream):
     _streamHandle(stream),
     _stream(stream.get())
 {
-    
+
 }
 
 void LogStreamSink::doLog(TimeFloat timestamp, Severity severity,
@@ -228,7 +228,7 @@ void LogTTYSink::doLogException(TimeFloat timestamp, Severity severity,
     free(tracebackSymbols);
     _stream->flush();
 }
-    
+
 
 /* PyEngine::IO::LogXMLSink */
 
@@ -304,7 +304,7 @@ LogServer::LogServer():
     _channels(),
     _globalChannel(getChannel("global"))
 {
-    
+
 }
 
 void LogServer::log(Severity severity, LogChannel *channel, const char *message)
@@ -360,7 +360,7 @@ LogChannelHandle LogServer::getChannel(const std::string &name)
     _channels[name] = channel;
     return channel;
 }
- 
+
 void LogServer::removeSink(LogSinkHandle sink)
 {
     _sinks.remove(sink);
