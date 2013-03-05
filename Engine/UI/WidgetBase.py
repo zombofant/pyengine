@@ -56,11 +56,12 @@ class AbstractWidget(object):
         super(AbstractWidget, self).__init__(**kwargs)
         self.Visible = True
         self.Enabled = True
+        self._parent = None
         self._relativeRect = Rect(0, 0, onChange=self.onResize)
         self._absoluteRect = Rect(0, 0, onChange=self.onResize)
         self._styleRule = None
-        self._invalidateComputedStyle()
-        self._invalidateAlignment()
+        self._invalidatedComputedStyle = True
+        self._invalidatedAlignment = True
         self._styleClasses = ClassSet()
         self._rootWidget = None
         self._cairoContext = None
@@ -69,21 +70,27 @@ class AbstractWidget(object):
         self._isActive = False
         self._isFocused = False
         self._theme = None
+        self._computedStyle = Style()
 
     def _invalidateComputedStyle(self):
         self._invalidatedComputedStyle = True
-        self._invalidateAlignment()
 
     def _invalidateAlignment(self):
         self._invalidatedAlignment = True
+        print("invalidated alignment of {}".format(self))
 
     def invalidateContext(self):
         pass
 
     def realign(self):
-        if self._invalidatedAlignment:
-            self._invalidatedAlignment = False
+        if self._invalidatedAlignment or self._invalidatedComputedStyle:
             self.doAlign()
+            self._invalidatedAlignment = False
+            # the below is neccessary for widgets which do no alignment
+            # nor rendering -- otherwise we'll realign them on every
+            # frame!
+            self.ComputedStyle
+            self.invalidate()
 
     def doAlign(self):
         pass
@@ -121,6 +128,12 @@ class AbstractWidget(object):
     def onCaretMotionSelect(self, motion):
         return False
 
+    def invalidate(self):
+        root = self.RootWidget
+        if not root:
+            return
+        root.invalidateRect(self.AbsoluteRect)
+
     @property
     def StyleRule(self):
         return self._styleRule
@@ -144,7 +157,11 @@ class AbstractWidget(object):
                 style.solveInheritance(self.Parent.ComputedStyle)
             else:
                 style.solveInheritance(BaseStyle())
-            self._computedStyle = style
+            if self._computedStyle != style:
+                self._computedStyle = style
+                self._invalidateAlignment()
+                if self.Parent:
+                    self.Parent._invalidateAlignment()
             self._invalidatedComputedStyle = False
         return self._computedStyle
 
@@ -154,8 +171,9 @@ class AbstractWidget(object):
 
     @RelativeRect.setter
     def RelativeRect(self, value):
-        self._relativeRect.assign(value)
-        self._invalidateAlignment()
+        if value != self._relativeRect:
+            self._relativeRect.assign(value)
+            self._invalidateAlignment()
 
     @property
     def AbsoluteRect(self):
@@ -163,8 +181,9 @@ class AbstractWidget(object):
 
     @AbsoluteRect.setter
     def AbsoluteRect(self, value):
-        self._absoluteRect.assign(value)
-        self._invalidateAlignment()
+        if value != self._absoluteRect:
+            self._absoluteRect.assign(value)
+            self._invalidateAlignment()
 
     @property
     def StyleClasses(self):
@@ -227,6 +246,10 @@ class AbstractWidget(object):
         rect.shrink(self.ComputedStyle.Border.getBox())
         return rect
 
+    @property
+    def RootWidget(self):
+        return self._rootWidget
+
 class Widget(AbstractWidget):
     """
     Base class for non-parent widgets. Use this for any widget which will
@@ -251,7 +274,7 @@ class Widget(AbstractWidget):
 
     def _parentChanged(self):
         if self._parent is not None:
-            self._rootWidget = self._parent.getRootWidget()
+            self._rootWidget = self._parent.RootWidget
         else:
             self._rootWidget = None
         if self._rootWidget is not None:
@@ -412,9 +435,6 @@ class ParentWidget(Widget, WidgetContainer):
         child = self._children[key]
         del self._children[key]
         self._children.append(child)
-
-    def getRootWidget(self):
-        return self._rootWidget
 
     def hitTestWithChain(self, p):
         self.realign()

@@ -28,6 +28,8 @@ from our_future import *
 __all__ = ["RootWidget"]
 
 import cairo
+import copy
+
 import Engine.CEngine.Pango as Pango
 
 import CSS.Minilanguage
@@ -48,6 +50,7 @@ class RootWidget(AbstractWidget, WidgetContainer):
     """
 
     def __init__(self, **kwargs):
+        self._invalidatedRects = []  # needed during initialization
         super(RootWidget, self).__init__(**kwargs)
         self._rootWidget = self
         self._mouseCapture = None
@@ -62,6 +65,9 @@ class RootWidget(AbstractWidget, WidgetContainer):
         self._cairoSurface = None
         self._cairoContext = None
         self._pangoContext = None
+        self._resized = False
+        self._invalidatedRects = []  # discard init values, they're incorrect
+                                     # anyways
         self.ActiveButtonMask = mouse.LEFT | mouse.MIDDLE | mouse.RIGHT
 
     def _findKeyEventTarget(self):
@@ -122,6 +128,9 @@ class RootWidget(AbstractWidget, WidgetContainer):
                 h == self._cairoSurface.get_height()):
             self._recreateCairoContext(w, h)
 
+    def invalidateRect(self, rect):
+        self._invalidatedRects.append(copy.copy(rect))
+
     def doAlign(self):
         assert len(self) == 3
         myRect = self.AbsoluteRect
@@ -130,6 +139,8 @@ class RootWidget(AbstractWidget, WidgetContainer):
         self._popupLayer.AbsoluteRect = myRect
 
         self._requireCairoContext()
+        self._invalidatedRects = []
+        self._resized = True
 
     def dispatchKeyDown(self, *args):
         target = self._findKeyEventTarget()
@@ -188,9 +199,6 @@ class RootWidget(AbstractWidget, WidgetContainer):
         target = self._findKeyEventTarget()
         target.onCaretMotionSelect(motion)
 
-    def getRootWidget(self):
-        return self
-
     def realign(self):
         super(RootWidget, self).realign()
         for child in self:
@@ -205,10 +213,20 @@ class RootWidget(AbstractWidget, WidgetContainer):
         ctx.set_line_cap(cairo.LINE_CAP_SQUARE)
 
     def render(self):
+        self.realign()
+        if not (self._invalidatedRects or self._resized):
+            # no dirty regions, nothing to do \o/
+            return
+        if self._invalidatedRects:
+            print(self._invalidatedRects)
+        else:
+            print("global repaint")
         self.clearCairoSurface()
         self._desktopLayer.render()
         self._windowLayer.render()
         self._popupLayer.render()
+        self._invalidatedRects = []
+        self._resized = False
 
     def update(self, timeDelta):
         for child in self:
@@ -229,5 +247,9 @@ class RootWidget(AbstractWidget, WidgetContainer):
     @property
     def Parent(self):
         return None
+
+    @property
+    def RootWidget(self):
+        return self
 
 CSS.Minilanguage.ElementNames().registerWidgetClass(RootWidget, "Root")
