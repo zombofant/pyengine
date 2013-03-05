@@ -77,7 +77,7 @@ void EventLoop::terminate()
 
 void EventLoop::run()
 {
-    timespec lastUpdate, frameCounterStart;
+    TimeStamp lastUpdate, frameCounterStart;
     Display *display = _display.get();
     EventSink *eventSink = _eventSink.get();
     uint32_t frameCount = 0, syncedFrameCount = 0;
@@ -88,7 +88,7 @@ void EventLoop::run()
         while (!_terminated) {
             display->pullEvents(eventSink);
 
-            const timespec currentUpdate = nanotime();
+            const TimeStamp currentUpdate = nanotime();
             const TimeFloat interval = timeIntervalToDouble(lastUpdate, currentUpdate);
             const TimeFloat fpsInterval = timeIntervalToDouble(frameCounterStart, currentUpdate);
 
