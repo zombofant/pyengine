@@ -37,10 +37,16 @@ import Flags
 import Label
 
 class ButtonWidget(LabelledWidget):
-    def __init__(self, parent, caption="", **kwargs):
+    def __init__(self, parent, caption="", onclick=None, **kwargs):
         super(ButtonWidget, self).__init__(parent, **kwargs)
         self._flags = {Flags.Focusable}
         self._label.Text = caption
+        self._onclick = onclick
+
+    def onMouseClick(self, x, y, button, modifiers, nth):
+        rect = self.AbsoluteRect
+        if 0 <= x < rect.Width and 0 <= y < rect.Height and self._onclick:
+            self._onclick(self)
 
 
 CSS.Minilanguage.ElementNames().registerWidgetClass(ButtonWidget, "Button")
