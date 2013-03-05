@@ -31,3 +31,4 @@ from ScreenWidget import *
 from RootWidget import *
 from SceneWidget import *
 from ButtonWidget import *
+from SpaceWidget import *
