@@ -49,6 +49,12 @@ class Style(object):
     __metaclass__ = Inheritables
     __hash__ = None
 
+    class PropGroup(object):
+        pass
+
+    Visual = PropGroup()
+    Layout = PropGroup()
+
     def __init__(self, *rules, **kwargs):
         inherit = Literals.Inherit
 
@@ -114,6 +120,32 @@ class Style(object):
         )
         new._fontdesc_cache = self._fontdesc_cache
         return new
+
+    def diff(self, other):
+        diffs = set()
+        if (self._background != other._background or
+            self._textColour != other._textColour or
+            self._shear != other._shear or
+            self._border != other._border or
+            self._fontSize != other._fontSize or
+            self._fontWeight != other._fontWeight or
+            self._fontFamily != other._fontFamily or
+            self._textAlign != other._textAlign or
+            self._verticalAlign != other._verticalAlign):
+
+            diffs.add(self.Visual)
+
+        if (self._border != other._border or
+            self._width != other._width or
+            self._height != other._height or
+            self._flex != other._flex or
+            self._boxSpacing != other._boxSpacing or
+            self._margin != other._margin or
+            self._padding != other._padding):
+
+            diffs.add(self.Layout)
+
+        return diffs
 
     def _addRule(self, rule):
         for key, value in rule._properties:

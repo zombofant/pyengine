@@ -77,20 +77,18 @@ class AbstractWidget(object):
 
     def _invalidateAlignment(self):
         self._invalidatedAlignment = True
-        print("invalidated alignment of {}".format(self))
 
     def invalidateContext(self):
         pass
 
     def realign(self):
         if self._invalidatedAlignment or self._invalidatedComputedStyle:
-            self.doAlign()
-            self._invalidatedAlignment = False
             # the below is neccessary for widgets which do no alignment
             # nor rendering -- otherwise we'll realign them on every
             # frame!
             self.ComputedStyle
-            self.invalidate()
+            self.doAlign()
+            self._invalidatedAlignment = False
 
     def doAlign(self):
         pass
@@ -157,11 +155,16 @@ class AbstractWidget(object):
                 style.solveInheritance(self.Parent.ComputedStyle)
             else:
                 style.solveInheritance(BaseStyle())
-            if self._computedStyle != style:
+            diff = self._computedStyle.diff(style)
+            if diff:
                 self._computedStyle = style
-                self._invalidateAlignment()
-                if self.Parent:
-                    self.Parent._invalidateAlignment()
+                if Style.Layout in diff:
+                    self._invalidateAlignment()
+                    if self.Parent:
+                        self.Parent._invalidateAlignment()
+                if Style.Visual in diff:
+                    # force redrawing of the current rect
+                    self.invalidate()
             self._invalidatedComputedStyle = False
         return self._computedStyle
 
@@ -182,6 +185,8 @@ class AbstractWidget(object):
     @AbsoluteRect.setter
     def AbsoluteRect(self, value):
         if value != self._absoluteRect:
+            # the old rect must be invalidated too
+            self.invalidate()
             self._absoluteRect.assign(value)
             self._invalidateAlignment()
 
