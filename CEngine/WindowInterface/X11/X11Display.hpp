@@ -32,8 +32,14 @@ authors named in the AUTHORS file.
 #include "CEngine/WindowInterface/Display.hpp"
 #include "CEngine/WindowInterface/EventSink.hpp"
 #include "CEngine/IO/Log.hpp"
+#include "CEngine/IO/Time.hpp"
 
 namespace PyEngine {
+
+const unsigned int MAX_MULTICLICK_BUTTON = 3;
+const TimeFloat NCLICK_TIME = 0.25;  // default value in gtk
+const unsigned int MAX_NCLICK = 3;
+
 class X11Display : public Display {
 public:
     X11Display(const char *foo = 0);
@@ -55,6 +61,9 @@ private:
     int *_scroll_x,
         *_scroll_y;
     bool _mouse_valid;
+
+    TimeStamp _last_mouse_down[MAX_MULTICLICK_BUTTON];
+    unsigned int _nclick[MAX_MULTICLICK_BUTTON];
 
     LogChannelHandle _log;
 };

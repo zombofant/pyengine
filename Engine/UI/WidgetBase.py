@@ -105,6 +105,9 @@ class AbstractWidget(object):
     def onMouseDown(self, x, y, button, modifiers):
         return False
 
+    def onMouseClick(self, x, y, button, modifiers, nth):
+        return False
+
     def onMouseMove(self, x, y, dx, dy, buttons, modifiers):
         return False
 

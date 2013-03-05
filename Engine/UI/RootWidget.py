@@ -164,6 +164,10 @@ class RootWidget(AbstractWidget, WidgetContainer):
         if self._mouseCapture is None and button & self.ActiveButtonMask:
             self._focusAndCapture(hitChain, button)
 
+    def dispatchMouseClick(self, x, y, button, modifiers, nth):
+        target, cx, cy = self._mapMouseEvent(x, y)
+        target.onMouseClick(cx, cy, button, modifiers, nth)
+
     def dispatchMouseMove(self, x, y, dx, dy, button, modifiers):
         if self._mouseCapture is None:
             hitChain = self._hitTestWithChain((x, y))

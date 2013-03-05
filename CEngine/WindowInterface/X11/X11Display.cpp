@@ -93,6 +93,11 @@ X11Display::X11Display(const char *display):
     _scroll_x[6] = 1;
     _scroll_x[7] = -1;
 
+    for (unsigned int i = 0; i < MAX_MULTICLICK_BUTTON; i++) {
+        _last_mouse_down[i] = nanotime();
+        _nclick[i] = 1;
+    }
+
     _log->logf(Information, "X11 interface set up successfully.");
 }
 
@@ -288,6 +293,37 @@ void X11Display::pullEvents(EventSink *sink) {
                                     event.xbutton.y,
                                     event.xbutton.button,
                                     event.xbutton.state);
+            }
+
+            if (event.xbutton.button <= MAX_MULTICLICK_BUTTON) {
+                assert(event.xbutton.button != 0);
+                TimeStamp &previous = _last_mouse_down[event.xbutton.button-1];
+                TimeStamp now = nanotime();
+                TimeFloat interval = timeIntervalToDouble(
+                    previous,
+                    now
+                    );
+
+                previous = now;
+
+                unsigned int &nclick = _nclick[event.xbutton.button-1];
+                if (interval <= NCLICK_TIME) {
+                    if (nclick < MAX_NCLICK)
+                        nclick += 1;
+                    else
+                        nclick = 1;
+                } else {
+                    nclick = 1;
+                }
+                _log->logf(Debug, "nclick %d with button %d",
+                           nclick, event.xbutton.button);
+
+                sink->handleMouseClick(
+                    event.xbutton.x,
+                    event.xbutton.y,
+                    event.xbutton.button,
+                    event.xbutton.state,
+                    nclick);
             }
             break;
         case MotionNotify:
