@@ -53,7 +53,7 @@ class DesktopLayer(LayerWidget):
 
 class WindowLayer(LayerWidget):
     def __init__(self, parent, **kwargs):
-        super(WindowLayer, self).__init__(parent)
+        super(WindowLayer, self).__init__(parent, **kwargs)
         # self._childClasses = WindowWidget
 
 class PopupLayer(LayerWidget):
