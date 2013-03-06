@@ -27,7 +27,7 @@ from our_future import *
 
 import unittest
 
-from Style import Style
+from Style import Style, BaseStyle
 from Theme import Theme
 from WidgetBase import ParentWidget
 from RootWidget import RootWidget
@@ -155,21 +155,19 @@ class States(ThemeTest):
     def test_states(self):
         root = RootWidget()._desktopLayer
         self.theme.applyStyles(root)
-        self.assertEqual(
-            root.ComputedStyle,
-            Style(
-                background=Colour(1., 1., 1., 1.),
-                padding=Padding(1),
-                border=self.referenceBorder
-                )
+        refStyle = Style(
+            background=Colour(1., 1., 1., 1.),
+            padding=Padding(1),
+            border=self.referenceBorder
             )
+        refStyle.solveInheritance(BaseStyle())
+        self.assertEqual(root.ComputedStyle, refStyle)
         root._isHovered = True
         root._invalidateComputedStyle()
-        self.assertEqual(
-            root.ComputedStyle,
-            Style(
-                padding=Padding(1),
-                border=self.referenceBorder,
-                background=Colour(1., 0., 0., 1.)
-                )
+        refStyle = Style(
+            padding=Padding(1),
+            border=self.referenceBorder,
+            background=Colour(1., 0., 0., 1.)
             )
+        refStyle.solveInheritance(BaseStyle())
+        self.assertEqual(root.ComputedStyle, refStyle)
