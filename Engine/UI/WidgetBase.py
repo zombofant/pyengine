@@ -312,6 +312,9 @@ class Widget(AbstractWidget):
         else:
             self._cairoContext = None
             self._pangoContext = None
+        self.IsFocused = False
+        self.IsHovered = False
+        self.IsActive = False
         self.invalidateContext()
         self._themeChanged()
 

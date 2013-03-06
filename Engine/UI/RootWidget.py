@@ -73,6 +73,8 @@ class RootWidget(AbstractWidget, WidgetContainer):
         self.ActiveButtonMask = mouse.LEFT | mouse.MIDDLE | mouse.RIGHT
 
     def _findKeyEventTarget(self):
+        if self._focused and self._focused.RootWidget is not self:
+            self._focused = None
         return self._focused or self
 
     def _mapMouseEvent(self, x, y, hitChain=None):
