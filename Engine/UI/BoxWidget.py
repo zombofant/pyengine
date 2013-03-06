@@ -25,7 +25,7 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-__all__ = ["VBox", "HBox", "Grid"]
+__all__ = ["AbstractVBox", "AbstractHBox", "VBox", "HBox", "Grid"]
 
 import itertools
 from operator import attrgetter
@@ -190,14 +190,16 @@ class BoxWidget(ParentWidget):
 
             aaPosA += widgetWidth
 
-class VBox(BoxWidget):
+class AbstractVBox(BoxWidget):
     def __init__(self, parent, **kwargs):
-        super(VBox, self).__init__(parent,
+        super(AbstractVBox, self).__init__(
+            parent,
             opSetattr("TopBottom"),
             opSetattr("LeftRight"),
             (attrgetter("Top"), attrgetter("Bottom")),
             (attrgetter("Left"), attrgetter("Right")),
             attrgetter("Height"),
+            1,
             **kwargs)
 
     def doAlign(self):
@@ -209,14 +211,16 @@ class VBox(BoxWidget):
         x, y, w, h = self.AbsoluteRect.XYWH
         self._doAlign(spacingList, (y, x), h, w, (myStyle.Padding.Left, myStyle.Padding.Right))
 
-class HBox(BoxWidget):
+class AbstractHBox(BoxWidget):
     def __init__(self, parent, **kwargs):
-        super(HBox, self).__init__(parent,
+        super(AbstractHBox, self).__init__(
+            parent,
             opSetattr("LeftRight"),
             opSetattr("TopBottom"),
             (attrgetter("Left"), attrgetter("Right")),
             (attrgetter("Top"), attrgetter("Bottom")),
             attrgetter("Width"),
+            0,
             **kwargs)
 
     def doAlign(self):
@@ -233,6 +237,11 @@ class HBox(BoxWidget):
 class Grid(ParentWidget):
     pass
 
+class VBox(AbstractVBox):
+    pass
+
+class HBox(AbstractHBox):
+    pass
 
 CSS.Minilanguage.ElementNames().registerWidgetClass(VBox)
 CSS.Minilanguage.ElementNames().registerWidgetClass(HBox)
