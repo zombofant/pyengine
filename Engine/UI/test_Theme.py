@@ -85,7 +85,9 @@ DesktopLayer:hover {
 
 class ThemeCascading(ThemeTest):
     def test_cascade(self):
-        root = RootWidget()._desktopLayer
+        rootW = RootWidget()
+        root = rootW._desktopLayer
+        rootW.Theme = self.theme
         child1 = ParentWidget(root)
         child2 = ParentWidget(child1)
 
@@ -106,15 +108,15 @@ class ThemeCascading(ThemeTest):
         )
 
     def test_customStyle(self):
-        root = RootWidget()._desktopLayer
+        rootW = RootWidget()
+        root = rootW._desktopLayer
+        rootW.Theme = self.theme
         child1 = ParentWidget(root)
         child2 = ParentWidget(child1)
         child2.StyleRule = Rule(
             [],
             [("margin", ("1",))]
         )
-
-        self.theme.applyStyles(root)
 
         refStyle = Style(
             background=Transparent,
@@ -129,15 +131,15 @@ class ThemeCascading(ThemeTest):
         )
 
     def test_applyStyles(self):
-        root = RootWidget()._desktopLayer
+        rootW = RootWidget()
+        root = rootW._desktopLayer
+        rootW.Theme = self.theme
         child1 = ParentWidget(root)
         child2 = ParentWidget(child1)
         child2.StyleRule = Rule(
             [],
             [("margin", ("1",))]
         )
-
-        self.theme.applyStyles(root)
 
         refStyle = Style(
             background=Transparent,
@@ -153,8 +155,9 @@ class ThemeCascading(ThemeTest):
 
 class States(ThemeTest):
     def test_states(self):
-        root = RootWidget()._desktopLayer
-        self.theme.applyStyles(root)
+        rootW = RootWidget()
+        root = rootW._desktopLayer
+        rootW.Theme = self.theme
         refStyle = Style(
             background=Colour(1., 1., 1., 1.),
             padding=Padding(1),

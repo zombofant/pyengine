@@ -57,7 +57,32 @@ class WindowLayer(LayerWidget):
         # self._childClasses = WindowWidget
 
 class PopupLayer(LayerWidget):
-    pass
+    def __init__(self, parent, **kwargs):
+        super(PopupLayer, self).__init__(parent, **kwargs)
+        self._currentRootMenu = None
+
+    def hitTest(self, p):
+        if self._currentRootMenu:
+            hit = ParentWidget.hitTest(self, p)
+            if hit is self and p in self._currentRootMenu.AbsoluteRect:
+                return self._currentRootMenu.hitTest(p)
+            return hit
+        else:
+            return super(PopupLayer, self).hitTest(p)
+
+    def onMouseClick(self, x, y, button, modifiers, nth):
+        if self._currentRootMenu:
+            self._currentRootMenu.hideSubMenu()
+            self._currentRootMenu = None
+
+    @property
+    def CurrentRootMenu(self):
+        return self._currentRootMenu
+
+    @CurrentRootMenu.setter
+    def CurrentRootMenu(self, value):
+        self._currentRootMenu = value
+
 
 CSS.Minilanguage.ElementNames().registerWidgetClass(DesktopLayer)
 CSS.Minilanguage.ElementNames().registerWidgetClass(WindowLayer)

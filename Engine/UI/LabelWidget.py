@@ -38,7 +38,7 @@ import copy
 import Engine.Resources.Manager as Manager
 import Engine.Resources.FontLoader
 
-import CSS.Literals as Literals
+from CSS.Literals import Auto
 import CSS.Minilanguage
 
 from WidgetBase import Widget
@@ -57,14 +57,31 @@ class LabelledWidget(Widget):
         super(LabelledWidget, self).invalidateContext()
         self._label.invalidateContext()
 
+    def getDimensions(self):
+        myStyle = self.ComputedStyle
+
+        width, height = self._label.getDimensions()
+        if myStyle.Width is not Auto:
+            width = myStyle.Width
+        if myStyle.Height is not Auto:
+            height = myStyle.Height
+
+        borderBox = myStyle.Border.getBox()
+        if width is not None:
+            width += myStyle.Padding.Horizontal + borderBox.Horizontal
+        if height is not None:
+            height += myStyle.Padding.Vertical + borderBox.Vertical
+
+        return width, height
+
     def doAlign(self):
+        myStyle = self.ComputedStyle
+
         self._label_rect = copy.copy(self.AbsoluteRect)
-        self._label_rect.shrink(self.ComputedStyle.Padding)
+        self._label_rect.shrink(myStyle.Padding)
+        self._label_rect.shrink(myStyle.Border.getBox())
         self._label.Width = self._label_rect.Width
-        if self.ComputedStyle.VerticalAlign == Literals.VerticalAlign.Top:
-            self._label.Height = self._label_rect.Height
-        else:
-            self._label.Height = None
+        self._label.Height = self._label_rect.Height
 
     def render(self):
         super(LabelledWidget, self).render()

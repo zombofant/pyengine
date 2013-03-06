@@ -50,6 +50,7 @@ class RootWidget(AbstractWidget, WidgetContainer):
     """
 
     def __init__(self, **kwargs):
+        self._theme = None
         self._invalidatedRects = []  # needed during initialization
         super(RootWidget, self).__init__(**kwargs)
         self._rootWidget = self
@@ -72,6 +73,8 @@ class RootWidget(AbstractWidget, WidgetContainer):
         self.ActiveButtonMask = mouse.LEFT | mouse.MIDDLE | mouse.RIGHT
 
     def _findKeyEventTarget(self):
+        if self._focused and self._focused.RootWidget is not self:
+            self._focused = None
         return self._focused or self
 
     def _mapMouseEvent(self, x, y, hitChain=None):
@@ -92,9 +95,11 @@ class RootWidget(AbstractWidget, WidgetContainer):
         if hitChain != oldHitChain:
             for non_hovered in oldHitChain - hitChain:
                 non_hovered.IsHovered = False
+                non_hovered.onMouseLeave()
 
             for hovered in hitChain - oldHitChain:
                 hovered.IsHovered = True
+                hovered.onMouseEnter()
 
             self._oldHitChain = hitChain
 
@@ -273,5 +278,17 @@ class RootWidget(AbstractWidget, WidgetContainer):
     @property
     def RootWidget(self):
         return self
+
+    @property
+    def Theme(self):
+        return self._theme
+
+    @Theme.setter
+    def Theme(self, theme):
+        if theme == self._theme:
+            return
+        self._theme = theme
+        for widget in self.treeDepthFirst():
+            widget._themeChanged()
 
 CSS.Minilanguage.ElementNames().registerWidgetClass(RootWidget, "Root")

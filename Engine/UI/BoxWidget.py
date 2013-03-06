@@ -25,7 +25,7 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-__all__ = ["VBox", "HBox", "Grid"]
+__all__ = ["AbstractVBox", "AbstractHBox", "VBox", "HBox", "Grid"]
 
 import itertools
 from operator import attrgetter
@@ -66,6 +66,7 @@ class BoxWidget(ParentWidget):
             aaBoxEdges,
             faBoxEdges,
             aaSizeGetter,
+            aaDimensionIndex,
             **kwargs):
         super(BoxWidget, self).__init__(parent, **kwargs)
         self._aaPositionSetter = aaPositionSetter # e.g. opSetattr("LeftRight")
@@ -73,6 +74,7 @@ class BoxWidget(ParentWidget):
         self._aaBoxEdges = aaBoxEdges # e.g. attrgetter("Left"), attrgetter("Right")
         self._faBoxEdges = faBoxEdges # e.g. attrgetter("Top"), attrgetter("Bottom")
         self._aaSizeGetter = aaSizeGetter # e.g. attrgetter("Width")
+        self._aaDimensionIndex = aaDimensionIndex
 
     def _getSpacingList(self, baseSpacing):
         """
@@ -116,14 +118,14 @@ class BoxWidget(ParentWidget):
                 my_left_margin = getterA(this_style.Margin)
                 my_right_margin = getterB(this_style.Margin)
                 flex = this_style.Flex
-                size = self._aaSizeGetter(this_style)
+                size = this.getDimensions()[self._aaDimensionIndex]
 
                 if my_left_margin < 0:
                     left_margin = left_space + my_left_margin
                 else:
                     left_margin = max(my_left_margin, left_space)
             else:
-                left_margin = max(left_space, getterB(myStyle.Padding))
+                left_margin += getterB(myStyle.Padding)
                 flex = 0
                 size = None
             results.append((this, left_margin, flex, size))
@@ -188,14 +190,16 @@ class BoxWidget(ParentWidget):
 
             aaPosA += widgetWidth
 
-class VBox(BoxWidget):
+class AbstractVBox(BoxWidget):
     def __init__(self, parent, **kwargs):
-        super(VBox, self).__init__(parent,
+        super(AbstractVBox, self).__init__(
+            parent,
             opSetattr("TopBottom"),
             opSetattr("LeftRight"),
             (attrgetter("Top"), attrgetter("Bottom")),
             (attrgetter("Left"), attrgetter("Right")),
             attrgetter("Height"),
+            1,
             **kwargs)
 
     def doAlign(self):
@@ -207,14 +211,16 @@ class VBox(BoxWidget):
         x, y, w, h = self.AbsoluteRect.XYWH
         self._doAlign(spacingList, (y, x), h, w, (myStyle.Padding.Left, myStyle.Padding.Right))
 
-class HBox(BoxWidget):
+class AbstractHBox(BoxWidget):
     def __init__(self, parent, **kwargs):
-        super(HBox, self).__init__(parent,
+        super(AbstractHBox, self).__init__(
+            parent,
             opSetattr("LeftRight"),
             opSetattr("TopBottom"),
             (attrgetter("Left"), attrgetter("Right")),
             (attrgetter("Top"), attrgetter("Bottom")),
             attrgetter("Width"),
+            0,
             **kwargs)
 
     def doAlign(self):
@@ -231,6 +237,11 @@ class HBox(BoxWidget):
 class Grid(ParentWidget):
     pass
 
+class VBox(AbstractVBox):
+    pass
+
+class HBox(AbstractHBox):
+    pass
 
 CSS.Minilanguage.ElementNames().registerWidgetClass(VBox)
 CSS.Minilanguage.ElementNames().registerWidgetClass(HBox)

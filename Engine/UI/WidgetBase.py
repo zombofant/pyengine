@@ -69,7 +69,6 @@ class AbstractWidget(object):
         self._isHovered = False
         self._isActive = False
         self._isFocused = False
-        self._theme = None
         self._computedStyle = Style()
 
     def _invalidateComputedStyle(self):
@@ -77,6 +76,10 @@ class AbstractWidget(object):
 
     def _invalidateAlignment(self):
         self._invalidatedAlignment = True
+
+    def _themeChanged(self):
+        self._invalidateComputedStyle()
+        self.ComputedStyle
 
     def invalidateContext(self):
         pass
@@ -114,6 +117,12 @@ class AbstractWidget(object):
     def onMouseUp(self, x, y, button, modifiers):
         return False
 
+    def onMouseEnter(self):
+        pass
+
+    def onMouseLeave(self):
+        pass
+
     def onResize(self):
         self._invalidateAlignment()
 
@@ -135,6 +144,22 @@ class AbstractWidget(object):
             return
         root.invalidateRect(self.AbsoluteRect)
 
+    def getDimensions(self):
+        myStyle = self.ComputedStyle
+        borderBox = myStyle.Border.getBox()
+        if myStyle.Width is not None:
+            width = myStyle.Width + myStyle.Padding.Horizontal + \
+                borderBox.Horizontal
+        else:
+            width = None
+        if myStyle.Height is not None:
+            height = myStyle.Height + myStyle.Padding.Vertical + \
+                borderBox.Vertical
+        else:
+            height = None
+
+        return width, height
+
     @property
     def StyleRule(self):
         return self._styleRule
@@ -149,8 +174,8 @@ class AbstractWidget(object):
     @property
     def ComputedStyle(self):
         if self._invalidatedComputedStyle:
-            if self._theme:
-                style = copy.copy(self._theme.getWidgetStyle(self))
+            if self.Theme:
+                style = copy.copy(self.Theme.getWidgetStyle(self))
             else:
                 style = Style()
             style += self._styleRule
@@ -202,17 +227,6 @@ class AbstractWidget(object):
         return (self._isHovered, self._isActive, self._isFocused)
 
     @property
-    def Theme(self):
-        return self._theme
-
-    @Theme.setter
-    def Theme(self, value):
-        if value == self._theme:
-            return
-        self._theme = value
-        self._invalidateComputedStyle()
-
-    @property
     def IsHovered(self):
         return self._isHovered
 
@@ -258,6 +272,13 @@ class AbstractWidget(object):
     def RootWidget(self):
         return self._rootWidget
 
+    @property
+    def Theme(self):
+        if self._rootWidget:
+            return self._rootWidget.Theme
+        else:
+            return None
+
 class Widget(AbstractWidget):
     """
     Base class for non-parent widgets. Use this for any widget which will
@@ -291,7 +312,11 @@ class Widget(AbstractWidget):
         else:
             self._cairoContext = None
             self._pangoContext = None
+        self.IsFocused = False
+        self.IsHovered = False
+        self.IsActive = False
         self.invalidateContext()
+        self._themeChanged()
 
     def hitTestWithChain(self, p):
         return [self] if p in self.AbsoluteRect else False

@@ -32,3 +32,4 @@ from RootWidget import *
 from SceneWidget import *
 from ButtonWidget import *
 from SpaceWidget import *
+from MenuWidget import *
