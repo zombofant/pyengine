@@ -96,6 +96,8 @@ X11Display::X11Display(const char *display):
     for (unsigned int i = 0; i < MAX_MULTICLICK_BUTTON; i++) {
         _last_mouse_down[i] = nanotime();
         _nclick[i] = 1;
+        _nclick_pos[i][0] = -10;
+        _nclick_pos[i][1] = -10;
     }
 
     _log->logf(Information, "X11 interface set up successfully.");
@@ -289,7 +291,7 @@ void X11Display::pullEvents(EventSink *sink) {
             if (event.xbutton.button <= MAX_MULTICLICK_BUTTON) {
                 assert(event.xbutton.button != 0);
                 TimeStamp &previous = _last_mouse_down[event.xbutton.button-1];
-                TimeStamp now = nanotime();
+                const TimeStamp now = nanotime();
                 TimeFloat interval = timeIntervalToDouble(
                     previous,
                     now
@@ -298,7 +300,14 @@ void X11Display::pullEvents(EventSink *sink) {
                 previous = now;
 
                 unsigned int &nclick = _nclick[event.xbutton.button-1];
-                if (interval <= NCLICK_TIME) {
+                int (&nclick_pos)[2] = _nclick_pos[event.xbutton.button-1];
+
+                const int dist = nclick_pos[0] + nclick_pos[1] -
+                    event.xbutton.x - event.xbutton.y;
+
+                if (interval <= NCLICK_TIME &&
+                    (dist <= MAX_NCLICK_DISTANCE))
+                {
                     if (nclick < MAX_NCLICK)
                         nclick += 1;
                     else
@@ -306,6 +315,9 @@ void X11Display::pullEvents(EventSink *sink) {
                 } else {
                     nclick = 1;
                 }
+                nclick_pos[0] = event.xbutton.x;
+                nclick_pos[1] = event.xbutton.y;
+
                 _log->logf(Debug, "nclick %d with button %d",
                            nclick, event.xbutton.button);
 

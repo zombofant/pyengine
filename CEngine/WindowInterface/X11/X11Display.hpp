@@ -39,6 +39,7 @@ namespace PyEngine {
 const unsigned int MAX_MULTICLICK_BUTTON = 3;
 const TimeFloat NCLICK_TIME = 0.25;  // default value in gtk
 const unsigned int MAX_NCLICK = 3;
+const int MAX_NCLICK_DISTANCE = 4;  // in manhatten metric
 
 class X11Display : public Display {
 public:
@@ -64,6 +65,7 @@ private:
 
     TimeStamp _last_mouse_down[MAX_MULTICLICK_BUTTON];
     unsigned int _nclick[MAX_MULTICLICK_BUTTON];
+    int _nclick_pos[MAX_MULTICLICK_BUTTON][2];
 
     LogChannelHandle _log;
 };
