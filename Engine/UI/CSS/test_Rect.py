@@ -38,7 +38,7 @@ class RectTest(unittest.TestCase):
         self.assertEqual(self.instance.Y, y)
         self.assertEqual(self.instance.Width, w)
         self.assertEqual(self.instance.Height, h)
-        
+
     def checkValuesXYRB(self, x, y, r, b):
         self.assertEqual(self.instance.X, x)
         self.assertEqual(self.instance.Y, y)
@@ -117,7 +117,7 @@ class RectProperties(RectInstanceTest):
         self.instance.Bottom = b
         self.assertEqual(self.instance.Bottom, b)
         self.assertEqual(self.instance.Height, b - y)
-        
+
 class RectConstraints(RectInstanceTest):
     def setattrWrapper(self, attr, value):
         def c():
@@ -146,7 +146,7 @@ class RectOperators(RectTest):
         b = copy.copy(a)
         self.assertIsNot(a, b)
         self.assertEqual(a, b)
-        
+
     def test_and(self):
         a = Rect.Rect(10, 10, 20, 20)
         backup = copy.copy(a)
@@ -267,7 +267,7 @@ class RectBoxes(RectTest):
             bottomLeft,
             Rect.Rect(0, 15, 5, 20)
         )
-    
+
     def test_cut2(self):
         a = Rect.Rect(0, 0, 20, 20)
         b = Box.BaseBox(0, 0, 0, 0)
