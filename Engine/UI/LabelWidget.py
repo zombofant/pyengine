@@ -58,13 +58,13 @@ class LabelledWidget(Widget):
         self._label.invalidateContext()
 
     def doAlign(self):
+        myStyle = self.ComputedStyle
+
         self._label_rect = copy.copy(self.AbsoluteRect)
-        self._label_rect.shrink(self.ComputedStyle.Padding)
+        self._label_rect.shrink(myStyle.Padding)
+        self._label_rect.shrink(myStyle.Border.getBox())
         self._label.Width = self._label_rect.Width
-        if self.ComputedStyle.VerticalAlign == Literals.VerticalAlign.Top:
-            self._label.Height = self._label_rect.Height
-        else:
-            self._label.Height = None
+        self._label.Height = self._label_rect.Height
 
     def render(self):
         super(LabelledWidget, self).render()
