@@ -418,7 +418,7 @@ class Style(object):
 
     @Width.setter
     def Width(self, value):
-        if value is not None:
+        if value is not None and value is not Literals.Auto:
             value = float(value)
             if value <= 0:
                 raise ValueError("Width must be positive. Got {0} {1}".format(type(value), value))
@@ -430,7 +430,7 @@ class Style(object):
 
     @Height.setter
     def Height(self, value):
-        if value is not None:
+        if value is not None and value is not Literals.Auto:
             value = float(value)
             if value <= 0:
                 raise ValueError("Height must be positive. Got {0} {1}".format(type(value), value))
