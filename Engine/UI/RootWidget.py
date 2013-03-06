@@ -93,9 +93,11 @@ class RootWidget(AbstractWidget, WidgetContainer):
         if hitChain != oldHitChain:
             for non_hovered in oldHitChain - hitChain:
                 non_hovered.IsHovered = False
+                non_hovered.onMouseLeave()
 
             for hovered in hitChain - oldHitChain:
                 hovered.IsHovered = True
+                hovered.onMouseEnter()
 
             self._oldHitChain = hitChain
 

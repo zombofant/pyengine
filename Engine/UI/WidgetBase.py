@@ -117,6 +117,12 @@ class AbstractWidget(object):
     def onMouseUp(self, x, y, button, modifiers):
         return False
 
+    def onMouseEnter(self):
+        pass
+
+    def onMouseLeave(self):
+        pass
+
     def onResize(self):
         self._invalidateAlignment()
 
