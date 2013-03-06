@@ -31,6 +31,23 @@ authors named in the AUTHORS file.
 namespace PyEngine {
 namespace GL {
 
+void transfer32BitImagePart(
+    GLenum target,
+    GLint level,
+    GLint source_xoffset, GLint source_yoffset,
+    GLint gl_xoffset, GLint gl_yoffset,
+    GLsizei part_width, GLsizei part_height,
+    GLsizei buf_width, GLsizei buf_height,
+    const GLvoid* buffer)
+{
+    GLvoid* partbuffer = (GLvoid*)malloc(part_width*part_height*4);
+
+    assert(false); // this is a stub
+
+    free(partbuffer);
+    raiseLastGLError();
+}
+
 void glTexCairoSurfaceSubImage2D(GLenum target,
     GLint level,
     GLint xoffset, GLint yoffset,
@@ -58,7 +75,7 @@ void glTexCairoSurfaceSubImage2D(GLenum target,
     } else {
         throw Exception("Got unsupported image surface format");
     }
-    
+
     glTexSubImage2D(target, level, xoffset, yoffset,
         width,
         cairo_image_surface_get_height(surface),
@@ -66,6 +83,18 @@ void glTexCairoSurfaceSubImage2D(GLenum target,
         glType,
         (const GLvoid*)cairo_image_surface_get_data(surface));
     raiseLastGLError();
+}
+
+void glTexSubCairoSurfaceSubImage2D(
+    GLenum target,
+    GLint level,
+    GLint cairo_xoffset, GLint cairo_yoffset,
+    GLint gl_xoffset, GLint gl_yoffset,
+    GLint width, GLint height,
+    cairo_surface_t *surface)
+{
+    assert(false);
+    // this is a stub
 }
 
 }
