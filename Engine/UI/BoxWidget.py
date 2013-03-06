@@ -125,7 +125,7 @@ class BoxWidget(ParentWidget):
                 else:
                     left_margin = max(my_left_margin, left_space)
             else:
-                left_margin = max(left_space, getterB(myStyle.Padding))
+                left_margin += getterB(myStyle.Padding)
                 flex = 0
                 size = None
             results.append((this, left_margin, flex, size))
