@@ -98,6 +98,10 @@ class Label(object):
 
         self._layoutInvalidated = False
 
+    def getDimesions(self):
+        _, logical = self._layout.get_pixel_extents()
+        return logical.width, logical.height
+
     def render(self, inBox):
         self._updateLayout()
         ctx = self._cairo
