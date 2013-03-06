@@ -110,6 +110,14 @@ class BaseBox(object):
             return
         self._bottom = self._checkValue(value)
 
+    @property
+    def Horizontal(self):
+        return self.Left + self.Right
+
+    @property
+    def Vertical(self):
+        return self.Top + self.Bottom
+
     def __eq__(self, other):
         if not isinstance(other, BaseBox):
             return NotImplemented
