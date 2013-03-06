@@ -50,6 +50,7 @@ class RootWidget(AbstractWidget, WidgetContainer):
     """
 
     def __init__(self, **kwargs):
+        self._theme = None
         self._invalidatedRects = []  # needed during initialization
         super(RootWidget, self).__init__(**kwargs)
         self._rootWidget = self
@@ -273,5 +274,17 @@ class RootWidget(AbstractWidget, WidgetContainer):
     @property
     def RootWidget(self):
         return self
+
+    @property
+    def Theme(self):
+        return self._theme
+
+    @Theme.setter
+    def Theme(self, theme):
+        if theme == self._theme:
+            return
+        self._theme = theme
+        for widget in self.treeDepthFirst():
+            widget._themeChanged()
 
 CSS.Minilanguage.ElementNames().registerWidgetClass(RootWidget, "Root")

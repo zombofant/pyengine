@@ -91,8 +91,3 @@ class Theme(object):
             style = Style(*rules)
             self._cache[selectors] = style
         return style
-
-
-    def applyStyles(self, rootWidget):
-        for widget in rootWidget.treeDepthFirst():
-            widget.Theme = self

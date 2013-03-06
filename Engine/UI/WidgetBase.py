@@ -69,7 +69,6 @@ class AbstractWidget(object):
         self._isHovered = False
         self._isActive = False
         self._isFocused = False
-        self._theme = None
         self._computedStyle = Style()
 
     def _invalidateComputedStyle(self):
@@ -77,6 +76,10 @@ class AbstractWidget(object):
 
     def _invalidateAlignment(self):
         self._invalidatedAlignment = True
+
+    def _themeChanged(self):
+        self._invalidateComputedStyle()
+        self.ComputedStyle
 
     def invalidateContext(self):
         pass
@@ -165,8 +168,8 @@ class AbstractWidget(object):
     @property
     def ComputedStyle(self):
         if self._invalidatedComputedStyle:
-            if self._theme:
-                style = copy.copy(self._theme.getWidgetStyle(self))
+            if self.Theme:
+                style = copy.copy(self.Theme.getWidgetStyle(self))
             else:
                 style = Style()
             style += self._styleRule
@@ -218,17 +221,6 @@ class AbstractWidget(object):
         return (self._isHovered, self._isActive, self._isFocused)
 
     @property
-    def Theme(self):
-        return self._theme
-
-    @Theme.setter
-    def Theme(self, value):
-        if value == self._theme:
-            return
-        self._theme = value
-        self._invalidateComputedStyle()
-
-    @property
     def IsHovered(self):
         return self._isHovered
 
@@ -274,6 +266,13 @@ class AbstractWidget(object):
     def RootWidget(self):
         return self._rootWidget
 
+    @property
+    def Theme(self):
+        if self._rootWidget:
+            return self._rootWidget.Theme
+        else:
+            return None
+
 class Widget(AbstractWidget):
     """
     Base class for non-parent widgets. Use this for any widget which will
@@ -308,6 +307,7 @@ class Widget(AbstractWidget):
             self._cairoContext = None
             self._pangoContext = None
         self.invalidateContext()
+        self._themeChanged()
 
     def hitTestWithChain(self, p):
         return [self] if p in self.AbsoluteRect else False
