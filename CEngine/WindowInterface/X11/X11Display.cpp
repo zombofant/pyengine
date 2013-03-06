@@ -249,6 +249,7 @@ void X11Display::openInputContext() {
                                XNInputStyle, XIMPreeditNothing | XIMStatusNothing,
                                NULL);
     if (_input_context == NULL) {
+        _log->logf(Error, "Could not acquire input context");
         // FIXME: die loudly, or try to correct
     }
 
@@ -370,6 +371,7 @@ void X11Display::pullEvents(EventSink *sink) {
                 buf = (char *) realloc(buf, buf_size);
 
                 if (buf == NULL) {
+                    _log->log(Error, "Memory allocation for utf8 buffer failed.");
                     // FIXME: raise exception, die ungracefully but loudly
                 }
 
