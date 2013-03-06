@@ -135,6 +135,22 @@ class AbstractWidget(object):
             return
         root.invalidateRect(self.AbsoluteRect)
 
+    def getDimensions(self):
+        myStyle = self.ComputedStyle
+        borderBox = myStyle.Border.getBox()
+        if myStyle.Width is not None:
+            width = myStyle.Width + myStyle.Padding.Horizontal + \
+                borderBox.Horizontal
+        else:
+            width = None
+        if myStyle.Height is not None:
+            height = myStyle.Height + myStyle.Padding.Vertical + \
+                borderBox.Vertical
+        else:
+            height = None
+
+        return width, height
+
     @property
     def StyleRule(self):
         return self._styleRule

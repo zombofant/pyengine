@@ -66,6 +66,7 @@ class BoxWidget(ParentWidget):
             aaBoxEdges,
             faBoxEdges,
             aaSizeGetter,
+            aaDimensionIndex,
             **kwargs):
         super(BoxWidget, self).__init__(parent, **kwargs)
         self._aaPositionSetter = aaPositionSetter # e.g. opSetattr("LeftRight")
@@ -73,6 +74,7 @@ class BoxWidget(ParentWidget):
         self._aaBoxEdges = aaBoxEdges # e.g. attrgetter("Left"), attrgetter("Right")
         self._faBoxEdges = faBoxEdges # e.g. attrgetter("Top"), attrgetter("Bottom")
         self._aaSizeGetter = aaSizeGetter # e.g. attrgetter("Width")
+        self._aaDimensionIndex = aaDimensionIndex
 
     def _getSpacingList(self, baseSpacing):
         """
@@ -116,7 +118,7 @@ class BoxWidget(ParentWidget):
                 my_left_margin = getterA(this_style.Margin)
                 my_right_margin = getterB(this_style.Margin)
                 flex = this_style.Flex
-                size = self._aaSizeGetter(this_style)
+                size = this.getDimensions()[self._aaDimensionIndex]
 
                 if my_left_margin < 0:
                     left_margin = left_space + my_left_margin
