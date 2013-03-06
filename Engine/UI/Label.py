@@ -98,7 +98,8 @@ class Label(object):
 
         self._layoutInvalidated = False
 
-    def getDimesions(self):
+    def getDimensions(self):
+        self._updateLayout()
         _, logical = self._layout.get_pixel_extents()
         return logical.width, logical.height
 
