@@ -78,11 +78,15 @@ class RootWidget(AbstractWidget, WidgetContainer):
         target = self._mouseCapture or \
             ((hitChain[0] if hitChain is not False else None)
              if hitChain is not None else self._hitTest((x, y)))
+        if target is None:
+            return None, x, y
         return (target, x - target.AbsoluteRect.Left, y - target.AbsoluteRect.Top)
 
     def _updateHoverState(self, hitChain=None, p=None):
         if hitChain is None:
             hitChain = self._hitTestWithChain(p)
+        if hitChain is False:
+            hitChain = []
         hitChain = frozenset(hitChain)
         oldHitChain = self._oldHitChain
         if hitChain != oldHitChain:
@@ -161,13 +165,15 @@ class RootWidget(AbstractWidget, WidgetContainer):
         else:
             hitChain = None
         target, x, y = self._mapMouseEvent(x, y, hitChain)
-        target.onMouseDown(x, y, button, modifiers)
+        if target:
+            target.onMouseDown(x, y, button, modifiers)
         if self._mouseCapture is None and button & self.ActiveButtonMask:
             self._focusAndCapture(hitChain, button)
 
     def dispatchMouseClick(self, x, y, button, modifiers, nth):
         target, cx, cy = self._mapMouseEvent(x, y)
-        target.onMouseClick(cx, cy, button, modifiers, nth)
+        if target:
+            target.onMouseClick(cx, cy, button, modifiers, nth)
 
     def dispatchMouseMove(self, x, y, dx, dy, button, modifiers):
         if self._mouseCapture is None:
@@ -175,14 +181,16 @@ class RootWidget(AbstractWidget, WidgetContainer):
         else:
             hitChain = None
         target, x, y = self._mapMouseEvent(x, y, hitChain)
-        target.onMouseMove(x, y, dx, dy, button, modifiers)
+        if target:
+            target.onMouseMove(x, y, dx, dy, button, modifiers)
 
         if self._mouseCapture is None:
             self._updateHoverState(hitChain)
 
     def dispatchMouseUp(self, x, y, button, modifiers):
         target, cx, cy = self._mapMouseEvent(x, y)
-        target.onMouseUp(cx, cy, button, modifiers)
+        if target:
+            target.onMouseUp(cx, cy, button, modifiers)
         if target is self._mouseCapture and button & self._mouseCaptureButton:
             self._mouseCapture = None
             self._mouseCaptureButton = 0
@@ -190,7 +198,8 @@ class RootWidget(AbstractWidget, WidgetContainer):
 
     def dispatchScroll(self, x, y, scrollX, scrollY):
         target, x, y = self._mapMouseEvent(x, y)
-        target.onScroll(scrollX, scrollY)
+        if target:
+            target.onScroll(scrollX, scrollY)
 
     def dispatchTextInput(self, text):
         target = self._findKeyEventTarget()
