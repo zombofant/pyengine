@@ -75,6 +75,18 @@ class ParseSelectors(ParserInstanceTest):
             Rules.Rule([Selectors.Is("test")], [])
         )
 
+    def test_comment(self):
+        self._testRule(
+            """
+/* ignored content */
+            test  /* some more ignored content */{
+ /* more ignored content
+*/
+            } /* even more ignored content */
+            """,
+            Rules.Rule([Selectors.Is("test")], [])
+        )
+
     def test_invalidSelector(self):
         # FIXME: Make the parser raise a proper exception here
         self.assertRaises(Exception, self._parseCSS, """{}""")
