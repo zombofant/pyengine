@@ -68,6 +68,7 @@ class RootWidget(AbstractWidget, WidgetContainer):
         self._resized = False
         self._invalidatedRects = []  # discard init values, they're incorrect
                                      # anyways
+        self.surfaceDirty = False
         self.ActiveButtonMask = mouse.LEFT | mouse.MIDDLE | mouse.RIGHT
 
     def _findKeyEventTarget(self):
@@ -224,6 +225,7 @@ class RootWidget(AbstractWidget, WidgetContainer):
 
     def render(self):
         self.realign()
+        self.surfaceDirty = False
         if not (self._invalidatedRects or self._resized):
             # no dirty regions, nothing to do \o/
             return
@@ -237,6 +239,7 @@ class RootWidget(AbstractWidget, WidgetContainer):
         self._invalidatedRects = []
         self._resized = False
         self._cairoContext.reset_clip()
+        self.surfaceDirty = True
 
     def update(self, timeDelta):
         for child in self:
