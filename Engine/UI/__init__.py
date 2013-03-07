@@ -33,3 +33,4 @@ from SceneWidget import *
 from ButtonWidget import *
 from SpaceWidget import *
 from MenuWidget import *
+from EditWidget import *
