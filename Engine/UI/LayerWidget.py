@@ -70,7 +70,7 @@ class PopupLayer(LayerWidget):
         else:
             return super(PopupLayer, self).hit_test(p)
 
-    def onmouseclick(self, x, y, button, modifiers, nth):
+    def on_mouse_click(self, x, y, button, modifiers, nth):
         if self._current_root_menu:
             self._current_root_menu.hide_submenu()
             self._current_root_menu = None

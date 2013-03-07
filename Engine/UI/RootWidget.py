@@ -95,11 +95,11 @@ class RootWidget(AbstractWidget, WidgetContainer):
         if hitchain != old_hit_chain:
             for non_hovered in old_hit_chain - hitchain:
                 non_hovered.IsHovered = False
-                non_hovered.onmouseleave()
+                non_hovered.on_mouse_leave()
 
             for hovered in hitchain - old_hit_chain:
                 hovered.IsHovered = True
-                hovered.onmouseenter()
+                hovered.on_mouse_enter()
 
             self._old_hit_chain = hitchain
 
@@ -154,15 +154,15 @@ class RootWidget(AbstractWidget, WidgetContainer):
 
     def dispatch_key_down(self, *args):
         target = self._find_key_event_target()
-        handled = target.onkeydown(*args)
+        handled = target.on_key_down(*args)
         if not handled and target is not self:
-            self.onkeydown(*args)
+            self.on_key_down(*args)
 
     def dispatch_key_up(self, *args):
         target = self._find_key_event_target()
-        handled = target.onkeyup(*args)
+        handled = target.on_key_up(*args)
         if not handled and target is not self:
-            self.onkeyup(*args)
+            self.on_key_up(*args)
 
     def dispatch_mouse_down(self, x, y, button, modifiers):
         if self._mouse_capture is None:
@@ -171,14 +171,14 @@ class RootWidget(AbstractWidget, WidgetContainer):
             hitchain = None
         target, x, y = self._map_mouse_event(x, y, hitchain)
         if target:
-            target.onmousedown(x, y, button, modifiers)
+            target.on_mouse_down(x, y, button, modifiers)
         if self._mouse_capture is None and button & self.ActiveButtonMask:
             self._focus_and_capture(hitchain, button)
 
     def dispatch_mouse_click(self, x, y, button, modifiers, nth):
         target, cx, cy = self._map_mouse_event(x, y)
         if target:
-            target.onmouseclick(cx, cy, button, modifiers, nth)
+            target.on_mouse_click(cx, cy, button, modifiers, nth)
 
     def dispatch_mouse_move(self, x, y, dx, dy, button, modifiers):
         if self._mouse_capture is None:
@@ -187,7 +187,7 @@ class RootWidget(AbstractWidget, WidgetContainer):
             hitchain = None
         target, x, y = self._map_mouse_event(x, y, hitchain)
         if target:
-            target.onmousemove(x, y, dx, dy, button, modifiers)
+            target.on_mouse_move(x, y, dx, dy, button, modifiers)
 
         if self._mouse_capture is None:
             self._update_hover_state(hitchain)
@@ -195,7 +195,7 @@ class RootWidget(AbstractWidget, WidgetContainer):
     def dispatch_mouse_up(self, x, y, button, modifiers):
         target, cx, cy = self._map_mouse_event(x, y)
         if target:
-            target.onmouseup(cx, cy, button, modifiers)
+            target.on_mouse_up(cx, cy, button, modifiers)
         if target is self._mouse_capture and button & self._mouse_capture_button:
             self._mouse_capture = None
             self._mouse_capture_button = 0
@@ -204,19 +204,19 @@ class RootWidget(AbstractWidget, WidgetContainer):
     def dispatch_scroll(self, x, y, scrollX, scrollY):
         target, x, y = self._map_mouse_event(x, y)
         if target:
-            target.onscroll(scrollX, scrollY)
+            target.on_scroll(scrollX, scrollY)
 
     def dispatch_text_input(self, text):
         target = self._find_key_event_target()
-        target.ontextinput(text)
+        target.on_text_input(text)
 
     def dispatch_caret_motion(self, motion):
         target = self._find_key_event_target()
-        target.oncaretmotion(motion)
+        target.on_caret_motion(motion)
 
     def dispatch_caret_motion_select(self, motion):
         target = self._find_key_event_target()
-        target.oncaretmotionselect(motion)
+        target.on_caret_motion_select(motion)
 
     def realign(self):
         super(RootWidget, self).realign()

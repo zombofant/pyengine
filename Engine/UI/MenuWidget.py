@@ -225,11 +225,11 @@ class MenuButton(LabelledWidget, MenuItem):
 
         return width, height
 
-    def onmouseenter(self):
+    def on_mouse_enter(self):
         if self.Parent.ShowingSubMenu or isinstance(self.Parent, Menu):
             self.Parent.show_submenu(self, self.SubMenu)
 
-    def onmouseclick(self, x, y, button, modifiers, nth):
+    def on_mouse_click(self, x, y, button, modifiers, nth):
         if self.SubMenu:
             if self.Parent.VisibleSubMenu != self.SubMenu:
                 self.Parent.show_submenu(self, self.SubMenu)

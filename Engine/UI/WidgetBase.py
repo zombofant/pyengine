@@ -57,8 +57,8 @@ class AbstractWidget(object):
         self.Visible = True
         self.Enabled = True
         self._parent = None
-        self._relative_rect = Rect(0, 0, onchange=self.onresize)
-        self._absolute_rect = Rect(0, 0, onchange=self.onresize)
+        self._relative_rect = Rect(0, 0, onchange=self.on_resize)
+        self._absolute_rect = Rect(0, 0, onchange=self.on_resize)
         self._stylerule = None
         self._computed_style_invalidated = True
         self._alignment_invalidated = True
@@ -99,43 +99,43 @@ class AbstractWidget(object):
     def render(self):
         self.ComputedStyle.in_cairo(self.AbsoluteRect, self._cairo)
 
-    def onkeydown(self, symbol, modifiers):
+    def on_key_down(self, symbol, modifiers):
         return False
 
-    def onkeyup(self, symbol, modifiers):
+    def on_key_up(self, symbol, modifiers):
         return False
 
-    def onmousedown(self, x, y, button, modifiers):
+    def on_mouse_down(self, x, y, button, modifiers):
         return False
 
-    def onmouseclick(self, x, y, button, modifiers, nth):
+    def on_mouse_click(self, x, y, button, modifiers, nth):
         return False
 
-    def onmousemove(self, x, y, dx, dy, buttons, modifiers):
+    def on_mouse_move(self, x, y, dx, dy, buttons, modifiers):
         return False
 
-    def onmouseup(self, x, y, button, modifiers):
+    def on_mouse_up(self, x, y, button, modifiers):
         return False
 
-    def onmouseenter(self):
+    def on_mouse_enter(self):
         pass
 
-    def onmouseleave(self):
+    def on_mouse_leave(self):
         pass
 
-    def onresize(self):
+    def on_resize(self):
         self._invalidate_alignment()
 
-    def onscroll(self, scrollX, scrollY):
+    def on_scroll(self, scrollX, scrollY):
         return False
 
-    def ontextinput(self, text):
+    def on_text_input(self, text):
         return False
 
-    def oncaretmotion(self, motion):
+    def on_caret_motion(self, motion):
         return False
 
-    def oncaretmotionselect(self, motion):
+    def on_caret_motion_select(self, motion):
         return False
 
     def invalidate(self):
