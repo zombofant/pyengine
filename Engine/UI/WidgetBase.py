@@ -132,10 +132,10 @@ class AbstractWidget(object):
     def on_text_input(self, text):
         return False
 
-    def on_caret_motion(self, motion):
+    def on_caret_motion(self, direction, step):
         return False
 
-    def on_caret_motion_select(self, motion):
+    def on_caret_motion_select(self, direction, step):
         return False
 
     def invalidate(self):

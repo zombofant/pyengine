@@ -35,6 +35,7 @@ import Engine.CEngine.Pango as Pango
 import CSS.Minilanguage
 
 from Engine.pygletHeadless import mouse
+from Engine.CEngine.Window import key, motion
 from WidgetBase import AbstractWidget, WidgetContainer
 from LayerWidget import LayerWidget, DesktopLayer, WindowLayer, PopupLayer
 from Flags import *
@@ -48,6 +49,17 @@ class RootWidget(AbstractWidget, WidgetContainer):
     it respects the *Focusable* flag, which must be set by a widget which
     wants to recieve the focus.
     """
+
+    keymap = {
+        (key.Left, 0): lambda self: self.dispatch_caret_motion(
+            motion.Left, motion.StepChar),
+        (key.Right, 0): lambda self: self.dispatch_caret_motion(
+            motion.Right, motion.StepChar),
+        (key.Home, 0): lambda self: self.dispatch_caret_motion(
+            motion.Begin, motion.StepChar),
+        (key.End, 0): lambda self: self.dispatch_caret_motion(
+            motion.End, motion.StepChar)
+        }
 
     def __init__(self, **kwargs):
         self._theme = None
@@ -152,17 +164,30 @@ class RootWidget(AbstractWidget, WidgetContainer):
         self._invalidated_rects = []
         self._resized = True
 
-    def dispatch_key_down(self, *args):
+    def dispatch_key_down(self, key, modifiers):
         target = self._find_key_event_target()
-        handled = target.on_key_down(*args)
-        if not handled and target is not self:
-            self.on_key_down(*args)
+
+        try:
+            handler = self.keymap[(key, modifiers)]
+        except KeyError:
+            pass
+        else:
+            if handler(self):
+                return
+
+        handled = target.on_key_down(key, modifiers)
+        parent = target.Parent
+        while parent and not handled:
+            handled = parent.on_key_down(key, modifiers)
+            parent = parent.Parent
 
     def dispatch_key_up(self, *args):
         target = self._find_key_event_target()
         handled = target.on_key_up(*args)
-        if not handled and target is not self:
-            self.on_key_up(*args)
+        parent = target.Parent
+        while parent and not handled:
+            handled = parent.on_key_up(*args)
+            parent = parent.Parent
 
     def dispatch_mouse_down(self, x, y, button, modifiers):
         if self._mouse_capture is None:
@@ -210,13 +235,22 @@ class RootWidget(AbstractWidget, WidgetContainer):
         target = self._find_key_event_target()
         target.on_text_input(text)
 
-    def dispatch_caret_motion(self, motion):
+    def dispatch_caret_motion(self, direction, step):
         target = self._find_key_event_target()
-        target.on_caret_motion(motion)
+        handled = target.on_caret_motion(direction, step)
+        parent = target.Parent
+        while not handled and parent:
+            handled = parent.on_caret_motion(direction, step)
+            parent = parent.Parent
 
-    def dispatch_caret_motion_select(self, motion):
+    def dispatch_caret_motion_select(self, direction, step):
         target = self._find_key_event_target()
-        target.on_caret_motion_select(motion)
+        handled = target.on_caret_motion_select(direction, step)
+        parent = target.Parent
+        while not handled and parent:
+            handled = parent.on_caret_motion_select(direction, step)
+            parent = parent.Parent
+        return handled
 
     def realign(self):
         super(RootWidget, self).realign()
