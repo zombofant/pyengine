@@ -241,7 +241,7 @@ class Rect(object):
 
     def transpose(self, byX, byY):
         self.X = self._x + byX
-        self.Y = sefl._y + byY
+        self.Y = self._y + byY
 
     def assign(self, other):
         if not isinstance(other, Rect):
