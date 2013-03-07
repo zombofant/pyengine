@@ -25,21 +25,10 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-__all__ = ["LabelWidget"]
-
-try:
-    from OpenGL.GL import *
-    import Engine.GL.Shader as Shader
-except (ImportError, NameError):
-    pass
-
 try:
     import Engine.CEngine.Pango as Pango
 except (ImportError):
     Pango = None
-
-import Engine.Resources.Manager as Manager
-import Engine.Resources.FontLoader
 
 import CSS.Minilanguage
 
