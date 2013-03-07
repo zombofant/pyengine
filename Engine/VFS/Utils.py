@@ -60,7 +60,7 @@ def absolutify(path):
         i += 1
     return '/'+'/'.join(segments)
 
-def validateVFSPath(path):
+def validate_vfs_path(path):
     """
     Checks whether a path is a valid VFS path.
 
@@ -77,7 +77,7 @@ def validateVFSPath(path):
             raise ValueError("Invalid VFS path {0!r}: \"//\" must not occur in a path".format(path))
     
 
-def normalizeVFSPath(path):
+def normalize_vfs_path(path):
     """
     Removes trailing slashes.
     """
@@ -86,7 +86,7 @@ def normalizeVFSPath(path):
         path = path[:-1]
     return path
 
-def isWriteFlag(flag):
+def is_write_flag(flag):
     """
     Checks whether an :func:`open()` flag means opening a file for
     writing.
@@ -103,19 +103,19 @@ def join(*segments):
     Works like os.path.join, except that it does not use the platforms
     directory separator but always a /.
     """
-    fullPath = ""
+    full_path = ""
     for segment in segments:
         if len(segment) == 0:
             continue
         if segment[0] == "/":
-            fullPath = absolutify(segment)
+            full_path = absolutify(segment)
         else:
             segment = absolutify(segment)
-            if len(fullPath) == 0:
-                fullPath += segment[1:]
+            if len(full_path) == 0:
+                full_path += segment[1:]
             else:
-                fullPath += segment
-    return fullPath
+                full_path += segment
+    return full_path
 
 def splitext(path):
     """

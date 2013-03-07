@@ -32,8 +32,8 @@ __all__ = ["Parser"]
 from Rules import Rule
 try:
     import GeneratedParser
-    genLexer = GeneratedParser.Lexer
-    genParser = GeneratedParser.Parser
+    genlexer = GeneratedParser.Lexer
+    genparser = GeneratedParser.Parser
 except ImportError:
     pass
 
@@ -42,7 +42,7 @@ class Parser(object):
         super(Parser, self).__init__(**kwargs)
 
     def parse(self, filelike):
-        lexer = genLexer(filelike)
-        parser = genParser(lexer)
+        lexer = genlexer(filelike)
+        parser = genparser(lexer)
         return parser.Parse()
         

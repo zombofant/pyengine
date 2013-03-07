@@ -52,120 +52,120 @@ class ResourceManager(object):
             cls.__singleton = super(type(ResourceManager), cls).__new__(cls, *args, **kwargs)
         return cls.__singleton
 
-    def __init__(self, fileSystem=None, **kwargs):
+    def __init__(self, filesystem=None, **kwargs):
         if not hasattr(self, '_initialized'):
             super(ResourceManager, self).__init__(**kwargs)
-            self._resourceLoaders = {}
-            self._resourceCache = {}
-            self._fileSystem = None
+            self._resource_loaders = {}
+            self._resource_cache = {}
+            self._filesystem = None
             self._initialized = True
 
         # This bluntly and planned ignores the singletonness of
         # ResourceManager. This allows for convinient setting of
-        # _fileSystem once.
-        if self._fileSystem is None and fileSystem is not None:
-            if not isinstance(fileSystem, FileSystem):
-                raise TypeError("FileSystem expected, got {0} {1}".format(type(fileSystem), fileSystem))
-            self._fileSystem = fileSystem
+        # _filesystem once.
+        if self._filesystem is None and filesystem is not None:
+            if not isinstance(filesystem, FileSystem):
+                raise TypeError("FileSystem expected, got {0} {1}".format(type(filesystem), filesystem))
+            self._filesystem = filesystem
 
     def _open(self, uri, mode):
-        if self._fileSystem is None:
-            raise ValueError("Assign a file system first by calling ResourceManager(fileSystem=instance) first")
-        return self._fileSystem.open(uri, mode)
+        if self._filesystem is None:
+            raise ValueError("Assign a file system first by calling ResourceManager(filesystem=instance) first")
+        return self._filesystem.open(uri, mode)
 
-    def _findResourceLoader(self, resourceType, requiredClass):
+    def _find_resource_loader(self, resourcetype, required_class):
         """
-        Tries to find an apropriate loader for the given resourceType. If a
+        Tries to find an apropriate loader for the given resourcetype. If a
         loader can be found, it is asked for its supported target classes.
-        If it supports the given requiredClass, the loader will be returned.
+        If it supports the given required_class, the loader will be returned.
 
         If no loader can be found for the requested resource type or the
         loader does not support the requested target class, an exception
         will be thrown.
         """
-        if resourceType in self._resourceLoaders:
-            loader = self._resourceLoaders[resourceType]
-            if requiredClass is None:
-                requiredClass = loader.DefaultTargetClass
-            if requiredClass in loader.SupportedTargetClasses:
+        if resourcetype in self._resource_loaders:
+            loader = self._resource_loaders[resourcetype]
+            if required_class is None:
+                required_class = loader.DefaultTargetClass
+            if required_class in loader.SupportedTargetClasses:
                 return loader
             else:
                 raise NotImplementedError(
                     "Loader for type '{0}' does not support target class <{1}>"
-                    .format(resourceType, requiredClass))
+                    .format(resourcetype, required_class))
         else:
-            raise NotImplementedError("No loader for type '{0}'".format(resourceType))
+            raise NotImplementedError("No loader for type '{0}'".format(resourcetype))
 
-    def _resourceCacheStore(self, cacheToken, instance):
-        if cacheToken in self._resourceCache: # maybe this is more worth a exception?
-            del self._resourceCache[cacheToken]
-        self._resourceCache[cacheToken] = instance
+    def _resource_cache_store(self, cachetoken, instance):
+        if cachetoken in self._resource_cache: # maybe this is more worth a exception?
+            del self._resource_cache[cachetoken]
+        self._resource_cache[cachetoken] = instance
 
-    def _resourceCacheRead(self, loaderClass, uri, requiredClass, loaderArgs):
-        cacheToken = loaderClass.getCacheToken(uri, requiredClass, **loaderArgs)
-        if cacheToken is not None and cacheToken in self._resourceCache:
-            instance = self._resourceCache[cacheToken]
-            if not isinstance(instance, requiredClass):
+    def _resource_cache_read(self, loader_class, uri, required_class, loaderargs):
+        cachetoken = loader_class.get_cache_token(uri, required_class, **loaderargs)
+        if cachetoken is not None and cachetoken in self._resource_cache:
+            instance = self._resource_cache[cachetoken]
+            if not isinstance(instance, required_class):
                 raise TypeError(
                     "Cached resource for {0} is of wrong class {1} ({2} requested)"
-                    .format(uri, type(instance), requiredClass))
-            return cacheToken, self._resourceCache[cacheToken]
-        return cacheToken, None
+                    .format(uri, type(instance), required_class))
+            return cachetoken, self._resource_cache[cachetoken]
+        return cachetoken, None
 
-    def _resourceTypeFromURI(self, uri):
+    def _resource_type_from_uri(self, uri):
         ext = os.path.splitext(uri)[1]
         if len(ext) < 2:
             raise TypeError('Cannot get resource type from uri: {0}'.format(uri))
         return ext[1:]
 
-    def require(self, uri, requiredClass=None, resourceType=None, **loaderArgs):
+    def require(self, uri, required_class=None, resourcetype=None, **loaderargs):
         """
         Load the given resource (or return cached instance).
         A resource can only be loaded if a loader is registered for the
-        requested resourceType and it supports loading requiredClass
+        requested resourcetype and it supports loading required_class
 
         If no type is given, the type is the requested file's extension.
-        If no requiredClass is given, the loaders default is used (which
+        If no required_class is given, the loaders default is used (which
         should be the right choice for most cases)
         """
         if len(uri) < 1:
             raise ValueError('uri must not be empty!')
-        if resourceType is None:
-            resourceType = self._resourceTypeFromURI(uri)
+        if resourcetype is None:
+            resourcetype = self._resource_type_from_uri(uri)
         
-        loader = self._findResourceLoader(resourceType, requiredClass)
-        if requiredClass is None:
-            requiredClass = loader.DefaultTargetClass
+        loader = self._find_resource_loader(resourcetype, required_class)
+        if required_class is None:
+            required_class = loader.DefaultTargetClass
         if uri[0] != '/':
             if loader.RelativePathPrefix is None:
                 raise ValueError("An absolute URI is required to load a {0} resource.".format(loader))
             else:
                 uri = Utils.join(loader.RelativePathPrefix, uri)
         
-        cacheToken, instance = self._resourceCacheRead(loader, uri, requiredClass, loaderArgs)
+        cachetoken, instance = self._resource_cache_read(loader, uri, required_class, loaderargs)
         if instance is None:
-            resFile = self._open(uri, "r")
-            instance = loader.load(resFile, requiredClass, **loaderArgs)
-            resFile.close()
-            assert isinstance(instance, requiredClass) # sanity check
-            if cacheToken is not None:
-                self._resourceCacheStore(cacheToken, instance)
+            resfile = self._open(uri, "r")
+            instance = loader.load(resfile, required_class, **loaderargs)
+            resfile.close()
+            assert isinstance(instance, required_class) # sanity check
+            if cachetoken is not None:
+                self._resource_cache_store(cachetoken, instance)
         return instance
 
-    def registerResourceLoader(self, loaderClass, **kwargs):
+    def register_resource_loader(self, loader_class, **kwargs):
         """
         Register a resource loader.
         The loader has to be a subclass of ResourceLoader.
         """
         try:
-            loader = loaderClass(**kwargs)
+            loader = loader_class(**kwargs)
         except NotImplementedError as err:
-            log.log(Severity.Warning, "Loader {0!s} is not available. Reason: {1!s}".format(loaderClass, err))
+            log.log(Severity.Warning, "Loader {0!s} is not available. Reason: {1!s}".format(loader_class, err))
             return
-        for resourceType in loader.ResourceTypes:
-            if resourceType in self._resourceLoaders:
-                raise Exception("Already registered a loader for type '{0}'".format(resourceType))
-            self._resourceLoaders[resourceType] = loader
+        for resourcetype in loader.ResourceTypes:
+            if resourcetype in self._resource_loaders:
+                raise Exception("Already registered a loader for type '{0}'".format(resourcetype))
+            self._resource_loaders[resourcetype] = loader
 
-    def clearCache(self):
-        self._resourceCache = {}
+    def clear_cache(self):
+        self._resource_cache = {}

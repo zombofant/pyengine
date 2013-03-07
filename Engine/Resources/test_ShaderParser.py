@@ -34,14 +34,14 @@ class ParserTest(TestResourceLoader):
     def tearDown(self):
         super(ParserTest, self).tearDown()
 
-    def parseMultiLineString(self, s):
-        return self.parseFileLike(s.split("\n"))
+    def parse_multi_line_string(self, s):
+        return self.parse_file_like(s.split("\n"))
 
-    def parseFileLike(self, fl):
+    def parse_file_like(self, fl):
         return ShaderParser(fl).parse()
     
     def test_simple(self):
-        variables, vp, fp = self.parseMultiLineString("""[vertex shader]
+        variables, vp, fp = self.parse_multi_line_string("""[vertex shader]
 void main() {
     // vertex shader goes here
 }
@@ -58,20 +58,20 @@ void main() {
         self.assertEqual(0, len(variables))
 
     def test_include(self):
-        vertexShader = """void main() {
+        vertex_shader = """void main() {
     // vertex shader goes here
 }"""
-        fragmentShader = """void main() {
+        fragment_shader = """void main() {
     // fragment shader goes here
 }"""
-        TestMount["/test.vp"] = vertexShader
-        TestMount["/test.fp"] = fragmentShader
+        TestMount["/test.vp"] = vertex_shader
+        TestMount["/test.fp"] = fragment_shader
         TestMount["/test.shader"] = """[vertex shader]
 #include "/data/test.vp"
 [fragment shader]
 #include "/data/test.fp" """
 
-        variables, vp, fp = self.parseFileLike(TestVFS.open("/data/test.shader", "r"))
+        variables, vp, fp = self.parse_file_like(TestVFS.open("/data/test.shader", "r"))
         self.assertEqual("""void main() {
     // vertex shader goes here
 }""", vp({}))
@@ -84,18 +84,18 @@ void main() {
         del TestMount["/test.shader"]
 
     def test_conditional(self):
-        vertexShader = """void main() {
+        vertex_shader = """void main() {
 #if var
     // vertex shader goes here
 #else
     // vertex shader goes not here
 #endif
 }"""
-        fragmentShader = """void main() {
+        fragment_shader = """void main() {
     // fragment shader goes here
 }"""
-        TestMount["/test.vp"] = vertexShader
-        TestMount["/test.fp"] = fragmentShader
+        TestMount["/test.vp"] = vertex_shader
+        TestMount["/test.fp"] = fragment_shader
         TestMount["/test.shader"] = """
 [variables]
 var=False
@@ -105,7 +105,7 @@ var=False
 [fragment shader]
 #include "/data/test.fp" """
 
-        variables, vp, fp = self.parseFileLike(TestVFS.open("/data/test.shader", "r"))
+        variables, vp, fp = self.parse_file_like(TestVFS.open("/data/test.shader", "r"))
         self.assertEqual("""void main() {
     // vertex shader goes not here
 }""", vp({"var": False}))
@@ -120,19 +120,19 @@ var=False
         del TestMount["/test.fp"]
         del TestMount["/test.shader"]
 
-    def test_conditionalInclude(self):
-        vertexShader1 = """void main() {
+    def test_conditional_include(self):
+        vertex_shader1 = """void main() {
     // vertex shader goes here
 }"""
-        vertexShader2 = """void main() {
+        vertex_shader2 = """void main() {
     // vertex shader goes not here
 }"""
-        fragmentShader = """void main() {
+        fragment_shader = """void main() {
     // fragment shader goes here
 }"""
-        TestMount["/test1.vp"] = vertexShader1
-        TestMount["/test2.vp"] = vertexShader2
-        TestMount["/test.fp"] = fragmentShader
+        TestMount["/test1.vp"] = vertex_shader1
+        TestMount["/test2.vp"] = vertex_shader2
+        TestMount["/test.fp"] = fragment_shader
         TestMount["/test.shader"] = """
 [variables]
 var=False
@@ -146,10 +146,10 @@ var=False
 [fragment shader]
 #include "/data/test.fp" """
 
-        variables, vp, fp = self.parseFileLike(TestVFS.open("/data/test.shader", "r"))
-        self.assertEqual(vertexShader1, vp({"var": True}))
-        self.assertEqual(vertexShader2, vp({"var": False}))
-        self.assertEqual(fragmentShader, fp({}))
+        variables, vp, fp = self.parse_file_like(TestVFS.open("/data/test.shader", "r"))
+        self.assertEqual(vertex_shader1, vp({"var": True}))
+        self.assertEqual(vertex_shader2, vp({"var": False}))
+        self.assertEqual(fragment_shader, fp({}))
         
         del TestMount["/test1.vp"]
         del TestMount["/test2.vp"]

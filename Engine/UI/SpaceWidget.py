@@ -35,4 +35,4 @@ class Space(Widget):
     def render(self):
         pass
 
-CSS.Minilanguage.ElementNames().registerWidgetClass(Space)
+CSS.Minilanguage.ElementNames().register_widget_class(Space)

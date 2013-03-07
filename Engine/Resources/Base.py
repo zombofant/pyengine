@@ -35,19 +35,19 @@ class ResourceLoader(object):
     a resource loader class using ResourceLoader.
 
     Every resource loader should register itself to the resource manager
-    by calling the managers registerResourceLoader() method in order to
+    by calling the managers register_resource_loader() method in order to
     be of any use.
     """
 
     @classmethod
-    def _loaderNotAvailable(cls, error=None):
+    def _loader_not_available(cls, error=None):
         raise NotImplementedError(error or ("{0!s} is not implemented on this platform.".format(cls)))
 
     def __init__(self,
-            supportedTargetClasses,
-            resourceTypes,
-            relativePathPrefix=None,
-            defaultTargetClass=None,
+            supported_target_classes,
+            resource_types,
+            relative_path_prefix=None,
+            default_target_class=None,
             **kwargs):
         """
         Creates a ResourceLoader class.
@@ -55,41 +55,41 @@ class ResourceLoader(object):
         ResourceLoaders should never be instanciated directly. The
         ResourceManager takes care about that already.
 
-        *supportedTargetClasses* must be an iterable (``frozenset`` is
+        *supported_target_classes* must be an iterable (``frozenset`` is
         preferred) which yields the python classes the loader can
         construct.
         
-        *resourceTypes* must be a iterable (``frozenset`` is preferred)
+        *resource_types* must be a iterable (``frozenset`` is preferred)
         which yields the file extensions (without leading ``"."``) which
         are supported by the loader.
 
-        *relativePathPrefix* can be a string which is prepended to the
+        *relative_path_prefix* can be a string which is prepended to the
         path if a relative path is given upon loading. Defaults to None,
         which marks a need for absolute paths.
 
-        *defaultTargetClass* can be a class which must also be in
-        *supportedTargetClasses* which is passed to the load method if
+        *default_target_class* can be a class which must also be in
+        *supported_target_classes* which is passed to the load method if
         the client does not specify a class on its own. If it is None,
-        the first class from the *supportedTargetClasses* iterable is
-        taken (for this, *supportedTargetClasses* must be subscriptable
+        the first class from the *supported_target_classes* iterable is
+        taken (for this, *supported_target_classes* must be subscriptable
         obviously).
         """
-        if len(supportedTargetClasses) == 0 and defaultTargetClass is None:
-            self._loaderNotAvailable()
+        if len(supported_target_classes) == 0 and default_target_class is None:
+            self._loader_not_available()
         super(ResourceLoader, self).__init__(**kwargs)
-        self._supportedTargetClasses = frozenset(supportedTargetClasses)
-        self._defaultTargetClass = defaultTargetClass or supportedTargetClasses[0]
-        self._resourceTypes = frozenset(resourceTypes)
-        self._relativePathPrefix = unicode(relativePathPrefix)
+        self._supported_target_classes = frozenset(supported_target_classes)
+        self._default_target_class = default_target_class or supported_target_classes[0]
+        self._resource_types = frozenset(resource_types)
+        self._relative_path_prefix = unicode(relative_path_prefix)
 
-    def load(self, fileLike, targetClass=None, **loaderArgs):
+    def load(self, filelike, targetclass=None, **loaderargs):
         """
         The actual loader that returns the loaded instance.
         This has to be overwritten by all subclasses.
         """
         raise NotImplemented()
 
-    def getCacheToken(self, vfspath, targetClass=None, **loaderArgs):
+    def get_cache_token(self, vfspath, targetclass=None, **loaderargs):
         """
         Must return a valid dict key which depends on any cache relevant
         loader arguments.
@@ -104,7 +104,7 @@ class ResourceLoader(object):
         The list of supported target classes.
         This property to be set by all subclasses.
         """
-        return self._supportedTargetClasses
+        return self._supported_target_classes
 
     @property
     def DefaultTargetClass(self):
@@ -112,7 +112,7 @@ class ResourceLoader(object):
         The default target class this loader creates when loading.
         This property may be set by subclasses if necessary.
         """
-        return self._defaultTargetClass
+        return self._default_target_class
 
     @property
     def ResourceTypes(self):
@@ -120,14 +120,14 @@ class ResourceLoader(object):
         The resource type this loader is able to load.
         This property has to be set by all subclasses.
         """
-        return self._resourceTypes
+        return self._resource_types
 
     @property
     def RelativePathPrefix(self):
         """
         The prefix to be prepended in relative paths.
         If there is a request for 'somefile.ext', the loaders
-        relativePathPrefix will be prepended before opening the file.
+        relative_path_prefix will be prepended before opening the file.
         """
-        return self._relativePathPrefix
+        return self._relative_path_prefix
 

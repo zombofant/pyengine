@@ -39,14 +39,14 @@ class CSSLoader(ResourceLoader):
         super(CSSLoader, self).__init__(
             [list],
             ['css'],
-            relativePathPrefix="/data/css",
+            relative_path_prefix="/data/css",
             **kwargs)
         self._parser = Parser()
 
-    def load(self, fileLike, targetClass=list):
-        assert targetClass is list
-        return self._parser.parse(fileLike)
+    def load(self, filelike, targetclass=list):
+        assert targetclass is list
+        return self._parser.parse(filelike)
 
 # register an instance of TextLoader with the resource manager
-ResourceManager().registerResourceLoader(CSSLoader)
+ResourceManager().register_resource_loader(CSSLoader)
 

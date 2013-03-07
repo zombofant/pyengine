@@ -37,7 +37,7 @@ except ImportError:
 class MaterialLoader(ResourceLoader):
     """
     The MaterialLoader loads model material data.
-    It loads exactly one material from the given fileLike and returns
+    It loads exactly one material from the given filelike and returns
     a Material instance constructed from the data.
     """
 
@@ -46,29 +46,29 @@ class MaterialLoader(ResourceLoader):
             super(MaterialLoader, self).__init__(
                 [Material],
                 ['mtl'],
-                relativePathPrefix='/data/materials',
+                relative_path_prefix='/data/materials',
                 **kwargs)
         except NameError:
-            self._loaderNotAvailable()
+            self._loader_not_available()
 
-    def load(self, fileLike, targetClass=None):
+    def load(self, filelike, targetclass=None):
         """
         The mtl loader.
-        Load the material with name materialName from 
+        Load the material with name matname from 
         """
         # FIXME: only parses face texture at the moment
-        inMaterial = False
+        inmaterial = False
         textures = []
-        for line in fileLike:
+        for line in filelike:
             if len(line) < 1 :
-                if inMaterial: break
+                if inmaterial: break
                 continue
             if line[0] == '#' : continue
             parts = line.strip().split(' ')
             if parts[0] == 'newmtl':
-                inMaterial = True
+                inmaterial = True
             if parts[0] == 'map_Kd':
                 textures.append(parts[1])
         return Material(textures=textures)
 
-ResourceManager().registerResourceLoader(MaterialLoader)
+ResourceManager().register_resource_loader(MaterialLoader)

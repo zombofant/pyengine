@@ -24,12 +24,12 @@
 ########################################################################
 from _cuni_gl import *
 
-def __testSizeRange(size, min, max, type):
+def __test_size_range(size, min, max, type):
     if size > max or size < min:
         raise ValueError("Size must be in [{0}..{1}] for {2}. Got {3}".format(min, max, type, size))
     return size
 
-def __testIndexRange(idx, min, max, type):
+def __test_index_range(idx, min, max, type):
     if len(idx) == 0:
         raise ValueError("{0} needs an index.".format(type))
     idx = int(idx)
@@ -39,17 +39,17 @@ def __testIndexRange(idx, min, max, type):
 
 __VertexFormat = VertexFormat
 
-def VertexFormat(fmtSpecifier):
-    nVertex, nColour = 0, 0
-    nTexCoord = [0, 0, 0, 0]
-    nAttrib = [0, 0, 0, 0]
-    hasNormal = False
+def VertexFormat(fmtspecifier):
+    nvertex, ncolour = 0, 0
+    ntexcoord = [0, 0, 0, 0]
+    nattrib = [0, 0, 0, 0]
+    has_normal = False
 
-    if not isinstance(fmtSpecifier, (unicode, str)):
-        segmentIterable = fmtSpecifier
+    if not isinstance(fmtspecifier, (unicode, str)):
+        segmentiter = fmtspecifier
     else:
-        segmentIterable = fmtSpecifier.split(";")
-    segments = [segment.split(':') for segment in segmentIterable]
+        segmentiter = fmtspecifier.split(";")
+    segments = [segment.split(':') for segment in segmentiter]
     for type, size in ((type.strip(), size.strip()) for type, size in segments):
         if len(type) + len(size) == 0:
             continue
@@ -59,18 +59,18 @@ def VertexFormat(fmtSpecifier):
 
         attrib = type[0]
         if attrib == "v":
-            nVertex = __testSizeRange(size, 2, 4, attrib)
+            nvertex = __test_size_range(size, 2, 4, attrib)
         elif attrib == "c":
-            nColour = __testSizeRange(size, 3, 4, attrib)
+            ncolour = __test_size_range(size, 3, 4, attrib)
         elif attrib == "n":
-            __testSizeRange(size, 3, 3, attrib)
-            hasNormal = True
+            __test_size_range(size, 3, 3, attrib)
+            has_normal = True
         elif attrib == "t":
-            idx = __testIndexRange(type[1:], 0, len(nTexCoord), attrib)
-            nTexCoord[idx] = __testSizeRange(size, 1, 4, type)
+            idx = __test_index_range(type[1:], 0, len(ntexcoord), attrib)
+            ntexcoord[idx] = __test_size_range(size, 1, 4, type)
         elif attrib == "g" or attrib == "a":
-            idx = __testIndexRange(type[1:], 0, len(nAttrib), attrib)
-            nAttrib[idx] = __testSizeRange(size, 1, 4, type)
+            idx = __test_index_range(type[1:], 0, len(nattrib), attrib)
+            nattrib[idx] = __test_size_range(size, 1, 4, type)
 
-    args = [nVertex, nColour] + nTexCoord + [hasNormal] + nAttrib;
+    args = [nvertex, ncolour] + ntexcoord + [has_normal] + nattrib;
     return __VertexFormat(*args)

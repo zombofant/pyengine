@@ -46,7 +46,7 @@ class StyleIdentity(unittest.TestCase):
         rule = Rule([], [
             ("border", ("1", "solid", Colour()))
         ])
-        self.style._addRule(rule)
+        self.style._add_rule(rule)
         self.assertIs(self.border, self.style.Border)
 
     def test_padding(self):
@@ -54,7 +54,7 @@ class StyleIdentity(unittest.TestCase):
             ("padding", ("1",)),
             ("padding-left", ("2",))
         ])
-        self.style._addRule(rule)
+        self.style._add_rule(rule)
         self.assertIs(self.padding, self.style.Padding)
 
 
@@ -70,7 +70,7 @@ class StyleIdentity(unittest.TestCase):
             ("box-spacing", ("4",)),
             ("text-align", (Literals.Pango.Alignment.CENTER,))
         ])
-        self.style._addRule(rule)
+        self.style._add_rule(rule)
         self.assertEqual(self.style, copy.deepcopy(self.style))
 
     def tearDown(self):
@@ -84,28 +84,28 @@ class StyleRules(unittest.TestCase):
     def tearDown(self):
         del self.style
 
-    def test_boxSpacing(self):
+    def test_box_spacing(self):
         self.assertEqual(self.style.BoxSpacingX, 0)
         self.assertEqual(self.style.BoxSpacingY, 0)
 
         rule = Rule([], [
             ("box-spacing", ("1",))
         ])
-        self.style._addRule(rule)
+        self.style._add_rule(rule)
         self.assertEqual(self.style.BoxSpacingX, 1)
         self.assertEqual(self.style.BoxSpacingY, 1)
 
         rule = Rule([], [
             ("box-spacing-y", ("2",))
         ])
-        self.style._addRule(rule)
+        self.style._add_rule(rule)
         self.assertEqual(self.style.BoxSpacingX, 1)
         self.assertEqual(self.style.BoxSpacingY, 2)
 
         rule = Rule([], [
             ("box-spacing-x", ("2",))
         ])
-        self.style._addRule(rule)
+        self.style._add_rule(rule)
         self.assertEqual(self.style.BoxSpacingX, 2)
         self.assertEqual(self.style.BoxSpacingY, 2)
 
@@ -115,7 +115,7 @@ class StyleRules(unittest.TestCase):
         rule = Rule([], [
             ("flex", ("2",))
         ])
-        self.style._addRule(rule)
+        self.style._add_rule(rule)
         self.assertEqual(self.style.Flex, 2)
 
 
@@ -123,16 +123,16 @@ class StyleRules(unittest.TestCase):
         rule = Rule([], [
             ("border", ("1", "solid", Colour()))
         ])
-        self.style._addRule(rule)
+        self.style._add_rule(rule)
         self.assertEqual(self.style.Border.Left.Width, 1)
 
-    def test_borderCorner(self):
+    def test_border_corner(self):
         rule = Rule([], [
             ("border-left", ("1", "solid", Colour())),
             ("border-radius", ("2",)),
             ("border-top-left-radius", ("8",))
         ])
-        self.style._addRule(rule)
+        self.style._add_rule(rule)
         self.assertEqual(self.style.Border.TopRightRadius, 2)
         self.assertEqual(self.style.Border.BottomLeftRadius, 2)
         self.assertEqual(self.style.Border.BottomRightRadius, 2)
@@ -144,14 +144,14 @@ class StyleRules(unittest.TestCase):
             ("padding", ("1",)),
             ("padding-left", ("2",))
         ])
-        self.style._addRule(rule)
+        self.style._add_rule(rule)
         self.assertEqual(self.style.Padding, Padding(2, 1, 1, 1))
 
     def test_background(self):
         rule = Rule([], [
             ("background", (Colour(1., 0., 1., 1.),)),
         ])
-        self.style._addRule(rule)
+        self.style._add_rule(rule)
         self.assertEqual(self.style.Background, Colour(1, 0, 1, 1))
 
     def test_dimensions(self):
@@ -161,15 +161,15 @@ class StyleRules(unittest.TestCase):
         rule = Rule([], [
             ("width", ("100",)),
         ])
-        self.style._addRule(rule)
+        self.style._add_rule(rule)
         self.assertEqual(self.style.Width, 100)
 
 class StyleInheritance(unittest.TestCase):
     def test_basic(self):
-        parent = Style(fontFamily="Helvetica")
-        child = Style(fontFamily=Literals.Inherit)
+        parent = Style(font_family="Helvetica")
+        child = Style(font_family=Literals.Inherit)
         self.assertIs(child.FontFamily, Literals.Inherit)
-        child.solveInheritance(parent)
+        child.solve_inheritance(parent)
         self.assertEqual(child.FontFamily, parent.FontFamily)
 
     def test_default(self):

@@ -34,56 +34,56 @@ from ScreenWidget import ScreenWidget
 from WindowWidget import WindowWidget
 
 class LayerWidget(ParentWidget):
-    def hitTest(self, p):
+    def hit_test(self, p):
         self.realign()
         if not p in self.AbsoluteRect:
             return None
-        return self._hitTest(p)
+        return self._hit_test(p)
 
-    def hitTestWithChain(self, p):
+    def hit_test_with_chain(self, p):
         self.realign()
         if not p in self.AbsoluteRect:
             return False
-        return self._hitTestWithChain(p)
+        return self._hit_test_with_chain(p)
 
 class DesktopLayer(LayerWidget):
-    def doAlign(self):
+    def do_align(self):
         for child in self:
             child.AbsoluteRect = self.AbsoluteRect
 
 class WindowLayer(LayerWidget):
     def __init__(self, parent, **kwargs):
         super(WindowLayer, self).__init__(parent, **kwargs)
-        # self._childClasses = WindowWidget
+        # self._child_classes = WindowWidget
 
 class PopupLayer(LayerWidget):
     def __init__(self, parent, **kwargs):
         super(PopupLayer, self).__init__(parent, **kwargs)
-        self._currentRootMenu = None
+        self._current_root_menu = None
 
-    def hitTest(self, p):
-        if self._currentRootMenu:
-            hit = ParentWidget.hitTest(self, p)
-            if hit is self and p in self._currentRootMenu.AbsoluteRect:
-                return self._currentRootMenu.hitTest(p)
+    def hit_test(self, p):
+        if self._current_root_menu:
+            hit = ParentWidget.hit_test(self, p)
+            if hit is self and p in self._current_root_menu.AbsoluteRect:
+                return self._current_root_menu.hit_test(p)
             return hit
         else:
-            return super(PopupLayer, self).hitTest(p)
+            return super(PopupLayer, self).hit_test(p)
 
-    def onMouseClick(self, x, y, button, modifiers, nth):
-        if self._currentRootMenu:
-            self._currentRootMenu.hideSubMenu()
-            self._currentRootMenu = None
+    def onmouseclick(self, x, y, button, modifiers, nth):
+        if self._current_root_menu:
+            self._current_root_menu.hide_submenu()
+            self._current_root_menu = None
 
     @property
     def CurrentRootMenu(self):
-        return self._currentRootMenu
+        return self._current_root_menu
 
     @CurrentRootMenu.setter
     def CurrentRootMenu(self, value):
-        self._currentRootMenu = value
+        self._current_root_menu = value
 
 
-CSS.Minilanguage.ElementNames().registerWidgetClass(DesktopLayer)
-CSS.Minilanguage.ElementNames().registerWidgetClass(WindowLayer)
-CSS.Minilanguage.ElementNames().registerWidgetClass(PopupLayer)
+CSS.Minilanguage.ElementNames().register_widget_class(DesktopLayer)
+CSS.Minilanguage.ElementNames().register_widget_class(WindowLayer)
+CSS.Minilanguage.ElementNames().register_widget_class(PopupLayer)

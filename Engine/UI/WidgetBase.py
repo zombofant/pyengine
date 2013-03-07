@@ -57,104 +57,104 @@ class AbstractWidget(object):
         self.Visible = True
         self.Enabled = True
         self._parent = None
-        self._relativeRect = Rect(0, 0, onChange=self.onResize)
-        self._absoluteRect = Rect(0, 0, onChange=self.onResize)
-        self._styleRule = None
-        self._invalidatedComputedStyle = True
-        self._invalidatedAlignment = True
-        self._styleClasses = ClassSet()
-        self._rootWidget = None
-        self._cairoContext = None
-        self._pangoContext = None
-        self._isHovered = False
-        self._isActive = False
-        self._isFocused = False
-        self._computedStyle = Style()
+        self._relative_rect = Rect(0, 0, onchange=self.onresize)
+        self._absolute_rect = Rect(0, 0, onchange=self.onresize)
+        self._stylerule = None
+        self._computed_style_invalidated = True
+        self._alignment_invalidated = True
+        self._styleclasses = ClassSet()
+        self._rootwidget = None
+        self._cairo = None
+        self._pango = None
+        self._is_hovered = False
+        self._is_active = False
+        self._is_focused = False
+        self._computed_style = Style()
 
-    def _invalidateComputedStyle(self):
-        self._invalidatedComputedStyle = True
+    def _invalidate_computed_style(self):
+        self._computed_style_invalidated = True
 
-    def _invalidateAlignment(self):
-        self._invalidatedAlignment = True
+    def _invalidate_alignment(self):
+        self._alignment_invalidated = True
 
-    def _themeChanged(self):
-        self._invalidateComputedStyle()
+    def _theme_changed(self):
+        self._invalidate_computed_style()
         self.ComputedStyle
 
-    def invalidateContext(self):
+    def invalidate_context(self):
         pass
 
     def realign(self):
-        if self._invalidatedAlignment or self._invalidatedComputedStyle:
+        if self._alignment_invalidated or self._computed_style_invalidated:
             # the below is neccessary for widgets which do no alignment
             # nor rendering -- otherwise we'll realign them on every
             # frame!
             self.ComputedStyle
-            self.doAlign()
-            self._invalidatedAlignment = False
+            self.do_align()
+            self._alignment_invalidated = False
 
-    def doAlign(self):
+    def do_align(self):
         pass
 
     def render(self):
-        self.ComputedStyle.inCairo(self.AbsoluteRect, self._cairoContext)
+        self.ComputedStyle.in_cairo(self.AbsoluteRect, self._cairo)
 
-    def onKeyDown(self, symbol, modifiers):
+    def onkeydown(self, symbol, modifiers):
         return False
 
-    def onKeyUp(self, symbol, modifiers):
+    def onkeyup(self, symbol, modifiers):
         return False
 
-    def onMouseDown(self, x, y, button, modifiers):
+    def onmousedown(self, x, y, button, modifiers):
         return False
 
-    def onMouseClick(self, x, y, button, modifiers, nth):
+    def onmouseclick(self, x, y, button, modifiers, nth):
         return False
 
-    def onMouseMove(self, x, y, dx, dy, buttons, modifiers):
+    def onmousemove(self, x, y, dx, dy, buttons, modifiers):
         return False
 
-    def onMouseUp(self, x, y, button, modifiers):
+    def onmouseup(self, x, y, button, modifiers):
         return False
 
-    def onMouseEnter(self):
+    def onmouseenter(self):
         pass
 
-    def onMouseLeave(self):
+    def onmouseleave(self):
         pass
 
-    def onResize(self):
-        self._invalidateAlignment()
+    def onresize(self):
+        self._invalidate_alignment()
 
-    def onScroll(self, scrollX, scrollY):
+    def onscroll(self, scrollX, scrollY):
         return False
 
-    def onTextInput(self, text):
+    def ontextinput(self, text):
         return False
 
-    def onCaretMotion(self, motion):
+    def oncaretmotion(self, motion):
         return False
 
-    def onCaretMotionSelect(self, motion):
+    def oncaretmotionselect(self, motion):
         return False
 
     def invalidate(self):
         root = self.RootWidget
         if not root:
             return
-        root.invalidateRect(self.AbsoluteRect)
+        root.invalidate_rect(self.AbsoluteRect)
 
-    def getDimensions(self):
-        myStyle = self.ComputedStyle
-        borderBox = myStyle.Border.getBox()
-        if myStyle.Width is not None:
-            width = myStyle.Width + myStyle.Padding.Horizontal + \
-                borderBox.Horizontal
+    def get_dimensions(self):
+        mystyle = self.ComputedStyle
+        borderbox = mystyle.Border.get_box()
+        if mystyle.Width is not None:
+            width = mystyle.Width + mystyle.Padding.Horizontal + \
+                borderbox.Horizontal
         else:
             width = None
-        if myStyle.Height is not None:
-            height = myStyle.Height + myStyle.Padding.Vertical + \
-                borderBox.Vertical
+        if mystyle.Height is not None:
+            height = mystyle.Height + mystyle.Padding.Vertical + \
+                borderbox.Vertical
         else:
             height = None
 
@@ -162,120 +162,120 @@ class AbstractWidget(object):
 
     @property
     def StyleRule(self):
-        return self._styleRule
+        return self._stylerule
 
     @StyleRule.setter
     def StyleRule(self, value):
         if value is not None and not isinstance(value, Rule):
             raise TypeError("Widget StyleRules must be CSS Rules")
-        self._styleRule = value
-        self._invalidateComputedStyle()
+        self._stylerule = value
+        self._invalidate_computed_style()
 
     @property
     def ComputedStyle(self):
-        if self._invalidatedComputedStyle:
+        if self._computed_style_invalidated:
             if self.Theme:
-                style = copy.copy(self.Theme.getWidgetStyle(self))
+                style = copy.copy(self.Theme.get_widget_style(self))
             else:
                 style = Style()
-            style += self._styleRule
+            style += self._stylerule
             if self.Parent:
-                style.solveInheritance(self.Parent.ComputedStyle)
+                style.solve_inheritance(self.Parent.ComputedStyle)
             else:
-                style.solveInheritance(BaseStyle())
-            diff = self._computedStyle.diff(style)
+                style.solve_inheritance(BaseStyle())
+            diff = self._computed_style.diff(style)
             if diff:
-                self._computedStyle = style
+                self._computed_style = style
                 if Style.Layout in diff:
-                    self._invalidateAlignment()
+                    self._invalidate_alignment()
                     if self.Parent:
-                        self.Parent._invalidateAlignment()
+                        self.Parent._invalidate_alignment()
                 if Style.Visual in diff:
                     # force redrawing of the current rect
                     self.invalidate()
-            self._invalidatedComputedStyle = False
-        return self._computedStyle
+            self._computed_style_invalidated = False
+        return self._computed_style
 
     @property
     def RelativeRect(self):
-        return self._relativeRect
+        return self._relative_rect
 
     @RelativeRect.setter
     def RelativeRect(self, value):
-        if value != self._relativeRect:
-            self._relativeRect.assign(value)
-            self._invalidateAlignment()
+        if value != self._relative_rect:
+            self._relative_rect.assign(value)
+            self._invalidate_alignment()
 
     @property
     def AbsoluteRect(self):
-        return self._absoluteRect
+        return self._absolute_rect
 
     @AbsoluteRect.setter
     def AbsoluteRect(self, value):
-        if value != self._absoluteRect:
+        if value != self._absolute_rect:
             # the old rect must be invalidated too
             self.invalidate()
-            self._absoluteRect.assign(value)
-            self._invalidateAlignment()
+            self._absolute_rect.assign(value)
+            self._invalidate_alignment()
 
     @property
     def StyleClasses(self):
-        return self._styleClasses
+        return self._styleclasses
 
     @property
     def CSSState(self):
-        return (self._isHovered, self._isActive, self._isFocused)
+        return (self._is_hovered, self._is_active, self._is_focused)
 
     @property
     def IsHovered(self):
-        return self._isHovered
+        return self._is_hovered
 
     @IsHovered.setter
     def IsHovered(self, value):
         value = bool(value)
-        if value == self._isHovered:
+        if value == self._is_hovered:
             return
-        self._isHovered = value
-        self._invalidateComputedStyle()
+        self._is_hovered = value
+        self._invalidate_computed_style()
 
     @property
     def IsFocused(self):
-        return self._isFocused
+        return self._is_focused
 
     @IsFocused.setter
     def IsFocused(self, value):
         value = bool(value)
-        if value == self._isFocused:
+        if value == self._is_focused:
             return
-        self._isFocused = value
-        self._invalidateComputedStyle()
+        self._is_focused = value
+        self._invalidate_computed_style()
 
     @property
     def IsActive(self):
-        return self._isActive
+        return self._is_active
 
     @IsHovered.setter
     def IsActive(self, value):
         value = bool(value)
-        if value == self._isActive:
+        if value == self._is_active:
             return
-        self._isActive = value
-        self._invalidateComputedStyle()
+        self._is_active = value
+        self._invalidate_computed_style()
 
     @property
     def ClientRect(self):
         rect = copy.copy(self.AbsoluteRect)
-        rect.shrink(self.ComputedStyle.Border.getBox())
+        rect.shrink(self.ComputedStyle.Border.get_box())
         return rect
 
     @property
     def RootWidget(self):
-        return self._rootWidget
+        return self._rootwidget
 
     @property
     def Theme(self):
-        if self._rootWidget:
-            return self._rootWidget.Theme
+        if self._rootwidget:
+            return self._rootwidget.Theme
         else:
             return None
 
@@ -291,46 +291,46 @@ class Widget(AbstractWidget):
         super(Widget, self).__init__(**kwargs)
         self._parent = None
         self._flags = set()
-        self._rootWidget = None
-        self._cairoContext = None
-        self._pangoContext = None
+        self._rootwidget = None
+        self._cairo = None
+        self._pango = None
         if parent is not None:
             parent.add(self)
 
-    def _requireParent(self):
+    def _require_parent(self):
         if self._parent is None:
             raise ValueError("This operation on {0} requires it to have a parent.".format(self))
 
-    def _parentChanged(self):
+    def _parent_changed(self):
         if self._parent is not None:
-            self._rootWidget = self._parent.RootWidget
+            self._rootwidget = self._parent.RootWidget
         else:
-            self._rootWidget = None
-        if self._rootWidget is not None:
-            self._cairoContext = self._rootWidget._cairoContext
-            self._pangoContext = self._rootWidget._pangoContext
+            self._rootwidget = None
+        if self._rootwidget is not None:
+            self._cairo = self._rootwidget._cairo
+            self._pango = self._rootwidget._pango
         else:
-            self._cairoContext = None
-            self._pangoContext = None
+            self._cairo = None
+            self._pango = None
         self.IsFocused = False
         self.IsHovered = False
         self.IsActive = False
-        self.invalidateContext()
-        self._themeChanged()
+        self.invalidate_context()
+        self._theme_changed()
 
-    def hitTestWithChain(self, p):
+    def hit_test_with_chain(self, p):
         return [self] if p in self.AbsoluteRect else False
 
-    def hitTest(self, p):
+    def hit_test(self, p):
         return self if p in self.AbsoluteRect else None
 
-    def clientToAbsolute(self, p):
+    def client_to_absolute(self, p):
         return (p[0] + self.AbsoluteRect.X, p[1] + self.AbsoluteRect.Y)
 
-    def clientToParent(self, p):
+    def client_to_parent(self, p):
         return (p[0] + self._left, p[1] + self._top)
 
-    def parentToClient(self, p):
+    def parent_to_client(self, p):
         return (p[0] - self._left, p[1] - self._top)
 
     def update(self, deltaT):
@@ -357,7 +357,7 @@ class WidgetContainer(object):
 
     def __init__(self, **kwargs):
         super(WidgetContainer, self).__init__(**kwargs)
-        self._childClasses = Widget
+        self._child_classes = Widget
         self._children = []
 
     def __contains__(self, child):
@@ -368,10 +368,10 @@ class WidgetContainer(object):
         if isinstance(key, slice):
             for child in l:
                 child._parent = None
-                child._parentChanged()
+                child._parent_changed()
         else:
             l._parent = None
-            l._parentChanged()
+            l._parent_changed()
         del self._children[key]
 
     def __getitem__(self, key):
@@ -386,37 +386,37 @@ class WidgetContainer(object):
     def __reversed__(self):
         return reversed(self._children)
 
-    def _checkPotentialChild(self, child):
-        if not isinstance(child, self._childClasses):
-            raise TypeError("Got {0}, but {1} only supports {2} as children.".format(type(child), self, self._childClasses))
+    def _check_potential_child(self, child):
+        if not isinstance(child, self._child_classes):
+            raise TypeError("Got {0}, but {1} only supports {2} as children.".format(type(child), self, self._child_classes))
         if child.Parent is not None:
             raise ValueError("A widget cannot be added multiple times (neither to the same nor to different parents).")
 
-    def _hitTest(self, p):
+    def _hit_test(self, p):
         for child in self:
-            hit = child.hitTest(p)
+            hit = child.hit_test(p)
             if hit is not None:
                 return hit
         return None
 
-    def _hitTestWithChain(self, p):
+    def _hit_test_with_chain(self, p):
         for child in self:
-            hit = child.hitTestWithChain(p)
+            hit = child.hit_test_with_chain(p)
             if hit is not False:
                 return hit
         return False
 
-    def _newChild(self, widget):
+    def _new_child(self, widget):
         pass
 
     def add(self, child):
         assert not (child in self._children and not child.Parent == self and not isinstance(child, RootWidget))
-        self._checkPotentialChild(child)
+        self._check_potential_child(child)
         self._children.append(child)
         child._parent = self
-        child._parentChanged()
-        self._newChild(child)
-        self._invalidateAlignment()
+        child._parent_changed()
+        self._new_child(child)
+        self._invalidate_alignment()
 
     def index(self, child):
         return self._children.index(child)
@@ -424,23 +424,23 @@ class WidgetContainer(object):
     def remove(self, child):
         self._children.remove(child)
         child._parent = None
-        child._parentChanged()
-        self._invalidateAlignment()
+        child._parent_changed()
+        self._invalidate_alignment()
 
-    def treeDepthFirst(self):
+    def tree_depth_first(self):
         yield self
         for child in self:
             if isinstance(child, WidgetContainer):
-                for node in child.treeDepthFirst():
+                for node in child.tree_depth_first():
                     yield node
             else:
                 yield child
 
-    def updateRenderingContext(self):
-        for widget in self.treeDepthFirst():
-            widget._cairoContext = widget._rootWidget._cairoContext
-            widget._pangoContext = widget._rootWidget._pangoContext
-            widget.invalidateContext()
+    def update_rendering_context(self):
+        for widget in self.tree_depth_first():
+            widget._cairo = widget._rootwidget._cairo
+            widget._pango = widget._rootwidget._pango
+            widget.invalidate_context()
 
 
 class ParentWidget(Widget, WidgetContainer):
@@ -452,39 +452,39 @@ class ParentWidget(Widget, WidgetContainer):
     def __init__(self, parent, **kwargs):
         super(ParentWidget, self).__init__(parent)
 
-    def _newChild(self, widget):
+    def _new_child(self, widget):
         pass
 
-    def _parentChanged(self):
-        super(ParentWidget, self)._parentChanged()
+    def _parent_changed(self):
+        super(ParentWidget, self)._parent_changed()
         for child in self:
-            child._parentChanged()
+            child._parent_changed()
 
     def add(self, widget):
         super(ParentWidget, self).add(widget)
-        self._newChild(widget)
+        self._new_child(widget)
 
-    def bringToFront(self, key):
+    def bring_to_front(self, key):
         child = self._children[key]
         del self._children[key]
         self._children.append(child)
 
-    def hitTestWithChain(self, p):
+    def hit_test_with_chain(self, p):
         self.realign()
         if not p in self.AbsoluteRect:
             return False
-        chain = self._hitTestWithChain(p)
+        chain = self._hit_test_with_chain(p)
         if chain is not False:
             chain.append(self)
             return chain
         else:
             return [self]
 
-    def hitTest(self, p):
+    def hit_test(self, p):
         self.realign()
         if not p in self.AbsoluteRect:
             return None
-        return self._hitTest(p) or self
+        return self._hit_test(p) or self
 
     def realign(self):
         super(ParentWidget, self).realign()
@@ -497,11 +497,11 @@ class ParentWidget(Widget, WidgetContainer):
             if child.Visible and child.AbsoluteRect.Area > 0:
                 child.render()
 
-    def sendToBack(self, key):
+    def send_to_back(self, key):
         child = self._children[key]
         del self._children[key]
         self._children.insert(0, child)
 
-    def update(self, timeDelta):
+    def update(self, time_delta):
         for child in self:
-            child.update(timeDelta)
+            child.update(timedelta)

@@ -31,16 +31,16 @@ class VFSError(BaseException):
     pass
 
 class VFSIOError(IOError, VFSError):
-    def _processFileNameArgument(self, fileName):
-        return (": '"+fileName+"'") if fileName is not None else ""
+    def _process_file_name_argument(self, filename):
+        return (": '"+filename+"'") if filename is not None else ""
 
 class VFSPermissionDeniedError(VFSIOError):
-    def __init__(self, fileName):
-        super(VFSPermissionDeniedError, self).__init__(errno.EACCES, "Permission denied{0}".format(self._processFileNameArgument(fileName)))
+    def __init__(self, filename):
+        super(VFSPermissionDeniedError, self).__init__(errno.EACCES, "Permission denied{0}".format(self._process_file_name_argument(filename)))
 
 class VFSFileNotFoundError(VFSIOError):
-    def __init__(self, fileName):
-        super(VFSFileNotFoundError, self).__init__(errno.ENOENT, "No such file or directory{0}".format(self._processFileNameArgument(fileName)))
+    def __init__(self, filename):
+        super(VFSFileNotFoundError, self).__init__(errno.ENOENT, "No such file or directory{0}".format(self._process_file_name_argument(filename)))
 
 SemanticException = {
     errno.EACCES: VFSPermissionDeniedError,

@@ -38,48 +38,48 @@ class Material(object):
 
     def __init__(self, **kwargs):
         super(Material, self).__init__()
-        self._dataTypes = ['textures']
-        self._stateGroup = None
-        self._updateGroup = False
+        self._datatypes = ['textures']
+        self._stategroup = None
+        self._updategroup = False
         self._clear()
-        self.setData(**kwargs)
+        self.set_data(**kwargs)
 
     def __del__(self):
         for texture in self._textures:
             del texture
-        if self._stateGroup is not None:
-            del self._stateGroup
+        if self._stategroup is not None:
+            del self._stategroup
 
     def _clear(self):
-        for dtype in self._dataTypes:
+        for dtype in self._datatypes:
             self.__setattr__(dtype, None)
-        self._stateGroup = None
+        self._stategroup = None
 
-    def _updateStateGroup(self):
+    def _update_state_group(self):
         states = []
         # add textures
         if self._textures is not None:
             for j in range(0,len(self._textures)):
-                texNum = int(GL_TEXTURE0) + j
-                states.append(ActiveTexture(self._textures[j], texNum))
-        if self._stateGroup is not None:
-            del self._stateGroup
-        self._stateGroup = StateObjectGroup(*states)
-        self._updateGroup = False
+                texnum = int(GL_TEXTURE0) + j
+                states.append(ActiveTexture(self._textures[j], texnum))
+        if self._stategroup is not None:
+            del self._stategroup
+        self._stategroup = StateObjectGroup(*states)
+        self._updategroup = False
  
-    def setData(self, **args):
+    def set_data(self, **args):
         for dtype in dict(**args):
             self.__setattr__(dtype, args[dtype])
 
     @property
-    def stateGroup(self):
+    def state_group(self):
         """
         Return a state group for rendering repesenting the OpenGL states
         and textures the material defines.
         """
-        if self._updateGroup or self._stateGroup is None:
-            self._updateStateGroup()
-        return self._stateGroup
+        if self._updategroup or self._stategroup is None:
+            self._update_state_group()
+        return self._stategroup
 
     @property
     def textures(self):
@@ -95,12 +95,12 @@ class Material(object):
         Set the list of textures this material contains.
         This should be a list of texture filenames.
         """
-        texList = []
+        texlist = []
         if value is not None:
             for filename in list(value):
-                texList.append(ResourceManager().require(filename))
-        self._textures = texList
+                texlist.append(ResourceManager().require(filename))
+        self._textures = texlist
         if len(self._textures) < 1:
             self._textures = None
-        self._updateGroup = True # force updating the render-state group
+        self._updategroup = True # force updating the render-state group
 

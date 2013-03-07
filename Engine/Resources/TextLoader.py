@@ -39,7 +39,7 @@ class TextLoader(ResourceLoader):
             ['txt'],
             **kwargs)
 
-    def _decodeAndStripLineEndings(self, iterable, encoding):
+    def _decode_and_strip_line_endings(self, iterable, encoding):
         for line in iterable:
             line = line.decode(encoding)
             if line[-2:] == "\r\n":
@@ -51,13 +51,13 @@ class TextLoader(ResourceLoader):
                 else:
                     yield line
 
-    def load(self, fileLike, targetClass=unicode, encoding="utf8"):
-        text = "\n" . join(self._decodeAndStripLineEndings(fileLike, encoding))
-        if targetClass is str:
+    def load(self, filelike, targetclass=unicode, encoding="utf8"):
+        text = "\n" . join(self._decode_and_strip_line_endings(filelike, encoding))
+        if targetclass is str:
             return str(text)
         else:
             return unicode(text)
 
 # register an instance of TextLoader with the resource manager
-ResourceManager().registerResourceLoader(TextLoader)
+ResourceManager().register_resource_loader(TextLoader)
 

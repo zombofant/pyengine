@@ -35,7 +35,7 @@ class FontLoader(ResourceLoader):
     This uses pyglet as a backend and is not available if pyglet
     ImportErrors.
 
-    This tries to do its best to serve the fontFamily requested, even
+    This tries to do its best to serve the fontfamily requested, even
     if pyglet does this not. Pyglet returns a surrogate font by default,
     this is circumvented by checking for the availability beforehand
     and ValueError'ing if not available.
@@ -48,20 +48,20 @@ class FontLoader(ResourceLoader):
                 ['ttf', 'otf'],
                 **kwargs)
         except NameError:
-            self._loaderNotAvailable()
+            self._loader_not_available()
 
-    def getCacheToken(self, vfspath, targetClass, fontFamily=None, size=10, italic=False, bold=False):
-        if fontFamily is None:
-            raise ValueError("Cannot request a font without specifying fontFamily keyword argument.")
-        return (fontFamily, size, italic, bold)
+    def get_cache_token(self, vfspath, targetclass, fontfamily=None, size=10, italic=False, bold=False):
+        if fontfamily is None:
+            raise ValueError("Cannot request a font without specifying fontfamily keyword argument.")
+        return (fontfamily, size, italic, bold)
 
-    def load(self, fileLike, targetClass, fontFamily=None, size=10, italic=False, bold=False):
-        # font.add_file(fileLike)
-        # if not font.base.Font.have_font(fontFamily):
-        #     raise ResourceNotFoundError("Cannot find font family {0}".format(fontFamily))
-        # return font.load(fontFamily, size, bold, italic)
+    def load(self, filelike, targetclass, fontfamily=None, size=10, italic=False, bold=False):
+        # font.add_file(filelike)
+        # if not font.base.Font.have_font(fontfamily):
+        #     raise ResourceNotFoundError("Cannot find font family {0}".format(fontfamily))
+        # return font.load(fontfamily, size, bold, italic)
         # FIXME/pyglet: font loading
         pass
 
-ResourceManager().registerResourceLoader(FontLoader)
+ResourceManager().register_resource_loader(FontLoader)
 

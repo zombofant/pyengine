@@ -38,8 +38,8 @@ class SelectorTuple(tuple):
             return NotImplemented
         if len(other) != len(self):
             return False
-        for myRule, otherRule in zip(self, other):
-            if myRule is not otherRule:
+        for myrule, otherrule in zip(self, other):
+            if myrule is not otherrule:
                 return False
         return True
 
@@ -64,12 +64,12 @@ class Theme(object):
         self._rules = []
         self._i = 0
         self._cache = {}
-        self._perWidgetCache = {}
+        self._per_widget_cache = {}
 
     def _sort(self):
         self._rules.sort(cmp=lambda x, y: cmp(x[0], y[0]) or cmp(x[1], y[1]))
 
-    def addRules(self, rules, resort=True):
+    def add_rules(self, rules, resort=True):
         for rule in rules:
             for i, selector in zip(itertools.count(self._i), rule._selectors):
                 self._rules.append((selector.specifity(), i, selector, rule))
@@ -77,13 +77,13 @@ class Theme(object):
         if resort:
             self._sort()
 
-    def getWidgetStyle(self, widget):
-        matchingRules = [(selector, rule) for _, _, selector, rule in self._rules
-                         if selector.testWidget(widget) is not None]
-        if len(matchingRules) == 0:
+    def get_widget_style(self, widget):
+        matching_rules = [(selector, rule) for _, _, selector, rule in self._rules
+                         if selector.test_widget(widget) is not None]
+        if len(matching_rules) == 0:
             return Style()
 
-        selectors, rules = zip(*matchingRules)
+        selectors, rules = zip(*matching_rules)
         selectors = SelectorTuple(selectors)
         if selectors in self._cache:
             style = self._cache[selectors]

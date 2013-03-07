@@ -28,11 +28,11 @@ from OpenGL.GL.glget import *
 from OpenGL.GL.glget import addGLGetConstant
 addGLGetConstant(0x880F, (1,) )
 
-def getAll():
+def get_all():
     global MAX_PROGRAM_NATIVE_TEX_INSTRUCTIONS_ARB
     
     MAX_PROGRAM_NATIVE_TEX_INSTRUCTIONS_ARB = glGetIntegerv(0x880F)
     
-def printAll():
+def print_all():
     global MAX_PROGRAM_NATIVE_TEX_INSTRUCTIONS_ARB
     print("Max native tex instructions: {0}".format(MAX_PROGRAM_NATIVE_TEX_INSTRUCTIONS_ARB))

@@ -41,121 +41,121 @@ import Label
 class AbstractMenu(object):
     def __init__(self, **kwargs):
         super(AbstractMenu, self).__init__(**kwargs)
-        self._visibleSubMenu = None
-        self._shownBy = None
+        self._visible_submenu = None
+        self._shown_by = None
         self.ShowingSubMenu = False
 
-    def addButton(self, caption, onclick=None, **kwargs):
+    def add_button(self, caption, onclick=None, **kwargs):
         button = MenuButton(self, caption=caption, onclick=onclick, **kwargs)
         return button
 
-    def addButtonAndMenu(self, caption, **kwargs):
-        button = self.addButton(caption, **kwargs)
+    def add_button_and_menu(self, caption, **kwargs):
+        button = self.add_button(caption, **kwargs)
         button.SubMenu = Menu()
         return button, button.SubMenu
 
-    def _setupSubMenu(self, button, submenu):
+    def _setup_submenu(self, button, submenu):
         pass
 
-    def showSubMenu(self, button, menu):
-        if self._visibleSubMenu == menu:
+    def show_submenu(self, button, menu):
+        if self._visible_submenu == menu:
             return
 
-        if self._visibleSubMenu is not None:
-            self._visibleSubMenu._shownBy = None
-            self._visibleSubMenu.kill()
-        self._visibleSubMenu = menu
+        if self._visible_submenu is not None:
+            self._visible_submenu._shown_by = None
+            self._visible_submenu.kill()
+        self._visible_submenu = menu
 
         if menu:
-            menu._shownBy = self
+            menu._shown_by = self
             self.RootWidget.PopupLayer.add(menu)
-            width, height = menu.getDimensions()
+            width, height = menu.get_dimensions()
             menu.AbsoluteRect.Width = width
             menu.AbsoluteRect.Height = height
-            self._setupSubMenu(button, menu)
+            self._setup_submenu(button, menu)
             menu.invalidate()
 
             self.ShowingSubMenu = True
 
-    def hideSubMenu(self):
-        self.showSubMenu(None, None)
+    def hide_submenu(self):
+        self.show_submenu(None, None)
         self.ShowingSubMenu = False
 
     def kill(self):
-        self.hideSubMenu()
+        self.hide_submenu()
         self.invalidate()
         self.Parent.remove(self)
 
-    def killUpwards(self):
-        if self._shownBy:
-            self._shownBy.killUpwards()
+    def kill_upwards(self):
+        if self._shown_by:
+            self._shown_by.kill_upwards()
         else:
             self.kill()
 
     @property
     def VisibleSubMenu(self):
-        return self._visibleSubMenu
+        return self._visible_submenu
 
 class MenuBar(AbstractHBox, AbstractMenu):
-    def _setupSubMenu(self, button, submenu):
-        subStyle = submenu.ComputedStyle
-        buttonRect = button.AbsoluteRect
-        x = buttonRect.Left + subStyle.Margin.Left
-        y = buttonRect.Top + buttonRect.Height + subStyle.Margin.Top
+    def _setup_submenu(self, button, submenu):
+        substyle = submenu.ComputedStyle
+        buttonrect = button.AbsoluteRect
+        x = buttonrect.Left + substyle.Margin.Left
+        y = buttonrect.Top + buttonrect.Height + substyle.Margin.Top
         submenu.AbsoluteRect.Y = y
         submenu.AbsoluteRect.X = x
 
         self.RootWidget.PopupLayer.CurrentRootMenu = self
 
-    def hideSubMenu(self):
-        super(MenuBar, self).hideSubMenu()
+    def hide_submenu(self):
+        super(MenuBar, self).hide_submenu()
         self.RootWidget.PopupLayer.CurrentRootMenu = None
 
     def kill(self):
-        self.hideSubMenu()
+        self.hide_submenu()
 
 class Menu(AbstractVBox, AbstractMenu):
     def __init__(self, parent=None, **kwargs):
         super(Menu, self).__init__(parent, **kwargs)
 
-    def addSeparator(self, **kwargs):
+    def add_separator(self, **kwargs):
         separator = MenuSeparator(self, **kwargs)
         return separator
 
-    def getDimensions(self):
-        myStyle = self.ComputedStyle
+    def get_dimensions(self):
+        mystyle = self.ComputedStyle
 
-        paddingLeft, paddingRight = myStyle.Padding.Left, myStyle.Padding.Right
+        paddingleft, paddingright = mystyle.Padding.Left, mystyle.Padding.Right
 
-        maxLabelWidth = max([btn.getLabelWidth()
+        max_label_width = max([btn.get_label_width()
                              for btn in self
                              if isinstance(btn, MenuButton)])
 
-        maxWidth = 0
+        maxwidth = 0
         for item in self:
-            item._maxLabelWidthHint = maxLabelWidth
-            width, height = item.getDimensions()
+            item._max_label_width_hint = max_label_width
+            width, height = item.get_dimensions()
 
             # FIXME: will break with auto-margins
-            itemMargin = item.ComputedStyle.Margin
+            item_margin = item.ComputedStyle.Margin
             if width is not None:
-                width += itemMargin.Horizontal + paddingLeft + paddingRight
-                maxWidth = max(maxWidth, width)
+                width += item_margin.Horizontal + paddingleft + paddingright
+                maxwidth = max(maxwidth, width)
 
-        totalSpace, totalFlex, totalHeight = self.getSpaceFlexWidth(
-            self._getSpacingList(myStyle.BoxSpacingY)
+        total_space, total_flex, total_height = self.get_space_flex_width(
+            self._get_spacing_list(mystyle.BoxSpacingY)
             )
 
-        assert totalFlex == 0
-        totalHeight += totalSpace
-        totalHeight += myStyle.Border.getBox().Vertical
-        return maxWidth, totalHeight
+        assert total_flex == 0
+        total_height += total_space
+        total_height += mystyle.Border.get_box().Vertical
+        return maxwidth, total_height
 
-    def _setupSubMenu(self, button, submenu):
-        subStyle = submenu.ComputedStyle
-        buttonRect = button.AbsoluteRect
-        x = buttonRect.Left + buttonRect.Width + subStyle.Margin.Left
-        y = buttonRect.Top + subStyle.Margin.Top
+    def _setup_submenu(self, button, submenu):
+        substyle = submenu.ComputedStyle
+        buttonrect = button.AbsoluteRect
+        x = buttonrect.Left + buttonrect.Width + substyle.Margin.Left
+        y = buttonrect.Top + substyle.Margin.Top
 
         submenu.AbsoluteRect.Y = y
         submenu.AbsoluteRect.X = x
@@ -167,89 +167,89 @@ class MenuButton(LabelledWidget, MenuItem):
     def __init__(self, parent,
                  caption="",
                  onclick=None,
-                 hotkeyString="",
+                 hotkey_string="",
                  **kwargs):
-        self._hotkeyLabel = Label.Label(self)
+        self._hotkey_label = Label.Label(self)
         super(MenuButton, self).__init__(parent, **kwargs)
         self._label.Text = caption
-        self._hotkeyLabel.Text = hotkeyString
+        self._hotkey_label.Text = hotkey_string
         self._onclick = onclick
-        self._maxLabelWidthHint = 0
+        self._max_label_width_hint = 0
         self.SubMenu = None
 
-    def _invalidateComputedStyle(self):
-        super(MenuButton, self)._invalidateComputedStyle()
-        self._hotkeyLabel.invalidateLayout()
+    def _invalidate_computed_style(self):
+        super(MenuButton, self)._invalidate_computed_style()
+        self._hotkey_label.invalidate_layout()
 
-    def invalidateContext(self):
-        super(MenuButton, self).invalidateContext()
-        self._hotkeyLabel.invalidateContext()
+    def invalidate_context(self):
+        super(MenuButton, self).invalidate_context()
+        self._hotkey_label.invalidate_context()
 
-    def doAlign(self):
-        myStyle = self.ComputedStyle
+    def do_align(self):
+        mystyle = self.ComputedStyle
 
         _label_rect = copy.copy(self.AbsoluteRect)
-        _label_rect.shrink(myStyle.Padding)
-        _label_rect.shrink(myStyle.Border.getBox())
+        _label_rect.shrink(mystyle.Padding)
+        _label_rect.shrink(mystyle.Border.get_box())
 
-        hotkeyW, hotkeyH = self._hotkeyLabel.getDimensions()
+        hotkeyW, hotkeyH = self._hotkey_label.get_dimensions()
 
         if hotkeyW > 0:
-            _label_rect.Width = _label_rect.Width - (hotkeyW + myStyle.BoxSpacingX)
+            _label_rect.Width = _label_rect.Width - (hotkeyW + mystyle.BoxSpacingX)
 
         self._label.Width = _label_rect.Width
         self._label.Height = _label_rect.Height
         self._label_rect = _label_rect
 
         hotkey_rect = copy.copy(self._label_rect)
-        hotkey_rect.X = hotkey_rect.X + hotkey_rect.Width + myStyle.BoxSpacingX
+        hotkey_rect.X = hotkey_rect.X + hotkey_rect.Width + mystyle.BoxSpacingX
         self._hotkey_rect = hotkey_rect
 
-        self._hotkeyLabel.Height = None
-        self._hotkeyLabel.Width = None
+        self._hotkey_label.Height = None
+        self._hotkey_label.Width = None
 
-    def getLabelWidth(self):
-        return self._label.getDimensions()[0]
+    def get_label_width(self):
+        return self._label.get_dimensions()[0]
 
-    def getDimensions(self):
-        width, height = self._label.getDimensions()
-        width = max(width, self._maxLabelWidthHint)
-        hotkeyW, hotkeyH = self._hotkeyLabel.getDimensions()
+    def get_dimensions(self):
+        width, height = self._label.get_dimensions()
+        width = max(width, self._max_label_width_hint)
+        hotkeyW, hotkeyH = self._hotkey_label.get_dimensions()
 
-        myStyle = self.ComputedStyle
-        borderBox = myStyle.Border.getBox()
-        width += myStyle.Padding.Horizontal + borderBox.Horizontal
-        height += myStyle.Padding.Vertical + borderBox.Vertical
+        mystyle = self.ComputedStyle
+        borderbox = mystyle.Border.get_box()
+        width += mystyle.Padding.Horizontal + borderbox.Horizontal
+        height += mystyle.Padding.Vertical + borderbox.Vertical
         if hotkeyW > 0:
-            width += hotkeyW + myStyle.BoxSpacingX
+            width += hotkeyW + mystyle.BoxSpacingX
 
         return width, height
 
-    def onMouseEnter(self):
+    def onmouseenter(self):
         if self.Parent.ShowingSubMenu or isinstance(self.Parent, Menu):
-            self.Parent.showSubMenu(self, self.SubMenu)
+            self.Parent.show_submenu(self, self.SubMenu)
 
-    def onMouseClick(self, x, y, button, modifiers, nth):
+    def onmouseclick(self, x, y, button, modifiers, nth):
         if self.SubMenu:
             if self.Parent.VisibleSubMenu != self.SubMenu:
-                self.Parent.showSubMenu(self, self.SubMenu)
+                self.Parent.show_submenu(self, self.SubMenu)
             elif isinstance(self.Parent, MenuBar):
                 self.Parent.kill()
         else:
-            self.Parent.killUpwards()
+            self.Parent.kill_upwards()
 
         if self._onclick is not None:
             self._onclick(self)
 
     def render(self):
         super(MenuButton, self).render()
-        self._hotkeyLabel.render(self._hotkey_rect)
+        self._hotkey_label.render(self._hotkey_rect)
 
 class MenuSeparator(MenuItem):
     def __init__(self, parent, **kwargs):
         super(MenuSeparator, self).__init__(parent, **kwargs)
 
-CSS.Minilanguage.ElementNames().registerWidgetClass(MenuBar)
-CSS.Minilanguage.ElementNames().registerWidgetClass(Menu)
-CSS.Minilanguage.ElementNames().registerWidgetClass(MenuButton)
-CSS.Minilanguage.ElementNames().registerWidgetClass(MenuSeparator)
+CSS.Minilanguage.ElementNames().register_widget_class(MenuBar)
+CSS.Minilanguage.ElementNames().register_widget_class(Menu)
+CSS.Minilanguage.ElementNames().register_widget_class(MenuButton)
+CSS.Minilanguage.ElementNames().register_widget_class(MenuSeparator)

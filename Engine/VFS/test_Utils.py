@@ -28,10 +28,10 @@ from our_future import *
 import unittest
 import platform
 
-from Utils import absolutify, normalizeVFSPath, validateVFSPath, isWriteFlag, join, splitext
+from Utils import absolutify, normalize_vfs_path, validate_vfs_path, is_write_flag, join, splitext
 
 class Absolutify(unittest.TestCase):
-    def test_keepsAbsolutePaths(self):
+    def test_keeps_absolute_paths(self):
         path = "/some/test/path"
         self.assertEqual(path, absolutify(path))
 
@@ -46,82 +46,82 @@ class Absolutify(unittest.TestCase):
         self.assertEqual(path_abs, absolutify(path_rel))
 
 class NormalizeVFSPath(unittest.TestCase):
-    def test_keepsNormalizedPaths(self):
+    def test_keeps_normalized_paths(self):
         path = "/some/normalized/path"
-        self.assertEqual(path, normalizeVFSPath(path))
+        self.assertEqual(path, normalize_vfs_path(path))
 
-    def test_removeTrailing(self):
+    def test_remove_trailing(self):
         path = "/with/trailing/slash/"
-        self.assertEqual(path[:-1], normalizeVFSPath(path))
+        self.assertEqual(path[:-1], normalize_vfs_path(path))
 
-    def test_singleFile(self):
+    def test_single_file(self):
         path_bad = "test.txt"
         path_good = "/test.txt"
         self.assertEqual(path_good, absolutify(path_bad))
 
 class ValidateVFSPath(unittest.TestCase):
-    def test_goodPath(self):
+    def test_good_path(self):
         path = "/some/okay/vfs/path"
         try:
-            validateVFSPath(path)
+            validate_vfs_path(path)
         except ValueError:
             self.fail("ValueError was thrown unexpectedly")
 
-    def test_trailingSlashes(self):
+    def test_trailing_slashes(self):
         path = "/some/not/okay/path/"
-        self.assertRaises(ValueError, validateVFSPath, path)
+        self.assertRaises(ValueError, validate_vfs_path, path)
 
-    def test_relativeRoot(self):
+    def test_relative_root(self):
         path = "some/relative/path"
-        self.assertRaises(ValueError, validateVFSPath, path)
+        self.assertRaises(ValueError, validate_vfs_path, path)
 
     def test_dot(self):
         path = "/some/./relative/path"
-        self.assertRaises(ValueError, validateVFSPath, path)
+        self.assertRaises(ValueError, validate_vfs_path, path)
 
     def test_ddot(self):
         path = "/some/../relative/path"
-        self.assertRaises(ValueError, validateVFSPath, path)
+        self.assertRaises(ValueError, validate_vfs_path, path)
 
     def test_sslash(self):
         path = "/some/broken//path"
-        self.assertRaises(ValueError, validateVFSPath, path)
+        self.assertRaises(ValueError, validate_vfs_path, path)
 
 class IsWriteFlag(unittest.TestCase):
     def test_r(self):
-        self.assertFalse(isWriteFlag("r"))
-        self.assertTrue(isWriteFlag("r+"))
-        self.assertTrue(isWriteFlag("r+b"))
-        self.assertTrue(isWriteFlag("r+bU"))
-        self.assertFalse(isWriteFlag("rb"))
-        self.assertFalse(isWriteFlag("rbU"))
-        self.assertFalse(isWriteFlag("rU"))
+        self.assertFalse(is_write_flag("r"))
+        self.assertTrue(is_write_flag("r+"))
+        self.assertTrue(is_write_flag("r+b"))
+        self.assertTrue(is_write_flag("r+bU"))
+        self.assertFalse(is_write_flag("rb"))
+        self.assertFalse(is_write_flag("rbU"))
+        self.assertFalse(is_write_flag("rU"))
 
     def test_w(self):
-        self.assertTrue(isWriteFlag("w"))
-        self.assertTrue(isWriteFlag("w+"))
-        self.assertTrue(isWriteFlag("w+b"))
-        self.assertTrue(isWriteFlag("w+bU"))
-        self.assertTrue(isWriteFlag("wb"))
-        self.assertTrue(isWriteFlag("wbU"))
-        self.assertTrue(isWriteFlag("wU"))
+        self.assertTrue(is_write_flag("w"))
+        self.assertTrue(is_write_flag("w+"))
+        self.assertTrue(is_write_flag("w+b"))
+        self.assertTrue(is_write_flag("w+bU"))
+        self.assertTrue(is_write_flag("wb"))
+        self.assertTrue(is_write_flag("wbU"))
+        self.assertTrue(is_write_flag("wU"))
 
     def test_a(self):
-        self.assertTrue(isWriteFlag("a"))
-        self.assertTrue(isWriteFlag("a+"))
-        self.assertTrue(isWriteFlag("a+b"))
-        self.assertTrue(isWriteFlag("a+bU"))
-        self.assertTrue(isWriteFlag("ab"))
-        self.assertTrue(isWriteFlag("abU"))
-        self.assertTrue(isWriteFlag("aU"))
+        self.assertTrue(is_write_flag("a"))
+        self.assertTrue(is_write_flag("a+"))
+        self.assertTrue(is_write_flag("a+b"))
+        self.assertTrue(is_write_flag("a+bU"))
+        self.assertTrue(is_write_flag("ab"))
+        self.assertTrue(is_write_flag("abU"))
+        self.assertTrue(is_write_flag("aU"))
 
 class Join(unittest.TestCase):
-    def test_oneRoot(self):
+    def test_one_root(self):
         self.assertEqual("/some/test/path", join("/some/test", "path"))
         self.assertEqual("/some/longer/test/path", join("/some/longer", "test", "path"))
         self.assertEqual("keeps/non/trailing/slashes", join("keeps", "non", "trailing", "slashes"))
 
-    def test_multipleRoots(self):
+    def test_multiple_roots(self):
         self.assertEqual("/some/test/path", join("garbage/path", "/some", "test", "path"))
 
 class SplitExt(unittest.TestCase):
@@ -129,6 +129,6 @@ class SplitExt(unittest.TestCase):
         self.assertEqual(("/root/path/test", "txt"), splitext("/root/path/test.txt"))
         self.assertEqual(("root/path/test", "txt"), splitext("root/path/test.txt"))
 
-    def test_dotInPath(self):
+    def test_dot_in_path(self):
         self.assertEqual(("/root/path.git/test", ""), splitext("/root/path.git/test"))
         self.assertEqual(("root/path.git/test", ""), splitext("root/path.git/test"))

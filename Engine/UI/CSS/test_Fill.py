@@ -32,18 +32,18 @@ from Rect import Rect
 from FaceBuffer import FaceBuffer
 
 class FillTest(unittest.TestCase):
-    def assertFaceBuffer(self, textureKey, vertices, colours=None, texCoords=None):
-        geometry = self.buffer.getGeometry()
-        vertexCount = len(vertices) // 2
+    def assertFaceBuffer(self, texture_key, vertices, colours=None, texcoords=None):
+        geometry = self.buffer.get_geometry()
+        vertexcount = len(vertices) // 2
         if colours is None:
-            colours = FaceBuffer.NullColours[:4]*vertexCount
-        if texCoords is None:
-            texCoords = FaceBuffer.NullTexCoords[:4]*vertexCount
-        self.assertIn(textureKey, geometry)
-        bVertices, bColours, bTexCoords = geometry[textureKey]
-        self.assertSequenceEqual(vertices, bVertices[1])
-        self.assertSequenceEqual(colours, bColours[1])
-        self.assertSequenceEqual(texCoords, bTexCoords[1])
+            colours = FaceBuffer.NullColours[:4]*vertexcount
+        if texcoords is None:
+            texcoords = FaceBuffer.NullTexCoords[:4]*vertexcount
+        self.assertIn(texture_key, geometry)
+        bvertices, bcolours, btexcoords = geometry[texture_key]
+        self.assertSequenceEqual(vertices, bvertices[1])
+        self.assertSequenceEqual(colours, bcolours[1])
+        self.assertSequenceEqual(texcoords, btexcoords[1])
 
     def setUp(self):
         self.buffer = FaceBuffer()
@@ -56,7 +56,7 @@ class ColourTest(unittest.TestCase):
         colour = Colour()
         self.assertEqual(colour, Colour(0., 0., 0., 1.))
 
-    def test_initInvalid(self):
+    def test_init_invalid(self):
         self.assertRaises(ValueError, Colour, -1., 0., 0., 1.)
         self.assertRaises(ValueError, Colour, 0., -1., 0., 1.)
         self.assertRaises(ValueError, Colour, 0., 0., -1., 1.)
@@ -81,7 +81,7 @@ class FakeImageFill(FillTest):
     def test_stretch_stretch(self):
         self.image.RepeatX = Stretch
         self.image.RepeatY = Stretch
-        self.image.geometryForRect(Rect(0, 0, 32, 32), self.buffer)
+        self.image.geometry_for_rect(Rect(0, 0, 32, 32), self.buffer)
         u1, v1, u2, v2 = self.uv
         self.assertFaceBuffer(None,
             [
@@ -108,7 +108,7 @@ class FakeImageFill(FillTest):
     def test_repeat_stretch(self):
         self.image.RepeatX = Repeat
         self.image.RepeatY = Stretch
-        self.image.geometryForRect(Rect(16, 16, 64, 32), self.buffer)
+        self.image.geometry_for_rect(Rect(16, 16, 64, 32), self.buffer)
         u1, v1, u2, v2 = self.uv
         self.assertFaceBuffer(
             None,
@@ -172,7 +172,7 @@ class FakeImageFill(FillTest):
     def test_repeat_repeat(self):
         self.image.RepeatX = Repeat
         self.image.RepeatY = Repeat
-        self.image.geometryForRect(Rect(0, 0, 32, 32), self.buffer)
+        self.image.geometry_for_rect(Rect(0, 0, 32, 32), self.buffer)
         u1, v1, u2, v2 = self.uv
         self.assertFaceBuffer(
             None,
@@ -254,7 +254,7 @@ class FakeImageFill(FillTest):
     def test_strech_repeat_partly(self):
         self.image.RepeatX = Stretch
         self.image.RepeatY = Repeat
-        self.image.geometryForRect(Rect(0, 0, 16, 24), self.buffer)
+        self.image.geometry_for_rect(Rect(0, 0, 16, 24), self.buffer)
         u1, v1, u2, v2 = self.uv
         vhalf = v1 + (v2 - v1) / 2.
         self.assertFaceBuffer(

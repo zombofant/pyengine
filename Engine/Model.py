@@ -60,7 +60,7 @@ class Geometry(object):
 
     @property
     def BoundingVolume(self):
-        return self._boundingVolume
+        return self._bounding_volume
 
 class Model(Geometry):
     """
@@ -70,7 +70,7 @@ class Model(Geometry):
     calculating the model's bounding box for example.
     See the class GL.RenderModel on how to render Models using OpenGL.
     """
-    _dataTypes = ('Faces', 'Vertices', 'Normals', 'TexCoords', 'Materials')
+    _data_types = ('Faces', 'Vertices', 'Normals', 'TexCoords', 'Materials')
 
     def __init__(self, **args):
         """
@@ -82,22 +82,22 @@ class Model(Geometry):
         """
         super(Model, self).__init__()
         self.clear()
-        self.setData(**args)
+        self.set_data(**args)
 
     def _copy(self, other):
         """
         Copy variables from another Model object.
         """
         assert isinstance(other, Model)
-        for dtype in self._dataTypes:
+        for dtype in self._data_types:
             setattr(self, dtype, getattr(other, dtype))
 
-    def _packFaces(self):
+    def _pack_faces(self):
         """
         Pack faces into a convenient data structure.
         See the faces property below for details.
         """
-        self._packedFaces = []
+        self._packed_faces = []
         for face in self.Faces:
             fvertices, ftexcoords, fnormals = [], [], []
             for elems in face:
@@ -111,34 +111,34 @@ class Model(Geometry):
                     fnormals.extend(self.Normals[npos*3:npos*3+3])
             if None in fnormals: fnormals = None
             if None in ftexcoords: ftexcoords = None
-            self._packedFaces.append((fvertices, fnormals, ftexcoords))
-        self._facesNeedPacking = False
-        return self._packedFaces
+            self._packed_faces.append((fvertices, fnormals, ftexcoords))
+        self._faces_need_packing = False
+        return self._packed_faces
 
     def clear(self):
         """
         Clear all model data.
         This resets all model data properties to None.
         """
-        for dtype in self._dataTypes:
+        for dtype in self._data_types:
             self.__setattr__(dtype, None)
-        self._packedFaces = []
-        self._facesNeedPacking = False
+        self._packed_faces = []
+        self._faces_need_packing = False
 
-    def setData(self, **args):
+    def set_data(self, **args):
         arguments = dict((x[0].upper()+x[1:], y) for (x,y) in dict(**args).iteritems())
-        for dtype in self._dataTypes:
+        for dtype in self._data_types:
             if dtype in arguments:
                 self.__setattr__(dtype, arguments[dtype])
 
     @property
     def TexCoords(self):
-        return self._texCoords
+        return self._tex_coords
 
     @TexCoords.setter
     def TexCoords(self, value):
-        self._texCoords = value
-        self._facesNeedPacking = True
+        self._tex_coords = value
+        self._faces_need_packing = True
  
     @property
     def Materials(self):
@@ -180,14 +180,14 @@ class Model(Geometry):
         """
         if value is None: value = []
         self._faces = value
-        self._facesNeedPacking = True
+        self._faces_need_packing = True
 
     @property
     def PackedFaces(self):
         """
         Return a list of packed face data.
         """
-        if self._facesNeedPacking:
-            self._packFaces()
-        return self._packedFaces
+        if self._faces_need_packing:
+            self._pack_faces()
+        return self._packed_faces
 

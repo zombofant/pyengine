@@ -28,21 +28,21 @@ from our_future import *
 import os.path
 
 from Errors import VFSPermissionDeniedError, VFSFileNotFoundError, SemanticException
-from Utils import absolutify, normalizeVFSPath, isWriteFlag
+from Utils import absolutify, normalize_vfs_path, is_write_flag
 import StringIO
 
 class Mount(object):
     def __init__(self, **kwargs):
         super(Mount, self).__init__(**kwargs)
 
-    def getRealPath(self, file):
+    def get_real_path(self, file):
         return None
     
-    def fileReadable(self, file):
-        raise NotImplementedError("Mount.fileReadable not specified")
+    def file_readable(self, file):
+        raise NotImplementedError("Mount.file_readable not specified")
 
-    def fileWritable(self, file):
-        raise NotImplementedError("Mount.fileWritable not specified")
+    def file_writable(self, file):
+        raise NotImplementedError("Mount.file_writable not specified")
 
     def open(self, file, flag):
         raise NotImplementedError("Mount.open not specified")
@@ -52,35 +52,35 @@ class MountDirectory(Mount):
     Provides access to a real file system directory.
     """
     
-    def __init__(self, path, readOnly=True, **kwargs):
+    def __init__(self, path, read_only=True, **kwargs):
         super(MountDirectory, self).__init__(**kwargs)
         self.path = os.path.realpath(os.path.abspath(path))
-        self._readOnly = readOnly
+        self._read_only = read_only
 
-    def getRealPath(self, vfspath):
+    def get_real_path(self, vfspath):
         return os.path.join(self.path, *vfspath.split('/'))
 
-    def fileReadable(self, path):
-        return os.access(self.getRealPath(path), os.R_OK)
+    def file_readable(self, path):
+        return os.access(self.get_real_path(path), os.R_OK)
 
-    def fileWritable(self, path):
-        return (not self._readOnly) and os.access(self.getRealPath(path), os.W_OK)
+    def file_writable(self, path):
+        return (not self._read_only) and os.access(self.get_real_path(path), os.W_OK)
 
     def open(self, path, flag):
         # FIXME: is this sufficient to detect a write access?
-        if self._readOnly and isWriteFlag(flag):
+        if self._read_only and is_write_flag(flag):
             raise VFSPermissionDeniedError(path)
         try:
-            return open(self.getRealPath(path), flag)
+            return open(self.get_real_path(path), flag)
         except IOError as err:
-            newType = SemanticException.get(err.errno, None)
-            if newType is not None:
-                raise newType(path)
+            new_type = SemanticException.get(err.errno, None)
+            if new_type is not None:
+                raise new_type(path)
             raise
 
     @property
     def ReadOnly(self):
-        return self._readOnly
+        return self._read_only
 
 
 # FIXME: Implement write IO
@@ -93,28 +93,28 @@ class MountVirtual(Mount):
         super(MountVirtual, self).__init__(**kwargs)
         self._files = {}
 
-    def _manglePath(self, path):
-        return absolutify(normalizeVFSPath(unicode(path)))
+    def _mangle_path(self, path):
+        return absolutify(normalize_vfs_path(unicode(path)))
 
     def __setitem__(self, vfspath, data):
-        vfspath = self._manglePath(vfspath)
+        vfspath = self._mangle_path(vfspath)
         if vfspath in self._files:
             # FIXME: Decide on an error to raise here
             pass
         self._files[vfspath] = unicode(data)
 
     def __delitem__(self, vfspath):
-        del self._files[self._manglePath(vfspath)]
+        del self._files[self._mangle_path(vfspath)]
 
-    def fileReadable(self, path):
-        return self._manglePath(path) in self._files
+    def file_readable(self, path):
+        return self._mangle_path(path) in self._files
 
-    def fileWritable(self, path):
-        return False and (self._manglePath(path) in self._files)
+    def file_writable(self, path):
+        return False and (self._mangle_path(path) in self._files)
 
     def open(self, path, flag):
-        path = self._manglePath(path)
-        if isWriteFlag(flag):
+        path = self._mangle_path(path)
+        if is_write_flag(flag):
             raise VFSPermissionDeniedError(path)
         if not path in self._files:
             raise VFSFileNotFoundError(path)

@@ -102,20 +102,20 @@ class MarginProperties(BoxTest):
 
     def test_deautoify(self):
         auto = Constants.Auto
-        objRect, outerRect = Rect.Rect(0, 0, 10, 10), Rect.Rect(0, 0, 100, 100)
+        objrect, outerrect = Rect.Rect(0, 0, 10, 10), Rect.Rect(0, 0, 100, 100)
 
         margin = Box.Margin(auto, 0, auto, 0)
-        margin.deautoify(objRect, outerRect)
+        margin.deautoify(objrect, outerrect)
         self.assertLRTB(margin, 45, 45, 0, 0)
 
         margin = Box.Margin(auto, auto, auto, auto)
-        margin.deautoify(objRect, outerRect)
+        margin.deautoify(objrect, outerrect)
         self.assertLRTB(margin, 45, 45, 45, 45)
 
         margin = Box.Margin(auto, 0, 0, 0)
-        margin.deautoify(objRect, outerRect)
+        margin.deautoify(objrect, outerrect)
         self.assertLRTB(margin, 90, 0, 0, 0)
 
         margin = Box.Margin(0, 0, 0, auto)
-        margin.deautoify(objRect, outerRect)
+        margin.deautoify(objrect, outerrect)
         self.assertLRTB(margin, 0, 0, 0, 90)

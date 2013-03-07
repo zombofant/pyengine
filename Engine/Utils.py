@@ -33,7 +33,7 @@ def indent(text, indent):
     """
     return "\n".join((indent+line for line in text.split("\n")))
 
-def lineNumbering(text):
+def line_numbering(text):
     if isinstance(text, (unicode, str)):
         lines = list(text.split("\n"))
     else:

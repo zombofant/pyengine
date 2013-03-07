@@ -50,17 +50,17 @@ class OBJModelLoader(ResourceLoader):
         super(OBJModelLoader, self).__init__(
             supported,
             ['obj'],
-            relativePathPrefix="/data/models",
+            relative_path_prefix="/data/models",
             **kwargs)
 
-    def load(self, fileLike, targetClass=Model):
+    def load(self, filelike, targetclass=Model):
         """
         The actual geometry data loader.
         Note: All faces in the obj data are expected to be triangulated.
         """
-        faceCount = 0
+        facecount = 0
         vertices, normals, texcoords, faces, materials = [], [], [], [], []
-        for line in fileLike:
+        for line in filelike:
             if len(line) < 1 : continue
             if line[0] == '#' : continue
             parts = line.strip().split(' ')
@@ -93,12 +93,12 @@ class OBJModelLoader(ResourceLoader):
         if len(faces) < 1:
             raise Exception('No faces found in geometric data!')
         args = dict(faces=faces, vertices=vertices, normals=normals,
-            texCoords=texcoords, materials=materials)
-        if targetClass is Model:
+            texcoords=texcoords, materials=materials)
+        if targetclass is Model:
             return Model(**args)
         else:
             return RenderModel(**args)
 
 # register loader with resource manager
-ResourceManager().registerResourceLoader(OBJModelLoader)
+ResourceManager().register_resource_loader(OBJModelLoader)
 

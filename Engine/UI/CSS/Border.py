@@ -30,7 +30,7 @@ import copy
 
 from Utils import css_inheritable, css_inheritance_recurse
 
-from Fill import Fill, Colour, Transparent, isPlainFill
+from Fill import Fill, Colour, Transparent, is_plain_fill
 from Box import BaseBox
 from Rect import Rect, NotARect
 
@@ -104,7 +104,7 @@ class BorderEdge(BorderComponent):
     def Fill(self, value):
         if self._fill == value:
             return
-        if not isPlainFill(value):
+        if not is_plain_fill(value):
             raise TypeError("Border needs plain fill instances as fillers (e.g. colour or transparent). Got {0} {1}".format(type(value), value))
         self._fill = value
 
@@ -175,14 +175,14 @@ class Border(BorderComponent):
         new._corners = list(self._corners)
         return new
 
-    def setWidth(self, value):
+    def set_width(self, value):
         """
         Set the width of all edges to the given *value*.
         """
         for edge in self._edges:
             edge.Width = value
 
-    def setFill(self, value):
+    def set_fill(self, value):
         """
         Set the filler for all edges to the given *value*. The same
         restrictions as for :attr:`BorderEdge.Fill` apply.
@@ -190,7 +190,7 @@ class Border(BorderComponent):
         for edge in self._edges:
             edge.Fill = value
 
-    def setRadius(self, value):
+    def set_radius(self, value):
         """
         Set the rounding radius of each edge to *value*.
         """
@@ -198,7 +198,7 @@ class Border(BorderComponent):
             raise ValueError("Border radius must be a non-zero integer number.")
         self._corners = [int(value)] * 4
 
-    def getAllRadii(self):
+    def get_all_radii(self):
         return tuple(self._corners)
 
     @property
@@ -207,7 +207,7 @@ class Border(BorderComponent):
 
     @Width.setter
     def Width(self, value):
-        self.setWidth(value)
+        self.set_width(value)
 
     @property
     def Widths(self):
@@ -219,7 +219,7 @@ class Border(BorderComponent):
 
     @Fill.setter
     def Fill(self, value):
-        self.setFill(value)
+        self.set_fill(value)
 
     @css_inheritance_recurse(BorderEdge)
     def Left(self):
@@ -312,49 +312,49 @@ class Border(BorderComponent):
     BottomLeft={7!r}>""".format(self.Left, self.Top, self.Right, self.Bottom,
             self.TopLeftRadius, self.TopRightRadius, self.BottomRightRadius, self.BottomLeftRadius)
 
-    def getBox(self):
+    def get_box(self):
         return BaseBox(self.Left.Width, self.Top.Width,
             self.Right.Width, self.Bottom.Width)
 
-    def getHalfBox(self):
+    def get_half_box(self):
         return BaseBox(self.Left.Width / 2, self.Top.Width / 2,
             self.Right.Width / 2, self.Bottom.Width / 2)
 
-    def geometryForRect(self, rect, faceBuffer):
+    def geometry_for_rect(self, rect, facebuffer):
         """
         Adds geometry for this border as inner border in *rect* in
-        *faceBuffer*.
+        *facebuffer*.
 
         Returns the BaseBox representing this border.
         """
-        box = self.getBox()
-        rectsAndEdges = zip(
+        box = self.get_box()
+        rects_and_edges = zip(
             rect.cut(box),
             iterutils.interleave((edge.Fill for edge in self._edges), self._corners)
         )
-        prevFill = None
-        for rect, fill in rectsAndEdges:
+        prev_fill = None
+        for rect, fill in rects_and_edges:
             if rect is NotARect:
                 continue
             if fill is None:
-                fill = prevFill
+                fill = prev_fill
             else:
-                prevFill = fill
-            fill.geometryForRect(rect, faceBuffer)
+                prev_fill = fill
+            fill.geometry_for_rect(rect, facebuffer)
         return box
 
-    def inCairo(self, rect, cr):
+    def in_cairo(self, rect, cr):
         """
         Execute all instructions neccessary to draw this border as the
         inner border in *rect* on cairo context *cr*.
         """
         raise NotImplementedError("this should in fact be done by Style currently")
 
-    def cairoGroupForRect(self, rect, cr):
+    def cairo_group_for_rect(self, rect, cr):
         """
         Create and return a cairo group for this border as inner border
         in *rect*, using *cr* as cairo context.
         """
         cr.push_group()
-        self.inCairo(rect, cr)
+        self.in_cairo(rect, cr)
         return cr.pop_group()

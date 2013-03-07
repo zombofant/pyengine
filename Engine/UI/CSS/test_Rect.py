@@ -33,13 +33,13 @@ import Rect
 import Box
 
 class RectTest(unittest.TestCase):
-    def checkValuesXYWH(self, x, y, w, h):
+    def assertXYWH(self, x, y, w, h):
         self.assertEqual(self.instance.X, x)
         self.assertEqual(self.instance.Y, y)
         self.assertEqual(self.instance.Width, w)
         self.assertEqual(self.instance.Height, h)
 
-    def checkValuesXYRB(self, x, y, r, b):
+    def assertXYRB(self, x, y, r, b):
         self.assertEqual(self.instance.X, x)
         self.assertEqual(self.instance.Y, y)
         self.assertEqual(self.instance.Right, r)
@@ -55,13 +55,13 @@ class RectInstanceTest(RectTest):
 class RectInit(RectTest):
     def test_init0(self):
         self.instance = Rect.Rect()
-        self.checkValuesXYRB(0, 0, 0, 0)
+        self.assertXYRB(0, 0, 0, 0)
 
     def test_init2(self):
         x = randint(0, 100)
         y = randint(0, 100) + x
         self.instance = Rect.Rect(x, y)
-        self.checkValuesXYRB(x, y, 0, 0)
+        self.assertXYRB(x, y, 0, 0)
 
     def test_init4(self):
         # guarantee that all values are random and non-equal
@@ -70,7 +70,7 @@ class RectInit(RectTest):
         r = randint(1, 100) + x
         b = randint(1, 100) + y
         self.instance = Rect.Rect(x, y, r, b)
-        self.checkValuesXYRB(x, y, r, b)
+        self.assertXYRB(x, y, r, b)
 
     def tearDown(self):
         del self.instance
@@ -119,26 +119,26 @@ class RectProperties(RectInstanceTest):
         self.assertEqual(self.instance.Height, b - y)
 
 class RectConstraints(RectInstanceTest):
-    def setattrWrapper(self, attr, value):
+    def setattr_wrapper(self, attr, value):
         def c():
             return setattr(self.instance, attr, value)
         return c
 
     def test_width(self):
-        self.assertRaises(ValueError, self.setattrWrapper("Width", -1))
+        self.assertRaises(ValueError, self.setattr_wrapper("Width", -1))
 
     def test_height(self):
-        self.assertRaises(ValueError, self.setattrWrapper("Height", -1))
+        self.assertRaises(ValueError, self.setattr_wrapper("Height", -1))
 
     def test_right(self):
         x = randint(10, 100)
         self.instance.X = x
-        self.assertRaises(ValueError, self.setattrWrapper("Right", x-1))
+        self.assertRaises(ValueError, self.setattr_wrapper("Right", x-1))
 
     def test_bottom(self):
         y = randint(10, 100)
         self.instance.Y = y
-        self.assertRaises(ValueError, self.setattrWrapper("Bottom", y-1))
+        self.assertRaises(ValueError, self.setattr_wrapper("Bottom", y-1))
 
 class RectOperators(RectTest):
     def test_copy(self):
@@ -158,7 +158,7 @@ class RectOperators(RectTest):
         self.assertEqual(a & b, Rect.Rect(15, 15, 20, 20))
         self.assertEqual(a, backup)
 
-    def test_andInvalid(self):
+    def test_and_invalid(self):
         a = Rect.Rect(0, 0, 10, 10)
         b = Rect.Rect(10, 10, 20, 20)
         self.assertEqual(a & b, Rect.Rect(10, 10, 10, 10))
@@ -180,7 +180,7 @@ class RectOperators(RectTest):
         a = Rect.Rect(x, y, r, b)
         self.assertIn(a, a)
 
-    def test_containsTuple(self):
+    def test_contains_tuple(self):
         a = Rect.Rect(0, 0, 10, 10)
         self.assertIn((5, 5), a)
         self.assertNotIn((13, 13), a)
@@ -234,13 +234,13 @@ class RectBoxes(RectTest):
         a = Rect.Rect(0, 0, 20, 20)
         b = Box.BaseBox(5, 5, 5, 5)
 
-        left, topLeft, top, topRight, right, bottomRight, bottom, bottomLeft = a.cut(b)
+        left, topleft, top, topright, right, bottomright, bottom, bottomleft = a.cut(b)
         self.assertEqual(
             left,
             Rect.Rect(0, 5, 5, 15)
         )
         self.assertEqual(
-            topLeft,
+            topleft,
             Rect.Rect(0, 0, 5, 5)
         )
         self.assertEqual(
@@ -248,7 +248,7 @@ class RectBoxes(RectTest):
             Rect.Rect(5, 0, 15, 5)
         )
         self.assertEqual(
-            topRight,
+            topright,
             Rect.Rect(15, 0, 20, 5)
         )
         self.assertEqual(
@@ -256,7 +256,7 @@ class RectBoxes(RectTest):
             Rect.Rect(15, 5, 20, 15)
         )
         self.assertEqual(
-            bottomRight,
+            bottomright,
             Rect.Rect(15, 15, 20, 20)
         )
         self.assertEqual(
@@ -264,7 +264,7 @@ class RectBoxes(RectTest):
             Rect.Rect(5, 15, 15, 20)
         )
         self.assertEqual(
-            bottomLeft,
+            bottomleft,
             Rect.Rect(0, 15, 5, 20)
         )
 
@@ -279,10 +279,10 @@ class RectBoxes(RectTest):
             (Rect.NotARect, Rect.NotARect, Rect.NotARect, Rect.NotARect, Rect.NotARect, Rect.NotARect, Rect.NotARect, Rect.NotARect)
         )
 
-    def test_cutCombinable(self):
+    def test_cut_combinable(self):
         a = Rect.Rect(0, 0, 20, 20)
         b = Box.BaseBox(5, 5, 5, 5)
-        left, topLeft, top, topRight, right, bottomRight, bottom, bottomLeft = a.cut(b)
+        left, topleft, top, topright, right, bottomright, bottom, bottomleft = a.cut(b)
 
         c = copy.copy(a)
         c.shrink(b)
@@ -291,8 +291,8 @@ class RectBoxes(RectTest):
         self.assertIsNot(c, Rect.NotARect)
         c |= right
         self.assertIsNot(c, Rect.NotARect)
-        c |= topLeft | top | topRight
+        c |= topleft | top | topright
         self.assertIsNot(c, Rect.NotARect)
-        c |= bottomLeft | bottom | bottomRight
+        c |= bottomleft | bottom | bottomright
         self.assertIsNot(c, Rect.NotARect)
         self.assertEqual(c, a)

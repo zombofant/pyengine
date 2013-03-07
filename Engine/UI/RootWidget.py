@@ -39,7 +39,7 @@ from WidgetBase import AbstractWidget, WidgetContainer
 from LayerWidget import LayerWidget, DesktopLayer, WindowLayer, PopupLayer
 from Flags import *
 
-from Engine.GL import makePOT
+from Engine.GL import make_pot
 
 class RootWidget(AbstractWidget, WidgetContainer):
     """
@@ -51,61 +51,61 @@ class RootWidget(AbstractWidget, WidgetContainer):
 
     def __init__(self, **kwargs):
         self._theme = None
-        self._invalidatedRects = []  # needed during initialization
+        self._invalidated_rects = []  # needed during initialization
         super(RootWidget, self).__init__(**kwargs)
-        self._rootWidget = self
-        self._mouseCapture = None
-        self._mouseCaptureButton = 0
+        self._rootwidget = self
+        self._mouse_capture = None
+        self._mouse_capture_button = 0
         self._focused = None
         self._flags = frozenset()
-        self._childClasses = LayerWidget
-        self._popupLayer = PopupLayer(self)
-        self._windowLayer = WindowLayer(self)
-        self._desktopLayer = DesktopLayer(self)
-        self._oldHitChain = frozenset()
-        self._cairoSurface = None
-        self._cairoContext = None
-        self._pangoContext = None
+        self._child_classes = LayerWidget
+        self._popuplayer = PopupLayer(self)
+        self._windowlayer = WindowLayer(self)
+        self._desktoplayer = DesktopLayer(self)
+        self._old_hit_chain = frozenset()
+        self._cairo_surface = None
+        self._cairo = None
+        self._pango = None
         self._resized = False
-        self._invalidatedRects = []  # discard init values, they're incorrect
+        self._invalidated_rects = []  # discard init values, they're incorrect
                                      # anyways
-        self.surfaceDirty = False
+        self.surface_dirty = False
         self.ActiveButtonMask = mouse.LEFT | mouse.MIDDLE | mouse.RIGHT
 
-    def _findKeyEventTarget(self):
+    def _find_key_event_target(self):
         if self._focused and self._focused.RootWidget is not self:
             self._focused = None
         return self._focused or self
 
-    def _mapMouseEvent(self, x, y, hitChain=None):
-        target = self._mouseCapture or \
-            ((hitChain[0] if hitChain is not False else None)
-             if hitChain is not None else self._hitTest((x, y)))
+    def _map_mouse_event(self, x, y, hitchain=None):
+        target = self._mouse_capture or \
+            ((hitchain[0] if hitchain is not False else None)
+             if hitchain is not None else self._hit_test((x, y)))
         if target is None:
             return None, x, y
         return (target, x - target.AbsoluteRect.Left, y - target.AbsoluteRect.Top)
 
-    def _updateHoverState(self, hitChain=None, p=None):
-        if hitChain is None:
-            hitChain = self._hitTestWithChain(p)
-        if hitChain is False:
-            hitChain = []
-        hitChain = frozenset(hitChain)
-        oldHitChain = self._oldHitChain
-        if hitChain != oldHitChain:
-            for non_hovered in oldHitChain - hitChain:
+    def _update_hover_state(self, hitchain=None, p=None):
+        if hitchain is None:
+            hitchain = self._hit_test_with_chain(p)
+        if hitchain is False:
+            hitchain = []
+        hitchain = frozenset(hitchain)
+        old_hit_chain = self._old_hit_chain
+        if hitchain != old_hit_chain:
+            for non_hovered in old_hit_chain - hitchain:
                 non_hovered.IsHovered = False
-                non_hovered.onMouseLeave()
+                non_hovered.onmouseleave()
 
-            for hovered in hitChain - oldHitChain:
+            for hovered in hitchain - old_hit_chain:
                 hovered.IsHovered = True
-                hovered.onMouseEnter()
+                hovered.onmouseenter()
 
-            self._oldHitChain = hitChain
+            self._old_hit_chain = hitchain
 
-    def _focusAndCapture(self, hitChain, button):
+    def _focus_and_capture(self, hitchain, button):
         target = None
-        for candidate in hitChain:
+        for candidate in hitchain:
             if Focusable in candidate._flags:
                 target = candidate
                 break
@@ -113,163 +113,163 @@ class RootWidget(AbstractWidget, WidgetContainer):
             return
 
         if self._focused is not None:
-            self._focused._isFocused = False
-            self._focused._invalidateComputedStyle()
+            self._focused._is_focused = False
+            self._focused._invalidate_computed_style()
         self._focused = target
         target.IsFocused = True
 
-        self._mouseCapture = target
-        self._mouseCaptureButton = button
+        self._mouse_capture = target
+        self._mouse_capture_button = button
 
-    def _recreateCairoContext(self, width, height):
-        self._cairoSurface = cairo.ImageSurface(
+    def _recreate_cairo_context(self, width, height):
+        self._cairo_surface = cairo.ImageSurface(
             cairo.FORMAT_ARGB32,
             width, height)
-        self._cairoContext = cairo.Context(self._cairoSurface)
-        self._pangoContext = Pango.PangoCairo.create_context(self._cairoContext)
-        self.updateRenderingContext()
+        self._cairo = cairo.Context(self._cairo_surface)
+        self._pango = Pango.PangoCairo.create_context(self._cairo)
+        self.update_rendering_context()
 
-    def _requireCairoContext(self):
-        myRect = self.AbsoluteRect
-        w, h = myRect.Width, myRect.Height
+    def _require_cairo_context(self):
+        myrect = self.AbsoluteRect
+        w, h = myrect.Width, myrect.Height
 
-        if not (self._cairoSurface and
-                w == self._cairoSurface.get_width() and
-                h == self._cairoSurface.get_height()):
-            self._recreateCairoContext(w, h)
+        if not (self._cairo_surface and
+                w == self._cairo_surface.get_width() and
+                h == self._cairo_surface.get_height()):
+            self._recreate_cairo_context(w, h)
 
-    def invalidateRect(self, rect):
-        self._invalidatedRects.append(copy.copy(rect))
+    def invalidate_rect(self, rect):
+        self._invalidated_rects.append(copy.copy(rect))
 
-    def doAlign(self):
+    def do_align(self):
         assert len(self) == 3
-        myRect = self.AbsoluteRect
-        self._desktopLayer.AbsoluteRect = myRect
-        self._windowLayer.AbsoluteRect = myRect
-        self._popupLayer.AbsoluteRect = myRect
+        myrect = self.AbsoluteRect
+        self._desktoplayer.AbsoluteRect = myrect
+        self._windowlayer.AbsoluteRect = myrect
+        self._popuplayer.AbsoluteRect = myrect
 
-        self._requireCairoContext()
-        self._invalidatedRects = []
+        self._require_cairo_context()
+        self._invalidated_rects = []
         self._resized = True
 
-    def dispatchKeyDown(self, *args):
-        target = self._findKeyEventTarget()
-        handled = target.onKeyDown(*args)
+    def dispatch_key_down(self, *args):
+        target = self._find_key_event_target()
+        handled = target.onkeydown(*args)
         if not handled and target is not self:
-            self.onKeyDown(*args)
+            self.onkeydown(*args)
 
-    def dispatchKeyUp(self, *args):
-        target = self._findKeyEventTarget()
-        handled = target.onKeyUp(*args)
+    def dispatch_key_up(self, *args):
+        target = self._find_key_event_target()
+        handled = target.onkeyup(*args)
         if not handled and target is not self:
-            self.onKeyUp(*args)
+            self.onkeyup(*args)
 
-    def dispatchMouseDown(self, x, y, button, modifiers):
-        if self._mouseCapture is None:
-            hitChain = self._hitTestWithChain((x, y))
+    def dispatch_mouse_down(self, x, y, button, modifiers):
+        if self._mouse_capture is None:
+            hitchain = self._hit_test_with_chain((x, y))
         else:
-            hitChain = None
-        target, x, y = self._mapMouseEvent(x, y, hitChain)
+            hitchain = None
+        target, x, y = self._map_mouse_event(x, y, hitchain)
         if target:
-            target.onMouseDown(x, y, button, modifiers)
-        if self._mouseCapture is None and button & self.ActiveButtonMask:
-            self._focusAndCapture(hitChain, button)
+            target.onmousedown(x, y, button, modifiers)
+        if self._mouse_capture is None and button & self.ActiveButtonMask:
+            self._focus_and_capture(hitchain, button)
 
-    def dispatchMouseClick(self, x, y, button, modifiers, nth):
-        target, cx, cy = self._mapMouseEvent(x, y)
+    def dispatch_mouse_click(self, x, y, button, modifiers, nth):
+        target, cx, cy = self._map_mouse_event(x, y)
         if target:
-            target.onMouseClick(cx, cy, button, modifiers, nth)
+            target.onmouseclick(cx, cy, button, modifiers, nth)
 
-    def dispatchMouseMove(self, x, y, dx, dy, button, modifiers):
-        if self._mouseCapture is None:
-            hitChain = self._hitTestWithChain((x, y))
+    def dispatch_mouse_move(self, x, y, dx, dy, button, modifiers):
+        if self._mouse_capture is None:
+            hitchain = self._hit_test_with_chain((x, y))
         else:
-            hitChain = None
-        target, x, y = self._mapMouseEvent(x, y, hitChain)
+            hitchain = None
+        target, x, y = self._map_mouse_event(x, y, hitchain)
         if target:
-            target.onMouseMove(x, y, dx, dy, button, modifiers)
+            target.onmousemove(x, y, dx, dy, button, modifiers)
 
-        if self._mouseCapture is None:
-            self._updateHoverState(hitChain)
+        if self._mouse_capture is None:
+            self._update_hover_state(hitchain)
 
-    def dispatchMouseUp(self, x, y, button, modifiers):
-        target, cx, cy = self._mapMouseEvent(x, y)
+    def dispatch_mouse_up(self, x, y, button, modifiers):
+        target, cx, cy = self._map_mouse_event(x, y)
         if target:
-            target.onMouseUp(cx, cy, button, modifiers)
-        if target is self._mouseCapture and button & self._mouseCaptureButton:
-            self._mouseCapture = None
-            self._mouseCaptureButton = 0
-            self._updateHoverState(p=(x,y))
+            target.onmouseup(cx, cy, button, modifiers)
+        if target is self._mouse_capture and button & self._mouse_capture_button:
+            self._mouse_capture = None
+            self._mouse_capture_button = 0
+            self._update_hover_state(p=(x,y))
 
-    def dispatchScroll(self, x, y, scrollX, scrollY):
-        target, x, y = self._mapMouseEvent(x, y)
+    def dispatch_scroll(self, x, y, scrollX, scrollY):
+        target, x, y = self._map_mouse_event(x, y)
         if target:
-            target.onScroll(scrollX, scrollY)
+            target.onscroll(scrollX, scrollY)
 
-    def dispatchTextInput(self, text):
-        target = self._findKeyEventTarget()
-        target.onTextInput(text)
+    def dispatch_text_input(self, text):
+        target = self._find_key_event_target()
+        target.ontextinput(text)
 
-    def dispatchCaretMotion(self, motion):
-        target = self._findKeyEventTarget()
-        target.onCaretMotion(motion)
+    def dispatch_caret_motion(self, motion):
+        target = self._find_key_event_target()
+        target.oncaretmotion(motion)
 
-    def dispatchCaretMotionSelect(self, motion):
-        target = self._findKeyEventTarget()
-        target.onCaretMotionSelect(motion)
+    def dispatch_caret_motion_select(self, motion):
+        target = self._find_key_event_target()
+        target.oncaretmotionselect(motion)
 
     def realign(self):
         super(RootWidget, self).realign()
         for child in self:
             child.realign()
 
-    def clearCairoSurface(self):
-        ctx = self._cairoContext
+    def clear_cairo_surface(self):
+        ctx = self._cairo
         ctx.set_source_rgba(0., 0., 0., 0.)
         ctx.set_operator(cairo.OPERATOR_SOURCE)
         ctx.paint()
         ctx.set_operator(cairo.OPERATOR_OVER)
         ctx.set_line_cap(cairo.LINE_CAP_SQUARE)
 
-    def _setupClipping(self):
-        ctx = self._cairoContext
-        for rect in self._invalidatedRects:
+    def _setup_clipping(self):
+        ctx = self._cairo
+        for rect in self._invalidated_rects:
             ctx.rectangle(*rect.XYWH)
         ctx.clip()
 
     def render(self):
         self.realign()
-        self.surfaceDirty = False
-        if not (self._invalidatedRects or self._resized):
+        self.surface_dirty = False
+        if not (self._invalidated_rects or self._resized):
             # no dirty regions, nothing to do \o/
             return
         if not self._resized:
             # set up clipping regions
-            self._setupClipping()
-        self.clearCairoSurface()
-        self._desktopLayer.render()
-        self._windowLayer.render()
-        self._popupLayer.render()
-        self._invalidatedRects = []
+            self._setup_clipping()
+        self.clear_cairo_surface()
+        self._desktoplayer.render()
+        self._windowlayer.render()
+        self._popuplayer.render()
+        self._invalidated_rects = []
         self._resized = False
-        self._cairoContext.reset_clip()
-        self.surfaceDirty = True
+        self._cairo.reset_clip()
+        self.surface_dirty = True
 
-    def update(self, timeDelta):
+    def update(self, timedelta):
         for child in self:
-            child.update(timeDelta)
+            child.update(timedelta)
 
     @property
     def WindowLayer(self):
-        return self._windowLayer
+        return self._windowlayer
 
     @property
     def DesktopLayer(self):
-        return self._desktopLayer
+        return self._desktoplayer
 
     @property
     def PopupLayer(self):
-        return self._popupLayer
+        return self._popuplayer
 
     @property
     def Parent(self):
@@ -288,7 +288,7 @@ class RootWidget(AbstractWidget, WidgetContainer):
         if theme == self._theme:
             return
         self._theme = theme
-        for widget in self.treeDepthFirst():
-            widget._themeChanged()
+        for widget in self.tree_depth_first():
+            widget._theme_changed()
 
-CSS.Minilanguage.ElementNames().registerWidgetClass(RootWidget, "Root")
+CSS.Minilanguage.ElementNames().register_widget_class(RootWidget, "Root")

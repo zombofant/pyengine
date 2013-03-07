@@ -35,7 +35,7 @@ class RenderbufferBase(Object):
         super(RenderbufferBase, self).__init__(**kwargs)
         self._dimensions = (width, height)
         
-    def _getValid(self):
+    def _get_valid(self):
         return False
         
     @property
@@ -44,7 +44,7 @@ class RenderbufferBase(Object):
         
     @property
     def Valid(self):
-        return self._getValid()
+        return self._get_valid()
         
     def attach(self, target):
         pass
@@ -64,6 +64,6 @@ class Renderbuffer(RenderbufferBase):
     def attach(self, target):
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, target, GL_RENDERBUFFER, self.id)
         
-    def _getValid(self):
+    def _get_valid(self):
         return True
 

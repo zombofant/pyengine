@@ -31,7 +31,7 @@ from test_ResourceVFS import *
 from ModelLoader import OBJModelLoader
 
 class OBJModelLoaderTest(unittest.TestCase):
-    _testModel = unicode("""
+    _test_model = unicode("""
         # a comment
         o Cube
         v 1.000000 -1.000000 -1.000000
@@ -63,13 +63,13 @@ class OBJModelLoaderTest(unittest.TestCase):
         f 5//6 4//6 8//6
         """).split('\n')
 
-    def test_loadModel(self):
+    def test_load_model(self):
         loader = OBJModelLoader()
-        loadedInstance = loader.load(self._testModel, targetClass=Model)
-        self.assertIsInstance(loadedInstance, Model)
-        del loader, loadedInstance
+        loaded_instance = loader.load(self._test_model, targetclass=Model)
+        self.assertIsInstance(loaded_instance, Model)
+        del loader, loaded_instance
 
-    def test_loadRenderModel(self):
+    def test_load_render_model(self):
         try:
             import cuni
             from Engine.GL.RenderModel import RenderModel
@@ -78,7 +78,7 @@ class OBJModelLoaderTest(unittest.TestCase):
         RenderModel = Engine.GL.RenderModel
         loader = OBJModelLoader()
         # FIXME create virtual material file and test it
-        loadedInstance = loader.load(self._testModel, targetClass=RenderModel)
-        self.assertIsInstance(loadedInstance, RenderModel)
-        del loader, loadedInstance
+        loaded_instance = loader.load(self._test_model, targetclass=RenderModel)
+        self.assertIsInstance(loaded_instance, RenderModel)
+        del loader, loaded_instance
 

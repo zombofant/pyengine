@@ -34,9 +34,9 @@ import ctypes as c
 class Shader(BindableObject):
     def __init__(self, **kwargs):
         super(Shader, self).__init__(**kwargs)
-        self.uniformMap = {}
+        self.uniformmap = {}
 
-    def _compileShader(self, kind, source):
+    def _compile_shader(self, kind, source):
         shader = glCreateShader(kind)
         glShaderSource(shader, source)
         glCompileShader(shader)
@@ -45,32 +45,32 @@ class Shader(BindableObject):
         if length > 1:
             log = glGetShaderInfoLog(shader)
             glDeleteShader(shader)
-            raise ValueError("Failed to compile {0}.\nCompiler log: \n{2}\nSource: \n{1}".format(kind, Utils.lineNumbering(source), log))
+            raise ValueError("Failed to compile {0}.\nCompiler log: \n{2}\nSource: \n{1}".format(kind, Utils.line_numbering(source), log))
         return shader
 
-    def _loadUniform(self, name):
+    def _load_uniform(self, name):
         location = glGetUniformLocation(self.id, str(name))
-        self.uniformMap[name] = location
+        self.uniformmap[name] = location
         return location
 
-    def loadShader(self, vs, fs):
+    def load_shader(self, vs, fs):
         if self.id != 0:
-            self.unloadShader()
-        vsObj = None
-        fsObj = None
+            self.unload_shader()
+        vsobj = None
+        fsobj = None
         error = None
         program = glCreateProgram()
         try:
-            vsObj = self._compileShader(GL_VERTEX_SHADER, vs)
-            fsObj = self._compileShader(GL_FRAGMENT_SHADER, fs)
+            vsobj = self._compile_shader(GL_VERTEX_SHADER, vs)
+            fsobj = self._compile_shader(GL_FRAGMENT_SHADER, fs)
             
-            glAttachShader(program, vsObj)
-            glAttachShader(program, fsObj)
+            glAttachShader(program, vsobj)
+            glAttachShader(program, fsobj)
             
             glLinkProgram(program)
             
-            glDeleteShader(vsObj)
-            glDeleteShader(fsObj)
+            glDeleteShader(vsobj)
+            glDeleteShader(fsobj)
 
             if glGetProgramiv(program, GL_LINK_STATUS) != GL_TRUE:
                 log = glGetProgramInfoLog(program)
@@ -82,37 +82,37 @@ class Shader(BindableObject):
             
             self.id = program
         except:
-            if vsObj is not None:
-                glDeleteShader(vsObj)
-            if fsObj is not None:
-                glDeleteShader(fsObj)
+            if vsobj is not None:
+                glDeleteShader(vsobj)
+            if fsobj is not None:
+                glDeleteShader(fsobj)
             glDeleteProgram(program)
             self.id = 0
             raise
 
-    def loadFromFile(self, vsName, fsName, uniforms):
-        f = open(fsName, 'r')
+    def load_from_file(self, vsname, fsname, uniforms):
+        f = open(fsname, 'r')
         fs = f.read()
         f.close()
-        f = open(vsName, 'r')
+        f = open(vsname, 'r')
         vs = f.read()
         f.close()
-        self.loadShader(vs, fs, uniforms)
+        self.load_shader(vs, fs, uniforms)
 
-    def unloadShader(self):
+    def unload_shader(self):
         glDeleteProgram(program)
         self.id = 0
 
     def __contains__(self, name):
-        value = self.uniformMap.get(name, None)
+        value = self.uniformmap.get(name, None)
         if value is None:
-            value = self._loadUniform(name)
+            value = self._load_uniform(name)
         return value >= 0
 
     def __getitem__(self, name):
-        value = self.uniformMap.get(name, None)
+        value = self.uniformmap.get(name, None)
         if value is None:
-            value = self._loadUniform(name)
+            value = self._load_uniform(name)
         if value < 0:
             raise KeyError("Unknown uniform in program object: {0}".format(name))
         return value

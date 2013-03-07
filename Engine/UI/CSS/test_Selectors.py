@@ -30,14 +30,14 @@ import unittest
 import Selectors
 
 class SelectorEq(unittest.TestCase):
-    def test_switchAttributes(self):
+    def test_switch_attributes(self):
         instanceA = Selectors.HasAttributes(Selectors.AttributeClass("testclass"), chained=Selectors.HasAttributes(Selectors.AttributeExists("testattr")))
         instanceB = Selectors.HasAttributes(Selectors.AttributeExists("testattr"), chained=Selectors.HasAttributes(Selectors.AttributeClass("testclass")))
         self.assertEqual(instanceA, instanceB)
 
-selectorClasses = [getattr(Selectors, name) for name in Selectors.__all__]
+selector_classes = [getattr(Selectors, name) for name in Selectors.__all__]
 
-def buildSetup(cls):
+def build_setup(cls):
     if issubclass(cls, Selectors.ParentSelector):
         def setup():
             return cls(int)
@@ -54,32 +54,32 @@ def buildSetup(cls):
         raise NotImplementedError("Don't know how to setup a test for {0}".format(cls))
     return setup
 
-def buildSubTest(class1, class2, setup1, setup2):
+def build_sub_test(class1, class2, setup1, setup2):
     if class1 == class2:
-        def testEq(self):
+        def test_eq(self):
             instance1, instance2 = setup1(), setup2()
             self.assertEqual(instance1, instance2)
-        return testEq
+        return test_eq
     else:
-        def testNe(self):
+        def test_ne(self):
             instance1, instance2 = setup1(), setup2()
             self.assertNotEqual(instance1, instance2)
-        return testNe
+        return test_ne
 
-def buildTest(class1, setup1, classes):
-    tests = [buildSubTest(class1, class2, setup1, buildSetup(class2)) for class2 in classes]
+def build_test(class1, setup1, classes):
+    tests = [build_sub_test(class1, class2, setup1, build_setup(class2)) for class2 in classes]
     def test(self):
         for test in tests:
             test(self)
     return test
 
-def populateTests(classes):
-    for class1 in selectorClasses:
-        #for class2 in selectorClasses:
-        #    setattr(SelectorEqTest, "test_{0}_{1}".format(class1.__name__, class2.__name__), buildTest(class1, class2, buildSetup(class1), buildSetup(class2)))
-        setattr(SelectorEq, "test_{0}".format(class1.__name__), buildTest(class1, buildSetup(class1), classes))
+def populate_tests(classes):
+    for class1 in selector_classes:
+        #for class2 in selector_classes:
+        #    setattr(SelectorEqTest, "test_{0}_{1}".format(class1.__name__, class2.__name__), build_test(class1, class2, build_setup(class1), build_setup(class2)))
+        setattr(SelectorEq, "test_{0}".format(class1.__name__), build_test(class1, build_setup(class1), classes))
 
-populateTests(selectorClasses)
+populate_tests(selector_classes)
 
 
 class SelectorSpecifity(unittest.TestCase):

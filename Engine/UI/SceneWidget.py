@@ -39,19 +39,19 @@ class SceneWidget(Widget):
         self.ZNear = 1.0
         self.ZFar = 100.0
 
-    def _setupProjection(self):
+    def _setup_projection(self):
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
         gluPerspective(self.FOV, self.AbsoluteRect.Width / self.AbsoluteRect.Height, self.ZNear, self.ZFar)
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity()
 
-    def _resetProjection(self):
+    def _reset_projection(self):
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
         glMatrixMode(GL_MODELVIEW)
 
-    def renderScene(self):
+    def render_scene(self):
         pass
 
     def render(self):

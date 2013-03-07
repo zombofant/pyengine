@@ -42,8 +42,8 @@ def __mktimestamp():
     mtime += unicode(os.stat(LANGUAGE_FILE).st_mtime)
     return mtime
 
-def buildCSSParser():
-    tooOld = False
+def build_css_parser():
+    tooold = False
     try:
         try:
             mtime = __mktimestamp()
@@ -59,7 +59,7 @@ def buildCSSParser():
             raise TooOld()
         return True
     except TooOld as err:
-        tooOld = True
+        tooold = True
     except ImportError as err:
         pass
     
@@ -74,49 +74,49 @@ def buildCSSParser():
         except ImportError as err:
             warn(ImportWarning("Could not generate CSS parser: {0}".format(err)))
             print("Exception occured while trying to find the parser generator. Did you run a git submodule init && git submodule update?")
-            return tooOld
+            return tooold
         # rebuild the parser
-        syntaxFile = open(SYNTAX_FILE, "r")
-        parser = pyLRp.Parser(syntaxFile)
+        syntaxfile = open(SYNTAX_FILE, "r")
+        parser = pyLRp.Parser(syntaxfile)
         syntax = parser.Parse()
-        syntaxFile.close()
-        del syntaxFile
+        syntaxfile.close()
+        del syntaxfile
         del parser
 
         graph = pyLRp.LALR1StateTransitionGraph(syntax)
         graph.Construct()
 
-        lexingNFA = pyLRp.LexingNFA(syntax)
-        lexingNFA.Construct()
-        lexingDFA = lexingNFA.CreateDFA()
-        del lexingNFA
-        lexingDFA.Optimize()
+        lexing_nfa = pyLRp.LexingNFA(syntax)
+        lexing_nfa.Construct()
+        lexing_dfa = lexing_nfa.CreateDFA()
+        del lexing_nfa
+        lexing_dfa.Optimize()
 
-        lexingTable = lexingDFA.CreateLexTable()
-        del lexingDFA
+        lexing_table = lexing_dfa.CreateLexTable()
+        del lexing_dfa
 
-        lexingTable.ConstructEquivalenceClasses()
+        lexing_table.ConstructEquivalenceClasses()
         
-        parserFile = open(PARSER_FILE, "w")
-        writer = pyLRp.Writer(parserFile, True, False, True, sys.version_info[0] >= 3, version=mtime)
-        writer.Write(syntax, graph, lexingTable)
+        parserfile = open(PARSER_FILE, "w")
+        writer = pyLRp.Writer(parserfile, True, False, True, sys.version_info[0] >= 3, version=mtime)
+        writer.Write(syntax, graph, lexing_table)
 
         del graph
-        del lexingTable
+        del lexing_table
         del syntax
         del writer
-        parserFile.close()
-        del parserFile
+        parserfile.close()
+        del parserfile
     finally:
         del sys.path[1]
 
     try:
-        if tooOld:
+        if tooold:
             reload(GeneratedParser)
         else:
             import GeneratedParser
     except ImportError as err:
         warn(ImportWarning("Despite having created the parser: {0}".format(err)))
 
-if not buildCSSParser():
+if not build_css_parser():
     warn(UserWarning("CSS interpreter will be unavailable."))

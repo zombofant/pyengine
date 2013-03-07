@@ -66,7 +66,7 @@ class StylesheetNamespace(object):
     bottom = staticmethod(VerticalAlign.Bottom)
     inherit = Inherit
 
-    _tokenBlacklist = ["evaluateCall", "get"]
+    _token_blacklist = ["evaluate_call", "get"]
 
     __singleton = None
 
@@ -81,13 +81,13 @@ class StylesheetNamespace(object):
             super(StylesheetNamespace, self).__init__()
             self._initialized = True
 
-    def evaluateCall(self, call, *args):
+    def evaluate_call(self, call, *args):
         call = self.get(call)
         return call(*args)
 
     def get(self, token):
         token.lower()
-        if token.startswith("_") or token in self._tokenBlacklist or not hasattr(self, token):
+        if token.startswith("_") or token in self._token_blacklist or not hasattr(self, token):
             raise ValueError("Token {0!r} not defined in css".format(token))
         return getattr(self, token)
 
@@ -119,10 +119,10 @@ class ElementNames(dict):
         for key, value in otherdict.iteritems():
             self[key] = value
 
-    def registerWidgetClass(self, widgetClass, asName=None):
-        if asName is None:
-            asName = widgetClass.__name__
-        self[asName] = widgetClass
+    def register_widget_class(self, widgetclass, asname=None):
+        if asname is None:
+            asname = widgetclass.__name__
+        self[asname] = widgetclass
 
-elementNames = ElementNames()
+elementnames = ElementNames()
 namespace = StylesheetNamespace()

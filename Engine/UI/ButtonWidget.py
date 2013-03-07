@@ -43,10 +43,10 @@ class ButtonWidget(LabelledWidget):
         self._label.Text = caption
         self._onclick = onclick
 
-    def onMouseClick(self, x, y, button, modifiers, nth):
+    def onmouseclick(self, x, y, button, modifiers, nth):
         rect = self.AbsoluteRect
         if 0 <= x < rect.Width and 0 <= y < rect.Height and self._onclick:
             self._onclick(self)
 
 
-CSS.Minilanguage.ElementNames().registerWidgetClass(ButtonWidget, "Button")
+CSS.Minilanguage.ElementNames().register_widget_class(ButtonWidget, "Button")

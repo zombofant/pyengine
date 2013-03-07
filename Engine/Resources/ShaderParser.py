@@ -41,22 +41,22 @@ class ParentNode(CodeNode):
         super(ParentNode, self).__init__(**kwargs)
         self.Nodes = list(nodes)
 
-    def __call__(self, varDict):
-        return itertools.chain.from_iterable((node(varDict) for node in self.Nodes))
+    def __call__(self, vardict):
+        return itertools.chain.from_iterable((node(vardict) for node in self.Nodes))
 
     def __repr__(self):
         return "ParentNode({0!r})".format(self.Nodes)
 
 class RootNode(ParentNode):
-    def __call__(self, varDict):
-        return "\n".join(super(RootNode, self).__call__(varDict))
+    def __call__(self, vardict):
+        return "\n".join(super(RootNode, self).__call__(vardict))
 
 class StaticNode(CodeNode):
     def __init__(self, lines, **kwargs):
         super(StaticNode, self).__init__(**kwargs)
         self.Lines = list(lines)
 
-    def __call__(self, varDict):
+    def __call__(self, vardict):
         return iter(self.Lines)
 
     def __repr__(self):
@@ -70,57 +70,57 @@ class ConditionalNode(CodeNode):
         self._conditionals = []
         self._else = None
 
-    def __call__(self, varDict):
+    def __call__(self, vardict):
         for condition, node in self._conditionals:
-            if bool(eval(condition, varDict)):
-                return node(varDict)
+            if bool(eval(condition, vardict)):
+                return node(vardict)
         if self._else is not None:
             return self._else()
         else:
             return ()
 
-    def newCondition(self, expression):
+    def new_condition(self, expression):
         if self._else is not None:
             raise ValueError("Cannot have another branch after the else branch.")
         node = ParentNode([])
         self._conditionals.append((expression, node))
         return node
 
-    def addElse(self):
+    def add_else(self):
         if self._else is not None:
             raise ValueError("Multiple else branches defined.")
-        self._else = self.newCondition("True")
+        self._else = self.new_condition("True")
         return self._else
 
     def __repr__(self):
         return "Conditionals["+(", ".join("If({0!r}, {1!r})".format(expr, node) for expr, node in self._conditionals))+"]"
 
 class State(object):
-    def __init__(self, parser, transitionTest, commentTest):
+    def __init__(self, parser, transition_test, comment_test):
         self._parser = parser
-        self._transitionTest = transitionTest
-        self._commentTest = commentTest
+        self._transition_test = transition_test
+        self._comment_test = comment_test
 
     def preprocessor(self, command, argument):
         return NotImplemented
 
 class DefaultState(State):
     def line(self, line):
-        if self._transitionTest(line):
+        if self._transition_test(line):
             return
-        if self._commentTest(line):
+        if self._comment_test(line):
             return
         raise ValueError("{0!r} not allowed outside any block.".format(line))
 
 class VariablesState(State):
-    _variableMatch = re.compile("^([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*(\S+)\s*$", re.I)
+    _variable_match = re.compile("^([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*(\S+)\s*$", re.I)
 
     def line(self, line):
-        if self._transitionTest(line):
+        if self._transition_test(line):
             return
-        if self._commentTest(line):
+        if self._comment_test(line):
             return
-        variable = self._variableMatch.match(line)
+        variable = self._variable_match.match(line)
         if variable:
             name, value = variable.groups()[0:2]
             self._parser.variables[name] = eval(value, {})
@@ -130,76 +130,76 @@ class VariablesState(State):
 class ShaderCodeState(State):
     def __init__(self, *args):
         super(ShaderCodeState, self).__init__(*args)
-        self._rootNode = RootNode([])
-        self._nodeStack = [self._rootNode]
+        self._root_node = RootNode([])
+        self._node_stack = [self._root_node]
 
     @property
-    def _currentNode(self):
-        return self._nodeStack[-1]
+    def _current_node(self):
+        return self._node_stack[-1]
 
-    def _pushNode(self, nodeInstance):
-        # print(self._nodeStack)
-        while isinstance(self._currentNode, StaticNode):
-            self._popNode()
-        assert isinstance(self._currentNode, ParentNode), repr(self._nodeStack)
-        self._currentNode.Nodes.append(nodeInstance)
-        self._nodeStack.append(nodeInstance)
-        return nodeInstance
+    def _push_node(self, node_instance):
+        # print(self._node_stack)
+        while isinstance(self._current_node, StaticNode):
+            self._pop_node()
+        assert isinstance(self._current_node, ParentNode), repr(self._node_stack)
+        self._current_node.Nodes.append(node_instance)
+        self._node_stack.append(node_instance)
+        return node_instance
 
-    def _popNode(self):
-        self._nodeStack.pop()
+    def _pop_node(self):
+        self._node_stack.pop()
 
-    def _getInnerConditional(self):
-        for i, node in enumerate(reversed(self._nodeStack)):
+    def _get_inner_conditional(self):
+        for i, node in enumerate(reversed(self._node_stack)):
             if isinstance(node, ConditionalNode):
                 return i, node
         return None, None
 
-    def _makeInnerConditionalCurrent(self, errormsg="No inner conditional found"):
-        index, conditional = self._getInnerConditional()
+    def _make_inner_conditional_current(self, errormsg="No inner conditional found"):
+        index, conditional = self._get_inner_conditional()
         if index is None:
             raise ValueError(errormsg)
         if index > 0:
-            self._nodeStack = self._nodeStack[:-index]
-        return self._currentNode
+            self._node_stack = self._node_stack[:-index]
+        return self._current_node
 
     def _pp_if(self, argument):
-        conditional = self._pushNode(ConditionalNode())
-        self._nodeStack.append(conditional.newCondition(argument))
+        conditional = self._push_node(ConditionalNode())
+        self._node_stack.append(conditional.new_condition(argument))
 
     def _pp_else(self, argument):
         if argument is not None:
             raise ValueError("else instructions must not have any argument. Got: {0}".format(argument))
-        self._makeInnerConditionalCurrent("else not allowed outside if/endif")
-        self._nodeStack.append(self._currentNode.addElse())
+        self._make_inner_conditional_current("else not allowed outside if/endif")
+        self._node_stack.append(self._current_node.add_else())
 
     def _pp_elif(self, argument):
-        self._makeInnerConditionalCurrent("elif not allowed outside if/endif")
-        self._nodeStack.append(self._currentNode.newCondition(argument))
+        self._make_inner_conditional_current("elif not allowed outside if/endif")
+        self._node_stack.append(self._current_node.new_condition(argument))
 
     def _pp_endif(self, argument):
-        self._makeInnerConditionalCurrent("unmatched endif")
-        self._popNode()
+        self._make_inner_conditional_current("unmatched endif")
+        self._pop_node()
 
     def preprocessor(self, command, argument):
-        call = self._preprocessorMap.get(command, None)
+        call = self._preprocessor_map.get(command, None)
         if call is not None:
             return call(self, argument)
         return NotImplemented
 
     def line(self, line):
-        if self._transitionTest(line):
-            index, conditional = self._getInnerConditional()
+        if self._transition_test(line):
+            index, conditional = self._get_inner_conditional()
             if index is not None:
                 raise ValueError("Unmatched if")
             return
-        if not isinstance(self._currentNode, StaticNode):
-            assert isinstance(self._currentNode, ParentNode)
-            self._pushNode(StaticNode([line]))
+        if not isinstance(self._current_node, StaticNode):
+            assert isinstance(self._current_node, ParentNode)
+            self._push_node(StaticNode([line]))
         else:
-            self._currentNode.append(line)
+            self._current_node.append(line)
     
-    _preprocessorMap = {
+    _preprocessor_map = {
         "if": _pp_if,
         "else": _pp_else,
         "endif": _pp_endif,
@@ -209,74 +209,74 @@ class ShaderCodeState(State):
 class FragmentShaderCodeState(ShaderCodeState):
     def __init__(self, *args):
         super(FragmentShaderCodeState, self).__init__(*args)
-        self._parser.fp = self._rootNode
+        self._parser.fp = self._root_node
 
 class VertexShaderCodeState(ShaderCodeState):
     def __init__(self, *args):
         super(VertexShaderCodeState, self).__init__(*args)
-        self._parser.vp = self._rootNode
+        self._parser.vp = self._root_node
 
 class ShaderParser(object):
     _transition = re.compile("^\[([\w\s]+)\]\s*$", re.I)
-    _transitionMap = {
+    _transition_map = {
         re.compile(r"^(library variables|variables|globals)$", re.I): VariablesState,
         re.compile(r"^(vertex( shader)?|vs)$", re.I): VertexShaderCodeState,
         re.compile(r"^(fragment( shader)?|fs)$", re.I): FragmentShaderCodeState
     }
     _preprocessor = re.compile(r"^\s*#(\w+)(\s+(\S.*))?\s*$")
-    _outsideComment = re.compile(r"^\s*//.*$")
+    _outside_comment = re.compile(r"^\s*//.*$")
 
-    _includeFile = re.compile(r'^"([^\"]+)"$')
+    _include_file = re.compile(r'^"([^\"]+)"$')
     
-    def __init__(self, lineIterable):
-        self.lineIterableStack = [iter(lineIterable)]
-        self.stateStack = [DefaultState(self, self._testTransition, self._testComment)]
+    def __init__(self, line_iterable):
+        self.line_iterable_stack = [iter(line_iterable)]
+        self.state_stack = [DefaultState(self, self._test_transition, self._test_comment)]
         self.variables = {}
         self.fp = None
         self.vp = None
 
-    def _getLine(self):
-        while len(self.lineIterableStack) > 0:
+    def _get_line(self):
+        while len(self.line_iterable_stack) > 0:
             try:
-                return next(self.lineIterableStack[-1])
+                return next(self.line_iterable_stack[-1])
             except StopIteration:
-                self.lineIterableStack.pop()
+                self.line_iterable_stack.pop()
                 pass
         else:
             return None
 
-    def _replaceState(self, stateClass):
-        self.stateStack[-1] = stateClass(self, self._testTransition, self._testComment)
+    def _replace_state(self, state_class):
+        self.state_stack[-1] = state_class(self, self._test_transition, self._test_comment)
 
     def _pp_include(self, argument):
-        includeFile = self._includeFile.match(argument.strip())
-        if not includeFile:
+        include_file = self._include_file.match(argument.strip())
+        if not include_file:
             raise ValueError("Invalid include command: {0}".format(argument))
-        fileName = includeFile.group(1)
-        iterable = ResourceManager().require(fileName, resourceType="txt").split("\n")
-        self.lineIterableStack.append(iter(iterable))
+        file_name = include_file.group(1)
+        iterable = ResourceManager().require(file_name, resourcetype="txt").split("\n")
+        self.line_iterable_stack.append(iter(iterable))
 
-    def _testTransition(self, line):
+    def _test_transition(self, line):
         transition = self._transition.match(line)
         if transition:
-            targetName = transition.group(1)
-            for match, stateClass in self._transitionMap.iteritems():
-                if match.match(targetName):
-                    self._replaceState(stateClass)
+            target_name = transition.group(1)
+            for match, state_class in self._transition_map.iteritems():
+                if match.match(target_name):
+                    self._replace_state(state_class)
                     return True
-            raise KeyError("Unknown section: {0!r}".format(targetName))
+            raise KeyError("Unknown section: {0!r}".format(target_name))
         return False
 
-    def _testComment(self, line):
+    def _test_comment(self, line):
         line = line.strip()
         if len(line) == 0:
             return True
-        if self._outsideComment.match(line):
+        if self._outside_comment.match(line):
             return True
         return False
 
     def parse(self):
-        line = self._getLine()
+        line = self._get_line()
         while line is not None:
             line = line.rstrip()
             preprocessor = self._preprocessor.match(line)
@@ -284,17 +284,17 @@ class ShaderParser(object):
                 groups = preprocessor.groups()
                 command = groups[0]
                 argument = groups[2]
-                if command in self._preprocessorMap:
-                    self._preprocessorMap[command](self, argument)
+                if command in self._preprocessor_map:
+                    self._preprocessor_map[command](self, argument)
                 else:
-                    status = self.stateStack[-1].preprocessor(command, argument)
+                    status = self.state_stack[-1].preprocessor(command, argument)
                     if status is NotImplemented:
                         raise KeyError("Unknown preprcosser instruction: {0}".format(command))
             else:
-                self.stateStack[-1].line(line)
-            line = self._getLine()
+                self.state_stack[-1].line(line)
+            line = self._get_line()
         return self.variables, self.vp, self.fp
 
-    _preprocessorMap = {
+    _preprocessor_map = {
         "include": _pp_include,
     }

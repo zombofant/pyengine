@@ -45,13 +45,13 @@ class ScreenWidget(ParentWidget):
         super(ScreenWidget, self).__init__(parent, **kwargs)
         self._window = window
 
-    def doAlign(self):
+    def do_align(self):
         for child in self:
             rect = copy.copy(self.AbsoluteRect)
             rect.shrink(self.ComputedStyle.Padding)
 
-            childStyle = child.ComputedStyle
-            margin = copy.copy(childStyle.Margin)
+            childstyle = child.ComputedStyle
+            margin = copy.copy(childstyle.Margin)
             margin.deautoify(
                 Rect.Rect(
                     0, 0,
@@ -71,4 +71,4 @@ class ScreenWidget(ParentWidget):
     def Window(self):
         return self._window
 
-CSS.Minilanguage.ElementNames().registerWidgetClass(ScreenWidget, "Screen")
+CSS.Minilanguage.ElementNames().register_widget_class(ScreenWidget, "Screen")

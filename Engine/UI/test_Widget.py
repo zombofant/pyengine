@@ -40,7 +40,7 @@ class WidgetInit(unittest.TestCase):
 class WidgetInstanceTest(unittest.TestCase):
     def setUp(self):
         self.instance = RootWidget()
-        self.parent = self.instance._desktopLayer
+        self.parent = self.instance._desktoplayer
 
     def tearDown(self):
         del self.instance
@@ -57,18 +57,18 @@ class WidgetChildren(WidgetInstanceTest):
         child = Widget(self.parent)
         self.assertRaises(ValueError, self.parent.add, child)
 
-    def test_multipleParents(self):
-        parentB = RootWidget()._desktopLayer
+    def test_multiple_parents(self):
+        parentB = RootWidget()._desktoplayer
         child = Widget(self.parent)
         self.assertRaises(ValueError, parentB.add, child)
 
-    def test_multipleChildren(self):
+    def test_multiple_children(self):
         childA, childB, childC = Widget(parent=self.parent), Widget(parent=self.parent), Widget(parent=self.parent)
         self.assertEqual(list(self.parent), [childA, childB, childC])
         del self.parent[0]
         self.assertEqual(list(self.parent), [childB, childC])
 
-    def test_typeEnforcement(self):
+    def test_type_enforcement(self):
         self.assertRaises(TypeError, self.instance.add, 1)
 
     def test_init(self):
@@ -77,14 +77,14 @@ class WidgetChildren(WidgetInstanceTest):
         self.assertEqual(self.parent[0], child)
 
 class WidgetIteration(WidgetInstanceTest):
-    def test_depthFirst(self):
+    def test_depth_first(self):
         childA = ParentWidget(self.parent)
         childB = ParentWidget(self.parent)
-        childAA = Widget(childA)
-        childAB = Widget(childA)
-        childBA = Widget(childB)
+        child_aa = Widget(childA)
+        child_ab = Widget(childA)
+        child_ba = Widget(childB)
 
         self.assertSequenceEqual(
-            list(self.parent.treeDepthFirst()),
-            [self.parent, childA, childAA, childAB, childB, childBA]
+            list(self.parent.tree_depth_first()),
+            [self.parent, childA, child_aa, child_ab, childB, child_ba]
         )

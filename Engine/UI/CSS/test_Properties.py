@@ -34,7 +34,7 @@ import Fill
 from FaceBuffer import FaceBuffer
 
 class BoxModelTest(unittest.TestCase):
-    def checkValues(self, l, t, r, b):
+    def assertValues(self, l, t, r, b):
         self.assertEqual(self.instance.Left, l)
         self.assertEqual(self.instance.Top, t)
         self.assertEqual(self.instance.Right, r)
@@ -43,12 +43,12 @@ class BoxModelTest(unittest.TestCase):
 class BoxModelInit(BoxModelTest):
     def test_init0(self):
         self.instance = Box.BaseBox()
-        self.checkValues(0, 0, 0, 0)
+        self.assertValues(0, 0, 0, 0)
 
     def test_init1(self):
         r = randint(0, 100)
         self.instance = Box.BaseBox(r)
-        self.checkValues(r, r, r, r)
+        self.assertValues(r, r, r, r)
 
     def test_init4(self):
         # guarantee that all values are random and non-equal
@@ -57,7 +57,7 @@ class BoxModelInit(BoxModelTest):
         t = randint(1, 100) + r
         b = randint(1, 100) + t
         self.instance = Box.BaseBox(l, t, r, b)
-        self.checkValues(l, t, r, b)
+        self.assertValues(l, t, r, b)
 
     def tearDown(self):
         del self.instance
@@ -91,22 +91,22 @@ class BoxModelProperties(BoxModelInstanceTest):
         self.assertEqual(self.instance.Bottom, v)
 
 class BoxModelConstraints(BoxModelInstanceTest):
-    def setattrWrapper(self, attr, value):
+    def setattr_wrapper(self, attr, value):
         def c():
             return setattr(self.instance, attr, value)
         return c
     
     def test_left(self):
-        self.assertRaises(ValueError, self.setattrWrapper("Left", -1))
+        self.assertRaises(ValueError, self.setattr_wrapper("Left", -1))
 
     def test_right(self):
-        self.assertRaises(ValueError, self.setattrWrapper("Right", -1))
+        self.assertRaises(ValueError, self.setattr_wrapper("Right", -1))
 
     def test_top(self):
-        self.assertRaises(ValueError, self.setattrWrapper("Top", -1))
+        self.assertRaises(ValueError, self.setattr_wrapper("Top", -1))
 
     def test_bottom(self):
-        self.assertRaises(ValueError, self.setattrWrapper("Bottom", -1))
+        self.assertRaises(ValueError, self.setattr_wrapper("Bottom", -1))
 
 class PropertyEq(BoxModelTest):
     def test_BaseBox(self):
@@ -151,9 +151,9 @@ class TypeConstraints(unittest.TestCase):
 class BorderTests(unittest.TestCase):
     def test_box(self):
         a = Border.Border(3)
-        self.assertEqual(a.getBox(), Box.BaseBox(3))
+        self.assertEqual(a.get_box(), Box.BaseBox(3))
         a.Left.Width = 1
-        self.assertEqual(a.getBox(), Box.BaseBox(1, 3, 3, 3))
+        self.assertEqual(a.get_box(), Box.BaseBox(1, 3, 3, 3))
 
 class GeometryTest(unittest.TestCase):
     def setUp(self):

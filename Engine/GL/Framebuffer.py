@@ -30,8 +30,8 @@ from Renderbuffer import RenderbufferBase
 import numpy as np
 
 class Framebuffer(BindableObject):
-    _bindCall = glBindFramebuffer
-    _bindClass = GL_FRAMEBUFFER
+    _bind_call = glBindFramebuffer
+    _bind_class = GL_FRAMEBUFFER
     
     def __init__(self, width=None, height=None, **kwargs):
         assert width is not None
@@ -75,13 +75,13 @@ class Framebuffer(BindableObject):
     def Dimensions(self, value):
         if value == self._dimensions:
             return
-        newValue = tuple(value)
-        if len(newValue) != 2 or type(newValue[0]) != int or type(newValue[1]) != int:
+        newvalue = tuple(value)
+        if len(newvalue) != 2 or type(newvalue[0]) != int or type(newvalue[1]) != int:
             raise TypeError("Need two value tuple, got {0} {1}".format(type(value), value))
         for obj in self._attachments.itervalues():
             if obj is not None:
                 raise Exception("Cannot change framebuffer dimensions while attachments are present")
-        self._dimensions = newValue
+        self._dimensions = newvalue
         
     def reattach(self):
         for slot, obj in self._attachments.iteritems():
@@ -113,5 +113,5 @@ class Framebuffer(BindableObject):
         self.validate()
         glBindFramebuffer(GL_FRAMEBUFFER, self.id)
         
-    def setupViewport(self):
+    def setup_viewport(self):
         glViewport(0, 0, self._dimensions[0], self._dimensions[1])

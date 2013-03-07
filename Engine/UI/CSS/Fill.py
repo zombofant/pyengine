@@ -78,28 +78,28 @@ class Fill(object):
         self.RepeatY = repeatY
 
     # FIXME: use abc.abstractmethod as soon as possible
-    def geometryForRect(self, rect, faceBuffer):
+    def geometry_for_rect(self, rect, facebuffer):
         """
         Adds the geometry created by this filler for the given Rect
-        *rect* to the FaceBuffer *faceBuffer*.
+        *rect* to the FaceBuffer *facebuffer*.
         """
-        raise NotImplementedError("geometryForRect not implemented in {0}".format(type(self).__name__))
+        raise NotImplementedError("geometry_for_rect not implemented in {0}".format(type(self).__name__))
 
     # FIXME: use abc.abstractmethod as soon as possible
-    def inCairo(self, rect, ctx):
+    def in_cairo(self, rect, ctx):
         """
         Execute all calls neccessary to draw this filling in a cairo
         context *ctx* in *rect*.
         """
-        raise NotImplementedError("inCairo not implemented in {0}".format(type(self).__name__))
+        raise NotImplementedError("in_cairo not implemented in {0}".format(type(self).__name__))
 
-    def cairoGroupForRect(self, rect, ctx):
+    def cairo_group_for_rect(self, rect, ctx):
         ctx.push_group()
-        self.inCairo(rect, ctx)
+        self.in_cairo(rect, ctx)
         return ctx.pop_group()
 
-    def setSource(self, ctx):
-        raise NotImplementedError("setSource not implemented for {0}".format(type(self).__name__))
+    def set_source(self, ctx):
+        raise NotImplementedError("set_source not implemented for {0}".format(type(self).__name__))
 
     def __ne__(self, other):
         r = self.__eq__(other)
@@ -143,13 +143,13 @@ class __Transparent(Fill):
     def __eq__(self, other):
         return other is self.Transparent
         
-    def geometryForRect(self, rect, faceBuffer):
+    def geometry_for_rect(self, rect, facebuffer):
         pass
 
-    def inCairo(self, rect, ctx):
+    def in_cairo(self, rect, ctx):
         pass
 
-    def setSource(self, ctx):
+    def set_source(self, ctx):
         ctx.set_source_rgba(0., 0., 0., 0.)
     
 Transparent = __Transparent()
@@ -211,10 +211,10 @@ class Colour(Fill):
     def __repr__(self):
         return "Colour({0}, {1}, {2}, {3})".format(self._r, self._g, self._b, self._a)
 
-    def geometryForRect(self, rect, faceBuffer):
+    def geometry_for_rect(self, rect, facebuffer):
         x1, x2, y1, y2 = rect.Left, rect.Right, rect.Top, rect.Bottom
         colour = ((self._r, self._g, self._b, self._a),) * 3
-        faceBuffer.addFace(
+        facebuffer.add_face(
             (
                 (x1, y1),
                 (x1, y2),
@@ -223,7 +223,7 @@ class Colour(Fill):
             colour,
             None
         )
-        faceBuffer.addFace(
+        facebuffer.add_face(
             (
                 (x1, y2),
                 (x2, y2),
@@ -233,12 +233,12 @@ class Colour(Fill):
             None
         )
 
-    def inCairo(self, rect, ctx):
+    def in_cairo(self, rect, ctx):
         ctx.set_source_rgba(self._r, self._g, self._b, self._a)
         ctx.rectangle(rect.Left, rect.Top, rect.Width, rect.Height)
         ctx.fill()
 
-    def setSource(self, ctx):
+    def set_source(self, ctx):
         ctx.set_source_rgba(self._r, self._g, self._b, self._a)
     
 
@@ -296,25 +296,25 @@ class Gradient(Fill):
 class FakeImage(Fill):
     __hash__ = None
     
-    def __init__(self, resourceDimensions, rect=None, **kwargs):
+    def __init__(self, resdimensions, rect=None, **kwargs):
         super(FakeImage, self).__init__(**kwargs)
         if not hasattr(self, "_resource"):
             self._resource = None
-            self._cairoSurface = None
-        self._resourceDimensions = resourceDimensions
+            self._cairo_surface = None
+        self._dimensions = resdimensions
         if rect is None:
-            self._rect = Rect(0, 0, *self._resourceDimensions)
+            self._rect = Rect(0, 0, *self._dimensions)
         else:
             self._rect = rect
-        self._calculateUV()
+        self._calc_uv()
 
-    def _calculateUV(self):
-        rw, rh = self._resourceDimensions
+    def _calc_uv(self):
+        rw, rh = self._dimensions
         u1, u2, v1, v2 = self._rect.Left / rw, self._rect.Right / rw, self._rect.Top / rh, self._rect.Bottom / rh
         if u1 < 0 or u1 > 1 or u2 < 0 or u2 > 1 or v2 < 0 or v2 > 1 or v1 < 0 or v2 > 1:
             raise ValueError("UV coordinates leave valid bounds ([0.,1.]). Check your image rect.")
         self._uv = u1, v1, u2, v2
-        self._quadUV = (
+        self._quad_uv = (
             (   self._resource, (
                     (u1, v1),
                     (u1, v2),
@@ -330,12 +330,12 @@ class FakeImage(Fill):
             )
         )
 
-    def _createVertexTexCoords(self, splits, v1, v2, vw, t1, t2, tw):
+    def _create_vertex_tex_coords(self, splits, v1, v2, vw, t1, t2, tw):
         if splits > 0:
-            maxStep = int(math.ceil(splits))
+            maxstep = int(math.ceil(splits))
             vt = iterutils.interleave(
-                ((i/splits*vw + v1, t1) for i in range(0, maxStep)),
-                ((i/splits*vw + v1, t2) for i in range(1, maxStep))
+                ((i/splits*vw + v1, t1) for i in range(0, maxstep)),
+                ((i/splits*vw + v1, t2) for i in range(1, maxstep))
             )
             if int(splits) == splits:
                 t = t2
@@ -345,34 +345,34 @@ class FakeImage(Fill):
         else:
             return [(v1, t1), (v2, t2)]
 
-    def _createQuads(self, xuIterable, yvIterable):
-        i = iter(xuIterable)
-        xuIterable = list(zip(i, i))
-        i = iter(yvIterable)
-        yvIterable = zip(i, i)
-        for yv1, yv2 in yvIterable:
-            for xu1, xu2 in xuIterable:
+    def _create_quads(self, xu_iterable, yv_iterable):
+        i = iter(xu_iterable)
+        xu_iterable = list(zip(i, i))
+        i = iter(yv_iterable)
+        yv_iterable = zip(i, i)
+        for yv1, yv2 in yv_iterable:
+            for xu1, xu2 in xu_iterable:
                 yield (xu1, yv1, xu2, yv2)
         
 
-    def _addGeometryIterable(self, xuyvIterable, faceBuffer):
-        iterator = iter(xuyvIterable)
+    def _add_geometry_iterable(self, xuyv_iterable, facebuffer):
+        iterator = iter(xuyv_iterable)
         for (x1, u1), (y1, v1), (x2, u2), (y2, v2) in iterator:
-            vBottomLeft = (x1, y2)
-            vTopRight = (x2, y1)
-            tBottomLeft = (u1, v2)
-            tTopRight = (u2, v1)
-            faceBuffer.addFaces(
+            vbottomleft = (x1, y2)
+            vtopright = (x2, y1)
+            tbottomleft = (u1, v2)
+            ttopright = (u2, v1)
+            facebuffer.add_faces(
                 self._resource,
                 (
                     (
                         (x1, y1),
-                        vBottomLeft,
-                        vTopRight
+                        vbottomleft,
+                        vtopright
                     ),
                     (
-                        vTopRight,
-                        vBottomLeft,
+                        vtopright,
+                        vbottomleft,
                         (x2, y2)
                     )
                 ),
@@ -380,59 +380,59 @@ class FakeImage(Fill):
                 (
                     (
                         (u1, v1),
-                        tBottomLeft,
-                        tTopRight,
+                        tbottomleft,
+                        ttopright,
                     ),
                     (
-                        tTopRight,
-                        tBottomLeft,
+                        ttopright,
+                        tbottomleft,
                         (u2, v2)
                     )
                 )
             )
     
-    def geometryForRect(self, rect, faceBuffer):
+    def geometry_for_rect(self, rect, facebuffer):
         splitsX = 0 if self._repeatX is Stretch else (rect.Width / self._rect.Width)
         splitsY = 0 if self._repeatY is Stretch else (rect.Height / self._rect.Height)
         if not (splitsX or splitsY):
             x1, x2, y1, y2 = rect.Left, rect.Right, rect.Top, rect.Bottom
-            faceBuffer.addFace(
+            facebuffer.add_face(
                 (
                     (x1, y1),
                     (x1, y2),
                     (x2, y1)
                 ),
                 None,
-                self._quadUV[0]
+                self._quad_uv[0]
             )
-            faceBuffer.addFace(
+            facebuffer.add_face(
                 (
                     (x1, y2),
                     (x2, y2),
                     (x2, y1)
                 ),
                 None,
-                self._quadUV[1]
+                self._quad_uv[1]
             )
         else:
             u1, v1, u2, v2 = self._uv
             uw, vw = u2 - u1, v2 - v1
-            xu = self._createVertexTexCoords(splitsX,
+            xu = self._create_vertex_tex_coords(splitsX,
                 float(rect.Left), float(rect.Right),
                 float(rect.Width),
                 float(u1), float(u2),
                 float(uw)
             )
-            yv = self._createVertexTexCoords(splitsY,
+            yv = self._create_vertex_tex_coords(splitsY,
                 float(rect.Top), float(rect.Bottom),
                 float(rect.Height),
                 float(v1), float(v2),
                 float(vw)
             )
-            self._addGeometryIterable(self._createQuads(xu, yv), faceBuffer)
+            self._add_geometry_iterable(self._create_quads(xu, yv), facebuffer)
 
-    def inCairo(self, rect, ctx):
-        ctx.set_source_surface(self._cairoSurface)
+    def in_cairo(self, rect, ctx):
+        ctx.set_source_surface(self._cairo_surface)
         ctx.rectangle(rect.Left, rect.Top, rect.Right, rect.Bottom)
         ctx.fill()
 
@@ -442,7 +442,7 @@ class Image(FakeImage):
             self._resource = Manager.ResourceManager().require(resource, CairoSurface)
         else:
             self._resource = resource
-        self._cairoSurface = self._resource.surface
+        self._cairo_surface = self._resource.surface
         super(Image, self).__init__(self._resource.Dimensions, rect, **kwargs)
 
     def __eq__(self, other):
@@ -464,5 +464,5 @@ class Image(FakeImage):
             repeatY=self.RepeatY
         )
 
-def isPlainFill(fill):
+def is_plain_fill(fill):
     return isinstance(fill, (Colour, __Transparent))

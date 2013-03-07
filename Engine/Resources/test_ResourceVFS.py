@@ -60,14 +60,14 @@ Manager.ResourceManager(TestVFS)
 
 class TestTestVFS(unittest.TestCase):
     def test_vfs(self):
-        self.assertIs(Manager.ResourceManager()._fileSystem, TestVFS)
+        self.assertIs(Manager.ResourceManager()._filesystem, TestVFS)
 
     def test_mount(self):
-        testFile = "/test.txt"
-        TestMount[testFile] = "data"
-        self.assertTrue(TestVFS.fileReadable(TestMountPoint + testFile))
-        del TestMount[testFile]
+        testfile = "/test.txt"
+        TestMount[testfile] = "data"
+        self.assertTrue(TestVFS.file_readable(TestMountPoint + testfile))
+        del TestMount[testfile]
 
 class TestResourceLoader(unittest.TestCase):
     def tearDown(self):
-        Manager.ResourceManager().clearCache()
+        Manager.ResourceManager().clear_cache()

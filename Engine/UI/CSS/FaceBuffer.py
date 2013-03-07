@@ -43,7 +43,7 @@ class FaceBuffer(object):
     def __init__(self):
         self._faces = {} # grouped by texture
     
-    def addFace(self, vertices, colour=None, texture=None):
+    def add_face(self, vertices, colour=None, texture=None):
         """
         Adds a face to the FaceBuffer.
 
@@ -58,7 +58,7 @@ class FaceBuffer(object):
         is a 3-tuple of 2-tuples representing the uv-coordinates at
         each vertex.
 
-        If you want to add quads, you can use the *addQuad* method.
+        If you want to add quads, you can use the *add_quad* method.
 
         Data is expected to be passed in CCW order.
         """
@@ -67,42 +67,42 @@ class FaceBuffer(object):
         lists[1][1].extend(map(float, itertools.chain.from_iterable(colour)) if colour is not None else self.NullColours)
         lists[2][1].extend(map(float, itertools.chain.from_iterable(texture[1])) if texture is not None else self.NullTexCoords)
 
-    def addFaces(self, texture, vertices, colour=None, texCoords=None):
+    def add_faces(self, texture, vertices, colour=None, texcoords=None):
         """
         Adds multiple faces to the FaceBuffer.
 
         Expects *vertices* and *colour* to be iterables of their
-        respective *addFace* argument.
+        respective *add_face* argument.
 
         *texture* must be the Texture these faces are assigned to, while
-        *texCoords* must be the list of 3-tuples of 2-tuples where
+        *texcoords* must be the list of 3-tuples of 2-tuples where
         the texture coordinates are stored in.
 
-        *texture* can be None if no texture is assigned and texCoords
+        *texture* can be None if no texture is assigned and texcoords
         is None.
         """
         lists = self._faces.setdefault(texture, (("v2f", []),("c4f", []),("t2f", [])))
-        lists[0][1].extend(iterutils.yieldCount(map(float, iterutils.flattenTwoLevels(vertices)), self))
-        # len gets set by iterutils.yieldCount
-        vertexCount = self.len >> 1
+        lists[0][1].extend(iterutils.yield_count(map(float, iterutils.flatten_two_levels(vertices)), self))
+        # len gets set by iterutils.yield_count
+        vertexcount = self.len >> 1
         lists[1][1].extend(
-            map(float, iterutils.flattenTwoLevels(colour)) if colour is not None else itertools.chain.from_iterable(itertools.repeat(self.NullColours[:4], vertexCount))
+            map(float, iterutils.flatten_two_levels(colour)) if colour is not None else itertools.chain.from_iterable(itertools.repeat(self.NullColours[:4], vertexcount))
         )
         lists[2][1].extend(
-            map(float, iterutils.flattenTwoLevels(texCoords)) if texCoords is not None else itertools.chain.from_iterable(itertools.repeat(self.NullTexCoords[:2], vertexCount))
+            map(float, iterutils.flatten_two_levels(texcoords)) if texcoords is not None else itertools.chain.from_iterable(itertools.repeat(self.NullTexCoords[:2], vertexcount))
         )
 
-    def addQuad(self, vertices, colour=None, texture=None):
+    def add_quad(self, vertices, colour=None, texture=None):
         """
         Adds a quad to the FaceBuffer by splitting it in two triangles.
 
-        The arguments are the same as for *addFace*, except that the
+        The arguments are the same as for *add_face*, except that the
         3-tuples for vertex-specific data are 4-tuples.
 
         Data is expected to be passed in CCW order.
 
         This is rather inefficient as all tuples have to be
-        reconstructed, so one should feel encouraged to use *addFace*
+        reconstructed, so one should feel encouraged to use *add_face*
         directly.
 
         No assumptions should be made about where the split in the
@@ -111,37 +111,37 @@ class FaceBuffer(object):
         vertex0, vertex1, vertex2, vertex3 = vertices
         if colour is not None:
             colour0, colour1, colour2, colour3 = colour
-            newColour0 = (colour0, colour1, colour3)
-            newColour1 = (colour1, colour3, colour2)
+            new_colour0 = (colour0, colour1, colour3)
+            new_colour1 = (colour1, colour3, colour2)
         else:
-            newColour0 = None
-            newColour1 = None
+            new_colour0 = None
+            new_colour1 = None
         if texture is not None:
             texobj, (texture0, texture1, texture2, texture3) = texture
-            newTexture0 = (texObj, (texture0, texture1, texture3))
-            newTexture1 = (texObj, (texture1, texture3, texture2))
+            new_texture0 = (texobj, (texture0, texture1, texture3))
+            new_texture1 = (texobj, (texture1, texture3, texture2))
         else:
-            newTexture0 = None
-            newTexture1 = None
+            new_texture0 = None
+            new_texture1 = None
         
-        self.addFace(
+        self.add_face(
             (vertex0, vertex1, vertex3),
-            newColour0,
-            newTexture0
+            new_colour0,
+            new_texture0
         )
-        self.addFace(
+        self.add_face(
             (vertex1, vertex3, vertex2),
-            newColour1,
-            newTexture1
+            new_colour1,
+            new_texture1
         )
 
     def __iadd__(self, other):
         if not isinstance(other, FaceBuffer):
             return NotImplemented
-        for key, value in other._bothFaces.iteritems():
+        for key, value in other._both_faces.iteritems():
             self._faces.setdefault(key, []).extend(value)
 
-    def getGeometry(self):
+    def get_geometry(self):
         """
         Returns the geometry saved so far.
 

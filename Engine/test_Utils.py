@@ -27,18 +27,18 @@ from our_future import *
 
 import unittest
 
-from Utils import lineNumbering, indent
+from Utils import line_numbering, indent
 
 class LineNumbering(unittest.TestCase):
     def test_string(self):
-        self.assertMultiLineEqual(lineNumbering("""test
+        self.assertMultiLineEqual(line_numbering("""test
 test2
 test3"""), """1: test
 2: test2
 3: test3""")
 
     def test_lines(self):
-        self.assertMultiLineEqual(lineNumbering(["test", "test2", "test3"]), """1: test
+        self.assertMultiLineEqual(line_numbering(["test", "test2", "test3"]), """1: test
 2: test2
 3: test3""")
 

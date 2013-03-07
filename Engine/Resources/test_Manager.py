@@ -30,7 +30,7 @@ import unittest
 from Manager import ResourceManager
 
 class ResourceManagerTest(unittest.TestCase):
-    def _encodedDataIterable(self, encoding):
+    def _encoded_data_iterable(self, encoding):
         return (line.encode(encoding) for line in self.data.split("\n"))
 
 class ResourceManagerSingletonTest(unittest.TestCase):

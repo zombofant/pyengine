@@ -27,7 +27,7 @@ from Renderbuffer import Renderbuffer
 from Texture import Texture1D, Texture2D
 from Framebuffer import Framebuffer
 
-def makePOT(v):
+def make_pot(v):
     # From http://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2
     # Credit: Sean Anderson
     v -= 1

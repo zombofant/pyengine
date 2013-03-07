@@ -27,7 +27,7 @@ from our_future import *
 
 import Engine.FreeDesktop as FreeDesktop
 
-from Utils import normalizeVFSPath, validateVFSPath
+from Utils import normalize_vfs_path, validate_vfs_path
 from Mounts import Mount, MountDirectory
 from Errors import VFSPermissionDeniedError, VFSIOError, VFSFileNotFoundError
 
@@ -61,80 +61,80 @@ def MountDict():
 class FileSystem(object):
     def __init__(self, **kwargs):
         super(FileSystem, self).__init__(**kwargs)
-        self._mountDict, self._mounts = MountDict()
+        self._mount_dict, self._mounts = MountDict()
 
-    def _findMount(self, mount):
+    def _find_mount(self, mount):
         for key, value in self._mounts:
             for i, (path, obj) in enumerate(value):
                 if obj is mount:
                     return (key, i, path, obj)
         return None
 
-    def _findMountPoint(self, path):
+    def _find_mount_point(self, path):
         for key, value in self._mounts:
             for i, (path, obj) in enumerate(value):
                 if path == path:
                     return (key, i, path, obj)
         return None
 
-    def _findFileMounts(self, filePath):
+    def _find_file_mounts(self, filepath):
         for key, value in self._mounts:
             for path, obj in value:
-                if filePath.startswith(path):
-                    if path == filePath:
+                if filepath.startswith(path):
+                    if path == filepath:
                         continue
-                    yield (path, filePath[len(path):], obj)
+                    yield (path, filepath[len(path):], obj)
 
-    def _sortMounts(self):
+    def _sort_mounts(self):
         for key, value in self._mounts:
             value.sort(key=lambda x: len(x[0]))
 
-    def _getFileMounts(self, path):
-        path = normalizeVFSPath(path)
-        validateVFSPath(path)
-        for mountPoint, subPath, mount in self._findFileMounts(path):
-            yield mount, subPath
+    def _get_file_mounts(self, path):
+        path = normalize_vfs_path(path)
+        validate_vfs_path(path)
+        for mount_point, subpath, mount in self._find_file_mounts(path):
+            yield mount, subpath
 
-    def mount(self, mountPoint, mountObject, priority):
+    def mount(self, mount_point, mount_object, priority):
         """
-        Mounts a Mount instance *mountObject* at *mountPoint* with a
+        Mounts a Mount instance *mount_object* at *mount_point* with a
         given *priority*.
 
-        If an attempt is made to mount the same *mountObject* at
+        If an attempt is made to mount the same *mount_object* at
         different locations, a ValueError is raised.
 
         If an attempt is made to mount an object which is not derived
         from *Mount*, a TypeError is raised.
         """
-        if not isinstance(mountObject, Mount):
-            raise TypeError("Expected Mount, got {0}".format(type(mountObject)))
-        existing = self._findMount(mountObject)
+        if not isinstance(mount_object, Mount):
+            raise TypeError("Expected Mount, got {0}".format(type(mount_object)))
+        existing = self._find_mount(mount_object)
         if existing is not None:
             raise ValueError("Mount {0} is already mounted at {1} with priority {2}".format(existing[3], existing[2], existing[0]))
-        path = normalizeVFSPath(mountPoint)
-        validateVFSPath(path)
-        self._mountDict[priority].append((path, mountObject))
-        self._sortMounts()
+        path = normalize_vfs_path(mount_point)
+        validate_vfs_path(path)
+        self._mount_dict[priority].append((path, mount_object))
+        self._sort_mounts()
 
-    def fileReadable(self, path):
+    def file_readable(self, path):
         """
         Determines whether the file at *path* can be opened for reading.
         """
-        for mount, subPath in self._getFileMounts(path):
+        for mount, subpath in self._get_file_mounts(path):
             try:
-                if mount.fileReadable(subPath):
+                if mount.file_readable(subpath):
                     return True
             except IOError:
                 continue
         return False
 
-    def fileWritable(self, path):
+    def file_writable(self, path):
         """
         Determines whether the file at *path* can be opened for writing.
         """
-        for mount, subPath in self._getFileMounts(path):
+        for mount, subpath in self._get_file_mounts(path):
             try:
-                if mount.fileWritable(subPath):
+                if mount.file_writable(subpath):
                     return True
             except IOError:
                 continue
@@ -153,51 +153,51 @@ class FileSystem(object):
 
         Returns a file like object on success.
         """
-        hadPermissionDenied = False
-        for mount, subPath in self._getFileMounts(path):
+        had_permission_denied = False
+        for mount, subpath in self._get_file_mounts(path):
             try:
-                f = mount.open(subPath, flag)
+                f = mount.open(subpath, flag)
                 if f is not None:
                     return f
             except VFSPermissionDeniedError:
-                hadPermissionDenied = True
+                had_permission_denied = True
             except IOError:
                 pass
-        if hadPermissionDenied:
+        if had_permission_denied:
             raise VFSPermissionDeniedError(path)
         raise VFSFileNotFoundError(path)
 
 class XDGFileSystem(FileSystem):
     """
-    Automatically mounts the paths returned by :func:`requireDirs` from
+    Automatically mounts the paths returned by :func:`require_dirs` from
     :mod:`FreeDesktop` at customizable locations.
     """
     
-    def _setupMounts(self, mountPoint, globalDirs, homeDir):
-        for dir in globalDirs:
-            self.mount(mountPoint, MountDirectory(dir, readOnly=True), MountPriority.FileSystem)
-        self.mount(mountPoint, MountDirectory(homeDir, readOnly=False), MountPriority.Important)
+    def _setup_mounts(self, mount_point, global_dirs, home_dir):
+        for dir in global_dirs:
+            self.mount(mount_point, MountDirectory(dir, read_only=True), MountPriority.FileSystem)
+        self.mount(mount_point, MountDirectory(home_dir, read_only=False), MountPriority.Important)
     
-    def __init__(self, appDirName, dataMountPoint="/data", configMountPoint="/config", **kwargs):
+    def __init__(self, app_dir_name, data_mount_point="/data", config_mount_point="/config", **kwargs):
         """
         Initializes a FreeDesktop compliant VFS.
 
         The full path name is derived from the XDG environment
-        variables (or their defaults) with *appDirName~ appended.
+        variables (or their defaults) with *app_dir_name~ appended.
 
         Mounts all data directories at the location specified by
-        *dataMountPoint*. All global data directories are mounted
+        *data_mount_point*. All global data directories are mounted
         read-only, while the home data directory is mounted writable
         and also with a higher priority than the shared directories.
 
         The same is done for config directories, except that
-        *configMountPoint* is used instead.
+        *config_mount_point* is used instead.
 
-        *dataMountPoint* and *configMountPoint* can point to the same
+        *data_mount_point* and *config_mount_point* can point to the same
         location in the VFS.
         """
         super(XDGFileSystem, self).__init__(**kwargs)
-        dataDirs, dataHome, configDirs, configHome = FreeDesktop.requireDirs(appDirName)
+        data_dirs, data_home, config_dirs, config_home = FreeDesktop.require_dirs(app_dir_name)
 
-        self._setupMounts(dataMountPoint, dataDirs, dataHome)
-        self._setupMounts(configMountPoint, configDirs, configHome)
+        self._setup_mounts(data_mount_point, data_dirs, data_home)
+        self._setup_mounts(config_mount_point, config_dirs, config_home)

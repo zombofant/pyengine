@@ -49,37 +49,37 @@ class LabelledWidget(Widget):
         self._label = Label.Label(self)
         super(LabelledWidget, self).__init__(parent, **kwargs)
 
-    def _invalidateComputedStyle(self):
-        super(LabelledWidget, self)._invalidateComputedStyle()
-        self._label.invalidateLayout()
+    def _invalidate_computed_style(self):
+        super(LabelledWidget, self)._invalidate_computed_style()
+        self._label.invalidate_layout()
 
-    def invalidateContext(self):
-        super(LabelledWidget, self).invalidateContext()
-        self._label.invalidateContext()
+    def invalidate_context(self):
+        super(LabelledWidget, self).invalidate_context()
+        self._label.invalidate_context()
 
-    def getDimensions(self):
-        myStyle = self.ComputedStyle
+    def get_dimensions(self):
+        mystyle = self.ComputedStyle
 
-        width, height = self._label.getDimensions()
-        if myStyle.Width is not Auto:
-            width = myStyle.Width
-        if myStyle.Height is not Auto:
-            height = myStyle.Height
+        width, height = self._label.get_dimensions()
+        if mystyle.Width is not Auto:
+            width = mystyle.Width
+        if mystyle.Height is not Auto:
+            height = mystyle.Height
 
-        borderBox = myStyle.Border.getBox()
+        borderbox = mystyle.Border.get_box()
         if width is not None:
-            width += myStyle.Padding.Horizontal + borderBox.Horizontal
+            width += mystyle.Padding.Horizontal + borderbox.Horizontal
         if height is not None:
-            height += myStyle.Padding.Vertical + borderBox.Vertical
+            height += mystyle.Padding.Vertical + borderbox.Vertical
 
         return width, height
 
-    def doAlign(self):
-        myStyle = self.ComputedStyle
+    def do_align(self):
+        mystyle = self.ComputedStyle
 
         self._label_rect = copy.copy(self.AbsoluteRect)
-        self._label_rect.shrink(myStyle.Padding)
-        self._label_rect.shrink(myStyle.Border.getBox())
+        self._label_rect.shrink(mystyle.Padding)
+        self._label_rect.shrink(mystyle.Border.get_box())
         self._label.Width = self._label_rect.Width
         self._label.Height = self._label_rect.Height
 
@@ -100,4 +100,4 @@ class LabelWidget(LabelledWidget):
     def Text(self, value):
         self._label.Text = value
 
-CSS.Minilanguage.ElementNames().registerWidgetClass(LabelWidget, "Label")
+CSS.Minilanguage.ElementNames().register_widget_class(LabelWidget, "Label")

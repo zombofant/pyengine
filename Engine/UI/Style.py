@@ -62,41 +62,41 @@ class Style(object):
         self._padding = Padding()
         self._margin = Margin()
         self._border = Border()
-        self._boxSpacing = (0, 0)
+        self._box_spacing = (0, 0)
         self._flex = 1
-        self._textColour = inherit
+        self._text_colour = inherit
         self._width, self._height = None, None
         self._shear = (0, 0)
-        self._textAlign = kwargs.pop("textAlign", inherit)
-        self._fontWeight = kwargs.pop("fontWeight", inherit)
-        self._fontSize = kwargs.pop("fontSize", inherit)
-        self._fontFamily = kwargs.pop("fontFamily", inherit)
-        self._verticalAlign = kwargs.pop("verticalAlign", inherit)
+        self._text_align = kwargs.pop("text_align", inherit)
+        self._font_weight = kwargs.pop("font_weight", inherit)
+        self._font_size = kwargs.pop("font_size", inherit)
+        self._font_family = kwargs.pop("font_family", inherit)
+        self._vertical_align = kwargs.pop("vertical_align", inherit)
         if "padding" in kwargs:
             self.Padding = kwargs.pop("padding")
         if "margin" in kwargs:
             self.Margin = kwargs.pop("margin")
         if "border" in kwargs:
             self.Border = kwargs.pop("border")
-        if "boxSpacingX" in kwargs:
-            self.BoxSpacingX = kwargs.pop("boxSpacingX")
-        if "boxSpacingY" in kwargs:
-            self.BoxSpacingY = kwargs.pop("boxSpacingY")
+        if "box_spacing_x" in kwargs:
+            self.BoxSpacingX = kwargs.pop("box_spacing_x")
+        if "box_spacing_y" in kwargs:
+            self.BoxSpacingY = kwargs.pop("box_spacing_y")
         if "flex" in kwargs:
             self.Flex = kwargs.pop("flex")
-        if "textColour" in kwargs:
-            self.TextColour = kwargs.pop("textColour")
+        if "text_colour" in kwargs:
+            self.TextColour = kwargs.pop("text_colour")
         if "height" in kwargs:
             self.Height = kwargs.pop("height")
         if "width" in kwargs:
             self.Width = kwargs.pop("width")
         if "shear" in kwargs:
             shear = kwargs.pop("shear")
-            self._setShear(shear)
+            self._set_shear(shear)
         self._fontdesc_cache = None
         super(Style, self).__init__(**kwargs)
         for rule in rules:
-            self._addRule(rule)
+            self._add_rule(rule)
 
     def __deepcopy__(self, memo):
         # FIXME: implement pickle interface
@@ -105,18 +105,18 @@ class Style(object):
             padding=copy.deepcopy(self.Padding, memo),
             margin=copy.deepcopy(self.Margin, memo),
             border=copy.deepcopy(self.Border, memo),
-            boxSpacingX=self.BoxSpacingX,
-            boxSpacingY=self.BoxSpacingY,
+            box_spacing_x=self.BoxSpacingX,
+            box_spacing_y=self.BoxSpacingY,
             flex=self.Flex,
-            textColour=copy.deepcopy(self.TextColour, memo),
+            text_colour=copy.deepcopy(self.TextColour, memo),
             width=self.Width,
             height=self.Height,
             shear=(self.ShearLeft, self.ShearRight),
-            textAlign=self._textAlign,
-            fontWeight=self._fontWeight,
-            fontSize=self._fontSize,
-            fontFamily=self._fontFamily,
-            verticalAlign=self._verticalAlign
+            text_align=self._text_align,
+            font_weight=self._font_weight,
+            font_size=self._font_size,
+            font_family=self._font_family,
+            vertical_align=self._vertical_align
         )
         new._fontdesc_cache = self._fontdesc_cache
         return new
@@ -124,14 +124,14 @@ class Style(object):
     def diff(self, other):
         diffs = set()
         if (self._background != other._background or
-            self._textColour != other._textColour or
+            self._text_colour != other._text_colour or
             self._shear != other._shear or
             self._border != other._border or
-            self._fontSize != other._fontSize or
-            self._fontWeight != other._fontWeight or
-            self._fontFamily != other._fontFamily or
-            self._textAlign != other._textAlign or
-            self._verticalAlign != other._verticalAlign):
+            self._font_size != other._font_size or
+            self._font_weight != other._font_weight or
+            self._font_family != other._font_family or
+            self._text_align != other._text_align or
+            self._vertical_align != other._vertical_align):
 
             diffs.add(self.Visual)
 
@@ -139,7 +139,7 @@ class Style(object):
             self._width != other._width or
             self._height != other._height or
             self._flex != other._flex or
-            self._boxSpacing != other._boxSpacing or
+            self._box_spacing != other._box_spacing or
             self._margin != other._margin or
             self._padding != other._padding):
 
@@ -147,11 +147,11 @@ class Style(object):
 
         return diffs
 
-    def _addRule(self, rule):
+    def _add_rule(self, rule):
         for key, value in rule._properties:
-            self._applyProperty(key, value)
+            self._apply_property(key, value)
 
-    def _invalidateFontdescCache(self):
+    def _invalidate_fontdesc_cache(self):
         self._fontdesc_cache = None
 
     def __add__(self, rules):
@@ -161,13 +161,13 @@ class Style(object):
 
     def __iadd__(self, rules):
         if isinstance(rules, Rule):
-            self._addRule(rules)
+            self._add_rule(rules)
             return self
         else:
             if rules is None:
                 return self
             for rule in rules:
-                self._addRule(rule)
+                self._add_rule(rule)
             return self
         return NotImplemented
 
@@ -179,17 +179,17 @@ class Style(object):
             self._padding == other._padding and
             self._margin == other._margin and
             self._border == other._border and
-            self._boxSpacing == other._boxSpacing and
+            self._box_spacing == other._box_spacing and
             self._flex == other._flex and
-            self._textColour == other._textColour and
+            self._text_colour == other._text_colour and
             self._width == other._width and
             self._height == other._height and
             self._shear == other._shear and
-            self._textAlign == other._textAlign and
-            self._fontWeight == other._fontWeight and
-            self._fontSize == other._fontSize and
-            self._verticalAlign == other._verticalAlign and
-            self._fontFamily == other._fontFamily
+            self._text_align == other._text_align and
+            self._font_weight == other._font_weight and
+            self._font_size == other._font_size and
+            self._vertical_align == other._vertical_align and
+            self._font_family == other._font_family
         )
 
     def __ne__(self, other):
@@ -220,36 +220,36 @@ class Style(object):
             self._margin,
             self._background,
             self._border,
-            self._boxSpacing,
+            self._box_spacing,
             self._flex,
-            self._textColour,
+            self._text_colour,
             self._width,
             self._height,
             self._shear,
-            self._textAlign,
-            self._fontWeight,
-            self._fontSize,
-            self._fontFamily,
-            self._verticalAlign)
+            self._text_align,
+            self._font_weight,
+            self._font_size,
+            self._font_family,
+            self._vertical_align)
 
-    def _applyProperty(self, key, value):
-        if key in self._literalSetters:
+    def _apply_property(self, key, value):
+        if key in self._literal_setters:
             if not isinstance(value, tuple):
                 value = (value, )
-            literalClass, propName = self._literalSetters[key]
-            setattr(self, propName, literalClass(*value))
+            literal_class, prop_name = self._literal_setters[key]
+            setattr(self, prop_name, literal_class(*value))
             return
-        if key in self._propertySetters:
-            self._propertySetters[key](self, value)
+        if key in self._property_setters:
+            self._property_setters[key](self, value)
             return
-        if key in self._trivialSetters:
-            propname, = self._trivialSetters[key]
+        if key in self._trivial_setters:
+            propname, = self._trivial_setters[key]
             actual_value, = value
             setattr(self, propname, actual_value)
             return
         raise KeyError("{0} is not a valid stylesheet property".format(key))
 
-    def _setBackgroundRepeat(self, value):
+    def _set_background_repeat(self, value):
         if len(value) == 1:
             self.Background.RepeatX = value
             self.Background.RepeatY = value
@@ -258,24 +258,24 @@ class Style(object):
         else:
             raise ValueError("Unsupported amount of axis: {0}".format(len(value)))
 
-    def _setBackgroundImage(self, value):
+    def _set_background_image(self, value):
         img, = value
         self.Background = img
 
-    def _setBackgroundColour(self, value):
+    def _set_background_colour(self, value):
         colour, = value
         self.Background = colour
 
-    def _setBorderEdge(self, edge, value):
+    def _set_border_edge(self, edge, value):
         setattr(self.Border, edge, BorderEdge(value[0], value[2]))
 
-    def _setBaseBoxEdge(self, box, edge, value):
+    def _set_base_box_edge(self, box, edge, value):
         box = getattr(self, box)
         if len(value) != 1:
             raise ValueError("Setting a box edge requires exactly one number.")
         setattr(box, edge, value[0])
 
-    def _setBoxSpacing(self, value):
+    def _set_box_spacing(self, value):
         if len(value) == 1:
             self.BoxSpacingX, self.BoxSpacingY = value[0], value[0]
         elif len(value) == 2:
@@ -283,20 +283,20 @@ class Style(object):
         else:
             raise ValueError("Box spacing requires one or two integer numbers.")
 
-    def _setFlex(self, value):
+    def _set_flex(self, value):
         if len(value) != 1:
             raise ValueError("Flex requires one integer number.")
         self.Flex = int(value[0])
 
-    def _setTextColour(self, value):
+    def _set_text_colour(self, value):
         color, = value
         self.TextColour = color
 
-    def _setDimension(self, axis, value):
+    def _set_dimension(self, axis, value):
         dim, = value
         setattr(self, axis, dim)
 
-    def _setShear(self, value, key=None):
+    def _set_shear(self, value, key=None):
         if key is None:
             if len(value) == 2:
                 left, right = value
@@ -312,13 +312,13 @@ class Style(object):
                 shear, = value
                 setattr(self, "Shear"+key, shear)
 
-    def _setBorderRadius(self, edgeY, edgeX, value):
+    def _set_border_radius(self, edgeY, edgeX, value):
         radius, = value
         setattr(self._border, "{0}{1}Radius".format(edgeY, edgeX), number(radius))
 
-    def _setBorderRadiusAll(self, value):
+    def _set_border_radius_all(self, value):
         radius, = value
-        self._border.setRadius(number(radius))
+        self._border.set_radius(number(radius))
 
     @css_inheritable
     def Background(self):
@@ -362,7 +362,7 @@ class Style(object):
 
     @property
     def BoxSpacing(self):
-        return self._boxSpacing
+        return self._box_spacing
 
     @BoxSpacing.setter
     def BoxSpacing(self, value):
@@ -370,29 +370,29 @@ class Style(object):
         x, y = int(x), int(x)
         if x < 0 or y < 0:
             raise ValueError("BoxSpacing must be non-negative.")
-        self._boxSpacing = x, y
+        self._box_spacing = x, y
 
     @css_inheritable
     def BoxSpacingX(self):
-        return self._boxSpacing[0]
+        return self._box_spacing[0]
 
     @BoxSpacingX.setter
     def BoxSpacingX(self, value):
         x = int(value)
         if x < 0:
             raise ValueError("BoxSpacing must be non-negative.")
-        self._boxSpacing = x, self._boxSpacing[1]
+        self._box_spacing = x, self._box_spacing[1]
 
     @css_inheritable
     def BoxSpacingY(self):
-        return self._boxSpacing[1]
+        return self._box_spacing[1]
 
     @BoxSpacingY.setter
     def BoxSpacingY(self, value):
         y = int(value)
         if y < 0:
             raise ValueError("BoxSpacing must be non-negative.")
-        self._boxSpacing = self._boxSpacing[0], y
+        self._box_spacing = self._box_spacing[0], y
 
     @css_inheritable
     def Flex(self):
@@ -406,11 +406,11 @@ class Style(object):
 
     @css_inheritable
     def TextColour(self):
-        return self._textColour
+        return self._text_colour
 
     @TextColour.setter
     def TextColour(self, value):
-        self._textColour = value
+        self._text_colour = value
 
     @css_inheritable
     def Width(self):
@@ -442,7 +442,7 @@ class Style(object):
 
     @Shear.setter
     def Shear(self, value):
-        self._setShear(value)
+        self._set_shear(value)
 
     @css_inheritable
     def ShearLeft(self):
@@ -462,48 +462,48 @@ class Style(object):
 
     @css_inheritable
     def TextAlign(self):
-        return self._textAlign
+        return self._text_align
 
     @TextAlign.setter
     def TextAlign(self, value):
-        self._textAlign = value
+        self._text_align = value
 
     @css_inheritable
     def FontWeight(self):
-        return self._fontWeight
+        return self._font_weight
 
     @FontWeight.setter
     def FontWeight(self, value):
-        self._fontWeight = value
-        self._invalidateFontdescCache()
+        self._font_weight = value
+        self._invalidate_fontdesc_cache()
 
     @css_inheritable
     def FontSize(self):
-        return self._fontSize
+        return self._font_size
 
     @FontSize.setter
     def FontSize(self, value):
-        self._fontSize = float(value) if value is not Literals.Inherit else value
-        self._invalidateFontdescCache()
+        self._font_size = float(value) if value is not Literals.Inherit else value
+        self._invalidate_fontdesc_cache()
 
     @css_inheritable
     def FontFamily(self):
-        return self._fontFamily
+        return self._font_family
 
     @FontFamily.setter
     def FontFamily(self, value):
-        self._fontFamily = value
-        self._invalidateFontdescCache()
+        self._font_family = value
+        self._invalidate_fontdesc_cache()
 
     @css_inheritable
     def VerticalAlign(self):
-        return self._verticalAlign
+        return self._vertical_align
 
     @VerticalAlign.setter
     def VerticalAlign(self, value):
-        self._verticalAlign = value
+        self._vertical_align = value
 
-    _literalSetters = {
+    _literal_setters = {
         "background": (Literals.BackgroundLiteral, "Background"),
         "padding": (Box.Padding, "Padding"),
         "margin": (Box.Margin, "Margin"),
@@ -512,38 +512,38 @@ class Style(object):
         "box-spacing-y": (Literals.IntLiteral, "BoxSpacingY"),
     }
 
-    _propertySetters = {
-        "flex": lambda self, value: self._setFlex(value),
-        "box-spacing": lambda self, value: self._setBoxSpacing(value),
-        "background-image": lambda self, value: self._setBackgroundImage(value),
-        "background-repeat": lambda self, value: self._setBackgroundRepeat(value),
-        "background-color": lambda self, value: self._setBackgroundColour(value),
-        "border-left": lambda self, value: self._setBorderEdge("Left", value),
-        "border-right": lambda self, value: self._setBorderEdge("Right", value),
-        "border-top": lambda self, value: self._setBorderEdge("Top", value),
-        "border-bottom": lambda self, value: self._setBorderEdge("Bottom", value),
-        "border-radius": lambda self, value: self._setBorderRadiusAll(value),
-        "border-top-left-radius": lambda self, value: self._setBorderRadius("Top", "Left", value),
-        "border-top-right-radius": lambda self, value: self._setBorderRadius("Top", "Right", value),
-        "border-bottom-left-radius": lambda self, value: self._setBorderRadius("Bottom", "Left", value),
-        "border-bottom-right-radius": lambda self, value: self._setBorderRadius("Bottom", "Right", value),
-        "padding-left": lambda self, value: self._setBaseBoxEdge("Padding", "Left", value),
-        "padding-right": lambda self, value: self._setBaseBoxEdge("Padding", "Right", value),
-        "padding-top": lambda self, value: self._setBaseBoxEdge("Padding", "Top", value),
-        "padding-bottom": lambda self, value: self._setBaseBoxEdge("Padding", "Bottom", value),
-        "margin-left": lambda self, value: self._setBaseBoxEdge("Margin", "Left", value),
-        "margin-right": lambda self, value: self._setBaseBoxEdge("Margin", "Right", value),
-        "margin-top": lambda self, value: self._setBaseBoxEdge("Margin", "Top", value),
-        "margin-bottom": lambda self, value: self._setBaseBoxEdge("Margin", "Bottom", value),
-        "color": lambda self, value: self._setTextColour(value),
-        "width": lambda self, value: self._setDimension("Width", value),
-        "height": lambda self, value: self._setDimension("Height", value),
-        "shear-left": lambda self, value: self._setShear(value, "Left"),
-        "shear-right": lambda self, value: self._setShear(value, "Right"),
-        "shear": lambda self, value: self._setShear(value),
+    _property_setters = {
+        "flex": lambda self, value: self._set_flex(value),
+        "box-spacing": lambda self, value: self._set_box_spacing(value),
+        "background-image": lambda self, value: self._set_background_image(value),
+        "background-repeat": lambda self, value: self._set_background_repeat(value),
+        "background-color": lambda self, value: self._set_background_colour(value),
+        "border-left": lambda self, value: self._set_border_edge("Left", value),
+        "border-right": lambda self, value: self._set_border_edge("Right", value),
+        "border-top": lambda self, value: self._set_border_edge("Top", value),
+        "border-bottom": lambda self, value: self._set_border_edge("Bottom", value),
+        "border-radius": lambda self, value: self._set_border_radius_all(value),
+        "border-top-left-radius": lambda self, value: self._set_border_radius("Top", "Left", value),
+        "border-top-right-radius": lambda self, value: self._set_border_radius("Top", "Right", value),
+        "border-bottom-left-radius": lambda self, value: self._set_border_radius("Bottom", "Left", value),
+        "border-bottom-right-radius": lambda self, value: self._set_border_radius("Bottom", "Right", value),
+        "padding-left": lambda self, value: self._set_base_box_edge("Padding", "Left", value),
+        "padding-right": lambda self, value: self._set_base_box_edge("Padding", "Right", value),
+        "padding-top": lambda self, value: self._set_base_box_edge("Padding", "Top", value),
+        "padding-bottom": lambda self, value: self._set_base_box_edge("Padding", "Bottom", value),
+        "margin-left": lambda self, value: self._set_base_box_edge("Margin", "Left", value),
+        "margin-right": lambda self, value: self._set_base_box_edge("Margin", "Right", value),
+        "margin-top": lambda self, value: self._set_base_box_edge("Margin", "Top", value),
+        "margin-bottom": lambda self, value: self._set_base_box_edge("Margin", "Bottom", value),
+        "color": lambda self, value: self._set_text_colour(value),
+        "width": lambda self, value: self._set_dimension("Width", value),
+        "height": lambda self, value: self._set_dimension("Height", value),
+        "shear-left": lambda self, value: self._set_shear(value, "Left"),
+        "shear-right": lambda self, value: self._set_shear(value, "Right"),
+        "shear": lambda self, value: self._set_shear(value),
     }
 
-    _trivialSetters = {
+    _trivial_setters = {
         "text-align": ("TextAlign",),
         "font-weight": ("FontWeight",),
         "font-size": ("FontSize",),
@@ -557,16 +557,16 @@ class Style(object):
             return self._fontdesc_cache
 
         fontdesc = Pango.FontDescription()
-        fontdesc.set_weight(self._fontWeight)
-        fontdesc.set_size(self._fontSize * Pango.SCALE)
-        fontdesc.set_family(self._fontFamily)
+        fontdesc.set_weight(self._font_weight)
+        fontdesc.set_size(self._font_size * Pango.SCALE)
+        fontdesc.set_family(self._font_family)
         self._fontdesc_cache = fontdesc
         return fontdesc
 
-    def geometryForRect(self, rect, faceBuffer):
+    def geometry_for_rect(self, rect, face_buffer):
         """
         Takes a widget rect and creates ui geometry for it using
-        the geometryForRect calls of the respective filler objects.
+        the geometry_for_rect calls of the respective filler objects.
 
         Returns a Rect instance representing the client rect for the
         passed rect, that is the rect shrinked by any Border and Padding
@@ -574,13 +574,13 @@ class Style(object):
 
         Does not take into account margin.
         """
-        clientRect = copy.copy(rect)
-        clientRect.shrink(self.Border.geometryForRect(rect, faceBuffer))
-        self.Background.geometryForRect(clientRect, faceBuffer)
-        clientRect.shrink(self.Padding)
-        return clientRect
+        client_rect = copy.copy(rect)
+        client_rect.shrink(self.Border.geometry_for_rect(rect, face_buffer))
+        self.Background.geometry_for_rect(client_rect, face_buffer)
+        client_rect.shrink(self.Padding)
+        return client_rect
 
-    def inCairo(self, rect, ctx):
+    def in_cairo(self, rect, ctx):
         cl, cr, ct, cb = rect.LRTB
         bl, br, bt, bb = self.Border.Widths
 
@@ -598,119 +598,119 @@ class Style(object):
                     self._border.Right.Fill, self._border.Bottom.Fill)
 
         # this is slow like hell
-        # equalWidths = not any(widths[0] != width for width in widths)
-        # equalColours = not any(colours[0] != colour for colour in colours)
+        # equal_widths = not any(widths[0] != width for width in widths)
+        # equal_colours = not any(colours[0] != colour for colour in colours)
 
         # this is 15% faster than the above
-        # equalWidths = False
-        # equalColours = False
+        # equal_widths = False
+        # equal_colours = False
 
         # this is (for equal colours + widths) 3% faster than the
         # previous and 17% faster than the first
         # for unequal colours (first is already unequal), we find
         # that this is still 14% faster than the first solution.
-        equalWidths = (widths[0] == widths[1] and
+        equal_widths = (widths[0] == widths[1] and
                        widths[1] == widths[2] and
                        widths[2] == widths[3])
-        if equalWidths and self._background is Transparent:
-            equalColours = (colours[0] == colours[1] and
+        if equal_widths and self._background is Transparent:
+            equal_colours = (colours[0] == colours[1] and
                             colours[1] == colours[2] and
                             colours[2] == colours[3])
-            if equalColours and widths[0] == 0:
+            if equal_colours and widths[0] == 0:
                 return
-            bothEqual = False
+            both_equal = False
         else:
             # comparing colours is way more expensive than comparing
             # widths. So we only compare if widths are equal. We only
             # need both information at the same time anyways
-            bothEqual = (equalWidths and
+            both_equal = (equal_widths and
                 colours[0] == colours[1] and
                 colours[1] == colours[2] and
                 colours[2] == colours[3])
-        radii = self._border.getAllRadii()
+        radii = self._border.get_all_radii()
 
         shears = self._shear
 
-        shearTopLeft = shears[0] if shears[0] > 0 else 0
-        shearTopRight = -shears[1] if shears[1] > 0 else 0
-        shearBottomLeft = -shears[0] if shears[0] < 0 else 0
-        shearBottomRight = shears[1] if shears[1] < 0 else 0
+        shear_top_left = shears[0] if shears[0] > 0 else 0
+        shear_top_right = -shears[1] if shears[1] > 0 else 0
+        shear_bottom_left = -shears[0] if shears[0] < 0 else 0
+        shear_bottom_right = shears[1] if shears[1] < 0 else 0
 
         corners = [
-            (cl + shearTopLeft + radii[0], ct + radii[0]),
-            (cr + shearTopRight - radii[1], ct + radii[1]),
-            (cr + shearBottomRight - radii[2], cb - radii[2]),
-            (cl + shearBottomLeft + radii[3], cb - radii[3])
+            (cl + shear_top_left + radii[0], ct + radii[0]),
+            (cr + shear_top_right - radii[1], ct + radii[1]),
+            (cr + shear_bottom_right - radii[2], cb - radii[2]),
+            (cl + shear_bottom_left + radii[3], cb - radii[3])
         ]
 
         # pulling these in the local namespace gives only 1% speedup,
         # but we take everything we can get
         background = self._background
-        backgroundNotTransparent = background is not Transparent
+        background_not_transparent = background is not Transparent
 
         if sum(radii) == 0:
             # optimize for straight borders
-            if backgroundNotTransparent or bothEqual:
+            if background_not_transparent or both_equal:
                 ctx.move_to(*corners[0])
                 ctx.line_to(*corners[1])
                 ctx.line_to(*corners[2])
                 ctx.line_to(*corners[3])
                 ctx.close_path()
 
-            if bothEqual:
-                if backgroundNotTransparent:
-                    background.setSource(ctx)
+            if both_equal:
+                if background_not_transparent:
+                    background.set_source(ctx)
                     ctx.fill_preserve()
                 ctx.set_line_width(widths[0])
-                colours[0].setSource(ctx)
+                colours[0].set_source(ctx)
                 ctx.stroke()
             else:
-                background.setSource(ctx)
+                background.set_source(ctx)
                 ctx.fill()
 
                 for i, (width, fill) in enumerate(itertools.izip(widths, colours)):
                     if width <= 0 or fill is Transparent:
                         continue
                     ctx.set_line_width(width)
-                    fill.setSource(ctx)
+                    fill.set_source(ctx)
                     ctx.move_to(*corners[i-1])
                     ctx.line_to(*corners[i])
                     ctx.stroke()
         else:
-            leftLessAngle = math.atan(shears[0]/ch)
-            rightLessAngle = math.atan(shears[1]/ch)
+            left_less_angle = math.atan(shears[0]/ch)
+            right_less_angle = math.atan(shears[1]/ch)
             pi = math.pi
 
             # explicitly put this in a list here
-            pathSegments = list(itertools.izip(corners, itertools.izip(radii,
+            path_segments = list(itertools.izip(corners, itertools.izip(radii,
                 [   # start angles
-                    pi + leftLessAngle,
+                    pi + left_less_angle,
                     3*(pi/2),
-                    -rightLessAngle,
+                    -right_less_angle,
                     pi/2
                 ],
                 [   # stop angles
                     3*(pi/2),
-                    2*pi - rightLessAngle,
+                    2*pi - right_less_angle,
                     pi/2,
-                    pi + leftLessAngle
+                    pi + left_less_angle
                 ]
             )))
 
-            if backgroundNotTransparent or bothEqual:
-                for (x, y), segment in pathSegments:
+            if background_not_transparent or both_equal:
+                for (x, y), segment in path_segments:
                     ctx.arc(x, y, *segment)
                 ctx.close_path()
 
-            if bothEqual:
-                if backgroundNotTransparent:
-                    background.setSource(ctx)
+            if both_equal:
+                if background_not_transparent:
+                    background.set_source(ctx)
                     ctx.fill_preserve()
                 ctx.set_line_width(widths[0])
-                colours[0].setSource(ctx)
+                colours[0].set_source(ctx)
                 ctx.stroke()
             else:
-                background.setSource(ctx)
+                background.set_source(ctx)
                 ctx.fill()
 
                 for i, width, fill in itertools.izip(itertools.count(0), widths, colours):
@@ -718,20 +718,20 @@ class Style(object):
                         continue
                     # FIXME: optimize odd widths
                     ctx.set_line_width(width)
-                    fill.setSource(ctx)
-                    (x, y), segment = pathSegments[i-1]
+                    fill.set_source(ctx)
+                    (x, y), segment = path_segments[i-1]
                     ctx.arc(x, y, *segment)
-                    (x, y), segment = pathSegments[i]
+                    (x, y), segment = path_segments[i]
                     ctx.arc(x, y, *segment)
                     ctx.stroke()
 
 class BaseStyle(Style):
     def __init__(self):
         super(BaseStyle, self).__init__(
-            fontFamily="sans",
-            fontSize=12,
-            textColour=Colour(0, 0, 0, 1),
-            fontWeight=Literals.Pango.Weight.NORMAL,
-            textAlign=Literals.Pango.Alignment.LEFT,
-            verticalAlign=Literals.VerticalAlign.Top
+            font_family="sans",
+            font_size=12,
+            text_colour=Colour(0, 0, 0, 1),
+            font_weight=Literals.Pango.Weight.NORMAL,
+            text_align=Literals.Pango.Alignment.LEFT,
+            vertical_align=Literals.VerticalAlign.Top
             )

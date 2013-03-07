@@ -67,12 +67,12 @@ class Rect(object):
     __hash__ = None
 
     @staticmethod
-    def _checkDimension(value):
+    def _check_dimension(value):
         if value < 0:
             raise ValueError("Rect dimensions must be non negative.")
         return value
 
-    _onChange = None
+    _onchange = None
 
     def __init__(self, *args, **kwargs):
         """
@@ -99,13 +99,13 @@ class Rect(object):
             self.X, self.Y, self.Right, self.Bottom = args
         elif len(args) != 0:
             raise ValueError("Rect takes 0, 2 or 4 int arguments.")
-        self._onChange = kwargs.pop("onChange", None)
+        self._onchange = kwargs.pop("onchange", None)
 
-    def _recalcRB(self):
+    def _recalc_rb(self):
         self._right = self._x + self._width
         self._bottom = self._y + self._height
 
-    def _recalcWH(self):
+    def _recalc_wh(self):
         self._width = self._right - self._x
         self._height = self._bottom - self._y
 
@@ -126,8 +126,8 @@ class Rect(object):
             return
         self._x = value
         self._right = self._x + self._width
-        if self._onChange is not None:
-            self._onChange()
+        if self._onchange is not None:
+            self._onchange()
 
     @property
     def Y(self):
@@ -140,8 +140,8 @@ class Rect(object):
             return
         self._y = value
         self._bottom = self._y + self._height
-        if self._onChange is not None:
-            self._onChange()
+        if self._onchange is not None:
+            self._onchange()
 
     @property
     def Left(self):
@@ -156,8 +156,8 @@ class Rect(object):
             raise ValueError("Left must be smaller than or equal to right.")
         self._x = value
         self._width = self._right - self._x
-        if self._onChange is not None:
-            self._onChange()
+        if self._onchange is not None:
+            self._onchange()
 
     @property
     def Top(self):
@@ -172,8 +172,8 @@ class Rect(object):
             raise ValueError("Top must be smaller than or equal to bottom.")
         self._y = value
         self._height = self._bottom - self._y
-        if self._onChange is not None:
-            self._onChange()
+        if self._onchange is not None:
+            self._onchange()
 
     @property
     def Width(self):
@@ -184,10 +184,10 @@ class Rect(object):
         value = int(value)
         if self._width == value:
             return
-        self._width = self._checkDimension(value)
+        self._width = self._check_dimension(value)
         self._right = self._x + self._width
-        if self._onChange is not None:
-            self._onChange()
+        if self._onchange is not None:
+            self._onchange()
 
     @property
     def Height(self):
@@ -198,10 +198,10 @@ class Rect(object):
         value = int(value)
         if self._height == value:
             return
-        self._height = self._checkDimension(value)
+        self._height = self._check_dimension(value)
         self._bottom = self._y + self._height
-        if self._onChange is not None:
-            self._onChange()
+        if self._onchange is not None:
+            self._onchange()
 
     @property
     def Right(self):
@@ -216,8 +216,8 @@ class Rect(object):
             raise ValueError("Right must be larger than or equal to left.")
         self._right = value
         self._width = self._right - self._x
-        if self._onChange is not None:
-            self._onChange()
+        if self._onchange is not None:
+            self._onchange()
 
     @property
     def Bottom(self):
@@ -232,8 +232,8 @@ class Rect(object):
             raise ValueError("Bottom must be larger than or equal to top.")
         self._bottom = value
         self._height = self._bottom - self._y
-        if self._onChange is not None:
-            self._onChange()
+        if self._onchange is not None:
+            self._onchange()
 
     @property
     def Area(self):
@@ -248,8 +248,8 @@ class Rect(object):
             raise TypeError("Expected Rect, got {0}".format(type(other)))
         self._x, self._y, self._width, self._height = other._x, other._y, other._width, other._height
         self._right, self._bottom = other._right, other._bottom
-        if self._onChange is not None:
-            self._onChange()
+        if self._onchange is not None:
+            self._onchange()
 
     @property
     def XYWH(self):
@@ -260,12 +260,12 @@ class Rect(object):
         x, y, w, h = t
         self._x = int(x)
         self._y = int(y)
-        self._width = self._checkDimension(w)
-        self._height = self._checkDimension(h)
+        self._width = self._check_dimension(w)
+        self._height = self._check_dimension(h)
         self._right = self._x + self._width
         self._bottom = self._y + self._height
-        if self._onChange is not None:
-            self._onChange()
+        if self._onchange is not None:
+            self._onchange()
 
     @property
     def LRTB(self):
@@ -282,9 +282,9 @@ class Rect(object):
             raise ValueError("Right must be larger than or equal to Left.")
         self._x = l
         self._right = r
-        self._recalcWH()
-        if self._onChange is not None:
-            self._onChange()
+        self._recalc_wh()
+        if self._onchange is not None:
+            self._onchange()
 
     @property
     def TopBottom(self):
@@ -297,9 +297,9 @@ class Rect(object):
             raise ValueError("Bottom must be larger than or equal to Top.")
         self._y = t
         self._bottom = b
-        self._recalcWH()
-        if self._onChange is not None:
-            self._onChange()
+        self._recalc_wh()
+        if self._onchange is not None:
+            self._onchange()
 
     def __eq__(self, other):
         if isinstance(other, _NotARect):
@@ -329,7 +329,7 @@ class Rect(object):
         self._y = y
         self._right = r
         self._bottom = b
-        self._recalcWH()
+        self._recalc_wh()
         return self
 
     def __and__(self, other):
@@ -346,7 +346,7 @@ class Rect(object):
             if other._y <= self._bottom and self._y <= other._bottom:
                 self._y = min(other._y, self._y)
                 self._bottom = max(other._bottom, self._bottom)
-                self._recalcWH()
+                self._recalc_wh()
                 return self
             else:
                 return NotARect
@@ -354,7 +354,7 @@ class Rect(object):
             if other._x <= self._right and self._x <= other._right:
                 self._x = min(other._x, self._x)
                 self._right = max(other._right, self._right)
-                self._recalcWH()
+                self._recalc_wh()
                 return self
             else:
                 return NotARect
@@ -397,9 +397,9 @@ class Rect(object):
         self._y -= box.Top
         self._right += box.Right
         self._bottom += box.Bottom
-        self._recalcWH()
-        if self._onChange is not None:
-            self._onChange()
+        self._recalc_wh()
+        if self._onchange is not None:
+            self._onchange()
 
     def shrink(self, box):
         """
@@ -418,9 +418,9 @@ class Rect(object):
         self._y += box.Top
         self._right -= box.Right
         self._bottom -= box.Bottom
-        self._recalcWH()
-        if self._onChange is not None:
-            self._onChange()
+        self._recalc_wh()
+        if self._onchange is not None:
+            self._onchange()
 
     def cut(self, box):
         """
@@ -437,36 +437,36 @@ class Rect(object):
             left = Rect(self._x, self._y + box.Top, self._x + box.Left, self._bottom - box.Bottom)
         else:
             left = NotARect
-            topLeft = NotARect
-            bottomLeft = NotARect
+            topleft = NotARect
+            bottomleft = NotARect
 
         if box.Right > 0:
             right = Rect(self._right - box.Right, self._y + box.Top, self._right, self._bottom - box.Bottom)
         else:
             right = NotARect
-            topRight = NotARect
-            bottomRight = NotARect
+            topright = NotARect
+            bottomright = NotARect
 
         if box.Top > 0:
             top = Rect(self._x + box.Left, self._y, self._right - box.Right, self._y + box.Top)
             if left is not NotARect:
-                topLeft = Rect(left._x, top._y, left._right, top._bottom)
+                topleft = Rect(left._x, top._y, left._right, top._bottom)
             if right is not NotARect:
-                topRight = Rect(right._x, top._y, right._right, top._bottom)
+                topright = Rect(right._x, top._y, right._right, top._bottom)
         else:
             top = NotARect
-            topLeft = NotARect
-            topRight = NotARect
+            topleft = NotARect
+            topright = NotARect
 
         if box.Bottom > 0:
             bottom = Rect(self._x + box.Left, self._bottom - box.Bottom, self._right - box.Right, self._bottom)
             if right is not NotARect:
-                bottomRight = Rect(right._x, bottom._y, right._right, bottom._bottom)
+                bottomright = Rect(right._x, bottom._y, right._right, bottom._bottom)
             if left is not NotARect:
-                bottomLeft = Rect(left._x, bottom._y, left._right, bottom._bottom)
+                bottomleft = Rect(left._x, bottom._y, left._right, bottom._bottom)
         else:
             bottom = NotARect
-            bottomLeft = NotARect
-            bottomRight = NotARect
+            bottomleft = NotARect
+            bottomright = NotARect
 
-        return (left, topLeft, top, topRight, right, bottomRight, bottom, bottomLeft)
+        return (left, topleft, top, topright, right, bottomright, bottom, bottomleft)

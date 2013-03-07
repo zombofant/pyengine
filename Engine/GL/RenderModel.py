@@ -44,7 +44,7 @@ class RenderModel(Model, Leaf):
         super(RenderModel, self).__init__(**kwargs)
         # FIXME/pyglet
         self._batch = []
-        self._vFormat = VertexFormat("v:3;t0:2;n:3")
+        self._vformat = VertexFormat("v:3;t0:2;n:3")
         self.update()
  
     def _copy(self, other):
@@ -63,7 +63,7 @@ class RenderModel(Model, Leaf):
         self._batch = []
 
     @classmethod
-    def fromModel(cls, model):
+    def from_model(cls, model):
         """
         Takes a Model instance and returns a RenderModel instance as a
         renderable representation of the given model.
@@ -83,40 +83,40 @@ class RenderModel(Model, Leaf):
         """
         if len(self.PackedFaces) < 1: return
         self._cleanup()
-        pos, nextMatSwitchIndex, matCount = 0, 0, 0
+        pos, next_mat_switch_index, matcount = 0, 0, 0
         materials = self.Materials
         group = None
         if materials is None: materials = []
         materials.append(['(null)',0])
         for material in materials:
-            matCount += 1
-            nextMatSwitchIndex = material[1]
-            if matCount >= len(materials):
-                nextMatSwitchIndex = len(self.PackedFaces)
-            if pos < nextMatSwitchIndex:
-                vertices, normals, texCoords = [], [], []
-                for face in self.PackedFaces[pos:nextMatSwitchIndex]:
+            matcount += 1
+            next_mat_switch_index = material[1]
+            if matcount >= len(materials):
+                next_mat_switch_index = len(self.PackedFaces)
+            if pos < next_mat_switch_index:
+                vertices, normals, texcoords = [], [], []
+                for face in self.PackedFaces[pos:next_mat_switch_index]:
                     before = len(vertices)
                     vertices.extend((x for y in face[0:1] for x in y))
                     normals.extend((x for y in face[1:2] for x in y))
-                    texCoords.extend((x for y in face[2:3] for x in y))
-                size = (nextMatSwitchIndex - pos) * 3
-                buf = GeometryBuffer(self._vFormat, GL_STATIC_DRAW)
+                    texcoords.extend((x for y in face[2:3] for x in y))
+                size = (next_mat_switch_index - pos) * 3
+                buf = GeometryBuffer(self._vformat, GL_STATIC_DRAW)
                 indices = buf.allocateVertices(size)
-                bufView = GeometryBufferView(buf, indices)
-                bufView.Vertex.set(vertices)
+                bufview = GeometryBufferView(buf, indices)
+                bufview.Vertex.set(vertices)
                 if len(normals) > 0:
-                    bufView.Normal.set(normals)
-                if len(texCoords) > 0:
-                    bufView.TexCoord(0).set(texCoords)
+                    bufview.Normal.set(normals)
+                if len(texcoords) > 0:
+                    bufview.TexCoord(0).set(texcoords)
                 buf.bind()
                 self._batch.append((buf, indices, group))
-                pos = nextMatSwitchIndex
+                pos = next_mat_switch_index
             if material[0] == '(null)':
                 group = None
             else:
                 mat_filename = '%s.mtl' % material[0]
-                group = ResourceManager().require(mat_filename).stateGroup
+                group = ResourceManager().require(mat_filename).stategroup
  
     def draw(self):
         """

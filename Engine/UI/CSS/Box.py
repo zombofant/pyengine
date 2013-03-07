@@ -38,9 +38,9 @@ class BaseBox(object):
         if len(args) == 0:
             self._left, self._right, self._top, self._bottom = 0, 0, 0, 0
         elif len(args) == 1:
-            self._left, self._right, self._top, self._bottom = (self._checkValue(args[0]), )*4
+            self._left, self._right, self._top, self._bottom = (self._check_value(args[0]), )*4
         elif len(args) == 4:
-            self._left, self._top, self._right, self._bottom = (self._checkValue(x) for x in args)
+            self._left, self._top, self._right, self._bottom = (self._check_value(x) for x in args)
         else:
             raise ValueError("BaseBox expects 1 or 4 arguments.")
 
@@ -64,7 +64,7 @@ class BaseBox(object):
     def __copy__(self):
         return self.__deepcopy__(None)
 
-    def _checkValue(self, v):
+    def _check_value(self, v):
         v = int(v)
         if v < 0:
             raise ValueError("Box value must be non negative.")
@@ -78,7 +78,7 @@ class BaseBox(object):
     def Left(self, value):
         if self._left == value:
             return
-        self._left = self._checkValue(value)
+        self._left = self._check_value(value)
 
     @css_inheritable
     def Right(self):
@@ -88,7 +88,7 @@ class BaseBox(object):
     def Right(self, value):
         if self._right == value:
             return
-        self._right = self._checkValue(value)
+        self._right = self._check_value(value)
 
     @css_inheritable
     def Top(self):
@@ -98,7 +98,7 @@ class BaseBox(object):
     def Top(self, value):
         if self._top == value:
             return
-        self._top = self._checkValue(value)
+        self._top = self._check_value(value)
 
     @css_inheritable
     def Bottom(self):
@@ -108,7 +108,7 @@ class BaseBox(object):
     def Bottom(self, value):
         if self._bottom == value:
             return
-        self._bottom = self._checkValue(value)
+        self._bottom = self._check_value(value)
 
     @property
     def Horizontal(self):
@@ -137,15 +137,15 @@ class BaseBox(object):
         return "{0}({1!r}, {2!r}, {3!r}, {4!r})".format(self.__class__.__name__, self._left, self._top, self._right, self._bottom)
 
 class Margin(BaseBox):
-    def _checkValue(self, v):
+    def _check_value(self, v):
         if v is Constants.Auto:
             return v
         return int(v)
 
-    def deautoify(self, objRect, outerRect):
+    def deautoify(self, objrect, outerrect):
         Auto = Constants.Auto
-        hspace = outerRect.Width - objRect.Width
-        vspace = outerRect.Height - objRect.Height
+        hspace = outerrect.Width - objrect.Width
+        vspace = outerrect.Height - objrect.Height
         if self.Left is Auto and self.Right is Auto:
             # center horizontally
             self.Left = max(0, int(hspace / 2))

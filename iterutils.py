@@ -27,7 +27,7 @@ from our_future import *
 
 import itertools
 
-__all__ = ["interleave", "flattenTwoLevels", "yieldCount"]
+__all__ = ["interleave", "flatten_two_levels", "yield_count"]
 
 def interleave(*iterators):
     """
@@ -43,16 +43,17 @@ def interleave(*iterators):
     while True:
         for iterator in iters:
             yield next(iterator)
-    
-def flattenTwoLevels(iterable):
+
+def flatten_two_levels(iterable):
     """
     Flattens a two times nested iterable.
 
     [[[0, 1], [2, 3]], [[4, 5], [6, 7]], ...] => [0, 1, 2, 3, 4, 5, 6, 7, ...]
     """
-    return itertools.chain.from_iterable(map(itertools.chain.from_iterable, iterable))
+    return itertools.chain.from_iterable(
+        map(itertools.chain.from_iterable, iterable))
 
-def yieldCount(iterable, storeTo):
+def yield_count(iterable, storeTo):
     """
     Iterates over the given iterable and stores the amount of iterations
     made after all items are consumed in ``storeTo.len``.

@@ -30,42 +30,42 @@ from Engine.CEngine.GL import Group, StateGroup
 from OpenGL.GL import glActiveTexture
 
 class StateContext(object):
-    def __init__(self, stateObj, **kwargs):
+    def __init__(self, stateobj, **kwargs):
         super(StateContext, self).__init__(**kwargs)
-        self._stateObj = stateObj
-        self._bindCall = self._stateObj.bind
-        if isinstance(stateObj, BindableObject):
-            self._unbindCall = type(self._stateObj).unbind
-        elif isinstance(stateObj, StateContext):
+        self._stateobj = stateobj
+        self._bind_call = self._stateobj.bind
+        if isinstance(stateobj, BindableObject):
+            self._unbind_call = type(self._stateobj).unbind
+        elif isinstance(stateobj, StateContext):
             # FIXME: order the calls in a list instead of calling
             # recursively
-            self._unbindCall = self._stateObj.unbind
+            self._unbind_call = self._stateobj.unbind
         else:
-            raise TypeError("StateContext requires a BindableObject or a StateContext. Got {0} {1}".format(type(stateObj), stateObj))
+            raise TypeError("StateContext requires a BindableObject or a StateContext. Got {0} {1}".format(type(stateobj), stateobj))
     
-    def setContext(self):
+    def set_context(self):
         pass
 
     def bind(self):
-        self.setContext()
-        self._bindCall()
+        self.set_context()
+        self._bind_call()
 
     def unbind(self):
-        self.setContext()
-        self._unbindCall()
+        self.set_context()
+        self._unbind_call()
 
 class ActiveTexture(StateContext):
     """
     Makes sure that the active texture unit is set to the value passed
-    in *textureUnit* before *stateObj* is bound/unbound.
+    in *textureunit* before *stateobj* is bound/unbound.
     """
     
-    def __init__(self, stateObj, textureUnit, **kwargs):
-        super(ActiveTexture, self).__init__(stateObj, **kwargs)
-        self._textureUnit = textureUnit
+    def __init__(self, stateobj, textureunit, **kwargs):
+        super(ActiveTexture, self).__init__(stateobj, **kwargs)
+        self._textureunit = textureunit
 
-    def setContext(self):
-        glActiveTexture(self._textureUnit)
+    def set_context(self):
+        glActiveTexture(self._textureunit)
 
 
 # FIXME/pyglet: Reimplement grouping
@@ -98,32 +98,32 @@ class StateObjectGroup(object):
         if "parent" in kwargs:
             parent = kwargs.pop("parent")
         super(StateObjectGroup, self).__init__(**kwargs)
-        setCalls = []
-        unsetCalls = []
-        for stateObj in args:
-            if isinstance(stateObj, Group):
-                setCalls.append(stateObj.set_state)
-                unsetCalls.append(stateObj.unset_state)
-            elif isinstance(stateObj, BindableObject):
-                setCalls.append(stateObj.bind)
-                unsetCalls.append(type(stateObj).unbind)
-            elif isinstance(stateObj, StateContext):
-                setCalls.append(stateObj.bind)
-                unsetCalls.append(stateObj.unbind)
-        unsetCalls.reverse()
-        self._setCalls = tuple(setCalls)
-        self._unsetCalls = tuple(unsetCalls)
+        setcalls = []
+        unsetcalls = []
+        for stateobj in args:
+            if isinstance(stateobj, Group):
+                setcalls.append(stateobj.set_state)
+                unsetcalls.append(stateobj.unset_state)
+            elif isinstance(stateobj, BindableObject):
+                setcalls.append(stateobj.bind)
+                unsetcalls.append(type(stateobj).unbind)
+            elif isinstance(stateobj, StateContext):
+                setcalls.append(stateobj.bind)
+                unsetcalls.append(stateobj.unbind)
+        unsetcalls.reverse()
+        self._setcalls = tuple(setcalls)
+        self._unsetcalls = tuple(unsetcalls)
 
     def set_state(self):
-        for call in self._setCalls:
+        for call in self._setcalls:
             call()
 
     def unset_state(self):
-        for call in self._unsetCalls:
+        for call in self._unsetcalls:
             call()
 
     def __hash__(self):
-        return hash((self._setCalls, self._unsetCalls))
+        return hash((self._setcalls, self._unsetcalls))
 
 class OrderedStateObjectGroup(StateObjectGroup):
     def __init__(self, *args, **kwargs):
@@ -155,4 +155,4 @@ class OrderedStateObjectGroup(StateObjectGroup):
             return not r
 
     def __hash__(self):
-        return hash((self.order, self.parent, self._setCalls, self._unsetCalls))
+        return hash((self.order, self.parent, self._setcalls, self._unsetcalls))

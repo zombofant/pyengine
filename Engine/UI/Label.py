@@ -42,29 +42,29 @@ class Label(object):
         self.Width = None
         self.Height = None
         self._justify = False
-        self.invalidateContext()
-        self.invalidateLayout()
+        self.invalidate_context()
+        self.invalidate_layout()
 
-    def invalidateContext(self):
-        self._contextInvalidated = True
+    def invalidate_context(self):
+        self._context_invalidated = True
 
-    def invalidateLayout(self):
-        self._layoutInvalidated = True
+    def invalidate_layout(self):
+        self._layout_invalidated = True
 
-    def _updateContext(self):
-        if not self._contextInvalidated:
+    def _update_context(self):
+        if not self._context_invalidated:
             return
         assert self._widget
-        self._cairo = self._widget._cairoContext
-        self._pango = self._widget._pangoContext
+        self._cairo = self._widget._cairo
+        self._pango = self._widget._pango
         self._layout = None
-        self._contextInvalidated = False
-        self.invalidateLayout()
+        self._context_invalidated = False
+        self.invalidate_layout()
 
-    def _updateLayout(self):
-        self._updateContext()
+    def _update_layout(self):
+        self._update_context()
 
-        if not self._layoutInvalidated:
+        if not self._layout_invalidated:
             return
 
         if not self._layout:
@@ -85,15 +85,15 @@ class Label(object):
 
         self._layout.set_text(self._text, len(self._text))
 
-        self._layoutInvalidated = False
+        self._layout_invalidated = False
 
-    def getDimensions(self):
-        self._updateLayout()
+    def get_dimensions(self):
+        self._update_layout()
         _, logical = self._layout.get_pixel_extents()
         return logical.width, logical.height
 
-    def render(self, inBox):
-        self._updateLayout()
+    def render(self, in_box):
+        self._update_layout()
         ctx = self._cairo
         style = self._widget.ComputedStyle
         _, logical = self._layout.get_pixel_extents()
@@ -106,11 +106,11 @@ class Label(object):
         # values of the extent. If we do, however, layout positioning
         # gets all wrong!! WTF?
         # <http://developer.gnome.org/pango/stable/pango-Layout-Objects.html#pango-layout-get-pixel-extents>
-        x = inBox.Left # + lx
-        y = inBox.Top + style.VerticalAlign(logical.height, inBox.Height) # + ly
+        x = in_box.Left # + lx
+        y = in_box.Top + style.VerticalAlign(logical.height, in_box.Height) # + ly
 
         ctx.translate(x, y)
-        style.TextColour.setSource(ctx)
+        style.TextColour.set_source(ctx)
         Pango.PangoCairo.show_layout(ctx, self._layout)
         ctx.translate(-x, -y)
 
@@ -126,7 +126,7 @@ class Label(object):
             self._width = -1
         else:
             self._width = int(value)
-        self.invalidateLayout()
+        self.invalidate_layout()
 
     @property
     def Height(self):
@@ -140,7 +140,7 @@ class Label(object):
             self._height = -1
         else:
             self._height = int(value)
-        self.invalidateLayout()
+        self.invalidate_layout()
 
     @property
     def Text(self):

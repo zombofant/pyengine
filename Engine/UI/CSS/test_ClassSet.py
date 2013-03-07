@@ -37,11 +37,11 @@ class ClassSetInstanceTest(unittest.TestCase):
         self.assertEqual(len(self.instance), 0)
 
     def test_add(self):
-        toAdd = ["testclass"]
+        to_add = ["testclass"]
         self.assertEqual(self.instance.__iadd__(10), NotImplemented)
-        self.instance += toAdd
-        self.assertIn(toAdd[0], self.instance)
-        self.assertEqual(list(self.instance), toAdd)
+        self.instance += to_add
+        self.assertIn(to_add[0], self.instance)
+        self.assertEqual(list(self.instance), to_add)
 
     def test_sub(self):
         classes = ["testclass", "moreclass", "anotherclass"]

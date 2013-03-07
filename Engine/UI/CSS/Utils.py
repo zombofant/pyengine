@@ -53,31 +53,31 @@ class Inheritables(type):
 
 
     @staticmethod
-    def getNestedProperty(self, path, at=None):
+    def get_nested_property(self, path, at=None):
         curr = at or self
         for node in path:
             curr = node.__get__(curr, curr.__class__)
         return curr
 
     @staticmethod
-    def setNestedProperty(self, path, value):
+    def set_nested_property(self, path, value):
         curr = self
         for node in path[:-1]:
             curr = node.__get__(curr, curr.__class__)
         path[-1].__set__(curr, value)
 
     @staticmethod
-    def solveInheritance(self, parent):
+    def solve_inheritance(self, parent):
         for prop in self.__inheritables__:
-            value = self.getNestedProperty(prop)
+            value = self.get_nested_property(prop)
             if value is Constants.Inherit:
-                self.setNestedProperty(prop, self.getNestedProperty(prop, parent))
+                self.set_nested_property(prop, self.get_nested_property(prop, parent))
 
 
     def __new__(mcls, name, bases, dct):
         inheritables = list(mcls.find_inheritables(dct))
         dct["__inheritables__"] = inheritables
-        dct["solveInheritance"] = mcls.solveInheritance
-        dct["getNestedProperty"] = mcls.getNestedProperty
-        dct["setNestedProperty"] = mcls.setNestedProperty
+        dct["solve_inheritance"] = mcls.solve_inheritance
+        dct["get_nested_property"] = mcls.get_nested_property
+        dct["set_nested_property"] = mcls.set_nested_property
         return type.__new__(mcls, name, bases, dct)

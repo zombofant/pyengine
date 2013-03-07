@@ -53,7 +53,7 @@ import_namespace(Pango)
 #                 value = enum(index)
 #             except ValueError:
 #                 break
-#             v, k = mcls.parseEnum(enum(index))
+#             v, k = mcls.parse_enum(enum(index))
 #             dct[k] = v
 
 #         return type.__new__(mcls, name, bases, dct)

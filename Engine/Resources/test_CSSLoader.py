@@ -37,8 +37,8 @@ import CSSLoader
 import Manager
 
 class CSSLoaderTest(unittest.TestCase):
-    def test_loadCSS(self):
-        Engine.UI.CSS.Minilanguage.ElementNames().registerWidgetClass(int)
+    def test_load_css(self):
+        Engine.UI.CSS.Minilanguage.ElementNames().register_widget_class(int)
         TestMount["/test.css"] = """
 int {
     background-color: rgba(1., 0., 0., 1.);

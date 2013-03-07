@@ -37,11 +37,11 @@ class MountPriorities(unittest.TestCase):
         self.assertGreater(MountPriority.Override, MountPriority.Important)
         self.assertGreater(MountPriority.Penetrant, MountPriority.Override)
 
-    def test_listOrder(self):
+    def test_list_order(self):
         dict, list = MountDict()
-        prevKey, _ = list[0]
+        prev_key, _ = list[0]
         for key, value in list[1:]:
-            self.assertLess(key, prevKey)
+            self.assertLess(key, prev_key)
 
     def test_dict(self):
         dict, list = MountDict()
@@ -56,5 +56,5 @@ class FileSystemInstanceTest(unittest.TestCase):
         del self.instance
 
 class FileSystemMount(FileSystemInstanceTest):
-    def test_typeCheck(self):
+    def test_type_check(self):
         self.assertRaises(TypeError, self.instance.mount, "/", int, MountPriority.FileSystem)

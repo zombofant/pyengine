@@ -37,36 +37,36 @@ import Parser as _Parser
 import Minilanguage
 
 class ParserInstanceTest(unittest.TestCase):
-    def _parseCSS(self, src):
+    def _parse_css(self, src):
         io = StringIO.StringIO(src)
         return self._parser.parse(io)
 
-    def _testRule(self, src, reference):
-        parsedRule = self._parseCSS(src)[0]
+    def _test_rule(self, src, reference):
+        parsedrule = self._parse_css(src)[0]
         try:
-            self.assertEqual(parsedRule, reference)
+            self.assertEqual(parsedrule, reference)
         except:
             raise
 
     def setUp(self):
         self._parser = _Parser.Parser()
-        Minilanguage.elementNames["test"] = "test"
-        Minilanguage.elementNames["test1"] = "test1"
-        Minilanguage.elementNames["test2"] = "test2"
-        Minilanguage.elementNames["test3"] = "test3"
+        Minilanguage.elementnames["test"] = "test"
+        Minilanguage.elementnames["test1"] = "test1"
+        Minilanguage.elementnames["test2"] = "test2"
+        Minilanguage.elementnames["test3"] = "test3"
 
     def tearDown(self):
-        Minilanguage.elementNames.clear()
+        Minilanguage.elementnames.clear()
         del self._parser
 
 class ParseSelectors(ParserInstanceTest):
-    def _testRule(self, src, reference):
-        super(ParseSelectors, self)._testRule(src, reference)
-        parsedRule = self._parseCSS(unicode(reference))[0]
-        self.assertEqual(parsedRule, reference)
+    def _test_rule(self, src, reference):
+        super(ParseSelectors, self)._test_rule(src, reference)
+        parsedrule = self._parse_css(unicode(reference))[0]
+        self.assertEqual(parsedrule, reference)
 
-    def test_emptyRule(self):
-        self._testRule(
+    def test_empty_rule(self):
+        self._test_rule(
             """
             test {
 
@@ -76,7 +76,7 @@ class ParseSelectors(ParserInstanceTest):
         )
 
     def test_comment(self):
-        self._testRule(
+        self._test_rule(
             """
 /* ignored content */
             test  /* some more ignored content */{
@@ -87,12 +87,12 @@ class ParseSelectors(ParserInstanceTest):
             Rules.Rule([Selectors.Is("test")], [])
         )
 
-    def test_invalidSelector(self):
+    def test_invalid_selector(self):
         # FIXME: Make the parser raise a proper exception here
-        self.assertRaises(Exception, self._parseCSS, """{}""")
+        self.assertRaises(Exception, self._parse_css, """{}""")
 
     def test_classes(self):
-        self._testRule(
+        self._test_rule(
             """
             test.class1.class2 {
 
@@ -106,7 +106,7 @@ class ParseSelectors(ParserInstanceTest):
         )
 
     def test_attributes(self):
-        self._testRule(
+        self._test_rule(
             """
             test[attr,attr2="value"] {
 
@@ -120,7 +120,7 @@ class ParseSelectors(ParserInstanceTest):
         )
 
     def test_nesting1(self):
-        self._testRule(
+        self._test_rule(
             """
             test1 > test2 {
 
@@ -134,7 +134,7 @@ class ParseSelectors(ParserInstanceTest):
 
 
     def test_nesting2(self):
-        self._testRule(
+        self._test_rule(
             """
             test1 test2 {
 
@@ -147,7 +147,7 @@ class ParseSelectors(ParserInstanceTest):
         )
 
     def test_state(self):
-        self._testRule(
+        self._test_rule(
             """
             test1:hover {
 
@@ -158,7 +158,7 @@ class ParseSelectors(ParserInstanceTest):
         )
 
     def test_complex(self):
-        self._testRule(
+        self._test_rule(
             """
             test1.class1 > test2[attr2="value2"] test3.class3[attr3] {
 
@@ -186,38 +186,38 @@ class ParseSelectors(ParserInstanceTest):
         )
 
 class ParseProperties(ParserInstanceTest):
-    def _testRule(self, propsrc, props):
-        super(ParseProperties, self)._testRule(
+    def _test_rule(self, propsrc, props):
+        super(ParseProperties, self)._test_rule(
             """test {{ {0} }}""".format(propsrc),
             Rules.Rule([Selectors.Is("test")], props)
         )
 
-    def _testBox(self, boxprop, boxkw):
-        self._testRule(
+    def _test_box(self, boxprop, boxkw):
+        self._test_rule(
             """{0}: 1 2 3 4;""".format(boxprop),
             [(boxkw, (1, 2, 3, 4))]
         )
 
-    def test_backgroundColour(self):
-        self._testRule(
+    def test_background_colour(self):
+        self._test_rule(
             """background: rgba(0.1, 0.2, 0.3, 0.4);""",
             [("background", (Colour(0.1, 0.2, 0.3, 0.4),))]
         )
 
     def test_padding(self):
-        self._testBox("padding", "padding")
+        self._test_box("padding", "padding")
 
     def test_margin(self):
-        self._testBox("margin", "margin")
+        self._test_box("margin", "margin")
 
-    def test_textAlign(self):
-        self._testRule(
+    def test_text_align(self):
+        self._test_rule(
             """text-align: center;""",
             [("text-align", (Literals.Pango.Alignment.CENTER,))]
         )
 
-    def test_negativeMargin(self):
-        self._testRule(
+    def test_negative_margin(self):
+        self._test_rule(
             """margin: -1;""",
             [("margin", (-1,))]
         )

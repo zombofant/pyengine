@@ -30,7 +30,7 @@ import unittest
 from TextLoader import TextLoader
 
 class TextLoaderTest(unittest.TestCase):
-    def _encodedDataIterable(self, encoding):
+    def _encoded_data_iterable(self, encoding):
         return (line.encode(encoding) for line in self.data.split("\n"))
 
 class TextLoaderInitTest(unittest.TestCase):
@@ -46,15 +46,15 @@ class TextLoaderEncodingTest(TextLoaderTest):
     def setUp(self):
         self.data = "✔"
 
-    def test_encodingUTF8(self):
+    def test_encoding_utf8(self):
         instance = TextLoader()
-        result = instance.load(self._encodedDataIterable("utf8"))
+        result = instance.load(self._encoded_data_iterable("utf8"))
         self.assertEqual(result, self.data)
         del instance
 
-    def test_decodeError(self):
+    def test_decode_error(self):
         instance = TextLoader()
-        self.assertRaises(UnicodeDecodeError, instance.load, self._encodedDataIterable("utf8"), None, encoding="ascii")
+        self.assertRaises(UnicodeDecodeError, instance.load, self._encoded_data_iterable("utf8"), None, encoding="ascii")
         del instance
 
     def tearDown(self):

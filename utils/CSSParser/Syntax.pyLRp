@@ -58,7 +58,7 @@ selector:
 constrainedToken:
     TOKEN:
         try:
-            $$.sem = Is(elementNames[$1.sem])
+            $$.sem = Is(elementnames[$1.sem])
         except KeyError:
             raise ValueError("No such widget: {}".format($1.sem))
     constrainedToken "[" attributes "]":
@@ -118,7 +118,7 @@ number:
 
 call:
     TOKEN "(" arguments ")":
-        $$.sem = namespace.evaluateCall($1.sem, *$3.sem)
+        $$.sem = namespace.evaluate_call($1.sem, *$3.sem)
 
 arguments:
     %empty:

@@ -36,7 +36,7 @@ except ImportError:
         Image = type(None)
 
 class TextureBase(BindableObject):
-    _bindCall = glBindTexture
+    _bind_call = glBindTexture
     
     def __init__(self, format=None, **kwargs):
         assert format is not None
@@ -44,27 +44,27 @@ class TextureBase(BindableObject):
         self.format = format
         self.id = glGenTextures(1)
 
-    def _getDataFormatType(self, dataTuple):
-        return dataTuple if dataTuple is not None else (GL_LUMINANCE, GL_UNSIGNED_BYTE, None)
+    def _get_data_format_type(self, datatuple):
+        return datatuple if datatuple is not None else (GL_LUMINANCE, GL_UNSIGNED_BYTE, None)
         
     def __del__(self):
         glDeleteTextures(np.array((self.id,), dtype=np.uint32))
         
     def __setitem__(self, key, value):
         if type(value) == int:
-            glTexParameteri(self._bindClass, key, value)
+            glTexParameteri(self._bind_class, key, value)
         else:
-            glTexParameterf(self._bindClass, key, value)
+            glTexParameterf(self._bind_class, key, value)
         
 class Texture1D(TextureBase):
-    _bindClass = GL_TEXTURE_1D
+    _bind_class = GL_TEXTURE_1D
     
     def __init__(self, width=None, format=None, data=None, **kwargs):
         super(Texture1D, self).__init__(format=format, **kwargs)
-        dataFormat, dataType, data = self._getDataFormatType(data)
+        dataformat, datatype, data = self._get_data_format_type(data)
         self._dimensions = (width, )
         self.bind()
-        glTexImage1D(GL_TEXTURE_1D, 0, format, self._dimensions[0], 0, dataFormat, dataType, data)
+        glTexImage1D(GL_TEXTURE_1D, 0, format, self._dimensions[0], 0, dataformat, datatype, data)
         self[GL_TEXTURE_MAG_FILTER] = GL_NEAREST
         self[GL_TEXTURE_MIN_FILTER] = GL_NEAREST
         self[GL_TEXTURE_WRAP_S] = GL_CLAMP_TO_EDGE
@@ -75,7 +75,7 @@ class Texture1D(TextureBase):
         return self._dimensions
 
 class Texture2D(TextureBase, RenderbufferBase):
-    _bindClass = GL_TEXTURE_2D
+    _bind_class = GL_TEXTURE_2D
     
     def __init__(self, width=None, height=None, format=None, data=None, **kwargs):
         super(Texture2D, self).__init__(width=width, height=height, format=format, **kwargs)
@@ -83,8 +83,8 @@ class Texture2D(TextureBase, RenderbufferBase):
         if isinstance(data, CResources.Image):
             data.texImage2D(GL_TEXTURE_2D, 0, format)
         else:
-            dataFormat, dataType, data = self._getDataFormatType(data)
-            glTexImage2D(GL_TEXTURE_2D, 0, format, self._dimensions[0], self._dimensions[1], 0, dataFormat, dataType, data)
+            dataformat, datatype, data = self._get_data_format_type(data)
+            glTexImage2D(GL_TEXTURE_2D, 0, format, self._dimensions[0], self._dimensions[1], 0, dataformat, datatype, data)
         self[GL_TEXTURE_MAG_FILTER] = GL_NEAREST
         self[GL_TEXTURE_MIN_FILTER] = GL_NEAREST
         self[GL_TEXTURE_WRAP_S] = GL_CLAMP_TO_EDGE
@@ -94,6 +94,6 @@ class Texture2D(TextureBase, RenderbufferBase):
     def attach(self, target):
         glFramebufferTexture2D(GL_FRAMEBUFFER, target, GL_TEXTURE_2D, self.id, 0)
         
-    def _getValid(self):
+    def _get_valid(self):
         return True
 

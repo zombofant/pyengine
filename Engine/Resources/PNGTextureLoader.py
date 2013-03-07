@@ -28,7 +28,7 @@ from our_future import *
 from Base import ResourceLoader
 from Manager import ResourceManager
 
-__globalError = None
+__global_error = None
 try:
     from Engine.GL.Texture import Texture2D
     from OpenGL.GL import GL_RGBA, GL_UNSIGNED_BYTE
@@ -36,7 +36,7 @@ try:
     import Engine.CEngine as CEngine
     import Engine.CEngine.Resources as CResources
 except ImportError as err:
-    __globalError = err
+    __global_error = err
 
 import cairo
 from CairoWrapper import CairoSurface
@@ -47,38 +47,38 @@ class PNGTextureLoader(ResourceLoader):
     """
 
     def __init__(self, **kwargs):
-        if globals()["__globalError"]:
-            self._loaderNotAvailable(globals()["__globalError"])
-        targetClasses = []
+        if globals()["__global_error"]:
+            self._loader_not_available(globals()["__global_error"])
+        target_classes = []
         try:
-            targetClasses.append(Texture2D)
+            target_classes.append(Texture2D)
         except NameError as err:
-            self._loaderNotAvailable(unicode(err))
-        targetClasses.append(CairoSurface)
+            self._loader_not_available(unicode(err))
+        target_classes.append(CairoSurface)
         try:
             CEngine
         except NameError as err:
-            self._loaderNotAvailable(unicode(err))
+            self._loader_not_available(unicode(err))
         
         super(PNGTextureLoader, self).__init__(
-            targetClasses,
+            target_classes,
             ['png'],
-            relativePathPrefix="/data/textures",
+            relative_path_prefix="/data/textures",
             **kwargs)
         
  
-    def load(self, fileLike, targetClass=None):
+    def load(self, filelike, targetclass=None):
         """
-        Loads the given fileLike as PNG image. This is done using
+        Loads the given filelike as PNG image. This is done using
         :cpp:func:`PNGImage` from CEngine
         """
-        image = CResources.PNGImage(CEngine.Stream(fileLike))
+        image = CResources.PNGImage(CEngine.Stream(filelike))
         if image is None or not image.IsValid:
             raise ValueError("Not valid PNG data.")
         
-        if issubclass(targetClass, CairoSurface):
+        if issubclass(targetclass, CairoSurface):
             return CairoSurface(image.cairoSurface())
-        elif issubclass(targetClass, Texture2D):            
+        elif issubclass(targetclass, Texture2D):            
             texture = Texture2D(
                 width=image.Width,
                 height=image.Height,
@@ -87,8 +87,8 @@ class PNGTextureLoader(ResourceLoader):
             del image
             return texture
         else:
-            assert targetClass in self._supportedTargetClasses
+            assert targetclass in self._supported_target_classes
 
 # register an instance of TextLoader with the resource manager
-ResourceManager().registerResourceLoader(PNGTextureLoader)
+ResourceManager().register_resource_loader(PNGTextureLoader)
 

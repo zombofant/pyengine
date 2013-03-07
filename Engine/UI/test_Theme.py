@@ -68,38 +68,38 @@ DesktopLayer:hover {
 """
 
     def setUp(self):
-        self._old_element_names = dict(Minilanguage.elementNames)
-        Minilanguage.elementNames.update({
+        self._old_element_names = dict(Minilanguage.elementnames)
+        Minilanguage.elementnames.update({
             "ParentWidget": ParentWidget,
             "DesktopLayer": DesktopLayer,
         })
         self.theme = Theme()
-        self.theme.addRules(Parser().parse(StringIO.StringIO(self.css)))
-        self.referenceBorder = Border()
-        self.referenceBorder.Right = BorderEdge(1, Colour(0.1, 0.2, 0.3))
+        self.theme.add_rules(Parser().parse(StringIO.StringIO(self.css)))
+        self.reference_border = Border()
+        self.reference_border.Right = BorderEdge(1, Colour(0.1, 0.2, 0.3))
 
     def tearDown(self):
-        Minilanguage.elementNames.clear()
-        Minilanguage.elementNames.update(self._old_element_names)
+        Minilanguage.elementnames.clear()
+        Minilanguage.elementnames.update(self._old_element_names)
         del self.theme
 
 class ThemeCascading(ThemeTest):
     def test_cascade(self):
         rootW = RootWidget()
-        root = rootW._desktopLayer
+        root = rootW._desktoplayer
         rootW.Theme = self.theme
         child1 = ParentWidget(root)
         child2 = ParentWidget(child1)
 
 
-        self.assertEqual(self.theme.getWidgetStyle(child2),
+        self.assertEqual(self.theme.get_widget_style(child2),
             Style(
                 background=Transparent,
                 padding=Padding(3),
-                border=self.referenceBorder
+                border=self.reference_border
             )
         )
-        self.assertEqual(self.theme.getWidgetStyle(child1),
+        self.assertEqual(self.theme.get_widget_style(child1),
             Style(
                 background=Colour(1., 1., 1., 1.),
                 padding=Padding(3),
@@ -107,9 +107,9 @@ class ThemeCascading(ThemeTest):
             )
         )
 
-    def test_customStyle(self):
+    def test_custom_style(self):
         rootW = RootWidget()
-        root = rootW._desktopLayer
+        root = rootW._desktoplayer
         rootW.Theme = self.theme
         child1 = ParentWidget(root)
         child2 = ParentWidget(child1)
@@ -118,21 +118,21 @@ class ThemeCascading(ThemeTest):
             [("margin", ("1",))]
         )
 
-        refStyle = Style(
+        refstyle = Style(
             background=Transparent,
             padding=Padding(3),
             margin=Margin(1),
-            border=self.referenceBorder
+            border=self.reference_border
             )
-        refStyle.solveInheritance(child1.ComputedStyle)
+        refstyle.solve_inheritance(child1.ComputedStyle)
         self.assertEqual(
             child2.ComputedStyle,
-            refStyle
+            refstyle
         )
 
-    def test_applyStyles(self):
+    def test_apply_styles(self):
         rootW = RootWidget()
-        root = rootW._desktopLayer
+        root = rootW._desktoplayer
         rootW.Theme = self.theme
         child1 = ParentWidget(root)
         child2 = ParentWidget(child1)
@@ -141,36 +141,36 @@ class ThemeCascading(ThemeTest):
             [("margin", ("1",))]
         )
 
-        refStyle = Style(
+        refstyle = Style(
             background=Transparent,
             padding=Padding(3),
             margin=Margin(1),
-            border=self.referenceBorder
+            border=self.reference_border
             )
-        refStyle.solveInheritance(child1.ComputedStyle)
+        refstyle.solve_inheritance(child1.ComputedStyle)
         self.assertEqual(
             child2.ComputedStyle,
-            refStyle
+            refstyle
         )
 
 class States(ThemeTest):
     def test_states(self):
         rootW = RootWidget()
-        root = rootW._desktopLayer
+        root = rootW._desktoplayer
         rootW.Theme = self.theme
-        refStyle = Style(
+        refstyle = Style(
             background=Colour(1., 1., 1., 1.),
             padding=Padding(1),
-            border=self.referenceBorder
+            border=self.reference_border
             )
-        refStyle.solveInheritance(BaseStyle())
-        self.assertEqual(root.ComputedStyle, refStyle)
-        root._isHovered = True
-        root._invalidateComputedStyle()
-        refStyle = Style(
+        refstyle.solve_inheritance(BaseStyle())
+        self.assertEqual(root.ComputedStyle, refstyle)
+        root._is_hovered = True
+        root._invalidate_computed_style()
+        refstyle = Style(
             padding=Padding(1),
-            border=self.referenceBorder,
+            border=self.reference_border,
             background=Colour(1., 0., 0., 1.)
             )
-        refStyle.solveInheritance(BaseStyle())
-        self.assertEqual(root.ComputedStyle, refStyle)
+        refstyle.solve_inheritance(BaseStyle())
+        self.assertEqual(root.ComputedStyle, refstyle)

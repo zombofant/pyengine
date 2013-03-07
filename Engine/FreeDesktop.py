@@ -62,56 +62,56 @@ elif platform.system() == "Windows":
 else:
     raise NotImplementedError("XDG paths are not defined on {0}".format(platform.system()))
     
-def _splitDirs(dirs, appDirName):
+def _split_dirs(dirs, app_dir_name):
     for dir in dirs.split(os.path.pathsep):
         if len(dir) == 0:
             continue
-        dir = os.path.join(os.path.abspath(dir), appDirName)
+        dir = os.path.join(os.path.abspath(dir), app_dir_name)
         if not os.path.isdir(dir):
             continue
         yield dir
 
-def getDirSet(globalKey, homeKey, appDirName):
+def get_dir_set(global_key, home_key, app_dir_name):
     """
-    Detects directories from environment variables named *globalKey*
-    and *homeKey* (or their drop-in replacements from *XDGDefaults*),
-    appending *appDirName*.
+    Detects directories from environment variables named *global_key*
+    and *home_key* (or their drop-in replacements from *XDGDefaults*),
+    appending *app_dir_name*.
     
-    The environment value behind *globalKey* is splitted using
-    *os.path.pathsep*, each element gets the *appDirName* appended using
+    The environment value behind *global_key* is splitted using
+    *os.path.pathsep*, each element gets the *app_dir_name* appended using
     *os.path.join*.
 
-    For *homeKey*, just *appDirName* gets appended. If a fallback to the
+    For *home_key*, just *app_dir_name* gets appended. If a fallback to the
     XDGDefaults dict is neccessary, os.path.expanduser is applied on it,
     so that ~ gets replaced by the users home directory.
     """
-    globalDirs = _splitDirs(os.environ.get(globalKey, XDGDefaults[globalKey]), appDirName)
+    global_dirs = _split_dirs(os.environ.get(global_key, XDGDefaults[global_key]), app_dir_name)
     
-    homeDir = os.path.join(os.environ.get(homeKey, os.path.expanduser(XDGDefaults[homeKey])), appDirName)
-    return globalDirs, homeDir
+    home_dir = os.path.join(os.environ.get(home_key, os.path.expanduser(XDGDefaults[home_key])), app_dir_name)
+    return global_dirs, home_dir
 
-def requireDirs(appDirName):
+def require_dirs(app_dir_name):
     """
     Returns a tuple whose entries represent the recommended data
     and config paths respectively.
     
     The returned tuple has the following structure:
-    ``(dataDirs, dataHome, configDirs, configHome)``
-    with dataDirs and configDirs being lists and dataHome and configHome
+    ``(data_dirs, data_home, config_dirs, config_home)``
+    with data_dirs and config_dirs being lists and data_home and config_home
     being strings.
     
-    dataDirs and configDirs may be empty if the directories they were
+    data_dirs and config_dirs may be empty if the directories they were
     supposed to point to did not exist.
     
-    dataHome and configHome will always be set, directories are created
+    data_home and config_home will always be set, directories are created
     as neccessary.
     """
-    dataDirs, dataHome = getDirSet("XDG_DATA_DIRS", "XDG_DATA_HOME", appDirName)
-    if not os.path.isdir(dataHome):
-        os.makedirs(dataHome)
+    data_dirs, data_home = get_dir_set("XDG_DATA_DIRS", "XDG_DATA_HOME", app_dir_name)
+    if not os.path.isdir(data_home):
+        os.makedirs(data_home)
 
-    configDirs, configHome = getDirSet("XDG_CONFIG_DIRS", "XDG_CONFIG_HOME", appDirName)
-    if not os.path.isdir(configHome):
-        os.makedirs(configHome)
+    config_dirs, config_home = get_dir_set("XDG_CONFIG_DIRS", "XDG_CONFIG_HOME", app_dir_name)
+    if not os.path.isdir(config_home):
+        os.makedirs(config_home)
     
-    return dataDirs, dataHome, configDirs, configHome
+    return data_dirs, data_home, config_dirs, config_home

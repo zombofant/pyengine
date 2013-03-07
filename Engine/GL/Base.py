@@ -47,7 +47,7 @@ class Struct(CGL.Struct):
     
     @classmethod
     def unbind(cls):
-        cls._bindCall(cls._bindClass, 0)
+        cls._bind_call(cls._bind_class, 0)
 
 class Object(Struct, CGL.Class):
     def __init__(self, **kwargs):
@@ -56,10 +56,10 @@ class Object(Struct, CGL.Class):
 
 class BindableObject(Object):
     def bind(self):
-        self._bindCall(self._bindClass, self.id)
+        self._bind_call(self._bind_class, self.id)
     
 
-def checkError():
+def check_error():
     error = glGetError()
     if error != GL_NO_ERROR:
         raise Exception(gluErrorString(error))
