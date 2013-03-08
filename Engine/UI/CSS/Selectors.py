@@ -279,6 +279,7 @@ class State(Selector):
         "hover": 0,
         "active": 1,
         "focused": 2,
+        "disabled": 3
     }
 
     def __init__(self, statestr, chained=None, **kwargs):

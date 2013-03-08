@@ -52,10 +52,9 @@ class AbstractWidget(object):
     See *Widget* and *ParentWidget* for other widgets.
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, disabled=False, **kwargs):
         super(AbstractWidget, self).__init__(**kwargs)
         self.Visible = True
-        self.Enabled = True
         self._parent = None
         self._relative_rect = Rect(0, 0, onchange=self.on_resize)
         self._absolute_rect = Rect(0, 0, onchange=self.on_resize)
@@ -69,6 +68,7 @@ class AbstractWidget(object):
         self._is_hovered = False
         self._is_active = False
         self._is_focused = False
+        self._is_enabled = not disabled
         self._computed_style = Style()
 
     def _invalidate_computed_style(self):
@@ -233,7 +233,7 @@ class AbstractWidget(object):
 
     @property
     def CSSState(self):
-        return (self._is_hovered, self._is_active, self._is_focused)
+        return (self._is_hovered, self._is_active, self._is_focused, not self._is_enabled)
 
     @property
     def IsHovered(self):
@@ -273,6 +273,18 @@ class AbstractWidget(object):
         if value == self._is_active:
             return
         self._is_active = value
+        self._invalidate_computed_style()
+
+    @property
+    def IsEnabled(self):
+        return self._is_enabled
+
+    @IsHovered.setter
+    def IsEnabled(self, value):
+        value = bool(value)
+        if value == self._is_enabled:
+            return
+        self._is_enabled = value
         self._invalidate_computed_style()
 
     @property
