@@ -237,6 +237,10 @@ class Colour(Fill):
     def set_source(self, ctx, rect):
         ctx.set_source_rgba(self._r, self._g, self._b, self._a)
 
+    @property
+    def RGBA(self):
+        return self._r, self._g, self._b, self._a
+
 
 class Gradient(Fill):
     __hash__ = None
@@ -248,18 +252,26 @@ class Gradient(Fill):
             position = float(position)
             if not (position >= 0 and position <= 1):
                 raise ValueError("Gradient.Step position must be within 0 and 1")
-            self._position = position
-            self._colour = colour
-    
+            self.position = position
+            self.colour = colour
+
     def __init__(self, direction, *steps):
         self._direction = {
             "horiz": (1, 0),
             "vert": (0, 1)
         }[direction]
-        for step in steps:
-            if not isinstance(step, Gradient.Step):
-                raise TypeError("Gradient can only use Gradient.Step instances")
-        self._steps = tuple(sorted(((step._position, i, step._colour) for i, step in enumerate(steps)), key=lambda x: (x[0],x[1])))
+        steps = [
+            (step.position, i, step.colour) for i, step in enumerate(steps)
+            ]
+        steps.sort(key=lambda x: x[:2])
+        steps = [(pos, colour) for pos, i, colour in steps]
+        self._steps = steps
+        self._pattern = cairo.LinearGradient(0, 0, *self._direction)
+        for position, colour in steps:
+            self._pattern.add_color_stop_rgba(
+                position,
+                *colour.RGBA
+                )
 
     def __eq__(self, other):
         if not isinstance(other, Fill):
@@ -284,10 +296,17 @@ class Gradient(Fill):
     def __deepcopy__(self, memo):
         return Gradient(
             "horiz" if self._direction == (1, 0) else "vert",
-            *(Step(position, colour) for position, i, colour in self._steps),
+            *(Step(position, colour) for position, colour in self._steps),
             repeatX=self.RepeatX,
             repeatY=self.RepeatY
         )
+
+    def set_source(self, ctx, rect):
+        mat = ctx.get_matrix()
+        ctx.translate(rect.X, rect.Y)
+        ctx.scale(rect.Width, rect.Height)
+        ctx.set_source(self._pattern)
+        ctx.set_matrix(mat)
 
 class FakeImage(Fill):
     __hash__ = None
