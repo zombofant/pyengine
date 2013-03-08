@@ -25,22 +25,66 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-__all__ = ["WindowWidget"]
+__all__ = ["Window"]
 
 import CSS.Minilanguage
 
 from WidgetBase import ParentWidget
 from LabelWidget import LabelWidget
-from BoxWidget import VBox
+from BoxWidget import VBox, HBox
+from DragController import DragMoveWidget
 
 import Flags
 
-class WindowWidget(VBox):
+class TitleBar(HBox):
     def __init__(self, parent, **kwargs):
-        super(WindowWidget, self).__init__(parent, **kwargs)
+        super(TitleBar, self).__init__(parent, **kwargs)
+        self._caption = LabelWidget(self)
+
+    def on_mouse_down(self, x, y, button, modifiers):
+        if button <= 3:
+            x += self.AbsoluteRect.Left
+            y += self.AbsoluteRect.Top
+            self.RootWidget.start_drag(
+                DragMoveWidget,
+                button,
+                x, y,
+                self.Parent)
+
+class Window(VBox):
+    def __init__(self, parent, **kwargs):
+        super(Window, self).__init__(parent, **kwargs)
         self.AbsoluteRect.Width = 256
         self.AbsoluteRect.Height = 128
-        self.Title = LabelWidget(self)
+        self._titlebar = TitleBar(self)
         self._flags.add(Flags.Focusable)
 
-CSS.Minilanguage.ElementNames().register_widget_class(WindowWidget, "Window")
+    def on_activate(self):
+        self.Parent.bring_to_front(self)
+
+    def on_deactivate(self):
+        pass
+
+    @property
+    def Caption(self):
+        return self._titlebar._caption.Text
+
+    @Caption.setter
+    def Caption(self, value):
+        self._titlebar._caption.Text = value
+
+    @property
+    def HasFocusedChild(self):
+        return self._has_focused_child
+
+    @HasFocusedChild.setter
+    def HasFocusedChild(self, value):
+        if value == self._has_focused_child:
+            return
+        self._has_focused_child = value
+        self.IsActive = value
+        if value:
+            self.on_activate()
+
+CSS.Minilanguage.ElementNames().register_widget_class(TitleBar)
+CSS.Minilanguage.ElementNames().register_widget_class(Window)

@@ -99,6 +99,12 @@ class AbstractWidget(object):
     def render(self):
         self.ComputedStyle.in_cairo(self.AbsoluteRect, self._cairo)
 
+    def on_activate(self):
+        pass
+
+    def on_deactivate(self):
+        pass
+
     def on_key_down(self, symbol, modifiers):
         return False
 
@@ -252,6 +258,10 @@ class AbstractWidget(object):
             return
         self._is_focused = value
         self._invalidate_computed_style()
+        if value:
+            self.on_activate()
+        else:
+            self.on_deactivate()
 
     @property
     def IsActive(self):
@@ -463,14 +473,23 @@ class ParentWidget(Widget, WidgetContainer):
         for child in self:
             child._parent_changed()
 
+    def _invalidate_computed_style(self):
+        super(ParentWidget, self)._invalidate_computed_style()
+        for child in self:
+            child._invalidate_computed_style()
+
     def add(self, widget):
         super(ParentWidget, self).add(widget)
         self._new_child(widget)
 
-    def bring_to_front(self, key):
+    def bring_to_front_by_index(self, key):
         child = self._children[key]
         del self._children[key]
-        self._children.append(child)
+        self._children.insert(0, child)
+        self.invalidate()
+
+    def bring_to_front(self, widget):
+        self.bring_to_front_by_index(self._children.index(widget))
 
     def hit_test_with_chain(self, p):
         self.realign()
@@ -496,14 +515,15 @@ class ParentWidget(Widget, WidgetContainer):
 
     def render(self):
         super(ParentWidget, self).render()
-        for child in self:
+        for child in reversed(self):
             if child.Visible and child.AbsoluteRect.Area > 0:
                 child.render()
 
     def send_to_back(self, key):
         child = self._children[key]
         del self._children[key]
-        self._children.insert(0, child)
+        self._children.append(child)
+        self.invalidate()
 
     def update(self, time_delta):
         for child in self:

@@ -37,6 +37,7 @@ import CSS.Minilanguage
 from Engine.CEngine import key, motion
 from WidgetBase import AbstractWidget, WidgetContainer
 from LayerWidget import LayerWidget, DesktopLayer, WindowLayer, PopupLayer
+from WindowWidget import Window
 from Flags import *
 
 from Engine.GL import make_pot
@@ -74,6 +75,7 @@ class RootWidget(AbstractWidget, WidgetContainer):
         self._windowlayer = WindowLayer(self)
         self._desktoplayer = DesktopLayer(self)
         self._old_hit_chain = frozenset()
+        self._old_focus_chain = frozenset()
         self._cairo_surface = None
         self._cairo = None
         self._pango = None
@@ -122,20 +124,28 @@ class RootWidget(AbstractWidget, WidgetContainer):
 
     def _focus(self, hitchain):
         if not hitchain:
-            return
+            hitchain = []
         target = None
-        for candidate in reversed(hitchain):
+        for i, candidate in enumerate(reversed(hitchain)):
             if Focusable in candidate._flags:
                 target = candidate
+                index = len(hitchain) - (i+1)
                 break
         else:
             return
 
         if self._focused is not None:
-            self._focused._is_focused = False
-            self._focused._invalidate_computed_style()
-        self._focused = target
+            self._focused.IsFocused = False
         target.IsFocused = True
+        self._focused = target
+
+        hitchain = frozenset(hitchain[:i])
+        for focused in hitchain - self._old_focus_chain:
+            focused.HasFocusedChild = True
+        for unfocused in self._old_focus_chain - hitchain:
+            unfocused.HasFocusedChild = False
+
+        self._old_focus_chain = hitchain
 
     def _recreate_cairo_context(self, width, height):
         self._cairo_surface = cairo.ImageSurface(
