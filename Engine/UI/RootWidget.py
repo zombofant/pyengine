@@ -113,9 +113,15 @@ class RootWidget(AbstractWidget, WidgetContainer):
 
             self._old_hit_chain = hitchain
 
-    def _focus_and_capture(self, hitchain, button):
+    def _capture(self, target, button):
+        if CaptureMouse not in target._flags:
+            return
+        self._mouse_capture = target
+        self._mouse_capture_button = button
+
+    def _focus(self, hitchain):
         target = None
-        for candidate in hitchain:
+        for candidate in reversed(hitchain):
             if Focusable in candidate._flags:
                 target = candidate
                 break
@@ -127,9 +133,6 @@ class RootWidget(AbstractWidget, WidgetContainer):
             self._focused._invalidate_computed_style()
         self._focused = target
         target.IsFocused = True
-
-        self._mouse_capture = target
-        self._mouse_capture_button = button
 
     def _recreate_cairo_context(self, width, height):
         self._cairo_surface = cairo.ImageSurface(
@@ -192,11 +195,22 @@ class RootWidget(AbstractWidget, WidgetContainer):
             hitchain = self._hit_test_with_chain((x, y))
         else:
             hitchain = None
-        target, x, y = self._map_mouse_event(x, y, hitchain)
-        if target:
-            target.on_mouse_down(x, y, button, modifiers)
-        if self._mouse_capture is None:
-            self._focus_and_capture(hitchain, button)
+        self._focus(hitchain)
+
+        target, tx, ty = self._map_mouse_event(x, y, hitchain)
+        if not target:
+            return
+
+        handled = target.on_mouse_down(tx, ty, button, modifiers)
+        parent = target.Parent
+        while not handled and parent:
+            target = parent
+            tx, ty = x - target.AbsoluteRect.Left, y - target.AbsoluteRect.Top
+            handled = target.on_mouse_down(tx, ty, button, modifiers)
+            parent = target.Parent
+
+        if handled and self._mouse_capture is None:
+            self._capture(target, button)
 
     def dispatch_mouse_click(self, x, y, button, modifiers, nth):
         target, cx, cy = self._map_mouse_event(x, y)
@@ -208,12 +222,20 @@ class RootWidget(AbstractWidget, WidgetContainer):
             hitchain = self._hit_test_with_chain((x, y))
         else:
             hitchain = None
-        target, x, y = self._map_mouse_event(x, y, hitchain)
-        if target:
-            target.on_mouse_move(x, y, dx, dy, button, modifiers)
+        target, tx, ty = self._map_mouse_event(x, y, hitchain)
+        if not target:
+            return
 
-        if self._mouse_capture is None:
-            self._update_hover_state(hitchain)
+        handled = target.on_mouse_move(tx, ty, dx, dy, button, modifiers)
+        if self._mouse_capture is not None:
+            return
+        self._update_hover_state(hitchain)
+
+        parent = target.Parent
+        while not handled and parent:
+            tx, ty = x - parent.AbsoluteRect.Left, y - parent.AbsoluteRect.Top
+            handled = parent.on_mouse_down(tx, ty, button, modifiers)
+            parent = parent.Parent
 
     def dispatch_mouse_up(self, x, y, button, modifiers):
         target, cx, cy = self._map_mouse_event(x, y)
