@@ -25,9 +25,10 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-__all__ = ["Focusable"]
+__all__ = ["Focusable", "CaptureMouse"]
 
 class Flag(object):
     pass
 
 Focusable = Flag()
+CaptureMouse = Flag()
