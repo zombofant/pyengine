@@ -41,6 +41,7 @@ from CSS.Rect import Rect
 
 from WidgetBase import Widget, ParentWidget
 from ButtonWidget import AbstractButton
+from DragController import DragMoveWidget
 import Flags
 
 class ScrollMode(object):
@@ -49,6 +50,34 @@ class ScrollMode(object):
 ScrollMode.HORIZONTAL = ScrollMode()
 ScrollMode.VERTICAL = ScrollMode()
 ScrollMode.valid_modes = {ScrollMode.VERTICAL, ScrollMode.HORIZONTAL}
+
+class DragScrollThumb(DragMoveWidget):
+    def __init__(self,
+                 root_widget,
+                 mouse_button,
+                 x, y,
+                 scrollbar,
+                 on_thumb_drag=None,
+                 **kwargs):
+        super(DragScrollThumb, self).__init__(
+            root_widget,
+            mouse_button,
+            x, y,
+            scrollbar._thumb,
+            **kwargs)
+        self.scrollbar = scrollbar
+        self.thumb = self.widget
+        self.old_position = scrollbar.Position
+
+    def release(self):
+        super(DragScrollThumb, self).release()
+
+    def abort(self):
+        self.scrollbar.Position = self.old_position
+        super(DragScrollThumb, self).abort()
+
+    def on_widget_move(self, x, y):
+        self.scrollbar._thumb_drag_handler(x, y)
 
 class ScrollButton(AbstractButton):
     pass
@@ -139,7 +168,7 @@ class AbstractScrollBar(ParentWidget):
 
     def _horiz_thumb_dragged(self, x, y):
         # offset x so that it matches the left end of the thumb bar
-        x -= self._thumb_bar_rect.Left - self.AbsoluteRect.Left
+        x -= self._thumb_bar_rect.Left
         new_position = int(round(x * self._thumb_factor))
         if new_position > self._max:
             new_position = self._max
@@ -208,7 +237,7 @@ class AbstractScrollBar(ParentWidget):
 
     def _vert_thumb_dragged(self, x, y):
         # offset y so that it matches the left end of the thumb bar
-        y -= self._thumb_bar_rect.Top - self.AbsoluteRect.Top
+        y -= self._thumb_bar_rect.Top
         new_position = int(round(y * self._thumb_factor))
         if new_position > self._max:
             new_position = self._max
@@ -288,24 +317,16 @@ class AbstractScrollBar(ParentWidget):
         self._invalidate_alignment()
 
     def on_mouse_down(self, x, y, button, modifiers):
-        if button <= 3 and not self._thumb_drag_btn:
+        if button <= 3  :
             x += self.AbsoluteRect.Left
             y += self.AbsoluteRect.Top
             thumb_rect = self._thumb.AbsoluteRect
             if (x, y) in thumb_rect:
-                self._thumb_drag_btn = button << 8
-                self._thumb_drag_start = x - thumb_rect.Left, y - thumb_rect.Top
-                return True
-
-    def on_mouse_move(self, x, y, dx, dy, buttons, modifiers):
-        if buttons & self._thumb_drag_btn:
-            sx, sy = self._thumb_drag_start
-            self._thumb_drag_handler(x - sx, y - sy)
-            return True
-
-    def on_mouse_up(self, x, y, button, modifiers):
-        if button << 8 == self._thumb_drag_btn:
-            self._thumb_drag_btn = 0
+                self.RootWidget.start_drag(
+                    DragScrollThumb,
+                    button,
+                    x, y,
+                    self)
             return True
 
     def on_mouse_click(self, x, y, button, modifiers, nth):
