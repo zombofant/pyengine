@@ -99,5 +99,6 @@ class LabelWidget(LabelledWidget):
     @Text.setter
     def Text(self, value):
         self._label.Text = value
+        self.invalidate()
 
 CSS.Minilanguage.ElementNames().register_widget_class(LabelWidget, "Label")

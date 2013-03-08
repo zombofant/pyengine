@@ -149,6 +149,7 @@ class Label(object):
     @Text.setter
     def Text(self, value):
         self._text = unicode(value).encode("utf-8")
+        self.invalidate_layout()
 
     @property
     def Widget(self):
