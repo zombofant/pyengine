@@ -31,7 +31,6 @@ import CSS.Minilanguage
 
 from WidgetBase import ParentWidget
 from ScreenWidget import ScreenWidget
-from WindowWidget import WindowWidget
 
 class LayerWidget(ParentWidget):
     def hit_test(self, p):
@@ -54,7 +53,6 @@ class DesktopLayer(LayerWidget):
 class WindowLayer(LayerWidget):
     def __init__(self, parent, **kwargs):
         super(WindowLayer, self).__init__(parent, **kwargs)
-        # self._child_classes = WindowWidget
 
 class PopupLayer(LayerWidget):
     def __init__(self, parent, **kwargs):
