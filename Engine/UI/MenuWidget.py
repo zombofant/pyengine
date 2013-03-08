@@ -27,6 +27,7 @@ from our_future import *
 
 from operator import attrgetter
 import copy
+import functools
 
 import CSS.Minilanguage
 
@@ -34,6 +35,7 @@ from WidgetBase import ParentWidget, Widget
 from Label import Label
 from LabelWidget import LabelledWidget
 from BoxWidget import AbstractHBox, AbstractVBox
+from IconWidget import Icon
 
 import Flags
 import Label
@@ -128,13 +130,19 @@ class Menu(AbstractVBox, AbstractMenu):
         borderbox = mystyle.Border.get_box()
         horiz_spacing = mystyle.Padding.Horizontal
 
-        max_label_width = max([btn.get_label_width()
-                             for btn in self
-                             if isinstance(btn, MenuButton)])
+        max_width_hints = functools.reduce(
+            lambda x, y: (max(x[0], y[0]), max(x[1], y[1])),
+            (
+                (btn.get_label_width(), btn.get_icon_width())
+                for btn in self
+                if isinstance(btn, MenuButton)
+            ))
+        max_label_width, max_icon_width = max_width_hints
 
         maxwidth = 0
         for item in self:
             item._max_label_width_hint = max_label_width
+            item._max_icon_width_hint = max_icon_width
             width, height = item.get_dimensions()
 
             # FIXME: will break with auto-margins
@@ -171,13 +179,16 @@ class MenuButton(LabelledWidget, MenuItem):
                  caption="",
                  onclick=None,
                  hotkey_string="",
+                 icon=None,
                  **kwargs):
         self._hotkey_label = Label.Label(self)
         super(MenuButton, self).__init__(parent, **kwargs)
+        self._icon = Icon(icon=icon)
         self._label.Text = caption
         self._hotkey_label.Text = hotkey_string
         self._onclick = onclick
         self._max_label_width_hint = 0
+        self._max_icon_width_hint = 0
         self.SubMenu = None
 
     def _invalidate_computed_style(self):
@@ -195,10 +206,22 @@ class MenuButton(LabelledWidget, MenuItem):
         _label_rect.shrink(mystyle.Padding)
         _label_rect.shrink(mystyle.Border.get_box())
 
+        icon_width, icon_height = self._icon.get_dimensions()
+        if icon_width > 0:
+            self._icon.X = _label_rect.X
+            self._icon.Y = _label_rect.Y + round(_label_rect.Height / 2 - icon_height / 2)
+            if self._max_icon_width_hint <= 0:
+                _label_rect.Left += icon_width + 2
+
+        if self._max_icon_width_hint > 0:
+            _label_rect.Left += self._max_icon_width_hint + 2
+
+
         hotkeyW, hotkeyH = self._hotkey_label.get_dimensions()
 
         if hotkeyW > 0:
             _label_rect.Width = _label_rect.Width - (hotkeyW + mystyle.BoxSpacingX)
+
 
         self._label.Width = _label_rect.Width
         self._label.Height = _label_rect.Height
@@ -214,6 +237,9 @@ class MenuButton(LabelledWidget, MenuItem):
     def get_label_width(self):
         return self._label.get_dimensions()[0]
 
+    def get_icon_width(self):
+        return self._icon.get_dimensions()[0]
+
     def get_dimensions(self):
         width, height = self._label.get_dimensions()
         width = max(width, self._max_label_width_hint)
@@ -225,6 +251,8 @@ class MenuButton(LabelledWidget, MenuItem):
         height += mystyle.Padding.Vertical + borderbox.Vertical
         if hotkeyW > 0:
             width += hotkeyW + mystyle.BoxSpacingX
+        if self._max_icon_width_hint > 0:
+            width += self._max_icon_width_hint + 2
 
         return width, height
 
@@ -246,6 +274,7 @@ class MenuButton(LabelledWidget, MenuItem):
 
     def render(self):
         super(MenuButton, self).render()
+        self._icon.render(self._cairo)
         self._hotkey_label.render(self._hotkey_rect)
 
 class MenuSeparator(MenuItem):
