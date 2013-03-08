@@ -208,6 +208,8 @@ class AbstractEdit(Widget):
             self._backspace()
         elif text == b"\x7f":  # delete
             self._delete()
+        elif text == b"\n" or text == b"\r":
+            return True
         else:
             self._insert_character(text)
         self.invalidate()
