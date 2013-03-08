@@ -78,6 +78,7 @@ class RootWidget(AbstractWidget, WidgetContainer):
         self._cairo = None
         self._pango = None
         self._resized = False
+        self._drag_controller = None
         self._invalidated_rects = []  # discard init values, they're incorrect
                                      # anyways
         self.surface_dirty = False
@@ -120,6 +121,8 @@ class RootWidget(AbstractWidget, WidgetContainer):
         self._mouse_capture_button = button
 
     def _focus(self, hitchain):
+        if not hitchain:
+            return
         target = None
         for candidate in reversed(hitchain):
             if Focusable in candidate._flags:
@@ -154,6 +157,21 @@ class RootWidget(AbstractWidget, WidgetContainer):
     def invalidate_rect(self, rect):
         self._invalidated_rects.append(copy.copy(rect))
 
+    def start_drag(self, controller_class, *args, **kwargs):
+        if self._drag_controller is not None:
+            raise RuntimeError("There is an active drag controller.")
+        controller = controller_class(self, *args, **kwargs)
+        self._drag_controller = controller
+        self.release_capture()
+
+    def stop_drag(self):
+        self._drag_controller = None
+        self.release_capture()
+
+    def release_capture(self):
+        self._mouse_capture = None
+        self._mouse_capture_button = 0
+
     def do_align(self):
         assert len(self) == 3
         myrect = self.AbsoluteRect
@@ -166,6 +184,10 @@ class RootWidget(AbstractWidget, WidgetContainer):
         self._resized = True
 
     def dispatch_key_down(self, key, modifiers):
+        if self._drag_controller:
+            self._drag_controller.on_key_down(key, modifiers)
+            return
+
         target = self._find_key_event_target()
 
         try:
@@ -183,14 +205,24 @@ class RootWidget(AbstractWidget, WidgetContainer):
             parent = parent.Parent
 
     def dispatch_key_up(self, *args):
+        if self._drag_controller:
+            self._drag_controller.on_key_up(key, modifiers)
+            return
+
         target = self._find_key_event_target()
         handled = target.on_key_up(*args)
+        if self._drag_controller:
+            return
         parent = target.Parent
         while parent and not handled:
             handled = parent.on_key_up(*args)
             parent = parent.Parent
 
     def dispatch_mouse_down(self, x, y, button, modifiers):
+        if self._drag_controller:
+            self._drag_controller.on_mouse_down(x, y, button, modifiers)
+            return
+
         if self._mouse_capture is None:
             hitchain = self._hit_test_with_chain((x, y))
         else:
@@ -213,11 +245,18 @@ class RootWidget(AbstractWidget, WidgetContainer):
             self._capture(target, button)
 
     def dispatch_mouse_click(self, x, y, button, modifiers, nth):
+        if self._drag_controller:
+            return
+
         target, cx, cy = self._map_mouse_event(x, y)
         if target:
             target.on_mouse_click(cx, cy, button, modifiers, nth)
 
     def dispatch_mouse_move(self, x, y, dx, dy, button, modifiers):
+        if self._drag_controller:
+            self._drag_controller.on_mouse_move(x, y, button, modifiers)
+            return
+
         if self._mouse_capture is None:
             hitchain = self._hit_test_with_chain((x, y))
         else:
@@ -238,6 +277,10 @@ class RootWidget(AbstractWidget, WidgetContainer):
             parent = parent.Parent
 
     def dispatch_mouse_up(self, x, y, button, modifiers):
+        if self._drag_controller:
+            self._drag_controller.on_mouse_up(x, y, button, modifiers)
+            return
+
         target, cx, cy = self._map_mouse_event(x, y)
         if target:
             target.on_mouse_up(cx, cy, button, modifiers)

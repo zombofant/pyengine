@@ -105,6 +105,9 @@ class AbstractWidget(object):
     def on_key_up(self, symbol, modifiers):
         return False
 
+    def on_drag_over(self, x, y, other):
+        return False
+
     def on_mouse_down(self, x, y, button, modifiers):
         return False
 
