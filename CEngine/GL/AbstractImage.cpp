@@ -60,12 +60,11 @@ void copyRGBA(const GLvoid *src, unsigned char *dest, sizeuint len) {
     int32 *curDst = (int32*)dest;
 
     for (; curSrc < endSrc; curSrc++) {
-        *curDst = (
-            ((*curSrc & 0x000000FF) << 16) |  // R → B
-            ((*curSrc & 0x0000FF00) <<  0) |  // G → G
-            ((*curSrc & 0x00FF0000) >> 16) |  // B → R
-            ((*curSrc & 0xFF000000) >>  0)    // A → A
-        );
+        *curDst =
+            ((*curSrc & 0x00FF0000L) >> 16) |
+            ((*curSrc & 0x000000FFL) << 16) |
+            (*curSrc & 0xFF00FF00L);
+        curDst++;
     }
 }
 
@@ -105,8 +104,7 @@ cairo_surface_t *AbstractImage2D::cairoSurface() {
     {
     case GL_RGBA:
         std::cout << "non-identity (RGBA)" << std::endl;
-        // copyFunc = copyRGBA;
-        copyFunc = copyABGR;
+        copyFunc = copyRGBA;
         cairoFmt = CAIRO_FORMAT_ARGB32;
         break;
     case GL_BGRA:
