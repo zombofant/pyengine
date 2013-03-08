@@ -222,13 +222,13 @@ class RectOr(RectTest):
 class RectBoxes(RectTest):
     def test_shrink(self):
         a = Rect.Rect(5, 5, 15, 15)
-        a.shrink(Box.BaseBox(1, 1, 1, 1))
-        self.assertEqual(a, Rect.Rect(6, 6, 14, 14))
+        a.shrink(Box.BaseBox(1, 2, 3, 4))
+        self.assertEqual(a, Rect.Rect(6, 7, 12, 11))
 
     def test_expand(self):
         a = Rect.Rect(5, 5, 15, 15)
-        a.expand(Box.BaseBox(5, 5, 5, 5))
-        self.assertEqual(a, Rect.Rect(0, 0, 20, 20))
+        a.expand(Box.BaseBox(1, 2, 3, 4))
+        self.assertEqual(a, Rect.Rect(4, 3, 18, 19))
 
     def test_cut(self):
         a = Rect.Rect(0, 0, 20, 20)
