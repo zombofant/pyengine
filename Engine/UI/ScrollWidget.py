@@ -77,6 +77,7 @@ class AbstractScrollBar(ParentWidget):
         self._thumb_factor = 0
         self._thumb_drag_btn = 0
         self._flags = {Flags.CaptureMouse}
+        self._thumb_bar_rect = Rect(0, 0, 0, 0)
 
     def _increase_position(self, delta):
         new_position = self._position + delta
@@ -118,7 +119,6 @@ class AbstractScrollBar(ParentWidget):
         self._down_button.Caption = down_caption
         self._thumb_drag_handler = thumb_dragged
         self._thumb_rel_click = thumb_rel_click
-        self._thumb_bar_rect = Rect(0, 0, 0, 0)
 
     def _calculate_thumb_size(self, space, min_size):
         steps = math.ceil((self._max - self._min + 1) / self._step)
