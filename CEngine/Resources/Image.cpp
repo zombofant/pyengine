@@ -36,7 +36,7 @@ using namespace std;
 
 /* PyEngine::Resources::Image */
 
-Image::Image(GLvoid *pixelData, 
+Image::Image(GLvoid *pixelData,
         const GLsizei aWidth, const GLsizei aHeight,
         const GLenum aFormat, const GLenum aType,
         const GLsizei aPixelSize):
@@ -143,7 +143,7 @@ ImageHandle Image::PNGImage(StreamHandle stream)
 
     const png_byte color_type = png_get_color_type(data, info);
     const png_byte bit_depth = png_get_bit_depth(data, info);
-    
+
     // we calculate row bytes on our own as we may apply a
     // transformation
     GLsizei channelBytes = 0;
@@ -158,7 +158,7 @@ ImageHandle Image::PNGImage(StreamHandle stream)
     {
         color = true;
         alpha = (PNG_COLOR_MASK_ALPHA & color_type) != 0;
-        
+
         channelBytes = 1;
         channels =(alpha?4:3);
         png_set_palette_to_rgb(data);
@@ -167,7 +167,7 @@ ImageHandle Image::PNGImage(StreamHandle stream)
     {
         color = false;
         alpha = ((PNG_COLOR_MASK_ALPHA & color_type) != 0);
-        
+
         channelBytes = 1;
         channels =(alpha?4:3);
         png_set_expand_gray_1_2_4_to_8(data);
@@ -241,12 +241,12 @@ ImageHandle Image::PNGImage(StreamHandle stream)
     }
     assert(format != 0);
     assert(type != 0);
-    
+
     const GLsizei rowbytes = (channels * channelBytes * width);
-    
+
     // at least we should not be below what libpng expects
     {
-        
+
         const GLsizei pngRowbytes = png_get_rowbytes(data, info);
         assert(rowbytes >= pngRowbytes);
     }
@@ -264,7 +264,7 @@ ImageHandle Image::PNGImage(StreamHandle stream)
     }
 
     png_read_image(data, rowPointers);
-    
+
     // we bluntly ignore end info
     png_destroy_read_struct(&data, &info, 0);
 
