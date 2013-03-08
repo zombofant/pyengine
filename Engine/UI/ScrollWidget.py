@@ -139,7 +139,7 @@ class AbstractScrollBar(ParentWidget):
 
     def _horiz_thumb_dragged(self, x, y):
         # offset x so that it matches the left end of the thumb bar
-        x -= self._thumb_bar_rect.Left
+        x -= self._thumb_bar_rect.Left - self.AbsoluteRect.Left
         new_position = int(round(x * self._thumb_factor))
         if new_position > self._max:
             new_position = self._max
@@ -176,7 +176,7 @@ class AbstractScrollBar(ParentWidget):
 
         thumb_style = self._thumb.ComputedStyle
 
-        space = myrect.Width - 2*height - thumb_style.Margin.Vertical
+        space = myrect.Width - 2*height - thumb_style.Margin.Horizontal
 
         self._thumb_bar_rect = Rect(
             myrect.Left + height,
@@ -215,7 +215,6 @@ class AbstractScrollBar(ParentWidget):
         elif new_position < self._min:
             new_position = self._min
         self.Position = new_position
-
 
     def _vert_thumb_rel_click(self, rx, ry):
         if ry < 0:
@@ -295,14 +294,13 @@ class AbstractScrollBar(ParentWidget):
             thumb_rect = self._thumb.AbsoluteRect
             if (x, y) in thumb_rect:
                 self._thumb_drag_btn = button << 8
-                self._thumb_drag_start = x - self._thumb.AbsoluteRect.Left, \
-                    y - self._thumb.AbsoluteRect.Top
+                self._thumb_drag_start = x - thumb_rect.Left, y - thumb_rect.Top
                 return True
 
     def on_mouse_move(self, x, y, dx, dy, buttons, modifiers):
         if buttons & self._thumb_drag_btn:
             sx, sy = self._thumb_drag_start
-            self._thumb_drag_handler(x - sx, y - sx)
+            self._thumb_drag_handler(x - sx, y - sy)
             return True
 
     def on_mouse_up(self, x, y, button, modifiers):
