@@ -234,7 +234,7 @@ class RootWidget(AbstractWidget, WidgetContainer):
         parent = target.Parent
         while not handled and parent:
             tx, ty = x - parent.AbsoluteRect.Left, y - parent.AbsoluteRect.Top
-            handled = parent.on_mouse_down(tx, ty, button, modifiers)
+            handled = parent.on_mouse_move(tx, ty, dx, dy, button, modifiers)
             parent = parent.Parent
 
     def dispatch_mouse_up(self, x, y, button, modifiers):
