@@ -97,7 +97,7 @@ class AbstractWidget(object):
         pass
 
     def render(self):
-        self.ComputedStyle.in_cairo(self.AbsoluteRect, self._cairo)
+        self.ComputedStyle.in_cairo(self._cairo, self.AbsoluteRect)
 
     def on_activate(self):
         pass

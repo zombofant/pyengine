@@ -85,8 +85,7 @@ class Fill(object):
         """
         raise NotImplementedError("geometry_for_rect not implemented in {0}".format(type(self).__name__))
 
-    # FIXME: use abc.abstractmethod as soon as possible
-    def in_cairo(self, rect, ctx):
+    def in_cairo(self, ctx, rect):
         """
         Execute all calls neccessary to draw this filling in a cairo
         context *ctx* in *rect*.
@@ -95,7 +94,7 @@ class Fill(object):
 
     def cairo_group_for_rect(self, rect, ctx):
         ctx.push_group()
-        self.in_cairo(rect, ctx)
+        self.in_cairo(ctx, rect)
         return ctx.pop_group()
 
     def set_source(self, ctx):
@@ -146,7 +145,7 @@ class __Transparent(Fill):
     def geometry_for_rect(self, rect, facebuffer):
         pass
 
-    def in_cairo(self, rect, ctx):
+    def in_cairo(self, ctx, rect):
         pass
 
     def set_source(self, ctx):
@@ -233,7 +232,7 @@ class Colour(Fill):
             None
         )
 
-    def in_cairo(self, rect, ctx):
+    def in_cairo(self, ctx, rect):
         ctx.set_source_rgba(self._r, self._g, self._b, self._a)
         ctx.rectangle(rect.Left, rect.Top, rect.Width, rect.Height)
         ctx.fill()
@@ -431,7 +430,7 @@ class FakeImage(Fill):
             )
             self._add_geometry_iterable(self._create_quads(xu, yv), facebuffer)
 
-    def in_cairo(self, rect, ctx):
+    def in_cairo(self, ctx, rect):
         ctx.set_source_surface(self._cairo_surface)
         ctx.rectangle(rect.Left, rect.Top, rect.Right, rect.Bottom)
         ctx.fill()

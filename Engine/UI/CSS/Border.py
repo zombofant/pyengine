@@ -345,18 +345,18 @@ class Border(BorderComponent):
             fill.geometry_for_rect(rect, facebuffer)
         return box
 
-    def in_cairo(self, rect, cr):
+    def in_cairo(self, cr, rect):
         """
         Execute all instructions neccessary to draw this border as the
         inner border in *rect* on cairo context *cr*.
         """
         raise NotImplementedError("this should in fact be done by Style currently")
 
-    def cairo_group_for_rect(self, rect, cr):
+    def cairo_group_for_rect(self, cr, rect):
         """
         Create and return a cairo group for this border as inner border
         in *rect*, using *cr* as cairo context.
         """
         cr.push_group()
-        self.in_cairo(rect, cr)
+        self.in_cairo(cr, rect)
         return cr.pop_group()

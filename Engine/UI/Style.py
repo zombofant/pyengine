@@ -580,7 +580,7 @@ class Style(object):
         client_rect.shrink(self.Padding)
         return client_rect
 
-    def in_cairo(self, rect, ctx):
+    def in_cairo(self, ctx, rect):
         cl, cr, ct, cb = rect.LRTB
         bl, bt, br, bb = self.Border.Widths
 
@@ -659,20 +659,20 @@ class Style(object):
 
             if both_equal:
                 if background_not_transparent:
-                    background.set_source(ctx)
+                    background.set_source(ctx, crect)
                     ctx.fill_preserve()
                 ctx.set_line_width(widths[0])
-                colours[0].set_source(ctx)
+                colours[0].set_source(ctx, crect)
                 ctx.stroke()
             else:
-                background.set_source(ctx)
+                background.set_source(ctx, crect)
                 ctx.fill()
 
                 for i, (width, fill) in enumerate(itertools.izip(widths, colours)):
                     if width <= 0 or fill is Transparent:
                         continue
                     ctx.set_line_width(width)
-                    fill.set_source(ctx)
+                    fill.set_source(ctx, crect)
                     ctx.move_to(*corners[i-1])
                     ctx.line_to(*corners[i])
                     ctx.stroke()
