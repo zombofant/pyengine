@@ -125,7 +125,8 @@ class Menu(AbstractVBox, AbstractMenu):
     def get_dimensions(self):
         mystyle = self.ComputedStyle
 
-        paddingleft, paddingright = mystyle.Padding.Left, mystyle.Padding.Right
+        borderbox = mystyle.Border.get_box()
+        horiz_spacing = mystyle.Padding.Horizontal
 
         max_label_width = max([btn.get_label_width()
                              for btn in self
@@ -139,7 +140,7 @@ class Menu(AbstractVBox, AbstractMenu):
             # FIXME: will break with auto-margins
             item_margin = item.ComputedStyle.Margin
             if width is not None:
-                width += item_margin.Horizontal + paddingleft + paddingright
+                width += item_margin.Horizontal + horiz_spacing
                 maxwidth = max(maxwidth, width)
 
         total_space, total_flex, total_height = self.get_space_flex_width(
@@ -148,7 +149,9 @@ class Menu(AbstractVBox, AbstractMenu):
 
         assert total_flex == 0
         total_height += total_space
-        total_height += mystyle.Border.get_box().Vertical
+        total_height += borderbox.Vertical
+
+        maxwidth += borderbox.Horizontal
         return maxwidth, total_height
 
     def _setup_submenu(self, button, submenu):

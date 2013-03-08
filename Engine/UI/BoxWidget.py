@@ -177,8 +177,8 @@ class BoxWidget(ParentWidget):
                 widget_width = width
 
             widget_margin = widget.ComputedStyle.Margin
-            fa_spacing_a = max(my_FAPadding[0], fa_box_edge_a(widget_margin))
-            fa_spacing_b = max(my_FAPadding[1], fa_box_edge_b(widget_margin))
+            fa_spacing_a = my_FAPadding[0] + fa_box_edge_a(widget_margin)
+            fa_spacing_b = my_FAPadding[1] + fa_box_edge_b(widget_margin)
 
             if fa_pos_a + fa_spacing_a < fa_pos_b - fa_spacing_b:
                 fa_position_setter(widget.AbsoluteRect, (fa_pos_a + fa_spacing_a, fa_pos_b - fa_spacing_b))
@@ -208,7 +208,9 @@ class AbstractVBox(BoxWidget):
             return
         mystyle = self.ComputedStyle
         spacing_list = self._get_spacing_list(self.ComputedStyle.BoxSpacingY)
-        x, y, w, h = self.AbsoluteRect.XYWH
+        rect = copy.copy(self.AbsoluteRect)
+        rect.shrink(mystyle.Border.get_box())
+        x, y, w, h = rect.XYWH
         self._do_align(spacing_list, (y, x), h, w, (mystyle.Padding.Left, mystyle.Padding.Right))
 
 class AbstractHBox(BoxWidget):
