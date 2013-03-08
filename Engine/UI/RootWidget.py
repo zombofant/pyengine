@@ -34,7 +34,6 @@ import Engine.CEngine.Pango as Pango
 
 import CSS.Minilanguage
 
-from Engine.pygletHeadless import mouse
 from Engine.CEngine import key, motion
 from WidgetBase import AbstractWidget, WidgetContainer
 from LayerWidget import LayerWidget, DesktopLayer, WindowLayer, PopupLayer
@@ -82,7 +81,6 @@ class RootWidget(AbstractWidget, WidgetContainer):
         self._invalidated_rects = []  # discard init values, they're incorrect
                                      # anyways
         self.surface_dirty = False
-        self.ActiveButtonMask = mouse.LEFT | mouse.MIDDLE | mouse.RIGHT
 
     def _find_key_event_target(self):
         if self._focused and self._focused.RootWidget is not self:
@@ -197,7 +195,7 @@ class RootWidget(AbstractWidget, WidgetContainer):
         target, x, y = self._map_mouse_event(x, y, hitchain)
         if target:
             target.on_mouse_down(x, y, button, modifiers)
-        if self._mouse_capture is None and button & self.ActiveButtonMask:
+        if self._mouse_capture is None:
             self._focus_and_capture(hitchain, button)
 
     def dispatch_mouse_click(self, x, y, button, modifiers, nth):
