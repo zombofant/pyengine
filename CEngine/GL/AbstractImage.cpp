@@ -103,17 +103,17 @@ cairo_surface_t *AbstractImage2D::cairoSurface() {
     switch (format)
     {
     case GL_RGBA:
-        std::cout << "non-identity (RGBA)" << std::endl;
+        // std::cout << "non-identity (RGBA)" << std::endl;
         copyFunc = copyRGBA;
         cairoFmt = CAIRO_FORMAT_ARGB32;
         break;
     case GL_BGRA:
-        std::cout << "identity (ABGR)" << std::endl;
+        // std::cout << "identity (ABGR)" << std::endl;
         copyFunc = copyABGR;
         cairoFmt = CAIRO_FORMAT_ARGB32;
         break;
     case GL_RGB:
-        std::cout << "non-identity (RGB)" << std::endl;
+        // std::cout << "non-identity (RGB)" << std::endl;
         copyFunc = copyRGB;
         cairoFmt = CAIRO_FORMAT_RGB24;
         break;

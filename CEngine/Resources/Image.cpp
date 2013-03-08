@@ -65,7 +65,6 @@ void Image::dropData()
 
 bool Image::getIsValid() const
 {
-    cerr << "is valid = " << (_pixelData != 0) << endl;
     return (_pixelData != 0);
 }
 
