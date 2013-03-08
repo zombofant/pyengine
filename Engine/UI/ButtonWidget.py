@@ -25,7 +25,7 @@
 from __future__ import unicode_literals, print_function, division
 from our_future import *
 
-__all__ = ["ButtonWidget"]
+__all__ = ["Button"]
 
 import CSS.Minilanguage
 
@@ -36,9 +36,9 @@ from LabelWidget import LabelledWidget
 import Flags
 import Label
 
-class ButtonWidget(LabelledWidget):
+class AbstractButton(LabelledWidget):
     def __init__(self, parent, caption="", onclick=None, **kwargs):
-        super(ButtonWidget, self).__init__(parent, **kwargs)
+        super(AbstractButton, self).__init__(parent, **kwargs)
         self._flags = {Flags.Focusable}
         self._label.Text = caption
         self._onclick = onclick
@@ -48,5 +48,15 @@ class ButtonWidget(LabelledWidget):
         if 0 <= x < rect.Width and 0 <= y < rect.Height and self._onclick:
             self._onclick(self)
 
+    @property
+    def Caption(self):
+        return self._label.Text
 
-CSS.Minilanguage.ElementNames().register_widget_class(ButtonWidget, "Button")
+    @Caption.setter
+    def Caption(self, value):
+        self._label.Text = value
+
+class Button(AbstractButton):
+    pass
+
+CSS.Minilanguage.ElementNames().register_widget_class(Button)
