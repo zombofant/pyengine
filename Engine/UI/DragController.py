@@ -79,8 +79,8 @@ class DragMoveWidget(DragControllerBase):
     def on_widget_move(self, x, y):
         widget_rect = self.widget.AbsoluteRect
         self.widget.invalidate()
-        widget_rect.X = px
-        widget_rect.Y = py
+        widget_rect.X = x
+        widget_rect.Y = y
         self.widget.invalidate()
 
     def on_drag_move(self, x, y, modifiers):
