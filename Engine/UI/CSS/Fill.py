@@ -68,7 +68,7 @@ RepeatMode.ValidModes += [Repeat, Stretch]
 
 class Fill(object):
     __metaclass__ = abc.ABCMeta
-    
+
     def __init__(self, repeatX=Stretch, repeatY=Stretch, **kwargs):
         assert self.__class__ is not Fill
         self._repeatX = Stretch
@@ -124,7 +124,7 @@ class Fill(object):
     @RepeatY.setter
     def RepeatY(self, value):
         self._repeatY = RepeatMode.check(value)
-    
+
 
 class __Transparent(Fill):
     # for fake constructor calls. We just hand out the instance as we
@@ -143,7 +143,7 @@ class __Transparent(Fill):
 
     def __eq__(self, other):
         return other is self.Transparent
-        
+
     def geometry_for_rect(self, rect, facebuffer):
         pass
 
@@ -152,13 +152,13 @@ class __Transparent(Fill):
 
     def set_source(self, ctx, rect):
         ctx.set_source_rgba(0., 0., 0., 0.)
-    
+
 Transparent = __Transparent()
 __Transparent.Transparent = Transparent
 
 class Colour(Fill):
     __hash__ = None
-    
+
     def __init__(self, r=0., g=0., b=0., a=1., **kwargs):
         r, g, b, a = float(r), float(g), float(b), float(a)
         if a < 0 or a > 1:
@@ -189,7 +189,7 @@ class Colour(Fill):
         if a == 0:
             return Transparent
         raise NotImplementedError("# FIXME: implement hsla->rgba conversion")
-    
+
     def __eq__(self, other):
         if not isinstance(other, Fill):
             return NotImplemented
@@ -240,7 +240,7 @@ class Colour(Fill):
 
 class Gradient(Fill):
     __hash__ = None
-    
+
     class Step(object):
         def __init__(self, position, colour):
             if not isinstance(colour, Colour):
@@ -291,7 +291,7 @@ class Gradient(Fill):
 
 class FakeImage(Fill):
     __hash__ = None
-    
+
     def __init__(self, resdimensions, rect=None, **kwargs):
         super(FakeImage, self).__init__(**kwargs)
         if not hasattr(self, "_resource"):
