@@ -582,7 +582,7 @@ class Style(object):
 
     def in_cairo(self, rect, ctx):
         cl, cr, ct, cb = rect.LRTB
-        bl, br, bt, bb = self.Border.Widths
+        bl, bt, br, bb = self.Border.Widths
 
         cl += bl / 2
         cr -= br / 2

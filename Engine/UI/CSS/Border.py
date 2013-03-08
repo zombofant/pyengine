@@ -313,11 +313,13 @@ class Border(BorderComponent):
             self.TopLeftRadius, self.TopRightRadius, self.BottomRightRadius, self.BottomLeftRadius)
 
     def get_box(self):
-        return BaseBox(self.Left.Width, self.Top.Width,
+        return BaseBox(
+            self.Left.Width, self.Top.Width,
             self.Right.Width, self.Bottom.Width)
 
     def get_half_box(self):
-        return BaseBox(self.Left.Width / 2, self.Top.Width / 2,
+        return BaseBox(
+            self.Left.Width / 2, self.Top.Width / 2,
             self.Right.Width / 2, self.Bottom.Width / 2)
 
     def geometry_for_rect(self, rect, facebuffer):
