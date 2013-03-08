@@ -59,27 +59,27 @@ class EventSinkWrap: public EventSink, public boost::python::wrapper<EventSink>
         this->get_override("handleKeyUp")(symbol, modifiers);
     }
 
-    virtual void handleMouseDown(unsigned int x, unsigned int y, unsigned int buttons, unsigned int modifiers)
+    virtual void handleMouseDown(int x, int y, unsigned int buttons, unsigned int modifiers)
     {
         this->get_override("handleMouseDown")(x, y, buttons, modifiers);
     }
 
-    virtual void handleMouseClick(unsigned int x, unsigned int y, unsigned int buttons, unsigned int modifiers, unsigned int nth)
+    virtual void handleMouseClick(int x, int y, unsigned int buttons, unsigned int modifiers, unsigned int nth)
     {
         this->get_override("handleMouseClick")(x, y, buttons, modifiers, nth);
     }
 
-    virtual void handleMouseMove(unsigned int x, unsigned int y, int dx, int dy, unsigned int buttons, unsigned int modifiers)
+    virtual void handleMouseMove(int x, int y, int dx, int dy, unsigned int buttons, unsigned int modifiers)
     {
         this->get_override("handleMouseMove")(x, y, dx, dy, buttons, modifiers);
     }
 
-    virtual void handleMouseUp(unsigned int x, unsigned int y, unsigned int buttons, unsigned int modifiers)
+    virtual void handleMouseUp(int x, int y, unsigned int buttons, unsigned int modifiers)
     {
         this->get_override("handleMouseUp")(x, y, buttons, modifiers);
     }
 
-    virtual void handleMouseScroll(unsigned int x, unsigned int y, int scrollX, int scrollY)
+    virtual void handleMouseScroll(int x, int y, int scrollX, int scrollY)
     {
         this->get_override("handleMouseScroll")(x, y, scrollX, scrollY);
     }

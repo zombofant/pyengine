@@ -41,17 +41,17 @@ public:
                                unsigned int modifiers) = 0;
     virtual void handleKeyUp(unsigned int key,
                              unsigned int modifiers) = 0;
-    virtual void handleMouseDown(unsigned int x, unsigned int y,
+    virtual void handleMouseDown(int x, int y,
                                  unsigned int buttons, unsigned int modifiers) = 0;
-    virtual void handleMouseClick(unsigned int x, unsigned int y,
+    virtual void handleMouseClick(int x, int y,
                                   unsigned int buttons, unsigned int modifiers,
                                   unsigned int nth) = 0;
-    virtual void handleMouseMove(unsigned int x, unsigned int y,
+    virtual void handleMouseMove(int x, int y,
                                  int dx, int dy, unsigned int buttons,
                                  unsigned int modifiers) = 0;
-    virtual void handleMouseUp(unsigned int x, unsigned int y,
+    virtual void handleMouseUp(int x, int y,
                                unsigned int buttons, unsigned int modifiers) = 0;
-    virtual void handleMouseScroll(unsigned int x, unsigned int y,
+    virtual void handleMouseScroll(int x, int y,
                                    int scrollX, int scrollY) = 0;
     virtual void handleResize(unsigned int w, unsigned int h) = 0;
     virtual void handleTextInput(const char *text) = 0;
