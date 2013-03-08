@@ -110,7 +110,7 @@ class Label(object):
         y = in_box.Top + style.VerticalAlign(logical.height, in_box.Height) # + ly
 
         ctx.translate(x, y)
-        style.TextColour.set_source(ctx)
+        style.TextColour.set_source(ctx, in_box)
         Pango.PangoCairo.show_layout(ctx, self._layout)
         ctx.translate(-x, -y)
 

@@ -95,7 +95,7 @@ class AbstractEdit(Widget):
         rect.shrink(style.Border.get_box())
 
         ctx.translate(rect.X, rect.Y)
-        style.TextColour.set_source(ctx)
+        style.TextColour.set_source(ctx, rect)
         Pango.PangoCairo.show_layout(ctx, self._layout)
         ctx.translate(-rect.X, -rect.Y)
 

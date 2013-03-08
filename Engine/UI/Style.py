@@ -643,6 +643,8 @@ class Style(object):
             (cl + shear_bottom_left + radii[3], cb - radii[3])
         ]
 
+        crect = Rect(cl, ct, cr, cb)
+
         # pulling these in the local namespace gives only 1% speedup,
         # but we take everything we can get
         background = self._background
@@ -704,13 +706,13 @@ class Style(object):
 
             if both_equal:
                 if background_not_transparent:
-                    background.set_source(ctx)
+                    background.set_source(ctx, crect)
                     ctx.fill_preserve()
                 ctx.set_line_width(widths[0])
-                colours[0].set_source(ctx)
+                colours[0].set_source(ctx, crect)
                 ctx.stroke()
             else:
-                background.set_source(ctx)
+                background.set_source(ctx, crect)
                 ctx.fill()
 
                 for i, width, fill in itertools.izip(itertools.count(0), widths, colours):
@@ -718,7 +720,7 @@ class Style(object):
                         continue
                     # FIXME: optimize odd widths
                     ctx.set_line_width(width)
-                    fill.set_source(ctx)
+                    fill.set_source(ctx, crect)
                     (x, y), segment = path_segments[i-1]
                     ctx.arc(x, y, *segment)
                     (x, y), segment = path_segments[i]

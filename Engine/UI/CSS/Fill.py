@@ -90,14 +90,16 @@ class Fill(object):
         Execute all calls neccessary to draw this filling in a cairo
         context *ctx* in *rect*.
         """
-        raise NotImplementedError("in_cairo not implemented in {0}".format(type(self).__name__))
+        self.set_source(ctx, rect)
+        ctx.rectangle(*rect.XYWH)
+        ctx.fill()
 
     def cairo_group_for_rect(self, rect, ctx):
         ctx.push_group()
         self.in_cairo(ctx, rect)
         return ctx.pop_group()
 
-    def set_source(self, ctx):
+    def set_source(self, ctx, rect):
         raise NotImplementedError("set_source not implemented for {0}".format(type(self).__name__))
 
     def __ne__(self, other):
@@ -148,7 +150,7 @@ class __Transparent(Fill):
     def in_cairo(self, ctx, rect):
         pass
 
-    def set_source(self, ctx):
+    def set_source(self, ctx, rect):
         ctx.set_source_rgba(0., 0., 0., 0.)
     
 Transparent = __Transparent()
@@ -232,14 +234,9 @@ class Colour(Fill):
             None
         )
 
-    def in_cairo(self, ctx, rect):
+    def set_source(self, ctx, rect):
         ctx.set_source_rgba(self._r, self._g, self._b, self._a)
-        ctx.rectangle(rect.Left, rect.Top, rect.Width, rect.Height)
-        ctx.fill()
 
-    def set_source(self, ctx):
-        ctx.set_source_rgba(self._r, self._g, self._b, self._a)
-    
 
 class Gradient(Fill):
     __hash__ = None
