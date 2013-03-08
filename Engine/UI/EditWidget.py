@@ -34,7 +34,7 @@ try:
 except ImportError:
     Pango = None
 
-from Engine.CEngine.Window import motion
+from Engine.CEngine import motion
 
 import CSS.Minilanguage
 from CSS.Rect import Rect

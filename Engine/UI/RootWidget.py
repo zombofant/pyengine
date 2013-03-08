@@ -35,7 +35,7 @@ import Engine.CEngine.Pango as Pango
 import CSS.Minilanguage
 
 from Engine.pygletHeadless import mouse
-from Engine.CEngine.Window import key, motion
+from Engine.CEngine import key, motion
 from WidgetBase import AbstractWidget, WidgetContainer
 from LayerWidget import LayerWidget, DesktopLayer, WindowLayer, PopupLayer
 from Flags import *
