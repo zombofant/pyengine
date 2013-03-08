@@ -203,7 +203,6 @@ void X11Display::detectDisplayModes() {
         GLX_X_RENDERABLE    , True,
         GLX_DRAWABLE_TYPE   , GLX_WINDOW_BIT,
         GLX_RENDER_TYPE     , GLX_RGBA_BIT,
-        GLX_DEPTH_SIZE      , 16,
         None
     };
     _log->logf(Debug, "Enumerating display modes");
