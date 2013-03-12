@@ -35,3 +35,4 @@ from SpaceWidget import *
 from MenuWidget import *
 from EditWidget import *
 from ScrollWidget import *
+from ListWidget import *
