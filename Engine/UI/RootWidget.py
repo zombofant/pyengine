@@ -82,7 +82,8 @@ class RootWidget(AbstractWidget, WidgetContainer):
         self._resized = False
         self._drag_controller = None
         self._invalidated_rects = []  # discard init values, they're incorrect
-                                     # anyways
+                                      # anyways
+        self._cursor = (0, 0)
         self.surface_dirty = False
 
     def _find_key_event_target(self):
@@ -263,6 +264,7 @@ class RootWidget(AbstractWidget, WidgetContainer):
             target.on_mouse_click(cx, cy, button, modifiers, nth)
 
     def dispatch_mouse_move(self, x, y, dx, dy, button, modifiers):
+        self._cursor = x, y
         if self._drag_controller:
             self._drag_controller.on_mouse_move(x, y, button, modifiers)
             return
@@ -343,6 +345,9 @@ class RootWidget(AbstractWidget, WidgetContainer):
         for rect in self._invalidated_rects:
             ctx.rectangle(*rect.XYWH)
         ctx.clip()
+
+    def rehover(self):
+        self._update_hover_state(p=self._cursor)
 
     def render(self):
         self.realign()
