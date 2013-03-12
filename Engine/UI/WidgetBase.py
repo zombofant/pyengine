@@ -419,6 +419,8 @@ class WidgetContainer(object):
 
     def _hit_test(self, p):
         for child in self:
+            if not child.Visible:
+                continue
             hit = child.hit_test(p)
             if hit is not None:
                 return hit
@@ -426,6 +428,8 @@ class WidgetContainer(object):
 
     def _hit_test_with_chain(self, p):
         for child in self:
+            if not child.Visible:
+                continue
             hit = child.hit_test_with_chain(p)
             if hit is not False:
                 return hit
