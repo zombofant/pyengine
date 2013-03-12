@@ -108,23 +108,27 @@ class AbstractScrollBar(ParentWidget):
         self._flags = {Flags.CaptureMouse}
         self._thumb_bar_rect = Rect(0, 0, 0, 0)
 
-    def _increase_position(self, delta):
+    def increase_position(self, delta):
         new_position = self._position + delta
         if new_position > self._max:
             new_position = self._max
         self.Position = new_position
 
-    def _decrease_position(self, delta):
+    def decrease_position(self, delta):
         new_position = self._position - delta
         if new_position < self._min:
             new_position = self._min
         self.Position = new_position
 
+    def scroll_by(self, delta):
+        new_position = max(self._min, min(self._position + delta, self._max))
+        self.Position = new_position
+
     def _up_button_click(self, sender):
-        self._increase_position(self._step)
+        self.increase_position(self._step)
 
     def _down_button_click(self, sender):
-        self._decrease_position(self._step)
+        self.decrease_position(self._step)
 
     def _set_mode(self, mode):
         try:
@@ -178,9 +182,9 @@ class AbstractScrollBar(ParentWidget):
 
     def _horiz_thumb_rel_click(self, rx, ry):
         if rx < 0:
-            self._decrease_position(self._page)
+            self.decrease_position(self._page)
         if rx > self._thumb.AbsoluteRect.Width:
-            self._increase_position(self._page)
+            self.increase_position(self._page)
 
     def _horiz_do_align(self):
         mystyle = self.ComputedStyle
@@ -247,9 +251,9 @@ class AbstractScrollBar(ParentWidget):
 
     def _vert_thumb_rel_click(self, rx, ry):
         if ry < 0:
-            self._decrease_position(self._page)
+            self.decrease_position(self._page)
         if ry > self._thumb.AbsoluteRect.Height:
-            self._increase_position(self._page)
+            self.increase_position(self._page)
 
     def _vert_do_align(self):
         mystyle = self.ComputedStyle
@@ -402,6 +406,17 @@ class AbstractScrollBar(ParentWidget):
         if value < 0:
             raise ValueError("Page size must be non-negative.")
         self._page = value
+
+    @property
+    def Step(self):
+        return self._step
+
+    @Step.setter
+    def Step(self, value):
+        if value < 0:
+            raise ValueError("Step size must be non-negative.")
+        self._step = value
+        self._invalidate_alignment()
 
 
 class ScrollBar(AbstractScrollBar):
