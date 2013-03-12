@@ -303,8 +303,13 @@ class RootWidget(AbstractWidget, WidgetContainer):
 
     def dispatch_scroll(self, x, y, scrollX, scrollY):
         target, x, y = self._map_mouse_event(x, y)
-        if target:
-            target.on_scroll(scrollX, scrollY)
+        handled = target.on_scroll(scrollX, scrollY)
+        parent = target.Parent
+
+        while not handled and parent:
+            target = parent
+            handled = target.on_scroll(scrollX, scrollY)
+            parent = target.Parent
 
     def dispatch_text_input(self, text):
         target = self._find_key_event_target()
