@@ -154,7 +154,8 @@ class AbstractScrollBar(ParentWidget):
         self._thumb_rel_click = thumb_rel_click
 
     def _calculate_thumb_size(self, space, min_size):
-        steps = math.ceil((self._max - self._min + 1) / self._step)
+        # steps = math.ceil((self._max - self._min + 1) / self._step)
+        steps = math.ceil((self._max - self._min + 1))
         if steps > space - min_size:
             # crunch
             size = min_size
