@@ -322,7 +322,7 @@ class AbstractScrollBar(ParentWidget):
         self._invalidate_alignment()
 
     def on_mouse_down(self, x, y, button, modifiers):
-        if button <= 3  :
+        if button <= 3:
             x += self.AbsoluteRect.Left
             y += self.AbsoluteRect.Top
             thumb_rect = self._thumb.AbsoluteRect
@@ -332,7 +332,7 @@ class AbstractScrollBar(ParentWidget):
                     button,
                     x, y,
                     self)
-            return True
+                return True
 
     def on_mouse_click(self, x, y, button, modifiers, nth):
         if button <= 3:
@@ -345,7 +345,7 @@ class AbstractScrollBar(ParentWidget):
                 x -= thumb_rect.Left
                 y -= thumb_rect.Top
                 self._thumb_rel_click(x, y)
-            return True
+                return True
 
     @property
     def Range(self):
