@@ -97,7 +97,7 @@ class AbstractScrollBar(ParentWidget):
         self._down_button.StyleClasses.add("down")
         self._thumb = ScrollThumb(self)
         self._min = 0
-        self._max = 0
+        self._max = 10
         self._step = 1
         self._page = 1
         self._on_scroll = on_scroll
