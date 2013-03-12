@@ -65,6 +65,7 @@ class StylesheetNamespace(object):
     middle = staticmethod(VerticalAlign.Middle)
     bottom = staticmethod(VerticalAlign.Bottom)
     inherit = Inherit
+    none = None
 
     _token_blacklist = ["evaluate_call", "get"]
 

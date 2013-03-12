@@ -266,8 +266,18 @@ class Style(object):
         colour, = value
         self.Background = colour
 
+    def _set_border(self, value):
+        if value[0] is not None:
+            self.Border = Literals.BorderLiteral(*value)
+        else:
+            self.Border.Width = 0
+            self.Border.Fill = Transparent
+
     def _set_border_edge(self, edge, value):
-        setattr(self.Border, edge, BorderEdge(value[0], value[2]))
+        if value[0] is None:
+            setattr(self.Border, edge, BorderEdge(0, Transparent))
+        else:
+            setattr(self.Border, edge, BorderEdge(value[0], value[2]))
 
     def _set_base_box_edge(self, box, edge, value):
         box = getattr(self, box)
@@ -507,7 +517,6 @@ class Style(object):
         "background": (Literals.BackgroundLiteral, "Background"),
         "padding": (Box.Padding, "Padding"),
         "margin": (Box.Margin, "Margin"),
-        "border": (Literals.BorderLiteral, "Border"),
         "box-spacing-x": (Literals.IntLiteral, "BoxSpacingX"),
         "box-spacing-y": (Literals.IntLiteral, "BoxSpacingY"),
     }
@@ -518,6 +527,7 @@ class Style(object):
         "background-image": lambda self, value: self._set_background_image(value),
         "background-repeat": lambda self, value: self._set_background_repeat(value),
         "background-color": lambda self, value: self._set_background_colour(value),
+        "border": lambda self, value: self._set_border(value),
         "border-left": lambda self, value: self._set_border_edge("Left", value),
         "border-right": lambda self, value: self._set_border_edge("Right", value),
         "border-top": lambda self, value: self._set_border_edge("Top", value),
