@@ -37,16 +37,16 @@ import Flags
 import Label
 
 class AbstractButton(LabelledWidget):
-    def __init__(self, parent, caption="", onclick=None, **kwargs):
+    def __init__(self, parent, caption="", on_click=None, **kwargs):
         super(AbstractButton, self).__init__(parent, **kwargs)
         self._flags = {Flags.Focusable}
         self._label.Text = caption
-        self._onclick = onclick
+        self._on_click = on_click
 
     def on_mouse_click(self, x, y, button, modifiers, nth):
         rect = self.AbsoluteRect
-        if 0 <= x < rect.Width and 0 <= y < rect.Height and self._onclick:
-            self._onclick(self)
+        if 0 <= x < rect.Width and 0 <= y < rect.Height and self._on_click:
+            self._on_click(self)
 
     @property
     def Caption(self):

@@ -54,6 +54,12 @@ class WindowLayer(LayerWidget):
     def __init__(self, parent, **kwargs):
         super(WindowLayer, self).__init__(parent, **kwargs)
 
+    def do_align(self):
+        rect = self.AbsoluteRect
+        for item in self:
+            if isinstance(item, ModalWindowLayer):
+                item.AbsoluteRect = rect
+
 class PopupLayer(LayerWidget):
     def __init__(self, parent, **kwargs):
         super(PopupLayer, self).__init__(parent, **kwargs)
@@ -81,7 +87,28 @@ class PopupLayer(LayerWidget):
     def CurrentRootMenu(self, value):
         self._current_root_menu = value
 
+class ModalWindowLayer(ParentWidget):
+    # opaque layer widget which eats all other events
+    def __init__(self, parent, window, **kwargs):
+        super(ModalWindowLayer, self).__init__(parent, **kwargs)
+        self._window = window
+        window._on_close_hook = self._handle_window_close
+
+        self.add(window)
+        if self.Parent:
+            self.RootWidget.focus(self._window)
+
+    def _parent_changed(self):
+        super(ModalWindowLayer, self)._parent_changed()
+        if self.Parent:
+            self.AbsoluteRect = self.Parent.AbsoluteRect
+            self.invalidate()
+
+    def _handle_window_close(self, sender):
+        self.invalidate()
+        self.Parent.remove(self)
 
 CSS.Minilanguage.ElementNames().register_widget_class(DesktopLayer)
 CSS.Minilanguage.ElementNames().register_widget_class(WindowLayer)
 CSS.Minilanguage.ElementNames().register_widget_class(PopupLayer)
+CSS.Minilanguage.ElementNames().register_widget_class(ModalWindowLayer, "ModalLayer")

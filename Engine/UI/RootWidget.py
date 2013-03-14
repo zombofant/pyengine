@@ -36,7 +36,8 @@ import CSS.Minilanguage
 
 from Engine.CEngine import key, motion
 from WidgetBase import AbstractWidget, WidgetContainer
-from LayerWidget import LayerWidget, DesktopLayer, WindowLayer, PopupLayer
+from LayerWidget import LayerWidget, DesktopLayer, WindowLayer, PopupLayer, \
+    ModalWindowLayer
 from WindowWidget import Window
 from Flags import *
 
@@ -127,10 +128,10 @@ class RootWidget(AbstractWidget, WidgetContainer):
         if not hitchain:
             hitchain = []
         target = None
-        for i, candidate in enumerate(reversed(hitchain)):
+        for i, candidate in enumerate(hitchain):
             if Focusable in candidate._flags:
                 target = candidate
-                index = len(hitchain) - (i+1)
+                index = i
                 break
         else:
             return
@@ -140,13 +141,17 @@ class RootWidget(AbstractWidget, WidgetContainer):
         target.IsFocused = True
         self._focused = target
 
-        hitchain = frozenset(hitchain[:i])
+        hitchain = frozenset(hitchain[i:])
         for focused in hitchain - self._old_focus_chain:
             focused.HasFocusedChild = True
         for unfocused in self._old_focus_chain - hitchain:
             unfocused.HasFocusedChild = False
 
         self._old_focus_chain = hitchain
+
+    def focus(self, widget):
+        hitchain = list(widget.iter_upwards())
+        self._focus(hitchain)
 
     def _recreate_cairo_context(self, width, height):
         self._cairo_surface = cairo.ImageSurface(
@@ -260,8 +265,14 @@ class RootWidget(AbstractWidget, WidgetContainer):
             return
 
         target, cx, cy = self._map_mouse_event(x, y)
-        if target:
-            target.on_mouse_click(cx, cy, button, modifiers, nth)
+        if not target:
+            return
+
+        handled = target.on_mouse_click(cx, cy, button, modifiers, nth)
+        parent = target.Parent
+        while not handled and parent:
+            handled = parent.on_mouse_click(x, y, button, modifiers, nth)
+            parent = parent.Parent
 
     def dispatch_mouse_move(self, x, y, dx, dy, button, modifiers):
         self._cursor = x, y
@@ -375,6 +386,10 @@ class RootWidget(AbstractWidget, WidgetContainer):
     def update(self, timedelta):
         for child in self:
             child.update(timedelta)
+
+    def show_modal_window(self, window):
+        ModalWindowLayer(self.WindowLayer, window)
+        window.on_show_modal()
 
     @property
     def WindowLayer(self):

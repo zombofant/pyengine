@@ -304,6 +304,12 @@ class AbstractWidget(object):
         else:
             return None
 
+    def iter_upwards(self):
+        widget = self
+        while widget:
+            yield widget
+            widget = widget.Parent
+
 class Widget(AbstractWidget):
     """
     Base class for non-parent widgets. Use this for any widget which will

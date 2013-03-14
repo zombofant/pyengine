@@ -90,10 +90,10 @@ class AbstractScrollBar(ParentWidget):
     def __init__(self, parent, mode, on_scroll=None, **kwargs):
         super(AbstractScrollBar, self).__init__(parent, **kwargs)
         self._up_button = ScrollButton(self,
-                                       onclick=self._up_button_click)
+                                       on_click=self._up_button_click)
         self._up_button.StyleClasses.add("up")
         self._down_button = ScrollButton(self,
-                                         onclick=self._down_button_click)
+                                         on_click=self._down_button_click)
         self._down_button.StyleClasses.add("down")
         self._thumb = ScrollThumb(self)
         self._min = 0

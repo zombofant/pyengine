@@ -52,18 +52,35 @@ class TitleBar(HBox):
                 self.Parent)
 
 class Window(VBox):
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent, on_modal_close=None, **kwargs):
         super(Window, self).__init__(parent, **kwargs)
         self.AbsoluteRect.Width = 256
         self.AbsoluteRect.Height = 128
         self._titlebar = TitleBar(self)
         self._flags.add(Flags.Focusable)
+        self._on_close_hook = None
+        self._has_focused_child = False
+        self._modal_result = None
+        self._on_modal_close = on_modal_close
+
+    def _modal_close(self):
+        self.close()
+        if self._on_modal_close:
+            self._on_modal_close(self)
 
     def on_activate(self):
         self.Parent.bring_to_front(self)
 
     def on_deactivate(self):
         pass
+
+    def on_show_modal(self):
+        pass
+
+    def close(self):
+        if self._on_close_hook:
+            self._on_close_hook(self)
+        self.Parent.remove(self)
 
     @property
     def Caption(self):
@@ -85,6 +102,17 @@ class Window(VBox):
         self.IsActive = value
         if value:
             self.on_activate()
+
+    @property
+    def ModalResult(self):
+        return self._modal_result
+
+    @ModalResult.setter
+    def ModalResult(self, value):
+        self._modal_result = value
+        if value is not None:
+            self._modal_close()
+
 
 CSS.Minilanguage.ElementNames().register_widget_class(TitleBar)
 CSS.Minilanguage.ElementNames().register_widget_class(Window)

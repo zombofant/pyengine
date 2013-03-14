@@ -43,14 +43,16 @@ from WidgetBase import Widget
 import Flags
 
 class AbstractEdit(Widget):
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent, on_apply=None, **kwargs):
         self._layout = None
         self._layout_invalidated = True
         self._text = b""
+        self._confirmed_text = b""
         super(AbstractEdit, self).__init__(parent, **kwargs)
         self._cursor_index = 0
         self._cursor_rect = Rect(0, 0, 0, 0)
         self._flags = {Flags.Focusable}
+        self._on_apply = on_apply
 
     def _invalidate_computed_style(self):
         super(AbstractEdit, self)._invalidate_computed_style()
@@ -59,6 +61,10 @@ class AbstractEdit(Widget):
     def invalidate_context(self):
         self._layout = None
         self._layout_invalidated = True
+
+    def _do_apply(self):
+        if self._on_apply:
+            self._on_apply(self, self._text)
 
     def _update_layout(self):
         if not self._layout_invalidated and self._layout:
@@ -145,8 +151,6 @@ class AbstractEdit(Widget):
 
         cur_index, cur_trailing = self._cursor_index_to_pango(self._cursor_index)
 
-        print(cur_index, cur_trailing)
-
         for i in xrange(by_characters):
             cur_index, cur_trailing = self._layout.move_cursor_visually(
                 True,
@@ -157,8 +161,6 @@ class AbstractEdit(Widget):
                 break
             elif cur_index > len(self._text):
                 break
-
-        print(cur_index, cur_trailing)
 
         self._cursor_index = self._pango_to_cursor_index(cur_index, cur_trailing)
         self._update_cursor_rect()
@@ -209,7 +211,10 @@ class AbstractEdit(Widget):
         elif text == b"\x7f":  # delete
             self._delete()
         elif text == b"\n" or text == b"\r":
-            return True
+            if self._on_apply:
+                self._do_apply()
+        elif text == b"\t":
+            return False
         else:
             self._insert_character(text)
         self.invalidate()
@@ -243,11 +248,26 @@ class AbstractEdit(Widget):
         x *= Pango.SCALE
         y *= Pango.SCALE
         exact, index, trailing = self._layout.xy_to_index(int(x), int(y))
-        print(index, trailing)
         self._cursor_index = self._pango_to_cursor_index(index, trailing)
         self._update_cursor_rect()
         self.invalidate()
         return True
+
+    @property
+    def Text(self):
+        return self._text.decode("utf-8")
+
+    @Text.setter
+    def Text(self, value):
+        if isinstance(value, unicode):
+            value = value.encode("utf-8")
+        if self._text == value:
+            return
+
+        self._text = value
+        self._confirmed_text = value
+        self._layout_invalidated = True
+        self.invalidate()
 
 class Edit(AbstractEdit):
     pass

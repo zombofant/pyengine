@@ -35,6 +35,7 @@ import copy
 
 import CSS.Minilanguage
 import CSS.Rect as Rect
+import CSS.Constants as Constants
 
 from WidgetBase import ParentWidget
 
@@ -102,7 +103,6 @@ class BoxWidget(ParentWidget):
         visible_widgets = [widget for widget in self if widget.Visible]
 
         widgets_l = [None] + visible_widgets
-
         results = []
         for left, this in zip(widgets_l, visible_widgets + [None]):
 
@@ -125,11 +125,10 @@ class BoxWidget(ParentWidget):
                 else:
                     left_margin = max(my_left_margin, left_space)
             else:
-                left_margin += getterB(mystyle.Padding)
+                left_margin = left_space + getterB(mystyle.Padding)
                 flex = 0
                 size = None
             results.append((this, left_margin, flex, size))
-
         return results
 
     def _do_align(self, spacing_list,
@@ -236,13 +235,160 @@ class AbstractHBox(BoxWidget):
         x, y, w, h = rect.XYWH
         self._do_align(spacing_list, (x, y), w, h, (mystyle.Padding.Top, mystyle.Padding.Bottom))
 
-class Grid(ParentWidget):
-    pass
+class AbstractGrid(ParentWidget):
+    def __init__(self, parent, rows=1, columns=1, **kwargs):
+        self._rows = 1
+        self._columns = 1
+        super(AbstractGrid, self).__init__(parent, **kwargs)
+        self.Rows = rows
+        self.Columns = columns
+
+    def _check_potential_child(self, child):
+        super(AbstractGrid, self)._check_potential_child(child)
+        if self.Rows is not None and self.Columns is not None and \
+                len(self) >= self.Rows * self.Columns:
+            raise ValueError("Too many children for grid widget (set Rows and Columns to appropriate values)")
+
+    def _column_width(self, column):
+        max_width = None
+        for widget, (width, height) in column:
+            if width is None:
+                continue
+            widget_margin = widget.ComputedStyle.Margin
+            if widget_margin.Left is not Constants.Auto:
+                width += widget_margin.Left
+            if widget_margin.Right is not Constants.Auto:
+                width += widget_margin.Right
+
+            max_width = max(max_width, width) \
+                if max_width is not None else width
+        return max_width
+
+    def _row_height(self, row):
+        max_height = None
+        for widget, (height, height) in row:
+            if height is None:
+                continue
+            widget_margin = widget.ComputedStyle.Margin
+            if widget_margin.Top is not Constants.Auto:
+                height += widget_margin.Left
+            if widget_margin.Bottom is not Constants.Auto:
+                height += widget_margin.Right
+
+            max_height = max(max_height, height) \
+                if max_height is not None else height
+        return max_height
+
+    def _cell_rects(self, x0, y0, row_heights, col_widths):
+        mystyle = self.ComputedStyle
+        space_x = mystyle.BoxSpacingX
+        space_y = mystyle.BoxSpacingY
+
+        y = y0
+        for row_height in row_heights:
+            x = x0
+            for col_width in col_widths:
+                yield Rect.Rect(x, y, x + col_width, y + row_height)
+                x += space_x + col_width
+            y += space_y + row_height
+
+    def _distribute_space(self, space_array, space_left, none_count=None):
+        if none_count is None:
+            none_count = sum(1 for v in space_array if v is None)
+
+        if none_count == 0:
+            return space_array
+
+        space_per_none = space_left / none_count
+        return [space if space is not None else space_per_none
+                for space in space_array]
+
+    def do_align(self):
+        mystyle = self.ComputedStyle
+        myrect = copy.copy(self.AbsoluteRect)
+        myrect.shrink(mystyle.Padding)
+        myrect.shrink(mystyle.Border.get_box())
+
+        children = [(widget, widget.get_dimensions())
+                    for widget in self]
+        col_count = self.Columns
+        row_count = self.Rows
+
+        if col_count is None:
+            col_count = math.ceil(len(children)/row_count)
+        elif row_count is None:
+            row_count = math.ceil(len(children)/col_count)
+
+        cols = [children[i::col_count]
+                for i in range(col_count)]
+        rows = [children[i*col_count:(i+1)*col_count]
+                for i in range(row_count)]
+
+        col_widths = list(map(self._column_width, cols))
+        row_heights = list(map(self._row_height, rows))
+
+        remaining_width = myrect.Width - sum(width
+                                             for width in col_widths
+                                             if width is not None)
+        remaining_width -= mystyle.BoxSpacingX * (col_count - 1)
+        if remaining_width < 0:
+            remaining_width = 0
+        col_widths = self._distribute_space(col_widths, remaining_width)
+
+        remaining_height = myrect.Height - sum(height
+                                               for height in row_heights
+                                               if height is not None)
+        remaining_height -= mystyle.BoxSpacingY * (row_count - 1)
+        if remaining_height < 0:
+            remaining_height = 0
+        row_heights = self._distribute_space(row_heights, remaining_height)
+
+        rects = self._cell_rects(myrect.X, myrect.Y, row_heights, col_widths)
+
+        for i, ((widget, (w, h)), cellrect) in enumerate(zip(children, rects)):
+            widget_margin = copy.copy(widget.ComputedStyle.Margin)
+            rect = copy.copy(cellrect)
+            rect.Width = w or cellrect.Width
+            rect.Height = h or cellrect.Height
+
+            widget_margin.deautoify(rect, cellrect)
+            rect.shrink(widget_margin)
+
+            widget.AbsoluteRect = rect
+
+    @property
+    def Rows(self):
+        return self._rows
+
+    @Rows.setter
+    def Rows(self, value):
+        if self._rows == value:
+            return
+        if value is None and self._columns is None:
+            raise ValueError("Cannot set both rows and columns to None.")
+        self._rows = value
+        self._invalidate_alignment()
+
+    @property
+    def Columns(self):
+        return self._columns
+
+    @Columns.setter
+    def Columns(self, value):
+        if self._columns == value:
+            return
+        if value is None and self._rows is None:
+            raise ValueError("Cannot set both rows and columns to None.")
+        self._columns = value
+        self._invalidate_alignment()
 
 class VBox(AbstractVBox):
     pass
 
 class HBox(AbstractHBox):
+    pass
+
+class Grid(AbstractGrid):
     pass
 
 CSS.Minilanguage.ElementNames().register_widget_class(VBox)
