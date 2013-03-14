@@ -103,7 +103,6 @@ class BoxWidget(ParentWidget):
         visible_widgets = [widget for widget in self if widget.Visible]
 
         widgets_l = [None] + visible_widgets
-
         results = []
         for left, this in zip(widgets_l, visible_widgets + [None]):
 
@@ -126,11 +125,10 @@ class BoxWidget(ParentWidget):
                 else:
                     left_margin = max(my_left_margin, left_space)
             else:
-                left_margin += getterB(mystyle.Padding)
+                left_margin = left_space + getterB(mystyle.Padding)
                 flex = 0
                 size = None
             results.append((this, left_margin, flex, size))
-
         return results
 
     def _do_align(self, spacing_list,
