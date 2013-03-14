@@ -36,6 +36,8 @@ from Label import Label
 from LabelWidget import LabelledWidget
 from ScrollWidget import ScrollBar, ScrollMode
 
+import Flags
+
 import CSS.Rect as Rect
 
 class ListItem(AbstractWidget):
@@ -48,7 +50,7 @@ class TextListItem(LabelledWidget, ListItem):
         self._label.Text = text
 
 class AbstractList(ParentWidget):
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent, on_dbl_click=None, **kwargs):
         super(AbstractList, self).__init__(parent, **kwargs)
 
         self._vbar = ScrollBar(self, ScrollMode.VERTICAL,
@@ -60,6 +62,8 @@ class AbstractList(ParentWidget):
         self._selected_item = None
         self._item_index = -1
         self._clip_rect = Rect.Rect(0, 0, 0, 0)
+        self._flags = {Flags.Focusable}
+        self._on_dbl_click = on_dbl_click
 
     def _calc_inner_dimensions(self):
         max_width, total_height = 0, 0
@@ -171,26 +175,12 @@ class AbstractList(ParentWidget):
         if not isinstance(child, ScrollBar):
             self._items.remove(child)
 
+    def clear(self):
+        for item in self._items:
+            self.remove(item)
+
     def select_item(self, item):
-        if item == self._selected_item:
-            return
-
-        if self._selected_item:
-            self._selected_item.IsActive = False
-
-        if item is None:
-            self._selected_item = None
-            self._item_index = -1
-            return
-
-        try:
-            self._item_index = self._items.index(item)
-        except ValueError:
-            self.select_item(None)
-            return
-
-        self._selected_item = item
-        item.IsActive = True
+        self.SelectedItem = item
 
     def render(self):
         AbstractWidget.render(self)
@@ -212,6 +202,53 @@ class AbstractList(ParentWidget):
     def on_scroll(self, scrollX, scrollY):
         self._vbar.scroll_by(-scrollY * self._vbar.Step)
         self._hbar.scroll_by(scrollX * self._hbar.Step)
+
+    def on_mouse_click(self, x, y, button, modifiers, nth):
+        print(nth)
+        print(self._on_dbl_click)
+        if nth == 2 and self._on_dbl_click:
+            self._on_dbl_click(self)
+            return True
+
+    @property
+    def SelectedItem(self):
+        return self._selected_item
+
+    @SelectedItem.setter
+    def SelectedItem(self, item):
+        if item == self._selected_item:
+            return
+
+        if self._selected_item:
+            self._selected_item.IsActive = False
+
+        if item is None:
+            self._selected_item = None
+            self._item_index = -1
+            return
+
+        try:
+            self._item_index = self._items.index(item)
+        except ValueError:
+            self.select_item(None)
+            return
+
+        self._selected_item = item
+        item.IsActive = True
+
+    @property
+    def ItemIndex(self):
+        return self._item_index
+
+    @ItemIndex.setter
+    def ItemIndex(self, value):
+        value = int(value)
+        if value < 0:
+            self.SelectedItem = None
+        elif value < len(self._items):
+            self.SelectedItem = self._items[value]
+        else:
+            raise ValueError("ItemIndex out of bounds.")
 
 class List(AbstractList):
     pass
