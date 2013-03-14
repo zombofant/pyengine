@@ -36,3 +36,4 @@ from MenuWidget import *
 from EditWidget import *
 from ScrollWidget import *
 from ListWidget import *
+from FSWidget import *
