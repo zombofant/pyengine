@@ -445,7 +445,7 @@ class WidgetContainer(object):
         pass
 
     def add(self, child):
-        assert not (child in self._children and not child.Parent == self and not isinstance(child, RootWidget))
+        assert not (child in self._children and not child.Parent is self and not isinstance(child, RootWidget))
         self._check_potential_child(child)
         self._children.append(child)
         child._parent = self
