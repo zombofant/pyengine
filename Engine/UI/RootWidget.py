@@ -148,6 +148,10 @@ class RootWidget(AbstractWidget, WidgetContainer):
 
         self._old_focus_chain = hitchain
 
+    def focus(self, widget):
+        hitchain = list(widget.iter_upwards())
+        self._focus(hitchain)
+
     def _recreate_cairo_context(self, width, height):
         self._cairo_surface = cairo.ImageSurface(
             cairo.FORMAT_ARGB32,
