@@ -55,6 +55,7 @@ PyStream::PyStream(PyObject *obj):
     _seekCall(getCallable(PyObject_GetAttrString(obj, "seek"))),
     _flushCall(getCallable(PyObject_GetAttrString(obj, "flush"))),
     _tellCall(getCallable(PyObject_GetAttrString(obj, "tell"))),
+    _closeCall(getCallable(PyObject_GetAttrString(obj, "close"))),
     _readable((_readCall != 0)),
     _seekable((_seekCall != 0) && (_tellCall != 0)),
     _writeable((_writeCall != 0))
@@ -66,17 +67,21 @@ PyStream::PyStream(PyObject *obj):
         Py_XDECREF(_seekCall);
         Py_XDECREF(_flushCall);
         Py_XDECREF(_tellCall);
+        Py_XDECREF(_closeCall);
         throw StreamError("Seems not to be a file-like (could find neither `read` nor `write`).");
     }
 }
 
 PyStream::~PyStream() throw()
 {
+    // we must not close() explicitly here -- the file might be still
+    // in python and it'll close it for us.
     Py_XDECREF(_readCall);
     Py_XDECREF(_writeCall);
     Py_XDECREF(_seekCall);
     Py_XDECREF(_flushCall);
     Py_XDECREF(_tellCall);
+    Py_XDECREF(_closeCall);
 }
 
 void PyStream::doSeek(const int whence, const sizeint offset) const
@@ -209,6 +214,15 @@ sizeuint PyStream::write(const void *data, const sizeuint length)
         throw error_already_set();
     }
     return length;
+}
+
+void PyStream::close()
+{
+    PyObject *ret = PyObject_CallFunctionObjArgs(_closeCall, 0);
+    Py_XDECREF(ret);
+    if (PyErr_Occurred() != 0) {
+        throw error_already_set();
+    }
 }
 
 PyStreamHandle PyStream::create(boost::python::object obj)

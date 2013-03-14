@@ -82,6 +82,7 @@ class FDStream: public Stream {
         virtual const sizeuint size() const;
         virtual const sizeuint tell() const;
         virtual sizeuint write(const void *data, const sizeuint length);
+        virtual void close();
 };
 
 /**

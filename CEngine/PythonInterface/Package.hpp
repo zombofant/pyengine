@@ -42,7 +42,7 @@ class PyStream: public Stream
         ~PyStream() throw();
     private:
         PyObject *_readCall, *_writeCall, *_seekCall, *_flushCall,
-            *_tellCall;
+            *_tellCall, *_closeCall;
         const bool _readable, _seekable, _writeable;
     protected:
         void doSeek(const int whence, const sizeint offset) const;
@@ -53,6 +53,7 @@ class PyStream: public Stream
         virtual const sizeuint size() const;
         virtual const sizeuint tell() const;
         virtual sizeuint write(const void *data, const sizeuint length);
+        virtual void close();
     public:
         virtual bool isReadable() const { return _readable; };
         virtual bool isSeekable() const { return _seekable; };

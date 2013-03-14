@@ -77,6 +77,11 @@ sizeuint Stream::write(const char *data, const sizeuint length)
     return write((const void*)data, length);
 }
 
+void Stream::close()
+{
+
+}
+
 void Stream::raiseSeekNotSupportedError() const
 {
     throw StreamNotSupportedError((boost::format("%s does not support seeking.") % typeid(this).name()).str());

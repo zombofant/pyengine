@@ -170,6 +170,11 @@ class Stream {
          */
         virtual sizeuint write(const void *data, const sizeuint length);
         sizeuint write(const char *data, const sizeuint length);
+
+        /**
+         * Close the stream.
+         */
+        virtual void close() = 0;
     protected:
         void raiseSeekNotSupportedError() const;
         void raiseReadError(const sizeuint read, const sizeuint required) const;

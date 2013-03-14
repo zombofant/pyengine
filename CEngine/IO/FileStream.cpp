@@ -43,10 +43,7 @@ FDStream::FDStream(int fd, bool ownsFD):
 }
 
 FDStream::~FDStream() throw() {
-    if (_ownsFD) {
-        close(_fd);
-        _fd = 0;
-    }
+    close();
 }
 
 void FDStream::flush() {
@@ -86,6 +83,13 @@ sizeuint FDStream::write(const void *data, const sizeuint length) {
         raiseLastOSError();
     }
     return writtenBytes;
+}
+
+void FDStream::close() {
+    if (_ownsFD) {
+        ::close(_fd);
+    }
+    _fd = 0;
 }
 
 /* PyEngine::FileStream */
