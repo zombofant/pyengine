@@ -127,10 +127,10 @@ class RootWidget(AbstractWidget, WidgetContainer):
         if not hitchain:
             hitchain = []
         target = None
-        for i, candidate in enumerate(reversed(hitchain)):
+        for i, candidate in enumerate(hitchain):
             if Focusable in candidate._flags:
                 target = candidate
-                index = len(hitchain) - (i+1)
+                index = i
                 break
         else:
             return
@@ -140,7 +140,7 @@ class RootWidget(AbstractWidget, WidgetContainer):
         target.IsFocused = True
         self._focused = target
 
-        hitchain = frozenset(hitchain[:i])
+        hitchain = frozenset(hitchain[i:])
         for focused in hitchain - self._old_focus_chain:
             focused.HasFocusedChild = True
         for unfocused in self._old_focus_chain - hitchain:
