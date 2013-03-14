@@ -97,7 +97,7 @@ class Stream {
          * is dependent on the actual stream type.
          *
          * A flush call should generally be made before switching
-         * from reading to writing and vice versa or when itsk neccessary
+         * from reading to writing and vice versa or when its neccessary
          * to be sure that data is actually stored (or sent, if its a
          * network stream for example).
          */

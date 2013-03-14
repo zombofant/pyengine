@@ -29,7 +29,7 @@ authors named in the AUTHORS file.
 #include "Stream.hpp"
 
 namespace PyEngine {
-    
+
 static inline int checkFD(int fd) {
     if (fd == -1) {
         raiseLastOSError();
@@ -87,7 +87,7 @@ class FDStream: public Stream {
 /**
  * Opens a stream to access a file. This is how the OpenMode:s and
  * WriteMode:s map to open(2) modes.
- * 
+ *
  * OpenMode     WriteMode       open flags
  * OM_READ      any             O_RDONLY
  * OM_WRITE     WM_IGNORE       O_WRONLY|O_TRUNC|O_CREAT
@@ -96,11 +96,11 @@ class FDStream: public Stream {
  * OM_BOTH      WM_IGNORE       O_RDWR|O_TRUNC|O_CREAT
  * OM_BOTH      WM_OVERWRITE    O_RDWR|O_TRUNC|O_CREAT
  * OM_BOTH      WM_APPEND       O_RDWR|O_APPEND|O_CREAT
- * 
- * As you can see from the table, for FileStream WM_IGNORE and 
+ *
+ * As you can see from the table, for FileStream WM_IGNORE and
  * WM_OVERWRITE are equivalent. However, this is only a coincidence and
  * should be treated as undocumented feature and not relied upon.
- * 
+ *
  * All considerations which can be found in the open(2) man page apply.
  */
 class FileStream: public FDStream {

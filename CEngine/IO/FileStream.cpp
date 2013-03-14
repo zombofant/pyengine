@@ -32,14 +32,14 @@ authors named in the AUTHORS file.
 #include <fcntl.h>
 
 namespace PyEngine {
-    
+
 /* PyEngine::FDStream */
 
 FDStream::FDStream(int fd, bool ownsFD):
     _fd(fd),
     _ownsFD(ownsFD)
 {
-    
+
 }
 
 FDStream::~FDStream() throw() {
@@ -91,7 +91,7 @@ sizeuint FDStream::write(const void *data, const sizeuint length) {
 /* PyEngine::FileStream */
 
 // note that throwing the exception on a failed open is done in checkFD
-FileStream::FileStream(const std::string fileName, 
+FileStream::FileStream(const std::string fileName,
     const OpenMode openMode, const WriteMode writeMode,
     const ShareMode shareMode):
     FDStream::FDStream(
@@ -123,5 +123,5 @@ bool FileStream::isSeekable() const {
 bool FileStream::isWritable() const {
     return (_openMode != OM_READ);
 }
-    
+
 }

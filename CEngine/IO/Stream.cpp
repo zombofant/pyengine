@@ -37,7 +37,7 @@ namespace PyEngine {
 
 void Stream::flush()
 {
-    
+
 }
 
 sizeuint Stream::read(void *data, const sizeuint length)
@@ -256,7 +256,7 @@ void Stream::writeNullTerminated(const char *value)
 
 void Stream::writeString(const std::string &value)
 {
-    
+
     // TODO: Replace this by a proper <limits> query
     if (value.size() >= 4294967296) {
         throw StreamError((boost::format("String is too long (%d).") % value.size()).str());

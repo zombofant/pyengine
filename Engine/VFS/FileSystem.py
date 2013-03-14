@@ -34,7 +34,7 @@ from Errors import VFSPermissionDeniedError, VFSIOError, VFSFileNotFoundError
 class MountPriority(object):
     def __new__(cls):
         raise NotImplementedError("Not instanciatable")
-    
+
     PractiallyInexistant = -3
     Discriminated = -2
     Fallback = -1
@@ -172,12 +172,12 @@ class XDGFileSystem(FileSystem):
     Automatically mounts the paths returned by :func:`require_dirs` from
     :mod:`FreeDesktop` at customizable locations.
     """
-    
+
     def _setup_mounts(self, mount_point, global_dirs, home_dir):
         for dir in global_dirs:
             self.mount(mount_point, MountDirectory(dir, read_only=True), MountPriority.FileSystem)
         self.mount(mount_point, MountDirectory(home_dir, read_only=False), MountPriority.Important)
-    
+
     def __init__(self, app_dir_name, data_mount_point="/data", config_mount_point="/config", **kwargs):
         """
         Initializes a FreeDesktop compliant VFS.

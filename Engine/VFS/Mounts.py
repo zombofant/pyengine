@@ -37,7 +37,7 @@ class Mount(object):
 
     def get_real_path(self, file):
         return None
-    
+
     def file_readable(self, file):
         raise NotImplementedError("Mount.file_readable not specified")
 
@@ -51,7 +51,7 @@ class MountDirectory(Mount):
     """
     Provides access to a real file system directory.
     """
-    
+
     def __init__(self, path, read_only=True, **kwargs):
         super(MountDirectory, self).__init__(**kwargs)
         self.path = os.path.realpath(os.path.abspath(path))
@@ -88,7 +88,7 @@ class MountVirtual(Mount):
     """
     Supports adding strings as text files in a virtual file system.
     """
-    
+
     def __init__(self, **kwargs):
         super(MountVirtual, self).__init__(**kwargs)
         self._files = {}
@@ -119,7 +119,7 @@ class MountVirtual(Mount):
         if not path in self._files:
             raise VFSFileNotFoundError(path)
         return StringIO.StringIO(self._files[path])
-        
+
     @property
     def ReadOnly(self):
         return True
