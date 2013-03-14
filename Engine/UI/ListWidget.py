@@ -28,6 +28,7 @@ from our_future import *
 __all__ = ["AbstractList", "List", "ListItem", "TextListItem"]
 
 import copy
+import itertools
 
 import CSS.Minilanguage
 
@@ -64,6 +65,8 @@ class AbstractList(ParentWidget):
         self._clip_rect = Rect.Rect(0, 0, 0, 0)
         self._flags = {Flags.Focusable}
         self._on_dbl_click = on_dbl_click
+        self._min_item = 0
+        self._max_item = 0
 
     def _calc_inner_dimensions(self):
         max_width, total_height = 0, 0
@@ -134,14 +137,20 @@ class AbstractList(ParentWidget):
             if not self._hbar.Visible:
                 self._vbar.AbsoluteRect.Bottom = rect.Bottom
 
+        min_index = len(self)
+        max_index = -1
+
         y = rect.Top - self._vbar.Position
-        for item in self._items:
+        for i, item in enumerate(self._items):
             item_style = item.ComputedStyle
             item_margin = item_style.Margin
             _, item_height = item.get_dimensions()
 
             if item_height is None:
                 continue
+
+            if y <= rect.Bottom:
+                max_index = max(max_index, i)
 
             y += item_margin.Top
 
@@ -153,6 +162,11 @@ class AbstractList(ParentWidget):
 
             y += item_height + item_margin.Bottom
 
+            if y >= rect.Top:
+                min_index = min(min_index, i)
+
+        self._min_index = min_index
+        self._max_index = max_index + 1
         self._clip_rect = rect
 
     def _scroll_vertical(self, old, new):
@@ -176,11 +190,32 @@ class AbstractList(ParentWidget):
             self._items.remove(child)
 
     def clear(self):
-        for item in self._items:
+        for item in list(self._items):
             self.remove(item)
+        self._vbar.Position = 0
+        self._hbar.Position = 0
+        self.invalidate()
 
     def select_item(self, item):
         self.SelectedItem = item
+
+    def _hit_test(self, p):
+        for child in [self._vbar, self._hbar] + self._items[self._min_index:self._max_index]:
+            if not child.Visible:
+                continue
+            hit = child.hit_test(p)
+            if hit is not None:
+                return hit
+        return None
+
+    def _hit_test_with_chain(self, p):
+        for child in [self._vbar, self._hbar] + self._items[self._min_index:self._max_index]:
+            if not child.Visible:
+                continue
+            hit = child.hit_test_with_chain(p)
+            if hit is not False:
+                return hit
+        return False
 
     def render(self):
         AbstractWidget.render(self)
@@ -189,7 +224,7 @@ class AbstractList(ParentWidget):
         try:
             ctx.rectangle(*self._clip_rect.XYWH)
             ctx.clip()
-            for item in self._items:
+            for item in self._items[self._min_index:self._max_index]:
                 item.render()
         finally:
             ctx.restore()
@@ -200,8 +235,10 @@ class AbstractList(ParentWidget):
             self._hbar.render()
 
     def on_scroll(self, scrollX, scrollY):
-        self._vbar.scroll_by(-scrollY * self._vbar.Step)
-        self._hbar.scroll_by(scrollX * self._hbar.Step)
+        if self._vbar.Visible:
+            self._vbar.scroll_by(-scrollY * self._vbar.Step)
+        if self._hbar.Visible:
+            self._hbar.scroll_by(scrollX * self._hbar.Step)
 
     def on_mouse_click(self, x, y, button, modifiers, nth):
         print(nth)
