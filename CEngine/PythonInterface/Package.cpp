@@ -33,6 +33,8 @@ authors named in the AUTHORS file.
 #include "SceneGraph.hpp"
 #include "RenderGraph.hpp"
 
+#include <cstdio>
+
 namespace PyEngine {
 
 using namespace boost::python;
@@ -152,6 +154,14 @@ sizeuint PyStream::read(void *data, const sizeuint length)
             return 0;
         }
         memcpy(data, (const void*)PyString_AS_STRING(bytes), readLen);
+
+        // const uint8_t* curr = (const uint8_t*)data;
+        // const uint8_t* end = curr + readLen;
+        // for (; curr != end; curr++) {
+        //     printf("%x ", ((const uint8_t*)curr)[0]);
+        // }
+        // printf("\n");
+
         Py_DECREF(bytes);
         return readLen;
     }
@@ -235,10 +245,17 @@ PyStreamHandle PyStream::create(boost::python::object obj)
     }
 }
 
+// void test_that_fucking_stream(PyStreamHandle stream)
+// {
+//     static const char data[] = "Hello World!";
+//     stream->write(data, strlen(data));
+// }
+
 BOOST_PYTHON_MODULE(_cuni)
 {
     class_<PyStream, PyStreamHandle, boost::noncopyable>("Stream", no_init)
         .def("__init__", make_constructor(&PyStream::create))
+        // .def("test_that_fucking_stream", &test_that_fucking_stream)
     ;
     implicitly_convertible<PyStreamHandle, StreamHandle>();
 }
