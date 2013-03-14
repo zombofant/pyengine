@@ -264,8 +264,14 @@ class RootWidget(AbstractWidget, WidgetContainer):
             return
 
         target, cx, cy = self._map_mouse_event(x, y)
-        if target:
-            target.on_mouse_click(cx, cy, button, modifiers, nth)
+        if not target:
+            return
+
+        handled = target.on_mouse_click(cx, cy, button, modifiers, nth)
+        parent = target.Parent
+        while not handled and parent:
+            handled = parent.on_mouse_click(x, y, button, modifiers, nth)
+            parent = parent.Parent
 
     def dispatch_mouse_move(self, x, y, dx, dy, button, modifiers):
         self._cursor = x, y
