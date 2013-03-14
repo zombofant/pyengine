@@ -36,7 +36,8 @@ import CSS.Minilanguage
 
 from Engine.CEngine import key, motion
 from WidgetBase import AbstractWidget, WidgetContainer
-from LayerWidget import LayerWidget, DesktopLayer, WindowLayer, PopupLayer
+from LayerWidget import LayerWidget, DesktopLayer, WindowLayer, PopupLayer, \
+    ModalWindowLayer
 from WindowWidget import Window
 from Flags import *
 
@@ -385,6 +386,10 @@ class RootWidget(AbstractWidget, WidgetContainer):
     def update(self, timedelta):
         for child in self:
             child.update(timedelta)
+
+    def show_modal_window(self, window):
+        ModalWindowLayer(self.WindowLayer, window)
+        window.on_show_modal()
 
     @property
     def WindowLayer(self):
