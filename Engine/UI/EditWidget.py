@@ -151,8 +151,6 @@ class AbstractEdit(Widget):
 
         cur_index, cur_trailing = self._cursor_index_to_pango(self._cursor_index)
 
-        print(cur_index, cur_trailing)
-
         for i in xrange(by_characters):
             cur_index, cur_trailing = self._layout.move_cursor_visually(
                 True,
@@ -163,8 +161,6 @@ class AbstractEdit(Widget):
                 break
             elif cur_index > len(self._text):
                 break
-
-        print(cur_index, cur_trailing)
 
         self._cursor_index = self._pango_to_cursor_index(cur_index, cur_trailing)
         self._update_cursor_rect()
