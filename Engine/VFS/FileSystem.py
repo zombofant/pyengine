@@ -167,6 +167,23 @@ class FileSystem(object):
             raise VFSPermissionDeniedError(path)
         raise VFSFileNotFoundError(path)
 
+    def listdir(self, path):
+        """
+        Return an iterable of all nodes in the directory pointed to by
+        *path*.
+
+        The returned iterable is not neccessarily a list; it might be
+        an iterator which is depleted after one use. There is no
+        guaranteed ordering in the items returned by the iterator.
+        """
+        for mount, subpath in self._get_file_mounts(path):
+            try:
+                for item in mount.listdir(subpath):
+                    yield item
+            except VFSFileNotFoundError:
+                pass
+
+
 class XDGFileSystem(FileSystem):
     """
     Automatically mounts the paths returned by :func:`require_dirs` from

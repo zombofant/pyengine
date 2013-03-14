@@ -47,6 +47,9 @@ class Mount(object):
     def open(self, file, flag):
         raise NotImplementedError("Mount.open not specified")
 
+    def listdir(self, path):
+        raise NotImplementedError("Mount.listdir not specified")
+
 class MountDirectory(Mount):
     """
     Provides access to a real file system directory.
@@ -73,6 +76,15 @@ class MountDirectory(Mount):
         try:
             return open(self.get_real_path(path), flag)
         except IOError as err:
+            new_type = SemanticException.get(err.errno, None)
+            if new_type is not None:
+                raise new_type(path)
+            raise
+
+    def listdir(self, path):
+        try:
+            return os.listdir(self.get_real_path(path))
+        except OSError as err:
             new_type = SemanticException.get(err.errno, None)
             if new_type is not None:
                 raise new_type(path)
