@@ -47,8 +47,8 @@ class AbstractMenu(object):
         self._shown_by = None
         self.ShowingSubMenu = False
 
-    def add_button(self, caption, onclick=None, **kwargs):
-        button = MenuButton(self, caption=caption, onclick=onclick, **kwargs)
+    def add_button(self, caption, on_click=None, **kwargs):
+        button = MenuButton(self, caption=caption, on_click=on_click, **kwargs)
         return button
 
     def add_button_and_menu(self, caption, **kwargs):
@@ -177,7 +177,7 @@ class MenuItem(Widget):
 class MenuButton(LabelledWidget, MenuItem):
     def __init__(self, parent,
                  caption="",
-                 onclick=None,
+                 on_click=None,
                  hotkey_string="",
                  icon=None,
                  **kwargs):
@@ -186,7 +186,7 @@ class MenuButton(LabelledWidget, MenuItem):
         self._icon = Icon(icon=icon)
         self._label.Text = caption
         self._hotkey_label.Text = hotkey_string
-        self._onclick = onclick
+        self._on_click = on_click
         self._max_label_width_hint = 0
         self._max_icon_width_hint = 0
         self.SubMenu = None
@@ -269,8 +269,8 @@ class MenuButton(LabelledWidget, MenuItem):
         else:
             self.Parent.kill_upwards()
 
-        if self._onclick is not None:
-            self._onclick(self)
+        if self._on_click is not None:
+            self._on_click(self)
 
     def render(self):
         super(MenuButton, self).render()
