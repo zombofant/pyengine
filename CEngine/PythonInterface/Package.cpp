@@ -200,8 +200,10 @@ const sizeuint PyStream::tell() const
 sizeuint PyStream::write(const void *data, const sizeuint length)
 {
     PyObject *str = PyString_FromStringAndSize((const char *)data, length);
-    Py_XDECREF(PyObject_CallObject(_writeCall, str));
+    PyObject *ret = PyObject_CallFunctionObjArgs(_writeCall, str, 0);
+    Py_XDECREF(ret);
     Py_DECREF(str);
+
     if (PyErr_Occurred() != 0)
     {
         throw error_already_set();
