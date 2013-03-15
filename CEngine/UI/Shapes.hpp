@@ -24,6 +24,34 @@ public:
     RectError(const char* what_arg);
 };
 
+class Point
+{
+public:
+    Point();
+    Point(coord_int_t x, coord_int_t y);
+    Point(const Point& ref);
+    Point& operator= (const Point& ref);
+private:
+    coord_int_t _x, _y;
+public:
+    inline void set_x(const coord_int_t value) {
+        _x = value;
+    };
+    inline void set_y(const coord_int_t value) {
+        _y = value;
+    };
+
+    inline coord_int_t get_x() const {
+        return _x;
+    };
+    inline coord_int_t get_y() const {
+        return _y;
+    };
+public:
+    bool operator== (const Point& b) const;
+    bool operator!= (const Point& b) const;
+};
+
 class Box
 {
 public:
@@ -33,7 +61,6 @@ public:
         coord_int_t top, coord_int_t bottom);
     Box(const Box& ref);
     Box& operator= (const Box& ref);
-    ~Box();
 private:
     coord_int_t _left, _top, _right, _bottom;
 protected:
@@ -144,7 +171,10 @@ public:
 public:
     coord_int_t area() const;
     void assign(const Rect& ref);
+    bool contains(const Rect& b) const;
+    bool contains(const Point& p) const;
     void translate(const coord_int_t dx, const coord_int_t dy);
+    void translate(const Point& point);
 public:
     inline bool operator==(const Rect& b) const;
     inline bool operator!=(const Rect& b) const;

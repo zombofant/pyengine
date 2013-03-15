@@ -30,6 +30,45 @@ RectError::RectError(const char* what_arg):
 
 }
 
+/* PyEngine::Point */
+
+Point::Point():
+    _x(0), _y(0)
+{
+
+}
+
+Point::Point(coord_int_t x, coord_int_t y):
+    _x(x), _y(y)
+{
+
+}
+
+Point::Point(const Point& ref):
+    _x(ref._x),
+    _y(ref._y)
+{
+
+}
+
+Point& Point::operator= (const Point& ref)
+{
+    _x = ref._x;
+    _y = ref._y;
+    return *this;
+}
+
+bool Point::operator== (const Point& b) const
+{
+    return ((_x == b._x) &&
+            (_y == b._y));
+}
+
+bool Point::operator!= (const Point& b) const
+{
+    return !(operator==(b));
+}
+
 /* PyEngine::Box */
 
 Box::Box():
@@ -73,11 +112,6 @@ Box& Box::operator= (const Box& ref)
     _right = ref._right;
     _bottom = ref._bottom;
     return *this;
-}
-
-Box::~Box()
-{
-
 }
 
 void Box::_check_value(const coord_int_t value) const
@@ -226,10 +260,49 @@ void Rect::assign(const Rect& ref)
     *this = ref;
 }
 
+bool Rect::contains(const Rect& b) const
+{
+    if (!b.is_a_rect()) {
+        return true;
+    }
+    if (!is_a_rect()) {
+        return false;
+    }
+
+    const coord_int_t me_right = get_right();
+    const coord_int_t me_bottom = get_bottom();
+
+    const coord_int_t b_right = b.get_right();
+    const coord_int_t b_bottom = b.get_bottom();
+
+    return ((_left <= b._left) &&
+            (_top <= b._top) &&
+            (me_right >= b_right) &&
+            (me_bottom >= b_bottom));
+}
+
+bool Rect::contains(const Point& p) const
+{
+    const coord_int_t me_right = get_right();
+    const coord_int_t me_bottom = get_bottom();
+
+    const coord_int_t p_x = p.get_x();
+    const coord_int_t p_y = p.get_y();
+
+    return (_left <= p_x && p_x < me_right &&
+            _top <= p_y && p_y < me_bottom);
+}
+
 void Rect::translate(const coord_int_t dx, const coord_int_t dy)
 {
     _left += dx;
     _top += dy;
+}
+
+void Rect::translate(const Point& point)
+{
+    _left += point.get_x();
+    _top += point.get_y();
 }
 
 inline bool Rect::operator==(const Rect& b) const
@@ -312,23 +385,7 @@ Rect Rect::operator|(const Rect& b) const
 
 bool Rect::operator<=(const Rect& b) const
 {
-    if (!b.is_a_rect()) {
-        return true;
-    }
-    if (!is_a_rect()) {
-        return false;
-    }
-
-    const coord_int_t me_right = get_right();
-    const coord_int_t me_bottom = get_bottom();
-
-    const coord_int_t b_right = b.get_right();
-    const coord_int_t b_bottom = b.get_bottom();
-
-    return ((_left <= b._left) &&
-            (_top <= b._top) &&
-            (me_right >= b_right) &&
-            (me_bottom >= b_bottom));
+    return contains(b);
 }
 
 bool Rect::operator<(const Rect& b) const
