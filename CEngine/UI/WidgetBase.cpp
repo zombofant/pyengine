@@ -67,7 +67,7 @@ void AbstractWidget::_root_changed()
     _focused = false;
     _hovered = false;
     _active = false;
-    _invalidate_computed_style();
+    invalidate_computed_style();
 }
 
 void AbstractWidget::set_root(RootPtr root)
@@ -105,6 +105,75 @@ void AbstractWidget::realign()
 void AbstractWidget::render()
 {
 
+}
+
+bool AbstractWidget::ev_activate()
+{
+    return false;
+}
+
+bool AbstractWidget::ev_deactivate()
+{
+    return false;
+}
+
+bool AbstractWidget::ev_key_down(unsigned int symbol, unsigned int modifiers)
+{
+    return false;
+}
+
+bool AbstractWidget::ev_key_up(unsigned int symbol, unsigned int modifiers)
+{
+    return false;
+}
+
+bool AbstractWidget::ev_mouse_click(int x, int y, unsigned int button,
+                                    unsigned int modifiers, unsigned int nth)
+{
+    return false;
+}
+
+bool AbstractWidget::ev_mouse_down(int x, int y, unsigned int button,
+                                    unsigned int modifiers)
+{
+    return false;
+}
+
+bool AbstractWidget::ev_mouse_enter()
+{
+    return false;
+}
+
+bool AbstractWidget::ev_mouse_leave()
+{
+    return false;
+}
+
+bool AbstractWidget::ev_mouse_move(int x, int y, int dx, int dy,
+                                   unsigned int button, unsigned int modifiers)
+{
+    return false;
+}
+
+bool AbstractWidget::ev_mouse_up(int x, int y, unsigned int button,
+                                 unsigned int modifiers)
+{
+    return false;
+}
+
+bool AbstractWidget::ev_resize()
+{
+    return false;
+}
+
+bool AbstractWidget::ev_scroll(int scrollx, int scrolly)
+{
+    return false;
+}
+
+bool AbstractWidget::ev_text_input(const char* buf)
+{
+    return false;
 }
 
 /* PyEngine::WidgetContainer */

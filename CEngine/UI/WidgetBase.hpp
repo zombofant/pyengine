@@ -103,6 +103,24 @@ public:
     virtual void realign();
     virtual void render();
 public:
+    virtual bool ev_activate();
+    virtual bool ev_deactivate();
+    virtual bool ev_key_down(unsigned int symbol, unsigned int modifiers);
+    virtual bool ev_key_up(unsigned int symbol, unsigned int modifiers);
+    virtual bool ev_mouse_click(int x, int y, unsigned int button,
+                                unsigned int modifiers, unsigned int nth);
+    virtual bool ev_mouse_down(int x, int y, unsigned int button,
+                               unsigned int modifiers);
+    virtual bool ev_mouse_enter();
+    virtual bool ev_mouse_leave();
+    virtual bool ev_mouse_move(int x, int y, int dx, int dy,
+                               unsigned int button, unsigned int modifiers);
+    virtual bool ev_mouse_up(int x, int y, unsigned int button,
+                             unsigned int modifiers);
+    virtual bool ev_resize();
+    virtual bool ev_scroll(int scrollx, int scrolly);
+    virtual bool ev_text_input(const char* buf);
+public:
     /* for updating the root widget */
     friend class ParentWidget;
 
