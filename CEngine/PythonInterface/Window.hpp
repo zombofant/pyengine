@@ -39,74 +39,74 @@ namespace PyEngine {
 
 class EventSinkWrap: public EventSink, public boost::python::wrapper<EventSink>
 {
-    virtual void frameSynced()
+    virtual void frame_synced()
     {
-        this->get_override("frameSynced")();
+        this->get_override("frame_synced")();
     }
 
-    virtual void frameUnsynced(double deltaT)
+    virtual void frame_unsynced(double deltaT)
     {
-        this->get_override("frameUnsynced")(deltaT);
+        this->get_override("frame_unsynced")(deltaT);
     }
 
-    virtual void handleKeyDown(unsigned int symbol, unsigned int modifiers)
+    virtual void dispatch_key_down(unsigned int symbol, unsigned int modifiers)
     {
-        this->get_override("handleKeyDown")(symbol, modifiers);
+        this->get_override("dispatch_key_down")(symbol, modifiers);
     }
 
-    virtual void handleKeyUp(unsigned int symbol, unsigned int modifiers)
+    virtual void dispatch_key_up(unsigned int symbol, unsigned int modifiers)
     {
-        this->get_override("handleKeyUp")(symbol, modifiers);
+        this->get_override("dispatch_key_up")(symbol, modifiers);
     }
 
-    virtual void handleMouseDown(int x, int y, unsigned int buttons, unsigned int modifiers)
+    virtual void dispatch_mouse_down(int x, int y, unsigned int buttons, unsigned int modifiers)
     {
-        this->get_override("handleMouseDown")(x, y, buttons, modifiers);
+        this->get_override("dispatch_mouse_down")(x, y, buttons, modifiers);
     }
 
-    virtual void handleMouseClick(int x, int y, unsigned int buttons, unsigned int modifiers, unsigned int nth)
+    virtual void dispatch_mouse_click(int x, int y, unsigned int buttons, unsigned int modifiers, unsigned int nth)
     {
-        this->get_override("handleMouseClick")(x, y, buttons, modifiers, nth);
+        this->get_override("dispatch_mouse_click")(x, y, buttons, modifiers, nth);
     }
 
-    virtual void handleMouseMove(int x, int y, int dx, int dy, unsigned int buttons, unsigned int modifiers)
+    virtual void dispatch_mouse_move(int x, int y, int dx, int dy, unsigned int buttons, unsigned int modifiers)
     {
-        this->get_override("handleMouseMove")(x, y, dx, dy, buttons, modifiers);
+        this->get_override("dispatch_mouse_move")(x, y, dx, dy, buttons, modifiers);
     }
 
-    virtual void handleMouseUp(int x, int y, unsigned int buttons, unsigned int modifiers)
+    virtual void dispatch_mouse_up(int x, int y, unsigned int buttons, unsigned int modifiers)
     {
-        this->get_override("handleMouseUp")(x, y, buttons, modifiers);
+        this->get_override("dispatch_mouse_up")(x, y, buttons, modifiers);
     }
 
-    virtual void handleMouseScroll(int x, int y, int scrollX, int scrollY)
+    virtual void dispatch_scroll(int x, int y, int scrollX, int scrollY)
     {
-        this->get_override("handleMouseScroll")(x, y, scrollX, scrollY);
+        this->get_override("dispatch_scroll")(x, y, scrollX, scrollY);
     }
 
-    virtual void handleResize(unsigned int w, unsigned int h)
+    virtual void dispatch_resize(unsigned int w, unsigned int h)
     {
-        this->get_override("handleResize")(w, h);
+        this->get_override("dispatch_resize")(w, h);
     }
 
-    virtual void handleTextInput(const char *text)
+    virtual void dispatch_text_input(const char *text)
     {
-        this->get_override("handleTextInput")(text);
+        this->get_override("dispatch_text_input")(text);
     }
 
-    virtual void handleHide()
+    virtual void dispatch_hide()
     {
-        this->get_override("handleHide")();
+        this->get_override("dispatch_hide")();
     }
 
-    virtual void handleShow()
+    virtual void dispatch_show()
     {
-        this->get_override("handleShow")();
+        this->get_override("dispatch_show")();
     }
 
-    virtual void handleWMQuit()
+    virtual void dispatch_wm_quit()
     {
-        this->get_override("handleWMQuit")();
+        this->get_override("dispatch_wm_quit")();
     }
 };
 

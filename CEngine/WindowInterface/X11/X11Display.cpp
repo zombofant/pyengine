@@ -274,15 +274,17 @@ void X11Display::pullEvents(EventSink *sink) {
             // filter scroll events
             if (_scroll_x[event.xbutton.button] != 0
              || _scroll_y[event.xbutton.button] != 0) {
-                sink->handleMouseScroll(event.xbutton.x,
-                                        event.xbutton.y,
-                                        _scroll_x[event.xbutton.button],
-                                        _scroll_y[event.xbutton.button]);
+                sink->dispatch_scroll(
+                    event.xbutton.x,
+                    event.xbutton.y,
+                    _scroll_x[event.xbutton.button],
+                    _scroll_y[event.xbutton.button]);
             } else {
-                sink->handleMouseDown(event.xbutton.x,
-                                      event.xbutton.y,
-                                      event.xbutton.button,
-                                      event.xbutton.state);
+                sink->dispatch_mouse_down(
+                    event.xbutton.x,
+                    event.xbutton.y,
+                    event.xbutton.button,
+                    event.xbutton.state);
             }
             break;
         case ButtonRelease:
@@ -321,7 +323,7 @@ void X11Display::pullEvents(EventSink *sink) {
                 _log->logf(Debug, "nclick %d with button %d",
                            nclick, event.xbutton.button);
 
-                sink->handleMouseClick(
+                sink->dispatch_mouse_click(
                     event.xbutton.x,
                     event.xbutton.y,
                     event.xbutton.button,
@@ -332,19 +334,21 @@ void X11Display::pullEvents(EventSink *sink) {
             // only report release events for non-scroll
             if (_scroll_x[event.xbutton.button] == 0
              && _scroll_y[event.xbutton.button] == 0) {
-                sink->handleMouseUp(event.xbutton.x,
-                                    event.xbutton.y,
-                                    event.xbutton.button,
-                                    event.xbutton.state);
+                sink->dispatch_mouse_up(
+                    event.xbutton.x,
+                    event.xbutton.y,
+                    event.xbutton.button,
+                    event.xbutton.state);
             }
             break;
         case MotionNotify:
-            sink->handleMouseMove(event.xmotion.x,
-                                  event.xmotion.y,
-                                  _mouse_valid ? event.xmotion.x - _mouse_x : 0,
-                                  _mouse_valid ? event.xmotion.y - _mouse_y : 0,
-                                  event.xmotion.state,
-                                  event.xmotion.state);
+            sink->dispatch_mouse_move(
+                event.xmotion.x,
+                event.xmotion.y,
+                _mouse_valid ? event.xmotion.x - _mouse_x : 0,
+                _mouse_valid ? event.xmotion.y - _mouse_y : 0,
+                event.xmotion.state,
+                event.xmotion.state);
 
             _mouse_x = event.xmotion.x;
             _mouse_y = event.xmotion.y;
@@ -388,7 +392,7 @@ void X11Display::pullEvents(EventSink *sink) {
             // fprintf(stderr, "\n");
 
             if (ret_state == XLookupBoth || ret_state == XLookupKeySym) {
-                sink->handleKeyDown(keysym, event.xkey.state);
+                sink->dispatch_key_down(keysym, event.xkey.state);
             }
 
             if (ret_state == XLookupBoth || ret_state == XLookupChars) {
@@ -404,21 +408,21 @@ void X11Display::pullEvents(EventSink *sink) {
                 // add zero termination to make it a C string
                 buf[len] = '\0';
 
-                sink->handleTextInput(buf);
+                sink->dispatch_text_input(buf);
             }
         } break;
         case KeyRelease:
-            sink->handleKeyUp(XLookupKeysym(&event.xkey, /* ??? */ 0),
+            sink->dispatch_key_up(XLookupKeysym(&event.xkey, /* ??? */ 0),
                               event.xkey.state);
             break;
         case ConfigureNotify:
-            sink->handleResize(event.xconfigure.width, event.xconfigure.height);
+            sink->dispatch_resize(event.xconfigure.width, event.xconfigure.height);
             break;
         case MapNotify:
-            sink->handleShow();
+            sink->dispatch_show();
             break;
         case UnmapNotify:
-            sink->handleHide();
+            sink->dispatch_hide();
             break;
         case ReparentNotify:
             // XXX: debug log this, handle this if we are interested in it some day
@@ -426,7 +430,7 @@ void X11Display::pullEvents(EventSink *sink) {
         case ClientMessage:
             if (event.xclient.message_type == _wm_protocols) {
                 if ((Atom)event.xclient.data.l[0] == _wm_quit) {
-                    sink->handleWMQuit();
+                    sink->dispatch_wm_quit();
                 } else {
                     char *name = XGetAtomName(_display, event.xclient.data.l[0]);
                     _log->logf(Warning, "Unknown X WM Protocol message %s!\n", name);

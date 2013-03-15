@@ -134,17 +134,17 @@ BOOST_PYTHON_MODULE(_cuni_window)
     implicitly_convertible<boost::shared_ptr<Display>, DisplayHandle >();
 
     class_<EventSinkWrap, boost::shared_ptr<EventSinkWrap>, boost::noncopyable>("EventSink")
-        .def("frameSynced", pure_virtual(&EventSink::frameSynced))
-        .def("frameUnsynced", pure_virtual(&EventSink::frameUnsynced))
-        .def("handleKeyDown", pure_virtual(&EventSink::handleKeyDown))
-        .def("handleKeyUp", pure_virtual(&EventSink::handleKeyUp))
-        .def("handleMouseDown", pure_virtual(&EventSink::handleMouseDown))
-        .def("handleMouseClick", pure_virtual(&EventSink::handleMouseClick))
-        .def("handleMouseMove", pure_virtual(&EventSink::handleMouseMove))
-        .def("handleMouseUp", pure_virtual(&EventSink::handleMouseUp))
-        .def("handleMouseScroll", pure_virtual(&EventSink::handleMouseScroll))
-        .def("handleResize", pure_virtual(&EventSink::handleResize))
-        .def("handleTextInput", pure_virtual(&EventSink::handleTextInput))
+        .def("frame_synced", pure_virtual(&EventSink::frame_synced))
+        .def("frame_unsynced", pure_virtual(&EventSink::frame_unsynced))
+        .def("dispatch_key_down", pure_virtual(&EventSink::dispatch_key_down))
+        .def("dispatch_key_up", pure_virtual(&EventSink::dispatch_key_up))
+        .def("dispatch_mouse_down", pure_virtual(&EventSink::dispatch_mouse_down))
+        .def("dispatch_mouse_click", pure_virtual(&EventSink::dispatch_mouse_click))
+        .def("dispatch_mouse_move", pure_virtual(&EventSink::dispatch_mouse_move))
+        .def("dispatch_mouse_up", pure_virtual(&EventSink::dispatch_mouse_up))
+        .def("dispatch_scroll", pure_virtual(&EventSink::dispatch_scroll))
+        .def("dispatch_resize", pure_virtual(&EventSink::dispatch_resize))
+        .def("dispatch_text_input", pure_virtual(&EventSink::dispatch_text_input))
     ;
 
     boost::python::implicitly_convertible<boost::shared_ptr<EventSinkWrap>, EventSinkHandle >();

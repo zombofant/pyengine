@@ -35,29 +35,33 @@ namespace PyEngine {
 class EventSink {
 public:
     virtual ~EventSink();
-    virtual void frameSynced() = 0;
-    virtual void frameUnsynced(double deltaT) = 0;
-    virtual void handleKeyDown(unsigned int key,
-                               unsigned int modifiers) = 0;
-    virtual void handleKeyUp(unsigned int key,
-                             unsigned int modifiers) = 0;
-    virtual void handleMouseDown(int x, int y,
-                                 unsigned int buttons, unsigned int modifiers) = 0;
-    virtual void handleMouseClick(int x, int y,
-                                  unsigned int buttons, unsigned int modifiers,
-                                  unsigned int nth) = 0;
-    virtual void handleMouseMove(int x, int y,
-                                 int dx, int dy, unsigned int buttons,
+    virtual void frame_synced() = 0;
+    virtual void frame_unsynced(double deltaT) = 0;
+    virtual void dispatch_key_down(unsigned int key,
+                                   unsigned int modifiers) = 0;
+    virtual void dispatch_key_up(unsigned int key,
                                  unsigned int modifiers) = 0;
-    virtual void handleMouseUp(int x, int y,
-                               unsigned int buttons, unsigned int modifiers) = 0;
-    virtual void handleMouseScroll(int x, int y,
-                                   int scrollX, int scrollY) = 0;
-    virtual void handleResize(unsigned int w, unsigned int h) = 0;
-    virtual void handleTextInput(const char *text) = 0;
-    virtual void handleHide() = 0;
-    virtual void handleShow() = 0;
-    virtual void handleWMQuit() = 0;
+    virtual void dispatch_mouse_down(int x, int y,
+                                     unsigned int buttons,
+                                     unsigned int modifiers) = 0;
+    virtual void dispatch_mouse_click(int x, int y,
+                                      unsigned int buttons,
+                                      unsigned int modifiers,
+                                      unsigned int nth) = 0;
+    virtual void dispatch_mouse_move(int x, int y,
+                                     int dx, int dy,
+                                     unsigned int buttons,
+                                     unsigned int modifiers) = 0;
+    virtual void dispatch_mouse_up(int x, int y,
+                                   unsigned int buttons,
+                                   unsigned int modifiers) = 0;
+    virtual void dispatch_scroll(int x, int y,
+                                 int scrollX, int scrollY) = 0;
+    virtual void dispatch_resize(unsigned int w, unsigned int h) = 0;
+    virtual void dispatch_text_input(const char *text) = 0;
+    virtual void dispatch_hide() = 0;
+    virtual void dispatch_show() = 0;
+    virtual void dispatch_wm_quit() = 0;
 };
 
 typedef boost::shared_ptr<EventSink> EventSinkHandle;

@@ -105,18 +105,18 @@ void EventLoop::run()
                 const TimeFloat frameLength = _deltaT;
                 while (accumulatedTime >= frameLength) {
                     accumulatedTime -= frameLength;
-                    eventSink->frameSynced();
+                    eventSink->frame_synced();
                     syncedFrameCount++;
                 }
 
                 lastUpdate = currentUpdate;
-                eventSink->frameUnsynced(interval);
+                eventSink->frame_unsynced(interval);
                 frameCount++;
                 if (_frameCount > 0) {
                     _currentFrameCount++;
                     if (_currentFrameCount >= _frameCount) {
                         log->log(Information, "Frame count limit reached, injecting WMQuit event");
-                        eventSink->handleWMQuit();
+                        eventSink->dispatch_wm_quit();
                     }
                 }
             } else {
