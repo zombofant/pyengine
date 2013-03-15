@@ -64,7 +64,10 @@ void AbstractWidget::_parent_changed()
 
 void AbstractWidget::_root_changed()
 {
-
+    _focused = false;
+    _hovered = false;
+    _active = false;
+    _invalidate_computed_style();
 }
 
 void AbstractWidget::set_root(RootPtr root)
@@ -273,9 +276,30 @@ void ParentWidget::realign()
 void ParentWidget::render()
 {
     this->AbstractWidget::render();
-    for (auto child: *this) {
-        child->realign();
+    for (auto it = _children.crbegin();
+         it != _children.crend();
+         it++)
+    {
+        (*it)->render();
     }
+}
+
+/* PyEngine::Widget */
+
+Widget::Widget():
+    AbstractWidget()
+{
+
+}
+
+Widget::~Widget()
+{
+
+}
+
+WidgetPtr Widget::hittest(const Point& p)
+{
+    return (_absolute_rect.contains(p) ? shared_from_this() : WidgetPtr());
 }
 
 }

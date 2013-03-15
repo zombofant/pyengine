@@ -61,7 +61,6 @@ public:
 protected:
     ParentWPtr _parent;
     RootWPtr _root;
-private:
     bool _alignment_invalidated, _computed_style_invalidated;
     Rect _absolute_rect;
     bool _visible, _enabled, _active, _hovered, _focused;
@@ -150,6 +149,14 @@ public:
     virtual WidgetPtr hittest(const Point& p);
     virtual void realign();
     virtual void render();
+};
+
+class Widget: public AbstractWidget {
+public:
+    Widget();
+    virtual ~Widget();
+public:
+    virtual WidgetPtr hittest(const Point& p);
 };
 
 }
