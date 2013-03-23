@@ -92,7 +92,7 @@ public:
         return _parent.lock();
     };
 
-    virtual RootPtr get_root() const {
+    virtual RootPtr get_root() {
         return _root.lock();
     };
 
