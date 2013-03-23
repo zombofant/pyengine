@@ -91,6 +91,9 @@ public:
     };
 };
 
+typedef std::shared_ptr<Fill> FillPtr;
+typedef CSSInheritable<FillPtr> CSSFillPtr;
+
 /**
  * This is a transparent filler.
  */
