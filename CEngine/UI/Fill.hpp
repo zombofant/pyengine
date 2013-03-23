@@ -89,6 +89,11 @@ public:
     virtual void set_repeat_y(const RepeatMode value) {
         _repeat_y = value;
     };
+public:
+    virtual bool operator==(const Fill& other) const = 0;
+    inline bool operator!=(const Fill& other) const {
+        return !(operator==(other));
+    };
 };
 
 typedef std::shared_ptr<Fill> FillPtr;
@@ -113,6 +118,8 @@ public:
      * Does nothing.
      */
     virtual void in_cairo(cairo_t* ctx, const Rect& rect) const;
+public:
+    virtual bool operator==(const Fill& other) const;
 };
 
 /**
@@ -130,6 +137,7 @@ private:
     double _r, _g, _b, _a;
 public:
     virtual void set_source(cairo_t* ctx, const Rect& rect) const;
+    virtual bool operator==(const Fill& oth) const;
 public:
     inline double get_r() const {
         return _r;
@@ -189,6 +197,7 @@ public:
     virtual void set_repeat_x(RepeatMode value);
     virtual void set_repeat_y(RepeatMode value);
     virtual void set_source(cairo_t* ctx, const Rect& rect) const;
+    virtual bool operator==(const Fill& oth) const;
 };
 
 /**
@@ -207,6 +216,7 @@ private:
     cairo_surface_t* _image;
 public:
     virtual void set_source(cairo_t* ctx, const Rect& rect) const;
+    virtual bool operator==(const Fill& oth) const;
 };
 
 }

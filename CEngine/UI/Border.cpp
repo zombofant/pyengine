@@ -106,6 +106,11 @@ void BorderEdge::set_width(const css_coord_int_t& value)
     _width = value;
 }
 
+bool BorderEdge::operator==(const BorderEdge& other) const {
+    return ((_width == other._width) &&
+            (_fill == other._fill));
+}
+
 /* PyEngine::Border */
 
 Border::Border():
@@ -209,6 +214,19 @@ FloatBox Border::get_half_box() const
         (coord_float_t)_edges[2]._width / 2,
         (coord_float_t)_edges[1]._width / 2,
         (coord_float_t)_edges[3]._width / 2);
+}
+
+bool Border::operator==(const Border& other) const
+{
+    for (typename decltype(_edges)::size_type i = 0; i < _edges.size(); i++) {
+        if (_corners[i] != other._corners[i]) {
+            return false;
+        }
+        if (_edges[i] != other._edges[i]) {
+            return false;
+        }
+    }
+    return true;
 }
 
 }

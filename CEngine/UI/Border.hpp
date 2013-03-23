@@ -66,6 +66,11 @@ public:
     void set_width(const css_coord_int_t& value);
 
     friend class Border;
+public:
+    bool operator==(const BorderEdge& other) const;
+    inline bool operator!=(const BorderEdge& other) const {
+        return !(operator==(other));
+    };
 };
 
 class Border: public BorderComponent
@@ -129,6 +134,11 @@ public:
     };
     inline void set_bottom_left_radius(const css_coord_int_t& value) {
         _corners[3] = value;
+    };
+public:
+    bool operator==(const Border& other) const;
+    inline bool operator!=(const Border& other) const {
+        return !(operator==(other));
     };
 };
 

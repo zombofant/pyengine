@@ -3,6 +3,7 @@ add_library(pyengine_UI
   "Shapes.cpp"
   "Fill.cpp"
   "Border.cpp"
+  "Style.cpp"
   "WidgetBase.cpp"
   "RootWidget.cpp"
 )

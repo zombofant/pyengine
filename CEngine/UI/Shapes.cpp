@@ -114,16 +114,6 @@ Box& Box::operator= (const Box& ref)
     return *this;
 }
 
-void Box::_check_value(const coord_int_t value) const
-{
-    if (value == (coord_int_t)Auto()) {
-        throw BoxError("Non-margin boxes do not support AUTO value.");
-    }
-    if (value < 0) {
-        throw BoxError("Non-margin boxes do not allow negative values.");
-    }
-}
-
 /* PyEngine::FloatBox */
 
 FloatBox::FloatBox():
@@ -155,16 +145,6 @@ FloatBox& FloatBox::operator=(const FloatBox& ref)
 {
     this->GenericBox<coord_float_t>::operator=(ref);
     return *this;
-}
-
-void FloatBox::_check_value(const coord_float_t value) const
-{
-    if (value == (coord_float_t)Auto()) {
-        throw BoxError("Non-margin boxes do not support AUTO value.");
-    }
-    if (value < 0) {
-        throw BoxError("Non-margin boxes do not allow negative values.");
-    }
 }
 
 bool FloatBox::operator==(const Box& b) const
@@ -213,50 +193,118 @@ Rect& Rect::operator= (const Rect &ref)
     return *this;
 }
 
+/* PyEngine::CSSBox */
+
+CSSBox::CSSBox():
+    GenericBox<css_coord_int_t>()
+{
+
+}
+
+CSSBox::CSSBox(css_coord_int_t value):
+    GenericBox<css_coord_int_t>(value)
+{
+
+}
+
+CSSBox::CSSBox(css_coord_int_t left, css_coord_int_t top,
+               css_coord_int_t right, css_coord_int_t bottom):
+    GenericBox<css_coord_int_t>(left, top, right, bottom)
+{
+
+}
+
+CSSBox::CSSBox(const CSSBox& ref):
+    GenericBox<css_coord_int_t>(ref)
+{
+
+}
+
+CSSBox::CSSBox(const Box& ref):
+    GenericBox<css_coord_int_t>(
+        ref.get_left(),
+        ref.get_top(),
+        ref.get_right(),
+        ref.get_bottom())
+{
+
+}
+
+CSSBox& CSSBox::operator=(const CSSBox& ref)
+{
+    this->GenericBox<css_coord_int_t>::operator=(ref);
+    return *this;
+}
+
+CSSBox& CSSBox::operator=(const Box& ref)
+{
+    _left = ref.get_left();
+    _top = ref.get_top();
+    _right = ref.get_right();
+    _bottom = ref.get_bottom();
+    return *this;
+}
 
 /* PyEngine::Margin */
 
 Margin::Margin():
-    Box::Box()
+    CSSBox()
 {
 
 }
 
-Margin::Margin(coord_int_t value):
-    Box::Box(value)
+Margin::Margin(css_coord_int_t value):
+    CSSBox(value)
 {
 
 }
 
-Margin::Margin(coord_int_t left, coord_int_t top,
-               coord_int_t right, coord_int_t bottom):
-    Box::Box(left, top, right, bottom)
-{
-
-}
-
-Margin::Margin(const Box& ref):
-    Box::Box(ref)
+Margin::Margin(css_coord_int_t left, css_coord_int_t top,
+               css_coord_int_t right, css_coord_int_t bottom):
+    CSSBox(left, top, right, bottom)
 {
 
 }
 
 Margin::Margin(const Margin& ref):
-    Box::Box(ref)
+    CSSBox(ref)
 {
 
 }
 
-Margin& Margin::operator= (const Margin& ref)
+Margin::Margin(const CSSBox& ref):
+    CSSBox(ref)
 {
-    this->Box::operator=(ref);
+
+}
+
+Margin::Margin(const Box& ref):
+    CSSBox(ref)
+{
+
+}
+
+Margin& Margin::operator=(const Margin& ref)
+{
+    this->CSSBox::operator=(ref);
     return *this;
 }
 
-Margin& Margin::operator= (const Box& ref)
+Margin& Margin::operator=(const CSSBox& ref)
 {
-    this->Box::operator=(ref);
+    this->CSSBox::operator=(ref);
     return *this;
+}
+
+Margin& Margin::operator=(const Box& ref)
+{
+    this->CSSBox::operator=(ref);
+    return *this;
+}
+
+void Margin::_check_value(const css_coord_int_t value) const
+{
+
 }
 
 }

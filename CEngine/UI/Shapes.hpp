@@ -27,6 +27,7 @@ authors named in the AUTHORS file.
 #define _PYE_UI_SHAPES_H
 
 #include <stdexcept>
+#include <cmath>
 
 #include "CSS.hpp"
 
@@ -114,7 +115,8 @@ public:
     {
 
     };
-    GenericBox(coord_t value):
+
+    explicit GenericBox(coord_t value):
         _left(value),
         _top(value),
         _right(value),
@@ -150,7 +152,14 @@ public:
 protected:
     coord_t _left, _top, _right, _bottom;
 protected:
-    virtual void _check_value(const coord_t value) const = 0;
+    virtual void _check_value(const coord_t value) const {
+        if (Auto::is_auto(value)) {
+            throw BoxError("Non-margin boxes do not support Auto value.");
+        }
+        if (value < 0) {
+            throw BoxError("Non-margin boxes do not allow negative values.");
+        }
+    };
 public:
     inline void set_left(const coord_t value) {
         _check_value(value);
@@ -204,28 +213,24 @@ class Box: public GenericBox<coord_int_t>
 {
 public:
     Box();
-    Box(coord_int_t value);
+    explicit Box(coord_int_t value);
     Box(coord_int_t left, coord_int_t right,
         coord_int_t top, coord_int_t bottom);
     Box(const Box& ref);
     Box& operator=(const Box& ref);
-protected:
-    virtual void _check_value(const coord_int_t value) const;
 };
 
 class FloatBox: public GenericBox<coord_float_t>
 {
 public:
     FloatBox();
-    FloatBox(coord_float_t value);
+    explicit FloatBox(coord_float_t value);
     FloatBox(coord_float_t left, coord_float_t right,
              coord_float_t top, coord_float_t bottom);
     FloatBox(const FloatBox& ref);
     FloatBox(const Box& ref);
     FloatBox& operator=(const Box& ref);
     FloatBox& operator=(const FloatBox& ref);
-protected:
-    virtual void _check_value(const coord_float_t value) const;
 public:
     inline bool operator==(const Box& b) const;
     inline bool operator!=(const Box& b) const;
@@ -516,21 +521,60 @@ public:
     Rect& operator=(const Rect& ref);
 };
 
-class Margin: public Box
+class CSSBox: public GenericBox<css_coord_int_t>
+{
+public:
+    CSSBox();
+    explicit CSSBox(css_coord_int_t value);
+    CSSBox(css_coord_int_t left, css_coord_int_t top,
+           css_coord_int_t right, css_coord_int_t bottom);
+    CSSBox(const CSSBox& ref);
+    CSSBox(const Box& ref);
+    CSSBox& operator=(const CSSBox& ref);
+    CSSBox& operator=(const Box& ref);
+};
+
+typedef CSSBox Padding;
+
+class Margin: public CSSBox
 {
 public:
     Margin();
-    Margin(coord_int_t value);
-    Margin(coord_int_t left, coord_int_t top,
-           coord_int_t right, coord_int_t bottom);
-    Margin(const Box& ref);
+    explicit Margin(css_coord_int_t value);
+    Margin(css_coord_int_t left, css_coord_int_t top,
+           css_coord_int_t right, css_coord_int_t bottom);
     Margin(const Margin& ref);
-    Margin& operator= (const Margin& ref);
-    Margin& operator= (const Box& ref);
+    Margin(const CSSBox& ref);
+    Margin(const Box& ref);
+    Margin& operator=(const Margin& ref);
+    Margin& operator=(const CSSBox& ref);
+    Margin& operator=(const Box& ref);
 protected:
-    virtual void _check_value(const coord_int_t value) const;
+    virtual void _check_value(const css_coord_int_t value) const;
 public:
-    void deautoify(const Rect& obj, const Rect &outer);
+    template <typename rect_t>
+    void deautoify(const rect_t& obj, const rect_t& outer) {
+        const coord_int_t hspace = round(outer.get_width() - obj.get_width());
+        const coord_int_t vspace = round(outer.get_height() - obj.get_height());
+
+        if (Auto::is_auto(_left) && Auto::is_auto(_right)) {
+            _left = std::max(0, hspace / 2);
+            _right = std::max(0, hspace - _left);
+        } else if (Auto::is_auto(_left)) {
+            _left = std::max(0, hspace - _right);
+        } else if (Auto::is_auto(_right)) {
+            _right = std::max(0, hspace - _left);
+        }
+
+        if (Auto::is_auto(_top) && Auto::is_auto(_bottom)) {
+            _top = std::max(0, vspace / 2);
+            _bottom = std::max(0, vspace - _top);
+        } else if (Auto::is_auto(_top)) {
+            _top = std::max(0, vspace - _bottom);
+        } else if (Auto::is_auto(_bottom)) {
+            _bottom = std::max(0, vspace - _top);
+        }
+    };
 };
 
 }

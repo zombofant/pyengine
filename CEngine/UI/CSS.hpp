@@ -44,6 +44,11 @@ struct Auto
     inline operator coord_float_t() const {
         return std::numeric_limits<coord_float_t>::signaling_NaN();
     };
+
+    template <typename coord_t>
+    static inline bool is_auto(coord_t value) {
+        return (coord_t)Auto() == value;
+    };
 };
 
 class UnresolvedInheritable: std::runtime_error
@@ -57,9 +62,11 @@ enum _Inherit {
     Inherit
 };
 
-template <typename value_type>
+template <typename _value_type>
 struct CSSInheritable
 {
+public:
+    typedef _value_type value_type;
 public:
     CSSInheritable():
         _inherit(false),
@@ -96,6 +103,14 @@ public:
 
     };
 
+    template<typename... arg_ts>
+    explicit CSSInheritable(arg_ts... args):
+        _inherit(false),
+        _value(args...)
+    {
+
+    };
+
     CSSInheritable& operator=(const CSSInheritable<value_type>& ref)
     {
         _inherit = ref._inherit;
@@ -109,6 +124,41 @@ public:
 private:
     bool _inherit;
     value_type _value;
+private:
+    template <typename other_value_type>
+    auto eq_impl(const other_value_type& oth, long v = 0) const
+        -> decltype(oth.is_inherit())
+    {
+        if (oth.is_inherit() || is_inherit()) {
+            return false;
+        }
+        return (const typename other_value_type::value_type&)oth ==
+            (const value_type&)(*this);
+    };
+
+    template <typename other_value_type>
+    bool eq_impl(const other_value_type& oth, int v = 0) const
+    {
+        return oth == (const value_type&)_value;
+    };
+
+    template <typename other_value_type>
+    auto ne_impl(const other_value_type& oth, long v = 0) const
+        -> decltype(oth.is_inherit())
+    {
+        if (oth.is_inherit() || is_inherit()) {
+            return false;
+        }
+        return (const typename other_value_type::value_type&)oth !=
+            (const value_type&)(*this);
+    };
+
+    template <typename other_value_type>
+    bool ne_impl(const other_value_type& oth, int v = 0) const
+    {
+        return oth != (const value_type&)_value;
+    };
+
 public:
     bool is_inherit() const {
         return _inherit;
@@ -121,11 +171,21 @@ public:
         return _value;
     };
 
-    operator value_type() const {
+    operator const value_type&() const {
         if (_inherit) {
             throw UnresolvedInheritable("Inheritable is unresolved.");
         }
         return _value;
+    };
+
+    template <typename other_value_type>
+    bool operator==(const other_value_type& oth) const {
+        return eq_impl(oth, 0L);
+    };
+
+    template <typename other_value_type>
+    bool operator!=(const other_value_type& oth) const {
+        return ne_impl(oth, 0L);
     };
 };
 

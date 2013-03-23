@@ -25,6 +25,8 @@ authors named in the AUTHORS file.
 **********************************************************************/
 #include "Fill.hpp"
 
+#include <cstring>
+
 namespace PyEngine {
 
 static const int GRADIENT_DIRECTION_WH[2][2] = {
@@ -107,6 +109,17 @@ void Transparent::in_cairo(cairo_t* ctx, const Rect& rect) const
 
 }
 
+bool Transparent::operator==(const Fill& other) const
+{
+    if (dynamic_cast<const Transparent*>(&other) != nullptr)
+        return false;
+    const Colour* colour = dynamic_cast<const Colour*>(&other);
+    if (colour) {
+        return colour->get_a() == 0;
+    }
+    return false;
+}
+
 /* PyEngine::Colour */
 
 Colour::Colour():
@@ -150,6 +163,18 @@ Colour& Colour::operator=(const Colour &ref)
 void Colour::set_source(cairo_t* ctx, const Rect& rect) const
 {
     cairo_set_source_rgba(ctx, _r, _g, _b, _a);
+}
+
+bool Colour::operator==(const Fill& oth) const
+{
+    const Colour* othc = dynamic_cast<const Colour*>(&oth);
+    if (!othc) {
+        return false;
+    }
+    return ((_r == othc->_r) &&
+            (_g == othc->_g) &&
+            (_b == othc->_b) &&
+            (_a == othc->_a));
 }
 
 /* PyEngine::Gradient::Stop */
@@ -255,6 +280,45 @@ void Gradient::set_source(cairo_t* ctx, const Rect& rect) const
     cairo_set_matrix(ctx, &mat);
 }
 
+bool Gradient::operator==(const Fill& oth) const
+{
+    struct stop {
+        double p, r, g, b, a;
+    };
+
+    const Gradient* othg = dynamic_cast<const Gradient*>(&oth);
+    if (!othg) {
+        return false;
+    }
+    int my_count = 0, oth_count = 0;
+    cairo_pattern_get_color_stop_count(_patt, &my_count);
+    cairo_pattern_get_color_stop_count(othg->_patt, &oth_count);
+
+    if (my_count != oth_count) {
+        return false;
+    }
+
+    for (int i = 0; i < my_count; i++) {
+        stop my_stop, oth_stop;
+        cairo_pattern_get_color_stop_rgba(
+            _patt, i, &my_stop.p,
+            &my_stop.r, &my_stop.g, &my_stop.b, &my_stop.a);
+        cairo_pattern_get_color_stop_rgba(
+            othg->_patt, i, &oth_stop.p,
+            &oth_stop.r, &oth_stop.g, &oth_stop.b, &oth_stop.a);
+        if ((my_stop.p != oth_stop.p) ||
+            (my_stop.r != oth_stop.r) ||
+            (my_stop.g != oth_stop.g) ||
+            (my_stop.b != oth_stop.b) ||
+            (my_stop.a != oth_stop.a))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 /* PyEngine::Image */
 
 Image::Image():
@@ -296,6 +360,35 @@ void Image::set_source(cairo_t* ctx, const Rect& rect) const
         cairo_pattern_set_extend(src, CAIRO_EXTEND_REPEAT);
     }
     cairo_set_matrix(ctx, &mat);
+}
+
+bool Image::operator==(const Fill& oth) const
+{
+    const Image* othi = dynamic_cast<const Image*>(&oth);
+    if (!othi) {
+        return false;
+    }
+
+    if (!_image && !othi->_image) {
+        return true;
+    } else if (!_image ^ !othi->_image) {
+        return false;
+    }
+    size_t buffer_size =
+        cairo_image_surface_get_stride(_image) *
+        cairo_image_surface_get_height(_image);
+
+    if ((cairo_image_surface_get_width(_image) != cairo_image_surface_get_width(othi->_image)) ||
+        (cairo_image_surface_get_height(_image) != cairo_image_surface_get_height(othi->_image)) ||
+        (cairo_image_surface_get_format(_image) != cairo_image_surface_get_format(othi->_image)) ||
+        (cairo_image_surface_get_stride(_image) != cairo_image_surface_get_stride(othi->_image)))
+    {
+        return false;
+    }
+
+    return memcmp(cairo_image_surface_get_data(_image),
+                  cairo_image_surface_get_data(othi->_image),
+                  buffer_size) == 0;
 }
 
 }
