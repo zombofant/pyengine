@@ -30,8 +30,7 @@ namespace PyEngine {
 /* PyEngine::RootWidget */
 
 RootWidget::RootWidget():
-    AbstractWidget(),
-    WidgetContainer(),
+    ParentWidget(),
     EventSink(),
     std::enable_shared_from_this<RootWidget>()
 {

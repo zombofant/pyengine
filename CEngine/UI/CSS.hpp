@@ -29,6 +29,7 @@ authors named in the AUTHORS file.
 #include <stdexcept>
 #include <memory>
 #include <limits>
+#include <bitset>
 
 namespace PyEngine {
 
@@ -104,7 +105,7 @@ public:
     };
 
     template<typename... arg_ts>
-    explicit CSSInheritable(arg_ts... args):
+    CSSInheritable(arg_ts... args):
         _inherit(false),
         _value(args...)
     {
@@ -191,6 +192,64 @@ public:
 
 typedef CSSInheritable<coord_int_t> css_coord_int_t;
 typedef CSSInheritable<coord_float_t> css_coord_float_t;
+
+enum CSSStateFlag {
+    Hovered,
+    Focused,
+    Active,
+    Disabled
+};
+
+typedef std::bitset<std::numeric_limits<CSSStateFlag>::max()> _CSSStateBitset;
+
+class CSSState: public _CSSStateBitset
+{
+public:
+    CSSState();
+    CSSState(std::initializer_list<CSSStateFlag> flags);
+public:
+    inline CSSState& set(CSSStateFlag flag, bool value = true) {
+        this->_CSSStateBitset::set(size_t(flag), value);
+        return *this;
+    };
+
+    inline CSSState& set(std::initializer_list<CSSStateFlag> flags) {
+        for (auto flag: flags) {
+            this->_CSSStateBitset::set(size_t(flag));
+        }
+        return *this;
+    };
+
+    inline CSSState& reset(CSSStateFlag flag) {
+        this->_CSSStateBitset::reset(size_t(flag));
+        return *this;
+    };
+
+    inline CSSState& reset(std::initializer_list<CSSStateFlag> flags) {
+        for (auto flag: flags) {
+            this->_CSSStateBitset::reset(size_t(flag));
+        }
+        return *this;
+    };
+
+    inline CSSState& flip(CSSStateFlag flag) {
+        this->_CSSStateBitset::flip(size_t(flag));
+        return *this;
+    };
+};
+
+template <const char* name>
+struct css_attrib_element_name
+{
+    css_attrib_element_name() = default;
+    css_attrib_element_name(const css_attrib_element_name& ref) = default;
+    css_attrib_element_name& operator=(const css_attrib_element_name& ref) = default;
+    virtual ~css_attrib_element_name() {};
+public:
+    virtual const char* element_name() {
+        return name;
+    };
+};
 
 }
 

@@ -32,17 +32,12 @@ namespace PyEngine {
 /* PyEngine::AbstractWidget */
 
 AbstractWidget::AbstractWidget():
-    std::enable_shared_from_this<AbstractWidget>(),
     _parent(),
     _root(),
     _alignment_invalidated(true),
     _computed_style_invalidated(true),
     _absolute_rect(0, 0, 0, 0),
-    _visible(true),
-    _enabled(true),
-    _active(false),
-    _hovered(false),
-    _focused(false)
+    _visible(true)
 {
 
 }
@@ -64,9 +59,7 @@ void AbstractWidget::_parent_changed()
 
 void AbstractWidget::_root_changed()
 {
-    _focused = false;
-    _hovered = false;
-    _active = false;
+    _state.reset({Hovered, Focused, Active});
     invalidate_computed_style();
 }
 
@@ -92,6 +85,11 @@ void AbstractWidget::set_parent(ParentPtr parent)
 void AbstractWidget::do_align()
 {
 
+}
+
+const char* AbstractWidget::element_name() const
+{
+    return nullptr;
 }
 
 void AbstractWidget::realign()
@@ -176,21 +174,22 @@ bool AbstractWidget::ev_text_input(const char* buf)
     return false;
 }
 
-/* PyEngine::WidgetContainer */
+/* PyEngine::ParentWidget */
 
-WidgetContainer::WidgetContainer():
-    std::enable_shared_from_this<WidgetContainer>(),
+ParentWidget::ParentWidget():
+    AbstractWidget(),
+    std::enable_shared_from_this<ParentWidget>(),
     _children()
 {
 
 }
 
-WidgetContainer::~WidgetContainer()
+ParentWidget::~ParentWidget()
 {
 
 }
 
-WidgetPtr WidgetContainer::_hittest(const Point& p) const
+WidgetPtr ParentWidget::_hittest(const Point& p) const
 {
     for (auto it = _children.crbegin();
          it != _children.crend();
@@ -204,7 +203,15 @@ WidgetPtr WidgetContainer::_hittest(const Point& p) const
     return WidgetPtr();
 }
 
-void WidgetContainer::add(WidgetPtr child)
+void ParentWidget::_root_changed()
+{
+    this->AbstractWidget::_root_changed();
+    for (auto child: *this) {
+        child->_root_changed();
+    }
+}
+
+void ParentWidget::add(WidgetPtr child)
 {
     if (child->get_parent()) {
         WidgetError("Cannot add a child which is already bound to a parent.");
@@ -213,27 +220,41 @@ void WidgetContainer::add(WidgetPtr child)
     child->set_parent(shared_from_this());
 }
 
-WidgetContainer::iterator WidgetContainer::begin()
+ParentWidget::iterator ParentWidget::begin()
 {
     return _children.begin();
 }
 
-WidgetContainer::const_iterator WidgetContainer::cbegin() const
+void ParentWidget::bring_to_front(WidgetPtr child)
+{
+    auto child_it = find(child);
+    if (child_it == end()) {
+        throw WidgetError("Cannot bring non-child to front.");
+    }
+
+    _children.erase(child_it);
+    /* don't forget that the back-front sematics are exchanged here,
+       as we usually want to bring stuff to front and new widgets
+       should also be rendered first. */
+    _children.push_back(child);
+}
+
+ParentWidget::const_iterator ParentWidget::cbegin() const
 {
     return _children.cbegin();
 }
 
-WidgetContainer::const_iterator WidgetContainer::cend() const
+ParentWidget::const_iterator ParentWidget::cend() const
 {
     return _children.cend();
 }
 
-WidgetContainer::iterator WidgetContainer::end()
+ParentWidget::iterator ParentWidget::end()
 {
     return _children.end();
 }
 
-WidgetContainer::iterator WidgetContainer::find(WidgetPtr child)
+ParentWidget::iterator ParentWidget::find(WidgetPtr child)
 {
     for (auto it = begin(); it != end(); it++) {
         if (*it == child) {
@@ -243,7 +264,7 @@ WidgetContainer::iterator WidgetContainer::find(WidgetPtr child)
     return end();
 }
 
-WidgetContainer::const_iterator WidgetContainer::find(WidgetPtr child) const
+ParentWidget::const_iterator ParentWidget::find(WidgetPtr child) const
 {
     for (auto it = cbegin(); it != cend(); it++) {
         if (*it == child) {
@@ -253,7 +274,7 @@ WidgetContainer::const_iterator WidgetContainer::find(WidgetPtr child) const
     return cend();
 }
 
-void WidgetContainer::remove(WidgetPtr child)
+void ParentWidget::remove(WidgetPtr child)
 {
     auto it = begin();
     for (;
@@ -274,42 +295,6 @@ void WidgetContainer::remove(WidgetPtr child)
     }
 
     _children.erase(it);
-}
-
-/* PyEngine::ParentWidget */
-
-ParentWidget::ParentWidget():
-    AbstractWidget(),
-    WidgetContainer()
-{
-
-}
-
-ParentWidget::~ParentWidget()
-{
-
-}
-
-void ParentWidget::_root_changed()
-{
-    this->AbstractWidget::_root_changed();
-    for (auto child: *this) {
-        child->_root_changed();
-    }
-}
-
-void ParentWidget::bring_to_front(WidgetPtr child)
-{
-    auto child_it = find(child);
-    if (child_it == end()) {
-        throw WidgetError("Cannot bring non-child to front.");
-    }
-
-    _children.erase(child_it);
-    /* don't forget that the back-front sematics are exchanged here,
-       as we usually want to bring stuff to front and new widgets
-       should also be rendered first. */
-    _children.push_back(child);
 }
 
 void ParentWidget::send_to_back(WidgetPtr child)
@@ -356,7 +341,8 @@ void ParentWidget::render()
 /* PyEngine::Widget */
 
 Widget::Widget():
-    AbstractWidget()
+    AbstractWidget(),
+    std::enable_shared_from_this<Widget>()
 {
 
 }

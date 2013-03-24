@@ -1,4 +1,5 @@
 add_library(pyengine_UI
+  "Selectors.cpp"
   "CSS.cpp"
   "Shapes.cpp"
   "Fill.cpp"

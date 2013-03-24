@@ -30,6 +30,7 @@ authors named in the AUTHORS file.
 #include <vector>
 #include <stdexcept>
 
+#include "CSS.hpp"
 #include "Shapes.hpp"
 
 namespace PyEngine {
@@ -42,18 +43,18 @@ public:
 };
 
 class AbstractWidget;
-class WidgetContainer;
 class RootWidget;
+class ParentWidget;
 
-typedef std::shared_ptr<WidgetContainer> ParentPtr;
-typedef std::weak_ptr<WidgetContainer> ParentWPtr;
+typedef std::shared_ptr<ParentWidget> ParentPtr;
+typedef std::weak_ptr<ParentWidget> ParentWPtr;
 
 typedef std::shared_ptr<RootWidget> RootPtr;
 typedef std::weak_ptr<RootWidget> RootWPtr;
 
 typedef std::shared_ptr<AbstractWidget> WidgetPtr;
 
-class AbstractWidget: public std::enable_shared_from_this<AbstractWidget>
+class AbstractWidget
 {
 public:
     AbstractWidget();
@@ -63,7 +64,8 @@ protected:
     RootWPtr _root;
     bool _alignment_invalidated, _computed_style_invalidated;
     Rect _absolute_rect;
-    bool _visible, _enabled, _active, _hovered, _focused;
+    bool _visible;
+    CSSState _state;
 protected:
     virtual void _parent_changed();
     virtual void _root_changed();
@@ -99,9 +101,17 @@ public:
     void set_parent(ParentPtr parent);
 public:
     virtual void do_align();
+    virtual const char* element_name() const;
     virtual WidgetPtr hittest(const Point& p) = 0;
     virtual void realign();
     virtual void render();
+
+    inline CSSState& state() {
+        return _state;
+    };
+    inline const CSSState& state() const {
+        return _state;
+    };
 public:
     virtual bool ev_activate();
     virtual bool ev_deactivate();
@@ -128,48 +138,42 @@ public:
     friend class RootWidget;
 };
 
-class WidgetContainer: public std::enable_shared_from_this<WidgetContainer>
+class ParentWidget: public AbstractWidget,
+                    public std::enable_shared_from_this<ParentWidget>
 {
 public:
     typedef std::vector<WidgetPtr> container_type;
     typedef typename container_type::iterator iterator;
     typedef typename container_type::const_iterator const_iterator;
 public:
-    WidgetContainer();
-    virtual ~WidgetContainer();
+    ParentWidget();
+    virtual ~ParentWidget();
 protected:
     container_type _children;
 protected:
     WidgetPtr _hittest(const Point& p) const;
+    virtual void _root_changed();
 public:
     void add(WidgetPtr child);
     iterator begin();
+    void bring_to_front(WidgetPtr child);
     const_iterator cbegin() const;
     const_iterator cend() const;
     iterator end();
     iterator find(WidgetPtr child);
     const_iterator find(WidgetPtr child) const;
     void remove(WidgetPtr child);
-public:
-    virtual RootPtr get_root() const = 0;
-};
-
-class ParentWidget: public AbstractWidget, public WidgetContainer {
-public:
-    ParentWidget();
-    virtual ~ParentWidget();
-protected:
-    virtual void _root_changed();
-public:
-    void bring_to_front(WidgetPtr child);
     void send_to_back(WidgetPtr child);
 public:
+    virtual RootPtr get_root() const = 0;
     virtual WidgetPtr hittest(const Point& p);
     virtual void realign();
     virtual void render();
 };
 
-class Widget: public AbstractWidget {
+class Widget: public AbstractWidget,
+              public std::enable_shared_from_this<Widget>
+{
 public:
     Widget();
     virtual ~Widget();
