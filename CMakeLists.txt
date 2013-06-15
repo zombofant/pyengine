@@ -77,6 +77,7 @@ endif (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     )
 
     # python
+    set(Python_ADDITIONAL_VERSIONS 2.7 2.6 2.5 2.4)
     find_package(PythonInterp REQUIRED)
     find_package(PythonLibs REQUIRED)
     set(PYENGINE_INCLUDE_DIRS ${PYENGINE_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIR})
