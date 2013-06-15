@@ -5,3 +5,6 @@
 [submodule "CEngine/Contrib/BinPack"]
 	path = CEngine/Contrib/BinPack
 	url = https://github.com/zombofant/RectangleBinPack
+[submodule "Catch"]
+	path = Catch
+	url = https://github.com/philsquared/Catch
