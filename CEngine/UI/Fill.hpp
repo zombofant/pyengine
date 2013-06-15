@@ -75,6 +75,10 @@ public:
      * @param rect Rectangle to draw in.
      */
     virtual void in_cairo(cairo_t* ctx, const Rect& rect) const;
+
+    /**
+     * Return a new copy of the object.
+     */
 public:
     inline RepeatMode get_repeat_x() const {
         return _repeat_x;
@@ -118,6 +122,8 @@ public:
      * Does nothing.
      */
     virtual void in_cairo(cairo_t* ctx, const Rect& rect) const;
+
+    virtual Transparent* copy() const;
 public:
     virtual bool operator==(const Fill& other) const;
 };
@@ -133,11 +139,17 @@ public:
     Colour(double r, double g, double b, double a);
     Colour(const Colour& ref);
     Colour& operator=(const Colour& ref);
+
 private:
     double _r, _g, _b, _a;
+
 public:
     virtual void set_source(cairo_t* ctx, const Rect& rect) const;
+    virtual Colour* copy() const;
+
+public:
     virtual bool operator==(const Fill& oth) const;
+
 public:
     inline double get_r() const {
         return _r;
@@ -183,21 +195,27 @@ public:
         bool operator< (const Stop& ref);
 
     };
+
 public:
     Gradient(GradientDirection dir, std::initializer_list<Stop> stop);
     Gradient(const Gradient& ref);
     Gradient& operator=(const Gradient& ref);
     virtual ~Gradient();
+
 private:
     GradientDirection _dir;
     cairo_pattern_t* _patt;
+
 private:
     void copy_pattern(cairo_pattern_t* patt);
+
 public:
     virtual void set_repeat_x(RepeatMode value);
     virtual void set_repeat_y(RepeatMode value);
     virtual void set_source(cairo_t* ctx, const Rect& rect) const;
+    virtual Gradient* copy() const;
     virtual bool operator==(const Fill& oth) const;
+
 };
 
 /**
@@ -209,8 +227,8 @@ public:
     Image();
     Image(cairo_surface_t* image);
     Image(GL::AbstractImage2D* image);
-    Image(const Image& ref);
-    Image& operator=(const Image& ref);
+    Image(const Image& ref) = delete;
+    Image& operator=(const Image& ref) = delete;
     virtual ~Image();
 private:
     cairo_surface_t* _image;

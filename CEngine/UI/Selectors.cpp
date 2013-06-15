@@ -87,6 +87,11 @@ Selector::Selector(SelectorPtr chained):
 
 }
 
+Selector::~Selector()
+{
+
+}
+
 bool Selector::operator==(const Selector& oth_) const
 {
     if (bool(_chained) != bool(oth_._chained)) {

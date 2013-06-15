@@ -59,6 +59,7 @@ public:
     Style(const Style& ref);
     Style& operator=(const Style& ref);
     ~Style();
+
 private:
     CSSFillPtr _background;
     CSSBox _padding;
@@ -76,10 +77,12 @@ private:
     CSSInheritable<VerticalAlign> _vertical_align;
     css_coord_int_t _shear_x, _shear_y;
     PangoFontDescription* _font_cache;
+
 protected:
     inline void _invalidate_font() {
         _font_cache = nullptr;
     };
+
 public:
     StyleDiff calc_diff(const Style& other) const;
 
@@ -100,6 +103,12 @@ public:
     };
     inline const css_coord_int_t& get_box_spacing_y() const {
         return _box_spacing_y;
+    };
+    inline const css_coord_int_t& get_width() const {
+        return _width;
+    };
+    inline const css_coord_int_t& get_height() const {
+        return _height;
     };
     inline const CSSInheritable<uint32_t>& get_flex() const {
         return _flex;
@@ -176,6 +185,7 @@ public:
     };
 
     PangoFontDescription* get_font();
+
 };
 
 Style DefaultStyle();

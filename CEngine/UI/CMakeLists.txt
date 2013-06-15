@@ -5,7 +5,10 @@ add_library(pyengine_UI
   "Fill.cpp"
   "Border.cpp"
   "Style.cpp"
+  "BaseRules.cpp"
+  "Rules.cpp"
+  "Theme.cpp"
   "WidgetBase.cpp"
   "RootWidget.cpp"
 )
-# add_dependencies(pyengine_UI)
+add_dependencies(pyengine_UI pyengine_GL)

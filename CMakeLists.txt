@@ -42,6 +42,7 @@ endif (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
         "pyengine_RenderGraph"
         "pyengine_SceneGraph"
         "pyengine_Resources"
+        "pyengine_UI"
         "pyengine_GL"
         "pyengine_IO"
         "pyengine_Math"

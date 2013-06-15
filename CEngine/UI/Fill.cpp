@@ -109,10 +109,15 @@ void Transparent::in_cairo(cairo_t* ctx, const Rect& rect) const
 
 }
 
+Transparent* Transparent::copy() const
+{
+    return new Transparent(*this);
+}
+
 bool Transparent::operator==(const Fill& other) const
 {
     if (dynamic_cast<const Transparent*>(&other) != nullptr)
-        return false;
+        return true;
     const Colour* colour = dynamic_cast<const Colour*>(&other);
     if (colour) {
         return colour->get_a() == 0;
@@ -163,6 +168,11 @@ Colour& Colour::operator=(const Colour &ref)
 void Colour::set_source(cairo_t* ctx, const Rect& rect) const
 {
     cairo_set_source_rgba(ctx, _r, _g, _b, _a);
+}
+
+Colour* Colour::copy() const
+{
+    return new Colour(*this);
 }
 
 bool Colour::operator==(const Fill& oth) const
@@ -280,6 +290,11 @@ void Gradient::set_source(cairo_t* ctx, const Rect& rect) const
     cairo_set_matrix(ctx, &mat);
 }
 
+Gradient* Gradient::copy() const
+{
+    return new Gradient(*this);
+}
+
 bool Gradient::operator==(const Fill& oth) const
 {
     struct stop {
@@ -329,6 +344,12 @@ Image::Image():
 
 Image::Image(GL::AbstractImage2D* image):
     _image(image->cairoSurface())
+{
+
+}
+
+Image::Image(cairo_surface_t* image):
+    _image(image)
 {
 
 }

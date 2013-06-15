@@ -26,6 +26,8 @@ authors named in the AUTHORS file.
 #ifndef _PYE_UI_SHAPES_H
 #define _PYE_UI_SHAPES_H
 
+
+#include <ostream>
 #include <stdexcept>
 #include <cmath>
 
@@ -124,8 +126,8 @@ public:
     {
 
     };
-    GenericBox(coord_t left, coord_t right,
-               coord_t top, coord_t bottom):
+    GenericBox(coord_t left, coord_t top,
+               coord_t right, coord_t bottom):
         _left(left),
         _top(top),
         _right(right),
@@ -392,7 +394,7 @@ private:
                 (_top <= b._top) &&
                 (me_right >= b_right) &&
                 (me_bottom >= b_bottom));
-    };
+    }
 
     template <typename point_t>
     inline bool contains_impl(const point_t& p, int v = 0) const
@@ -406,12 +408,12 @@ private:
 
         return (_left <= p_x && p_x < me_right &&
                 _top <= p_y && p_y < me_bottom);
-    };
+    }
 public:
     template <typename other_t>
     bool contains(const other_t& b) const {
         return contains_impl<other_t>(b, 0L);
-    };
+    }
 
 
     void translate(const coord_t dx, const coord_t dy) {
@@ -423,7 +425,7 @@ public:
     void translate(const Point& point) {
         _left += point.get_x();
         _top += point.get_y();
-    };
+    }
 public:
     template <typename rect_t>
     inline bool operator==(const rect_t& b) const {
@@ -431,12 +433,12 @@ public:
                 (_top == b._top) &&
                 (_width == b._width) &&
                 (_height == b._height));
-    };
+    }
 
     template <typename rect_t>
     inline bool operator!=(const rect_t& b) const {
         return !(operator==(b));
-    };
+    }
 
     template <typename rect_t>
     GenericRect<coord_t>& operator&=(const rect_t& b) {
@@ -459,14 +461,14 @@ public:
         _width = new_right - new_left;
         _height = new_bottom - new_top;
         return *this;
-    };
+    }
 
     template <typename rect_t>
     GenericRect<coord_t> operator&(const rect_t& b) const {
         GenericRect<coord_t> result = GenericRect<coord_t>(*this);
         result &= b;
         return std::move(result);
-    };
+    }
 
     template <typename rect_t>
     GenericRect<coord_t>& operator|=(const rect_t& b) {
@@ -500,14 +502,14 @@ public:
             throw RectError("Cannot combine rects (not aligned).");
         }
         return *this;
-    };
+    }
 
     template <typename rect_t>
     GenericRect<coord_t> operator|(const rect_t& b) const {
         GenericRect<coord_t> result = GenericRect<coord_t>(*this);
         result |= b;
         return std::move(result);
-    };
+    }
 };
 
 class Rect: public GenericRect<coord_int_t>
@@ -574,10 +576,33 @@ public:
         } else if (Auto::is_auto(_bottom)) {
             _bottom = std::max(0, vspace - _top);
         }
-    };
+    }
 };
+
+template <typename box_value_t>
+std::ostream& box_to_stream(std::ostream& stream,
+                            const GenericBox<box_value_t> &box)
+{
+    return stream << "left=" << box.get_left() << ", "
+                  << "top=" << box.get_top() << ", "
+                  << "right=" << box.get_right() << ", "
+                  << "bottom=" << box.get_bottom();
+}
 
 }
 
+namespace std {
+
+inline ostream& operator<<(ostream& stream, const PyEngine::CSSBox &pad)
+{
+    return PyEngine::box_to_stream(stream << "CSSBox(", pad) << ")";
+}
+
+inline ostream& operator<<(ostream& stream, const PyEngine::Margin &margin)
+{
+    return PyEngine::box_to_stream(stream << "Margin(", margin) << ")";
+}
+
+}
 
 #endif

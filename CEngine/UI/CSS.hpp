@@ -26,6 +26,7 @@ authors named in the AUTHORS file.
 #ifndef _PYE_UI_CSS_H
 #define _PYE_UI_CSS_H
 
+#include <iostream>
 #include <stdexcept>
 #include <memory>
 #include <limits>
@@ -38,10 +39,12 @@ typedef double coord_float_t;
 
 struct Auto
 {
-    Auto();
+    Auto() = default;
+
     inline operator coord_int_t() const {
         return std::numeric_limits<coord_int_t>::min();
     };
+
     inline operator coord_float_t() const {
         return std::numeric_limits<coord_float_t>::signaling_NaN();
     };
@@ -49,7 +52,7 @@ struct Auto
     template <typename coord_t>
     static inline bool is_auto(coord_t value) {
         return (coord_t)Auto() == value;
-    };
+    }
 };
 
 class UnresolvedInheritable: std::runtime_error
@@ -59,7 +62,7 @@ public:
     UnresolvedInheritable(const char* what_arg);
 };
 
-enum _Inherit {
+enum inherit_t {
     Inherit
 };
 
@@ -76,7 +79,7 @@ public:
 
     };
 
-    CSSInheritable(_Inherit inherit):
+    CSSInheritable(inherit_t inherit):
         _inherit(inherit == Inherit),
         _value()
     {
@@ -99,7 +102,7 @@ public:
 
     CSSInheritable(const CSSInheritable<value_type>& ref):
         _inherit(ref._inherit),
-        _value((_inherit ? ref._value : value_type()))
+        _value(_inherit ? value_type() : ref._value)
     {
 
     };
@@ -110,7 +113,7 @@ public:
         _value(args...)
     {
 
-    };
+    }
 
     CSSInheritable& operator=(const CSSInheritable<value_type>& ref)
     {
@@ -125,40 +128,14 @@ public:
 private:
     bool _inherit;
     value_type _value;
+
 private:
-    template <typename other_value_type>
-    auto eq_impl(const other_value_type& oth, long v = 0) const
-        -> decltype(oth.is_inherit())
+    void require_not_inherit() const
     {
-        if (oth.is_inherit() || is_inherit()) {
-            return false;
+        if (_inherit) {
+            throw UnresolvedInheritable("Inheritable is unresolved.");
         }
-        return (const typename other_value_type::value_type&)oth ==
-            (const value_type&)(*this);
-    };
-
-    template <typename other_value_type>
-    bool eq_impl(const other_value_type& oth, int v = 0) const
-    {
-        return oth == (const value_type&)_value;
-    };
-
-    template <typename other_value_type>
-    auto ne_impl(const other_value_type& oth, long v = 0) const
-        -> decltype(oth.is_inherit())
-    {
-        if (oth.is_inherit() || is_inherit()) {
-            return false;
-        }
-        return (const typename other_value_type::value_type&)oth !=
-            (const value_type&)(*this);
-    };
-
-    template <typename other_value_type>
-    bool ne_impl(const other_value_type& oth, int v = 0) const
-    {
-        return oth != (const value_type&)_value;
-    };
+    }
 
 public:
     bool is_inherit() const {
@@ -166,28 +143,24 @@ public:
     };
 
     operator value_type() {
-        if (_inherit) {
-            throw UnresolvedInheritable("Inheritable is unresolved.");
-        }
+        require_not_inherit();
         return _value;
     };
 
     operator const value_type&() const {
-        if (_inherit) {
-            throw UnresolvedInheritable("Inheritable is unresolved.");
-        }
+        require_not_inherit();
         return _value;
     };
 
-    template <typename other_value_type>
-    bool operator==(const other_value_type& oth) const {
-        return eq_impl(oth, 0L);
-    };
+    value_type& get() {
+        require_not_inherit();
+        return _value;
+    }
 
-    template <typename other_value_type>
-    bool operator!=(const other_value_type& oth) const {
-        return ne_impl(oth, 0L);
-    };
+    const value_type& get() const {
+        require_not_inherit();
+        return _value;
+    }
 };
 
 typedef CSSInheritable<coord_int_t> css_coord_int_t;
@@ -251,6 +224,127 @@ public:
     };
 };
 
+namespace {
+
+template <typename t>
+struct value_is_inherit_impl
+{
+    static bool check(const t &v)
+    {
+        return false;
+    }
+};
+
+template <typename t>
+struct value_is_inherit_impl<CSSInheritable<t>>
+{
+    static bool check(const CSSInheritable<t> &v)
+    {
+        return v.is_inherit();
+    }
+};
+
+}
+
+template <typename T>
+inline bool value_is_inherit(const T& v)
+{
+    return value_is_inherit_impl<T>::check(v);
+}
+
+inline std::ostream& operator<<(std::ostream& stream, const Auto &auto_)
+{
+    return stream << "<css auto>";
+}
+
+}
+
+
+namespace {
+
+template <typename T1, typename T2>
+struct cmp_css_inheritable;
+
+template <typename T1, typename T2>
+struct cmp_css_inheritable<PyEngine::CSSInheritable<T1>, T2>
+{
+    static inline bool eq(const PyEngine::CSSInheritable<T1> &me, const T2 &oth)
+    {
+        return me.get() == oth;
+    }
+
+    static inline bool ne(const PyEngine::CSSInheritable<T1> &me, const T2 &oth)
+    {
+        return !eq(me, oth);
+    }
+};
+
+template <typename T1, typename T2>
+struct cmp_css_inheritable<PyEngine::CSSInheritable<T1>, PyEngine::CSSInheritable<T2>>
+{
+    static inline bool eq(const PyEngine::CSSInheritable<T1> &me,
+                          const PyEngine::CSSInheritable<T2> &oth)
+    {
+        if (me.is_inherit() || oth.is_inherit()) {
+            return false;
+        }
+        return me.get() == oth.get();
+    }
+
+    static inline bool ne(const PyEngine::CSSInheritable<T1> &me,
+                          const PyEngine::CSSInheritable<T2> &oth)
+    {
+        if (me.is_inherit() || oth.is_inherit()) {
+            return false;
+        }
+        return me.get() != oth.get();
+    }
+};
+
+template <typename T1>
+struct cmp_css_inheritable<PyEngine::CSSInheritable<T1>, PyEngine::inherit_t>
+{
+    static inline bool eq(const PyEngine::CSSInheritable<T1> &me,
+                          const PyEngine::inherit_t &oth)
+    {
+        return me.is_inherit();
+    }
+
+    static inline bool ne(const PyEngine::CSSInheritable<T1> &me,
+                          const PyEngine::inherit_t &oth)
+    {
+        return !eq(me, oth);
+    }
+};
+
+template <typename T1>
+struct cmp_css_inheritable<PyEngine::CSSInheritable<T1>, PyEngine::Auto>
+{
+    static inline bool eq(const PyEngine::CSSInheritable<T1> &me,
+                          const PyEngine::Auto &oth)
+    {
+        return me.get() == static_cast<const T1&>(oth);
+    }
+
+    static inline bool ne(const PyEngine::CSSInheritable<T1> &me,
+                          const PyEngine::Auto &oth)
+    {
+        return !eq(me, oth);
+    }
+};
+
+}
+
+template <typename T1, typename T2>
+bool operator==(const PyEngine::CSSInheritable<T1> &me, const T2 &oth)
+{
+    return cmp_css_inheritable<PyEngine::CSSInheritable<T1>, T2>::eq(me, oth);
+}
+
+template <typename T1, typename T2>
+bool operator!=(const PyEngine::CSSInheritable<T1> &me, const T2 &oth)
+{
+    return cmp_css_inheritable<PyEngine::CSSInheritable<T1>, T2>::ne(me, oth);
 }
 
 #endif
