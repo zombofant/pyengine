@@ -21,7 +21,7 @@ TEST_CASE("UI/Style/DefaultStyle",
     CHECK(style.get_vertical_align() == CSS_VERTICAL_ALIGN_TOP);
 }
 
-TEST_CASE("UI/Style/construction",
+TEST_CASE("UI/Style/Style/construction",
           "Test settings of default-constructed style")
 {
     Style style;
