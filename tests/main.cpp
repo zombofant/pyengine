@@ -1,6 +1,6 @@
 /**********************************************************************
 File name: main.cpp
-This file is part of: structstream++
+This file is part of: Pythonic Engine
 
 LICENSE
 
@@ -20,7 +20,7 @@ provisions of GPL License are applicable instead of those above.
 
 FEEDBACK & QUESTIONS
 
-For feedback and questions about structstream++ please e-mail one of the
+For feedback and questions about pyengine please e-mail one of the
 authors named in the AUTHORS file.
 **********************************************************************/
 #define CATCH_CONFIG_MAIN
