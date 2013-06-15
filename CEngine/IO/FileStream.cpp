@@ -66,14 +66,14 @@ sizeuint FDStream::seek(const int whence, const sizeint offset) {
     return soughtOffset;
 }
 
-const sizeuint FDStream::size() const {
+sizeuint FDStream::size() const {
     const sizeint pos = tell();
     const sizeint fsize = lseek(_fd, 0, SEEK_END);
     lseek(_fd, pos, SEEK_SET);
     return fsize;
 }
 
-const sizeuint FDStream::tell() const {
+sizeuint FDStream::tell() const {
     return lseek(_fd, 0, SEEK_CUR);
 }
 

@@ -46,7 +46,10 @@ VertexIndexListMap::~VertexIndexListMap()
 }
 
 void VertexIndexListMap::rangeCheck(const size_t index) {
-    if ((index < 0) || (index >= _vertices->size())) {
+    static_assert(std::numeric_limits<size_t>::min() == 0,
+        "If this assertion triggers, add an (index > 0) to the "
+        "if below and you're fine.");
+    if (index >= _vertices->size()) {
         // throw IndexError(index, 0, _vertices->size()-1);
         std::cerr << "throw IndexError(" << index << ", " << 0 << ", " << _vertices->size()-1 << ");" << std::endl;
         throw std::exception();

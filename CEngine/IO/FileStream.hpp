@@ -77,12 +77,12 @@ class FDStream: public Stream {
     public:
         virtual void flush();
         inline int fileno() const { return _fd; };
-        virtual sizeuint read(void *data, const sizeuint length);
-        virtual sizeuint seek(const int whence, const sizeint offset);
-        virtual const sizeuint size() const;
-        virtual const sizeuint tell() const;
-        virtual sizeuint write(const void *data, const sizeuint length);
-        virtual void close();
+        virtual sizeuint read(void *data, const sizeuint length) override;
+        virtual sizeuint seek(const int whence, const sizeint offset) override;
+        virtual sizeuint size() const override;
+        virtual sizeuint tell() const override;
+        virtual sizeuint write(const void *data, const sizeuint length) override;
+        virtual void close() override;
 };
 
 /**

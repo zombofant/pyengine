@@ -50,8 +50,8 @@ class PyStream: public Stream
         virtual void flush();
         virtual sizeuint read(void *data, const sizeuint length);
         virtual sizeuint seek(const int whence, const sizeint offset);
-        virtual const sizeuint size() const;
-        virtual const sizeuint tell() const;
+        virtual sizeuint size() const;
+        virtual sizeuint tell() const;
         virtual sizeuint write(const void *data, const sizeuint length);
         virtual void close();
     public:

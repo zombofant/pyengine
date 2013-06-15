@@ -178,7 +178,7 @@ sizeuint PyStream::seek(const int whence, const sizeint offset)
     return tell();
 }
 
-const sizeuint PyStream::size() const
+sizeuint PyStream::size() const
 {
     sizeuint pos = tell();
     try {
@@ -192,7 +192,7 @@ const sizeuint PyStream::size() const
     }
 }
 
-const sizeuint PyStream::tell() const
+sizeuint PyStream::tell() const
 {
     PyObject *pos = PyObject_CallObject(_tellCall, 0);
     if (pos && PyNumber_Check(pos))

@@ -139,7 +139,7 @@ class Stream {
          * but this does not change the current reading/writing
          * position.
          */
-        virtual const sizeuint size() const;
+        virtual sizeuint size() const;
 
         /**
          * This has the same effect as seek(SEEK_CUR, 0), except that it
@@ -156,7 +156,7 @@ class Stream {
          * tell must never throw an exception. At may return 0 if
          * telling the position/bytecount is not supported.
          */
-        virtual const sizeuint tell() const;
+        virtual sizeuint tell() const;
 
         /**
          * Write length bytes read from data to the stream. Returns the

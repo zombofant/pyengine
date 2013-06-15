@@ -56,13 +56,13 @@ sizeuint Stream::seek(const int whence, const sizeint offset)
     return 0;
 }
 
-const sizeuint Stream::size() const
+sizeuint Stream::size() const
 {
     raiseSeekNotSupportedError();
     return 0;
 }
 
-const sizeuint Stream::tell() const
+sizeuint Stream::tell() const
 {
     return 0;
 }

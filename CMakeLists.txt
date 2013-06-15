@@ -1,5 +1,12 @@
 cmake_minimum_required(VERSION 2.6)
 
+if (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+    # standalone build (e.g. for tests)
+    # require some flags
+    set(CMAKE_CXX_FLAGS "-g -Werror -Wextra -std=gnu++11 -msse -msse2 -msse3 -mmmx -O2")
+endif (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+
+
 # macros
     macro(add_sphinx_target TARGET_NAME BUILDER COMMENT_STR)
         add_custom_target(${TARGET_NAME}
