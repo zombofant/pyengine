@@ -161,6 +161,19 @@ public:
         require_not_inherit();
         return _value;
     }
+
+    template <typename T2>
+    void deinherit_with(const CSSInheritable<T2>& other)
+    {
+        if (!is_inherit()) {
+            return;
+        }
+        if (other.is_inherit()) {
+            return;
+        }
+        _inherit = false;
+        _value = other.get();
+    }
 };
 
 typedef CSSInheritable<coord_int_t> css_coord_int_t;
@@ -259,6 +272,20 @@ inline std::ostream& operator<<(std::ostream& stream, const Auto &auto_)
 
 }
 
+namespace std {
+
+template <typename T1>
+inline ostream& operator<<(
+    ostream& stream,
+    const PyEngine::CSSInheritable<T1> &v)
+{
+    if (v.is_inherit()) {
+        return stream << "<css inherit>";
+    }
+    return stream << v.get();
+}
+
+}
 
 namespace {
 

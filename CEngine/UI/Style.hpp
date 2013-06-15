@@ -84,20 +84,41 @@ protected:
     };
 
 public:
-    StyleDiff calc_diff(const Style& other) const;
+    StyleDiff calc_diff(const Style &other) const;
+
+    void deinherit_with(const Style &other_style);
+
+    bool operator==(const Style& other);
+public:
 
     inline const CSSFillPtr& get_background() const {
         return _background;
     };
+
     inline CSSBox& padding() {
         return _padding;
     };
+
+    inline const CSSBox& padding() const {
+        return _padding;
+    };
+
     inline Margin& margin() {
         return _margin;
     };
+
+    inline const Margin& margin() const {
+        return _margin;
+    };
+
     inline Border& border() {
         return _border;
     };
+
+    inline const Border& border() const {
+        return _border;
+    };
+
     inline const css_coord_int_t& get_box_spacing_x() const {
         return _box_spacing_x;
     };
@@ -191,5 +212,18 @@ public:
 Style DefaultStyle();
 
 }
+
+namespace std {
+
+inline ostream& operator<<(ostream& stream, const PyEngine::Style &style)
+{
+    return stream << "Style("
+                  << "padding=" << style.padding() << ", "
+                  << "margin=" << style.margin() << ")";
+}
+
+
+}
+
 
 #endif

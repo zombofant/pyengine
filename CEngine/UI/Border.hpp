@@ -55,9 +55,11 @@ public:
     BorderEdge& operator=(const BorderComponent& ref);
     BorderEdge& operator=(const BorderEdge& ref);
     virtual ~BorderEdge();
+
 private:
     css_coord_int_t _width;
     CSSFillPtr _fill;
+
 public:
     virtual CSSFillPtr get_fill() const;
     virtual css_coord_int_t get_width() const;
@@ -66,11 +68,14 @@ public:
     void set_width(const css_coord_int_t& value);
 
     friend class Border;
+
 public:
     bool operator==(const BorderEdge& other) const;
     inline bool operator!=(const BorderEdge& other) const {
         return !(operator==(other));
     };
+
+    void deinherit_with(const BorderEdge &other);
 };
 
 class Border: public BorderComponent
@@ -83,9 +88,11 @@ public:
     Border& operator=(const BorderComponent& ref);
     Border& operator=(const Border& ref);
     virtual ~Border();
+
 private:
     std::array<BorderEdge, 4> _edges;
     std::array<css_coord_int_t, 4> _corners;
+
 public:
     virtual CSSFillPtr get_fill() const;
     virtual css_coord_int_t get_width() const;
@@ -93,9 +100,11 @@ public:
     void set_fill(const CSSFillPtr& value);
     void set_radius(const css_coord_int_t& value);
     void set_width(const css_coord_int_t& value);
+
 public:
     Box get_box() const;
     FloatBox get_half_box() const;
+
 public:
     inline BorderEdge& left() {
         return _edges[0];
@@ -135,11 +144,14 @@ public:
     inline void set_bottom_left_radius(const css_coord_int_t& value) {
         _corners[3] = value;
     };
+
 public:
     bool operator==(const Border& other) const;
     inline bool operator!=(const Border& other) const {
         return !(operator==(other));
     };
+
+    void deinherit_with(const Border &other);
 };
 
 }

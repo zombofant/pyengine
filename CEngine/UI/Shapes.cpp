@@ -245,6 +245,14 @@ CSSBox& CSSBox::operator=(const Box& ref)
     return *this;
 }
 
+void CSSBox::deinherit_with(const CSSBox& other)
+{
+    _left.deinherit_with(other.get_left());
+    _top.deinherit_with(other.get_top());
+    _right.deinherit_with(other.get_right());
+    _bottom.deinherit_with(other.get_bottom());
+}
+
 /* PyEngine::Margin */
 
 Margin::Margin():

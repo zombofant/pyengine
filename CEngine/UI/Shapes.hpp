@@ -534,6 +534,9 @@ public:
     CSSBox(const Box& ref);
     CSSBox& operator=(const CSSBox& ref);
     CSSBox& operator=(const Box& ref);
+
+public:
+    void deinherit_with(const CSSBox& other);
 };
 
 typedef CSSBox Padding;

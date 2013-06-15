@@ -27,6 +27,17 @@ authors named in the AUTHORS file.
 
 namespace PyEngine {
 
+template <typename A>
+bool cmp_css_ptr(
+    const CSSInheritable<A>& a,
+    const CSSInheritable<A>& b)
+{
+    if (a.is_inherit() || b.is_inherit()) {
+        return false;
+    }
+    return *a.get() == *b.get();
+}
+
 /* PyEngine::Style */
 
 Style::Style():
@@ -139,6 +150,67 @@ StyleDiff Style::calc_diff(const Style& other) const
     }
 
     return std::move(diffs);
+}
+
+void Style::deinherit_with(const Style &other_style)
+{
+    _background.deinherit_with(
+        other_style.get_background());
+    _padding.deinherit_with(
+        other_style._padding);
+    _margin.deinherit_with(
+        other_style._margin);
+    _border.deinherit_with(
+        other_style._border);
+    _box_spacing_x.deinherit_with(
+        other_style.get_box_spacing_x());
+    _box_spacing_y.deinherit_with(
+        other_style.get_box_spacing_y());
+    _width.deinherit_with(
+        other_style.get_width());
+    _height.deinherit_with(
+        other_style.get_height());
+    _flex.deinherit_with(
+        other_style.get_flex());
+    _text_align.deinherit_with(
+        other_style.get_text_align());
+    _font_weight.deinherit_with(
+        other_style.get_font_weight());
+    _font_family.deinherit_with(
+        other_style.get_font_family());
+    _font_size.deinherit_with(
+        other_style.get_font_size());
+    _ellipsize.deinherit_with(
+        other_style.get_ellipsize());
+    _vertical_align.deinherit_with(
+        other_style.get_vertical_align());
+    _shear_x.deinherit_with(
+        other_style.get_shear_x());
+    _shear_y.deinherit_with(
+        other_style.get_shear_y());
+    _invalidate_font();
+}
+
+bool Style::operator==(const Style &other)
+{
+    return (
+        cmp_css_ptr(_background, other._background) &&
+        (_padding == other._padding) &&
+        (_margin == other._margin) &&
+        (_border == other._border) &&
+        (_box_spacing_x == other._box_spacing_x) &&
+        (_box_spacing_y == other._box_spacing_y) &&
+        (_width == other._width) &&
+        (_height == other._height) &&
+        (_flex == other._flex) &&
+        (_text_align == other._text_align) &&
+        (_font_weight == other._font_weight) &&
+        (_font_family == other._font_family) &&
+        (_font_size == other._font_size) &&
+        (_ellipsize == other._ellipsize) &&
+        (_vertical_align == other._vertical_align) &&
+        (_shear_x == other._shear_x) &&
+        (_shear_y == other._shear_y));
 }
 
 /* free functions */

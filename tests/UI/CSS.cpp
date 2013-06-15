@@ -75,3 +75,14 @@ TEST_CASE("UI/CSS/value_is_inherit",
     CHECK(!value_is_inherit(b));
     CHECK(!value_is_inherit(c));
 }
+
+TEST_CASE("UI/CSS/CSSInheritable/deinherit",
+          "Test de-inheritance")
+{
+    css_coord_int_t inheriting(Inherit);
+    css_coord_int_t other(10);
+
+    inheriting.deinherit_with(other);
+    CHECK(!inheriting.is_inherit());
+    CHECK(inheriting == 10);
+}

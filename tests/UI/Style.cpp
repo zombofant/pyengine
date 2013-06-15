@@ -45,3 +45,29 @@ TEST_CASE("UI/Style/Style/construction",
     CHECK(style.get_shear_x() == 0);
     CHECK(style.get_shear_y() == 0);
 }
+
+TEST_CASE("UI/Style/Style/deinherit"
+          "Test deinheritance of style")
+{
+    Style inheriting;
+    inheriting.set_background(Inherit);
+    inheriting.set_box_spacing_x(Inherit);
+    inheriting.set_box_spacing_y(Inherit);
+    inheriting.set_flex(Inherit);
+    inheriting.set_text_colour(Inherit);
+    inheriting.set_text_align(Inherit);
+    inheriting.set_font_weight(Inherit);
+    inheriting.set_font_family(Inherit);
+    inheriting.set_font_size(Inherit);
+    inheriting.set_ellipsize(Inherit);
+    inheriting.set_vertical_align(Inherit);
+    inheriting.set_shear_x(Inherit);
+    inheriting.set_shear_y(Inherit);
+    inheriting.padding() = Padding(Inherit);
+    inheriting.margin() = Margin(Inherit);
+    inheriting.border() = Border(Inherit, Inherit);
+
+    inheriting.deinherit_with(DefaultStyle());
+
+    CHECK(inheriting == DefaultStyle());
+}

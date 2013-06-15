@@ -111,6 +111,13 @@ bool BorderEdge::operator==(const BorderEdge& other) const {
             (_fill == other._fill));
 }
 
+void BorderEdge::deinherit_with(const BorderEdge &other)
+{
+    _fill.deinherit_with(other._fill);
+    _width.deinherit_with(other._width);
+
+}
+
 /* PyEngine::Border */
 
 Border::Border():
@@ -227,6 +234,17 @@ bool Border::operator==(const Border& other) const
         }
     }
     return true;
+}
+
+void Border::deinherit_with(const Border &other)
+{
+    for (typename decltype(_edges)::size_type i = 0;
+         i < _edges.size();
+         i++)
+    {
+        _edges[i].deinherit_with(other._edges[i]);
+        _corners[i].deinherit_with(other._corners[i]);
+    }
 }
 
 }
