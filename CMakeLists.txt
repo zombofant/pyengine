@@ -173,4 +173,19 @@ if (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
         WORKING_DIRECTORY docs/sphinx
         COMMENT "Clean all generated documentation"
     )
+
+    set(CATCH_INCLUDE_DIRS "Catch/single_include")
+    set(TEST_SOURCES
+        "tests/UI/CSS.cpp"
+        "tests/UI/Shapes.cpp"
+        "tests/UI/Style.cpp"
+        "tests/UI/Rules.cpp"
+        "tests/UI/Theme.cpp"
+    )
+
+
+    include_directories(${CATCH_INCLUDE_DIRS})
+    add_executable(run_tests tests/main.cpp ${TEST_SOURCES} )
+    target_link_libraries(run_tests ${PYENGINE_MODULES} ${CONTRIB_MODULES} ${LIBS})
+
 endif (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)

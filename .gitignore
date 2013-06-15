@@ -15,3 +15,4 @@ pyengine-client
 CEngine/pyengineConfig.hpp
 log.xml
 log.txt
+run_tests
