@@ -37,7 +37,7 @@ VertexIndexListMap::VertexIndexListMap(const VertexIndexListHandle vertices):
     _verticesHandle(vertices),
     _vertices(_verticesHandle.get())
 {
-    
+
 }
 
 VertexIndexListMap::~VertexIndexListMap()

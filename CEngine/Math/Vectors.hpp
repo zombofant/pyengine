@@ -30,7 +30,7 @@ authors named in the AUTHORS file.
 #include <ostream>
 
 namespace PyEngine {
-    
+
 typedef double VectorFloat;
 
 struct Vector2f {
@@ -62,7 +62,7 @@ struct Vector4f {
         float as_array[4];
     };
 };
-    
+
 struct Vector2 {
     public:
         union {
@@ -78,7 +78,7 @@ struct Vector2 {
             };
             double as_array[2];
         };
-        
+
         Vector2();
         Vector2(const Vector2 &vec2);
         Vector2(const VectorFloat X, const VectorFloat Y);
@@ -107,9 +107,9 @@ struct Vector2 {
          * representation.
          */
         Vector2f toVector2f() const;
-        
+
         void dump() const;
-        
+
         Vector2 &operator+= (const Vector2 b);
         Vector2 &operator/= (const VectorFloat b);
         Vector2 &operator*= (const VectorFloat b);
@@ -134,7 +134,7 @@ struct Vector3 {
             };
             double as_array[3];
         };
-        
+
         Vector3();
         Vector3(double X, double Y, double Z);
         Vector3(Vector2 vec2, double Z = 0.);
@@ -147,14 +147,14 @@ struct Vector3 {
           \endrst
          */
         Vector2 vec2() const;
-        
+
         VectorFloat length() const;
         Vector3 normalized() const;
         void normalize();
         Vector3f toVector3f() const;
-        
+
         void dump() const;
-        
+
         Vector3 &operator+= (const Vector3 b);
         Vector3 &operator/= (const VectorFloat b);
 };
@@ -184,7 +184,7 @@ struct Vector4 {
             };
             double as_array[4];
         };
-        
+
         Vector4();
         Vector4(double X, double Y, double Z, double W);
         Vector4(Vector2 vec2, double Z = 0., double W = 0.);
@@ -198,7 +198,7 @@ struct Vector4 {
           \endrst
          */
         Vector2 vec2() const;
-        
+
         /**
           \rst
           Return the x, y, z components as :cpp:class:`Vector3 <PyEngine::Vector3>`
@@ -206,12 +206,12 @@ struct Vector4 {
           \endrst
          */
         Vector3 vec3() const;
-        
+
         VectorFloat length() const;
         Vector4 normalized() const;
         void normalize();
         Vector4f toVector4f() const;
-        
+
         void dump() const;
 };
 
