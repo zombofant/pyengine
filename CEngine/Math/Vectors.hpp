@@ -226,6 +226,10 @@ Vector2 operator- (Vector2 a, VectorFloat b);
 VectorFloat operator* (Vector2 a, Vector2 b);
 Vector2 operator* (Vector2 a, VectorFloat b);
 
+inline Vector2 operator* (VectorFloat a, Vector2 b) {
+    return b*a;
+}
+
 Vector2 operator/ (Vector2 a, VectorFloat b);
 
 bool operator== (Vector2 a, Vector2 b);
@@ -241,6 +245,10 @@ Vector3 operator- (Vector3 a, VectorFloat b);
 
 VectorFloat operator* (Vector3 a, Vector3 b);
 Vector3 operator* (Vector3 a, VectorFloat b);
+
+inline Vector3 operator* (VectorFloat a, Vector3 b) {
+    return b*a;
+}
 
 Vector3 operator% (Vector3 a, Vector3 b);
 
@@ -259,6 +267,10 @@ Vector4 operator- (Vector4 a, VectorFloat b);
 
 VectorFloat operator* (Vector4 a, Vector4 b);
 Vector4 operator* (Vector4 a, VectorFloat b);
+
+inline Vector4 operator* (VectorFloat a, Vector4 b) {
+    return b*a;
+}
 
 Vector4 operator/ (Vector4 a, VectorFloat b);
 
