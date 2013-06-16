@@ -58,7 +58,7 @@ Specifity& Specifity::operator=(const Specifity& ref)
 
 Specifity& Specifity::operator+=(const Specifity& other)
 {
-    for (int i = 0; i < 3; i++) {
+    for (size_type i = 0; i < size(); i++) {
         (*this)[i] += other[i];
     }
     return *this;
