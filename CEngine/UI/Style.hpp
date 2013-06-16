@@ -219,7 +219,23 @@ inline ostream& operator<<(ostream& stream, const PyEngine::Style &style)
 {
     return stream << "Style("
                   << "padding=" << style.padding() << ", "
-                  << "margin=" << style.margin() << ")";
+                  << "margin=" << style.margin() << ", "
+                  << "border=" << style.border() << ", "
+                  << "background=" << style.get_background() << ", "
+                  << "text_colour=" << style.get_text_colour() << ", "
+                  << "text_align=" << style.get_text_align() << ", "
+                  << "box_spacing_x=" << style.get_box_spacing_x() << ", "
+                  << "box_spacing_y=" << style.get_box_spacing_y() << ", "
+                  << "flex=" << style.get_flex() << ", "
+                  << "width=" << style.get_width() << ", "
+                  << "height=" << style.get_height() << ", "
+                  << "font_weight=" << style.get_font_weight() << ", "
+                  << "font_size=" << style.get_font_size() << ", "
+                  << "font_family=" << style.get_font_family() << ", "
+                  << "vertical_align=" << style.get_vertical_align() << ", "
+                  << "ellipsize=" << style.get_ellipsize() << ", "
+                  << "shear_x=" << style.get_shear_x() << ", "
+                  << "shear_y=" << style.get_shear_y() << ")";
 }
 
 

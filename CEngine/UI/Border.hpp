@@ -27,6 +27,7 @@ authors named in the AUTHORS file.
 #define _PYE_UI_BORDER_H
 
 #include <array>
+#include <ostream>
 
 #include "CSS.hpp"
 #include "Shapes.hpp"
@@ -109,15 +110,35 @@ public:
     inline BorderEdge& left() {
         return _edges[0];
     };
+
+    inline const BorderEdge& left() const {
+        return _edges[0];
+    };
+
     inline BorderEdge& top() {
         return _edges[1];
     };
+
+    inline const BorderEdge& top() const {
+        return _edges[1];
+    };
+
     inline BorderEdge& right() {
         return _edges[2];
     };
+
+    inline const BorderEdge& right() const {
+        return _edges[2];
+    };
+
     inline BorderEdge& bottom() {
         return _edges[3];
     };
+
+    inline const BorderEdge& bottom() const {
+        return _edges[3];
+    };
+
 
     inline css_coord_int_t get_top_left_radius() const {
         return _corners[0];
@@ -153,6 +174,30 @@ public:
 
     void deinherit_with(const Border &other);
 };
+
+}
+
+namespace std {
+
+inline ostream& operator<<(ostream &stream, const PyEngine::BorderEdge &edge)
+{
+    return stream << "BorderEdge("
+                  << "width=" << edge.get_width() << ", "
+                  << "fill=" << edge.get_fill() << ")";
+}
+
+inline ostream& operator<<(ostream &stream, const PyEngine::Border &border)
+{
+    return stream << "Border("
+                  << "top=" << border.top() << ", "
+                  << "left=" << border.left() << ", "
+                  << "right=" << border.right() << ", "
+                  << "bottom=" << border.bottom() << ", "
+                  << "top_left_radius=" << border.get_top_left_radius() << ", "
+                  << "top_right_radius=" << border.get_top_right_radius() << ", "
+                  << "bottom_left_radius=" << border.get_bottom_left_radius() << ", "
+                  << "bottom_right_radius=" << border.get_bottom_right_radius() << ")";
+}
 
 }
 
