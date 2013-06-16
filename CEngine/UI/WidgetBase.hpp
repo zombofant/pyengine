@@ -29,6 +29,8 @@ authors named in the AUTHORS file.
 #include <memory>
 #include <vector>
 #include <stdexcept>
+#include <list>
+#include <set>
 
 #include "CSS.hpp"
 #include "Shapes.hpp"
@@ -54,10 +56,15 @@ typedef std::weak_ptr<RootWidget> RootWPtr;
 
 typedef std::shared_ptr<AbstractWidget> WidgetPtr;
 
+typedef std::list<WidgetPtr> HitChain;
+typedef std::set<WidgetPtr> HitSet;
+
 class AbstractWidget
 {
 public:
     AbstractWidget();
+    AbstractWidget(const AbstractWidget &ref) = delete;
+    AbstractWidget& operator=(const AbstractWidget &ref) = delete;
     virtual ~AbstractWidget();
 protected:
     ParentWPtr _parent;
@@ -70,6 +77,8 @@ protected:
     virtual void _parent_changed();
     virtual void _root_changed();
     void set_root(RootPtr root);
+    virtual bool _hittest(const Point &p) const = 0;
+
 public:
     inline void invalidate_alignment() {
         _alignment_invalidated = true;
@@ -102,7 +111,8 @@ public:
 public:
     virtual void do_align();
     virtual const char* element_name() const;
-    virtual WidgetPtr hittest(const Point& p) = 0;
+    virtual WidgetPtr hittest(const Point &p) = 0;
+    virtual bool hittest_with_chain(const Point &p, HitChain &chain) = 0;
     virtual void realign();
     virtual void render();
 
@@ -151,7 +161,8 @@ public:
 protected:
     container_type _children;
 protected:
-    WidgetPtr _hittest(const Point& p) const;
+    bool _hittest(const Point &p) const override;
+    WidgetPtr _hittest_children(const Point &p) const;
     virtual void _root_changed();
 public:
     void add(WidgetPtr child);
@@ -166,9 +177,11 @@ public:
     void send_to_back(WidgetPtr child);
 public:
     virtual RootPtr get_root() const = 0;
-    virtual WidgetPtr hittest(const Point& p);
-    virtual void realign();
-    virtual void render();
+    WidgetPtr hittest(const Point &p) override;
+    bool hittest_with_chain(const Point &p, HitChain &chain) override;
+    void realign() override;
+    void render() override;
+
 };
 
 class Widget: public AbstractWidget,
@@ -177,8 +190,14 @@ class Widget: public AbstractWidget,
 public:
     Widget();
     virtual ~Widget();
+
+protected:
+    virtual bool _hittest(const Point &p) const override;
+
 public:
-    virtual WidgetPtr hittest(const Point& p);
+    WidgetPtr hittest(const Point &p) override;
+    bool hittest_with_chain(const Point &p, HitChain &chain) override;
+
 };
 
 }

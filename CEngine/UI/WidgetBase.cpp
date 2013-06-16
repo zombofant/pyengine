@@ -189,13 +189,22 @@ ParentWidget::~ParentWidget()
 
 }
 
-WidgetPtr ParentWidget::_hittest(const Point& p) const
+bool ParentWidget::_hittest(const Point &p) const
+{
+    return _absolute_rect.contains(p);
+}
+
+WidgetPtr ParentWidget::_hittest_children(const Point &p) const
 {
     for (auto it = _children.crbegin();
          it != _children.crend();
          it++)
     {
-        WidgetPtr hit = (*it)->hittest(p);
+        const WidgetPtr child = *it;
+        if (!child->_visible) {
+            continue;
+        }
+        WidgetPtr hit = child->hittest(p);
         if (hit) {
             return hit;
         }
@@ -310,13 +319,35 @@ void ParentWidget::send_to_back(WidgetPtr child)
 
 WidgetPtr ParentWidget::hittest(const Point& p)
 {
+    if (!_hittest(p)) {
+        return WidgetPtr();
+    }
     realign();
-    WidgetPtr hit = _hittest(p);
+    WidgetPtr hit = _hittest_children(p);
     if (!hit) {
-        return this->AbstractWidget::hittest(p);
+        return shared_from_this();
     } else {
         return std::move(hit);
     }
+}
+
+bool ParentWidget::hittest_with_chain(const Point &p, HitChain &chain)
+{
+    if (!_hittest(p)) {
+        return false;
+    }
+
+    for (auto &child: *this)
+    {
+        if (!child->_visible) {
+            continue;
+        }
+        if (child->hittest_with_chain(p, chain)) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 void ParentWidget::realign()
@@ -352,9 +383,24 @@ Widget::~Widget()
 
 }
 
-WidgetPtr Widget::hittest(const Point& p)
+bool Widget::_hittest(const Point &p) const
 {
-    return (_absolute_rect.contains(p) ? shared_from_this() : WidgetPtr());
+    return _absolute_rect.contains(p);
+}
+
+WidgetPtr Widget::hittest(const Point &p)
+{
+    return (_hittest(p) ? shared_from_this() : WidgetPtr());
+}
+
+bool Widget::hittest_with_chain(const Point &p, HitChain &chain)
+{
+    if (_hittest(p)) {
+        chain.push_back(shared_from_this());
+        return true;
+    } else {
+        return false;
+    }
 }
 
 }
