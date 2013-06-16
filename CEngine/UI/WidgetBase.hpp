@@ -66,6 +66,7 @@ public:
     AbstractWidget(const AbstractWidget &ref) = delete;
     AbstractWidget& operator=(const AbstractWidget &ref) = delete;
     virtual ~AbstractWidget();
+
 protected:
     ParentWPtr _parent;
     RootWPtr _root;
@@ -73,6 +74,7 @@ protected:
     Rect _absolute_rect;
     bool _visible;
     CSSState _state;
+
 protected:
     virtual void _parent_changed();
     virtual void _root_changed();
@@ -83,9 +85,11 @@ public:
     inline void invalidate_alignment() {
         _alignment_invalidated = true;
     };
+
     inline void invalidate_computed_style() {
         _computed_style_invalidated = true;
     };
+
 public:
     inline const Rect& get_absolute_rect() const {
         return _absolute_rect;
@@ -98,6 +102,7 @@ public:
     inline void set_absolute_rect(const Rect& value) {
         _absolute_rect = value;
     };
+
 public:
     inline ParentPtr get_parent() const {
         return _parent.lock();
@@ -119,9 +124,11 @@ public:
     inline CSSState& state() {
         return _state;
     };
+
     inline const CSSState& state() const {
         return _state;
     };
+
 public:
     virtual bool ev_activate();
     virtual bool ev_deactivate();
@@ -140,6 +147,7 @@ public:
     virtual bool ev_resize();
     virtual bool ev_scroll(int scrollx, int scrolly);
     virtual bool ev_text_input(const char* buf);
+
 public:
     /* for updating the root widget */
     friend class ParentWidget;
@@ -155,15 +163,19 @@ public:
     typedef std::vector<WidgetPtr> container_type;
     typedef typename container_type::iterator iterator;
     typedef typename container_type::const_iterator const_iterator;
+
 public:
     ParentWidget();
     virtual ~ParentWidget();
+
 protected:
     container_type _children;
+
 protected:
     bool _hittest(const Point &p) const override;
     WidgetPtr _hittest_children(const Point &p) const;
     virtual void _root_changed();
+
 public:
     void add(WidgetPtr child);
     iterator begin();
@@ -175,6 +187,7 @@ public:
     const_iterator find(WidgetPtr child) const;
     void remove(WidgetPtr child);
     void send_to_back(WidgetPtr child);
+
 public:
     virtual RootPtr get_root() const = 0;
     WidgetPtr hittest(const Point &p) override;
