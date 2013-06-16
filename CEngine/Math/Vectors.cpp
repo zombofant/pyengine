@@ -119,13 +119,13 @@ Vector3::Vector3(double X, double Y, double Z) {
     z = Z;
 }
 
-Vector3::Vector3(Vector2 vec2, double Z) {
+Vector3::Vector3(const Vector2 &vec2, double Z) {
     x = vec2.x;
     y = vec2.y;
     z = Z;
 }
 
-Vector3::Vector3(Vector3f vec3f) {
+Vector3::Vector3(const Vector3f &vec3f) {
     x = vec3f.x;
     y = vec3f.y;
     z = vec3f.z;
@@ -188,21 +188,21 @@ Vector4::Vector4(double X, double Y, double Z, double W) {
     w = W;
 }
 
-Vector4::Vector4(Vector2 vec2, double Z, double W) {
+Vector4::Vector4(const Vector2 &vec2, double Z, double W) {
     x = vec2.x;
     y = vec2.y;
     z = Z;
     w = W;
 }
 
-Vector4::Vector4(Vector3 vec3, double W) {
+Vector4::Vector4(const Vector3 &vec3, double W) {
     x = vec3.x;
     y = vec3.y;
     z = vec3.z;
     w = W;
 }
 
-Vector4::Vector4(Vector4f vec4f) {
+Vector4::Vector4(const Vector4f &vec4f) {
     x = vec4f.x;
     y = vec4f.y;
     z = vec4f.z;

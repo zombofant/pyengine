@@ -137,8 +137,8 @@ struct Vector3 {
 
         Vector3();
         Vector3(double X, double Y, double Z);
-        explicit Vector3(Vector2 vec2, double Z = 0.);
-        explicit Vector3(Vector3f vec3f);
+        explicit Vector3(const Vector2 &vec2, double Z = 0.);
+        Vector3(const Vector3f &vec3f);
 
         /**
           \rst
@@ -187,9 +187,9 @@ struct Vector4 {
 
         Vector4();
         Vector4(double X, double Y, double Z, double W);
-        explicit Vector4(Vector2 vec2, double Z = 0., double W = 0.);
-        explicit Vector4(Vector3 vec3, double W = 0.);
-        Vector4(Vector4f vec4f);
+        explicit Vector4(const Vector2 &vec2, double Z = 0., double W = 0.);
+        explicit Vector4(const Vector3 &vec3, double W = 0.);
+        Vector4(const Vector4f &vec4f);
 
         /**
           \rst
