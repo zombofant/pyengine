@@ -83,7 +83,7 @@ struct Vector2 {
         Vector2(const Vector2 &vec2);
         Vector2(const VectorFloat X, const VectorFloat Y);
         Vector2(const Vector2f &vec2f);
-        Vector2(const VectorFloat angle);
+        explicit Vector2(const VectorFloat angle);
 
         /**
          * @brief Calculate the length of the vector and return it.
@@ -137,8 +137,8 @@ struct Vector3 {
 
         Vector3();
         Vector3(double X, double Y, double Z);
-        Vector3(Vector2 vec2, double Z = 0.);
-        Vector3(Vector3f vec3f);
+        explicit Vector3(Vector2 vec2, double Z = 0.);
+        explicit Vector3(Vector3f vec3f);
 
         /**
           \rst
@@ -187,8 +187,8 @@ struct Vector4 {
 
         Vector4();
         Vector4(double X, double Y, double Z, double W);
-        Vector4(Vector2 vec2, double Z = 0., double W = 0.);
-        Vector4(Vector3 vec3, double W = 0.);
+        explicit Vector4(Vector2 vec2, double Z = 0., double W = 0.);
+        explicit Vector4(Vector3 vec3, double W = 0.);
         Vector4(Vector4f vec4f);
 
         /**
