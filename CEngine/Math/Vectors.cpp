@@ -30,6 +30,8 @@ authors named in the AUTHORS file.
 
 namespace PyEngine {
 
+/* PyEngine::Vector2 */
+
 Vector2::Vector2():
     x(0),
     y(0)
@@ -107,6 +109,8 @@ Vector2 &Vector2::operator*=(const VectorFloat b) {
     return *this;
 }
 
+/* PyEngine::Vector3 */
+
 Vector3::Vector3() {
     x = 0.;
     y = 0.;
@@ -173,6 +177,8 @@ Vector3 &Vector3::operator/=(const VectorFloat b) {
     vectorScalarDiv<3>(as_array, b, as_array);
     return *this;
 }
+
+/* PyEngine::Vector4 */
 
 Vector4::Vector4() {
     x = 0.;
