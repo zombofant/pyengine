@@ -32,6 +32,7 @@ authors named in the AUTHORS file.
 #include <list>
 #include <set>
 
+#include "Static.hpp"
 #include "CSS.hpp"
 #include "Shapes.hpp"
 
@@ -131,6 +132,9 @@ public:
 
 public:
     virtual bool ev_activate();
+    virtual bool ev_caret_motion(CaretMotionDirection direction,
+                                 CaretMotionStep step,
+                                 bool select);
     virtual bool ev_deactivate();
     virtual bool ev_key_down(unsigned int symbol, unsigned int modifiers);
     virtual bool ev_key_up(unsigned int symbol, unsigned int modifiers);

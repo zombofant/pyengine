@@ -110,6 +110,14 @@ bool AbstractWidget::ev_activate()
     return false;
 }
 
+bool AbstractWidget::ev_caret_motion(
+    CaretMotionDirection direction,
+    CaretMotionStep step,
+    bool select)
+{
+    return false;
+}
+
 bool AbstractWidget::ev_deactivate()
 {
     return false;
