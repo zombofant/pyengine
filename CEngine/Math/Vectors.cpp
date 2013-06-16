@@ -34,35 +34,35 @@ Vector2::Vector2():
     x(0),
     y(0)
 {
-    
+
 }
 
 Vector2::Vector2(const Vector2 &vec2):
     x(vec2.x),
     y(vec2.y)
 {
-    
+
 }
 
 Vector2::Vector2(const VectorFloat X, const VectorFloat Y):
     x(X),
     y(Y)
 {
-    
+
 }
 
 Vector2::Vector2(const Vector2f &vec2f):
     x(vec2f.x),
     y(vec2f.y)
 {
-    
+
 }
 
 Vector2::Vector2(const VectorFloat angle):
     x(cos(angle)),
     y(sin(angle))
 {
-    
+
 }
 
 VectorFloat Vector2::length() const {
@@ -343,7 +343,7 @@ Vector3 operator- (Vector3 a, VectorFloat b) {
     vectorScalarSub<3>(a.as_array, b, result.as_array);
     return result;
 }
-    
+
 VectorFloat operator* (Vector3 a, Vector3 b) {
     return vectorDotProduct<3>(a.as_array, b.as_array);
 }
@@ -403,7 +403,7 @@ Vector4 operator- (Vector4 a, Vector4 b) {
     vectorSub<4>(a.as_array, b.as_array, result.as_array);
     return result;
 }
-    
+
 Vector4 operator- (Vector4 a, VectorFloat b) {
     Vector4 result;
     vectorScalarSub<4>(a.as_array, b, result.as_array);
@@ -413,7 +413,7 @@ Vector4 operator- (Vector4 a, VectorFloat b) {
 VectorFloat operator* (Vector4 a, Vector4 b) {
     return vectorDotProduct<4>(a.as_array, b.as_array);
 }
-    
+
 Vector4 operator* (Vector4 a, VectorFloat b) {
     Vector4 result;
     vectorScalarMult<4>(a.as_array, b, result.as_array);
