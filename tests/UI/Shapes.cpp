@@ -38,3 +38,57 @@ TEST_CASE("UI/Shapes/CSSBox",
     CHECK(box.get_right() == 3);
     CHECK(box.get_bottom() == 4);
 }
+
+TEST_CASE("UI/Shapes/Rect/NotARect",
+          "Test NotARect semantics")
+{
+    Rect not_a_rect(NotARect);
+    Rect not_a_rect2(NotARect);
+    Rect r1(0, 0, 0, 0);
+
+    CHECK(not_a_rect == NotARect);
+    CHECK(not_a_rect2 == NotARect);
+    CHECK(not_a_rect == not_a_rect2);
+    CHECK(not_a_rect != r1);
+}
+
+TEST_CASE("UI/Shapes/Rect/operations",
+          "Initialization and some rectangle operations")
+{
+    Rect r1(0, 0, 10, 10);
+    Rect r2(0, 0, 5, 5);
+    Rect r3(5, 0, 10, 5);
+
+    CHECK(r1.is_a_rect() == true);
+    CHECK(r2.is_a_rect() == true);
+    CHECK(r3.is_a_rect() == true);
+
+    CHECK(r1.get_width() == 10);
+    CHECK(r1.get_height() == 10);
+
+    CHECK(r2.get_width() == 5);
+    CHECK(r2.get_height() == 5);
+
+    CHECK(r3.get_width() == 5);
+    CHECK(r3.get_height() == 5);
+
+    CHECK(r1.contains(r2));
+    CHECK(r1.contains(r3));
+
+    CHECK(r1 != r2);
+    CHECK(r2 != r3);
+    CHECK(r3 != r1);
+
+    CHECK((r1 & r2) == r2);
+    CHECK((r1 & r3) == r3);
+    CHECK((r2 & r3) == Rect(5, 0, 5, 5));
+
+    CHECK((r1 | r2) == r1);
+    CHECK((r1 | r3) == r1);
+    CHECK((r2 | r3) == Rect(0, 0, 10, 5));
+
+    CHECK((r1 | NotARect) == r1);
+    CHECK((r1 & NotARect) == NotARect);
+    CHECK((NotARect | r1) == r1);
+    CHECK((NotARect & r1) == NotARect);
+}

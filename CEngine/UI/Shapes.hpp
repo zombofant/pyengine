@@ -237,6 +237,11 @@ public:
     inline bool operator!=(const Box& b) const;
 };
 
+enum not_a_rect_t
+{
+    NotARect
+};
+
 template <typename _coord_t>
 class GenericRect
 {
@@ -272,6 +277,16 @@ public:
         _width(ref._width),
         _height(ref._height)
     {
+
+    };
+
+    GenericRect(const not_a_rect_t&):
+        _left(0),
+        _top(0),
+        _width(-1),
+        _height(-1)
+    {
+
     };
 
     GenericRect<coord_t>& operator=(const GenericRect<coord_t>& ref)
@@ -280,6 +295,13 @@ public:
         _top = ref._top;
         _width = ref._width;
         _height = ref._height;
+        return *this;
+    };
+
+    GenericRect<coord_t>& operator=(const not_a_rect_t&)
+    {
+        _width = -1;
+        _height = -1;
         return *this;
     };
 
@@ -426,25 +448,37 @@ public:
         _top += point.get_y();
     }
 public:
-    template <typename rect_t>
-    inline bool operator==(const rect_t& b) const {
-        return ((_left == b._left) &&
-                (_top == b._top) &&
-                (_width == b._width) &&
-                (_height == b._height));
+    template <typename other_coord_t>
+    inline bool operator==(const GenericRect<other_coord_t>& b) const {
+        if (is_a_rect() && b.is_a_rect()) {
+            return ((_left == b._left) &&
+                    (_top == b._top) &&
+                    (_width == b._width) &&
+                    (_height == b._height));
+        } else {
+            return !is_a_rect() && !b.is_a_rect();
+        }
     }
 
-    template <typename rect_t>
-    inline bool operator!=(const rect_t& b) const {
+    inline bool operator==(const not_a_rect_t&) const {
+        return !is_a_rect();
+    }
+
+    template <typename other_coord_t>
+    inline bool operator!=(const GenericRect<other_coord_t>& b) const {
         return !(operator==(b));
     }
 
-    template <typename rect_t>
-    GenericRect<coord_t>& operator&=(const rect_t& b) {
-        static_assert(std::is_convertible<typename rect_t::coord_t, coord_t>::value,
+    inline bool operator!=(const not_a_rect_t&) const {
+        return is_a_rect();
+    }
+
+    template <typename other_coord_t>
+    GenericRect<coord_t>& operator&=(const GenericRect<other_coord_t>& b) {
+        static_assert(std::is_convertible<coord_t, other_coord_t>::value,
                       "Coordinate type of right operand must be convertible to coordinate type of left operand.");
 
-        if (!is_a_rect() || !b.is_a_rect()) {
+        if (!is_a_rect()) {
             return *this;
         }
         const coord_t new_left = std::max(_left, b._left);
@@ -462,19 +496,26 @@ public:
         return *this;
     }
 
-    template <typename rect_t>
-    GenericRect<coord_t> operator&(const rect_t& b) const {
+    GenericRect<coord_t>& operator&=(const not_a_rect_t&)
+    {
+        *this = NotARect;
+        return *this;
+    }
+
+    template <typename other_t>
+    GenericRect<coord_t> operator&(const other_t& b) const {
         GenericRect<coord_t> result = GenericRect<coord_t>(*this);
         result &= b;
         return std::move(result);
     }
 
-    template <typename rect_t>
-    GenericRect<coord_t>& operator|=(const rect_t& b) {
-        static_assert(std::is_convertible<typename rect_t::coord_t, coord_t>::value,
+    template <typename other_coord_t>
+    GenericRect<coord_t>& operator|=(const GenericRect<other_coord_t>& b) {
+        static_assert(std::is_convertible<other_coord_t, coord_t>::value,
                       "Coordinate type of right operand must be convertible to coordinate type of left operand.");
 
-        if (!is_a_rect() || !b.is_a_rect()) {
+        if (!is_a_rect()) {
+            *this = b;
             return *this;
         }
 
@@ -497,23 +538,23 @@ public:
                 throw RectError("Cannot combine rects (not adjacent).");
             }
 
-        } else {
+        } else if (!contains(b)) {
             throw RectError("Cannot combine rects (not aligned).");
         }
         return *this;
     }
 
-    template <typename rect_t>
-    GenericRect<coord_t> operator|(const rect_t& b) const {
+    GenericRect<coord_t>& operator|=(const not_a_rect_t&)
+    {
+        return *this;
+    }
+
+    template <typename other_t>
+    GenericRect<coord_t> operator|(const other_t& b) const {
         GenericRect<coord_t> result = GenericRect<coord_t>(*this);
         result |= b;
         return std::move(result);
     }
-};
-
-enum not_a_rect_t
-{
-    NotARect
 };
 
 class Rect: public GenericRect<coord_int_t>
@@ -527,9 +568,6 @@ public:
     Rect(const not_a_rect_t&);
     Rect& operator=(const Rect& ref);
     Rect& operator=(const not_a_rect_t&);
-
-public:
-    bool operator==(const not_a_rect_t&);
 };
 
 class CSSBox: public GenericBox<css_coord_int_t>
@@ -601,6 +639,18 @@ std::ostream& box_to_stream(std::ostream& stream,
                   << "bottom=" << box.get_bottom();
 }
 
+template <typename coord_t>
+GenericRect<coord_t> operator& (const not_a_rect_t&, const GenericRect<coord_t>& r)
+{
+    return NotARect;
+}
+
+template <typename coord_t>
+GenericRect<coord_t> operator| (const not_a_rect_t&, const GenericRect<coord_t>& r)
+{
+    return r;
+}
+
 }
 
 namespace std {
@@ -613,6 +663,25 @@ inline ostream& operator<<(ostream& stream, const PyEngine::CSSBox &pad)
 inline ostream& operator<<(ostream& stream, const PyEngine::Margin &margin)
 {
     return PyEngine::box_to_stream(stream << "Margin(", margin) << ")";
+}
+
+inline ostream& operator<<(ostream& stream, const PyEngine::not_a_rect_t&)
+{
+    return stream << "NotARect";
+}
+
+template <typename coord_t>
+inline ostream& operator<<(ostream& stream, const PyEngine::GenericRect<coord_t> &rect)
+{
+    if (rect == PyEngine::NotARect) {
+        return stream << PyEngine::NotARect;
+    } else {
+        return stream << "GenericRect("
+                      << "x=" << rect.get_left() << ", "
+                      << "y=" << rect.get_top() << ", "
+                      << "w=" << rect.get_width() << ", "
+                      << "h=" << rect.get_height() << ")";
+    }
 }
 
 }

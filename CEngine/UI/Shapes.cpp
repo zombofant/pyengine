@@ -188,7 +188,7 @@ Rect::Rect(const Rect &ref):
 }
 
 Rect::Rect(const not_a_rect_t&):
-    GenericRect<coord_int_t>(0, 0, -1, -1)
+    GenericRect<coord_int_t>(NotARect)
 {
 
 }
@@ -201,14 +201,8 @@ Rect& Rect::operator= (const Rect &ref)
 
 Rect& Rect::operator=(const not_a_rect_t&)
 {
-    set_width(-1);
-    set_height(-1);
+    this->GenericRect<coord_int_t>::operator=(NotARect);
     return *this;
-}
-
-bool Rect::operator==(const not_a_rect_t&)
-{
-    return !is_a_rect();
 }
 
 /* PyEngine::CSSBox */
