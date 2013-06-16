@@ -26,7 +26,6 @@ authors named in the AUTHORS file.
 #ifndef _PYE_UI_SHAPES_H
 #define _PYE_UI_SHAPES_H
 
-
 #include <ostream>
 #include <stdexcept>
 #include <cmath>
@@ -512,6 +511,11 @@ public:
     }
 };
 
+enum not_a_rect_t
+{
+    NotARect
+};
+
 class Rect: public GenericRect<coord_int_t>
 {
 public:
@@ -520,7 +524,12 @@ public:
     Rect(coord_int_t left, coord_int_t top,
          coord_int_t right, coord_int_t bottom);
     Rect(const Rect& ref);
+    Rect(const not_a_rect_t&);
     Rect& operator=(const Rect& ref);
+    Rect& operator=(const not_a_rect_t&);
+
+public:
+    bool operator==(const not_a_rect_t&);
 };
 
 class CSSBox: public GenericBox<css_coord_int_t>
