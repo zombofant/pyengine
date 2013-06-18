@@ -46,9 +46,7 @@ struct Matrix
     Matrix():
         coeff()
     {
-        for (unsigned int i = 0; i < rows*columns; i++) {
-            coeff[i] = 0;
-        }
+
     };
 
     Matrix(matrix_identity_t):
@@ -57,9 +55,6 @@ struct Matrix
         static_assert(rows == columns,
                       "Identity construction only makes sense for "
                       "square matrices.");
-        for (unsigned int i = 0; i < rows*columns; i++) {
-            coeff[i] = 0;
-        }
         for (unsigned int n = 0; n < rows; n++) {
             component(n,n) = 1;
         }
@@ -267,8 +262,7 @@ struct Matrix
         unsigned int other_rows,
         unsigned int other_columns>
     static inline Matrix extend(
-        const Matrix<other_float_t, other_rows, other_columns> &mat,
-        const VectorFloat fill_with = 0)
+        const Matrix<other_float_t, other_rows, other_columns> &mat)
     {
         static_assert(other_rows <= rows,
                       "Source matrix must have equal or less rows than "
@@ -281,16 +275,6 @@ struct Matrix
         for (unsigned int i = 0; i < other_rows; i++) {
             for (unsigned int j = 0; j < other_columns; j++) {
                 result.component(i, j) = mat.component(i, j);
-            }
-        }
-        for (unsigned int i = other_rows; i < rows; i++) {
-            for (unsigned int j = 0; j < columns; j++) {
-                result.component(i, j) = fill_with;
-            }
-        }
-        for (unsigned int j = other_columns; j < columns; j++) {
-            for (unsigned int i = 0; i < other_rows; i++) {
-                result.component(i, j) = fill_with;
             }
         }
 
