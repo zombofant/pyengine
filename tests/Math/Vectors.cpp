@@ -52,10 +52,8 @@ TEST_CASE("Math/Vectors/Vector2/operations"
     CHECK((2*a) == Vector2(2, 2));
     CHECK((ex-a) == Vector2(0, -1));
 
-    CHECK(&a.x == &a.u);
-    CHECK(&a.y == &a.v);
-    CHECK(&a.as_array[0] == &a.x);
-    CHECK(&a.as_array[1] == &a.y);
+    CHECK(&a.as_array[0] == &a[eX]);
+    CHECK(&a.as_array[1] == &a[eY]);
 }
 
 TEST_CASE("Math/Vectors/Vector3/operations"
@@ -75,7 +73,7 @@ TEST_CASE("Math/Vectors/Vector3/operations"
 
     CHECK(a.normalized() == Vector3(anormcomp, anormcomp, anormcomp));
 
-    CHECK(a.vec2() == Vector2(1, 1));
+    CHECK(Vector2(a) == Vector2(1, 1));
 
     CHECK((ex + ey + ez) == a);
     CHECK((ex*ex) == 1);
@@ -84,12 +82,9 @@ TEST_CASE("Math/Vectors/Vector3/operations"
     CHECK((ex*a) == 1);
     CHECK((ex-a) == Vector3(0, -1, -1));
 
-    CHECK(&a.x == &a.r);
-    CHECK(&a.y == &a.g);
-    CHECK(&a.z == &a.b);
-    CHECK(&a.as_array[0] == &a.x);
-    CHECK(&a.as_array[1] == &a.y);
-    CHECK(&a.as_array[2] == &a.z);
+    CHECK(&a.as_array[0] == &a[eX]);
+    CHECK(&a.as_array[1] == &a[eY]);
+    CHECK(&a.as_array[2] == &a[eZ]);
 
     CHECK((ex%ey) == ez);
 }
@@ -124,12 +119,8 @@ TEST_CASE("Math/Vectors/Vector4/operations"
     CHECK((2*a) == Vector4(2, 2, 2, 2));
     CHECK((ex-a) == Vector4(0, -1, -1, -1));
 
-    CHECK(&a.x == &a.r);
-    CHECK(&a.y == &a.g);
-    CHECK(&a.z == &a.b);
-    CHECK(&a.w == &a.a);
-    CHECK(&a.as_array[0] == &a.x);
-    CHECK(&a.as_array[1] == &a.y);
-    CHECK(&a.as_array[2] == &a.z);
-    CHECK(&a.as_array[3] == &a.w);
+    CHECK(&a.as_array[0] == &a[eX]);
+    CHECK(&a.as_array[1] == &a[eY]);
+    CHECK(&a.as_array[2] == &a[eZ]);
+    CHECK(&a.as_array[3] == &a[eW]);
 }

@@ -65,19 +65,19 @@ Matrix3 Matrix3::Rotation(const Vector3 rawAxis, const VectorFloat angle) {
     
     Matrix3 result;
     const Vector3 axis = rawAxis / len;
-    
-    result.coeff[0] = (oneMinusCos * sqr(axis.x)) + saveCos;
-    result.coeff[1] = (oneMinusCos * axis.x * axis.y) - (axis.z * saveSin);
-    result.coeff[2] = (oneMinusCos * axis.z * axis.x) + (axis.y * saveSin);
 
-    result.coeff[3] = (oneMinusCos * axis.x * axis.y) + (axis.z * saveSin);
-    result.coeff[4] = (oneMinusCos * sqr(axis.y)) + saveCos;
-    result.coeff[5] = (oneMinusCos * axis.y * axis.z) - (axis.x * saveSin);
+    result.coeff[0] = (oneMinusCos * sqr(axis[eX])) + saveCos;
+    result.coeff[1] = (oneMinusCos * axis[eX] * axis[eY]) - (axis[eZ] * saveSin);
+    result.coeff[2] = (oneMinusCos * axis[eZ] * axis[eX]) + (axis[eY] * saveSin);
 
-    result.coeff[6] = (oneMinusCos * axis.z * axis.x) - (axis.y * saveSin);
-    result.coeff[7] = (oneMinusCos * axis.y * axis.z) + (axis.x * saveSin);
-    result.coeff[8] = (oneMinusCos * sqr(axis.z)) + saveCos;
-    
+    result.coeff[3] = (oneMinusCos * axis[eX] * axis[eY]) + (axis[eZ] * saveSin);
+    result.coeff[4] = (oneMinusCos * sqr(axis[eY])) + saveCos;
+    result.coeff[5] = (oneMinusCos * axis[eY] * axis[eZ]) - (axis[eX] * saveSin);
+
+    result.coeff[6] = (oneMinusCos * axis[eZ] * axis[eX]) - (axis[eY] * saveSin);
+    result.coeff[7] = (oneMinusCos * axis[eY] * axis[eZ]) + (axis[eX] * saveSin);
+    result.coeff[8] = (oneMinusCos * sqr(axis[eZ])) + saveCos;
+
     return result;
 }
 
@@ -171,17 +171,17 @@ Matrix4 Matrix4::RotationZ(const VectorFloat angle) {
 
 Matrix4 Matrix4::Translation(const Vector3 &by) {
     Matrix4 result;
-    result.coeff[12] = by.x;
-    result.coeff[13] = by.y;
-    result.coeff[14] = by.z;
+    result.coeff[12] = by[eX];
+    result.coeff[13] = by[eY];
+    result.coeff[14] = by[eZ];
     return result;
 }
 
 Matrix4 Matrix4::Scale(const Vector3 &by) {
     Matrix4 result;
-    result.coeff[0] = by.x;
-    result.coeff[5] = by.y;
-    result.coeff[10] = by.z;
+    result.coeff[0] = by[eX];
+    result.coeff[5] = by[eY];
+    result.coeff[10] = by[eZ];
     return result;
 }
 
