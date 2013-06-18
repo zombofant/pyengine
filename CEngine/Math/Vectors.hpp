@@ -49,38 +49,7 @@ enum vector_component_w_t {
 
 typedef double VectorFloat;
 
-namespace {
-
-template <typename vector_float_t, typename... other_float_ts>
-struct init_array_with_data;
-
-template <typename vector_float_t, typename other_float_t,
-    typename... other_float_ts>
-struct init_array_with_data<vector_float_t, other_float_t,
-    other_float_ts...>
-{
-    static inline void init(
-        vector_float_t *arr,
-        other_float_t value,
-        other_float_ts... values)
-    {
-        arr[0] = value;
-        init_array_with_data<vector_float_t, other_float_ts...>::init(
-            &arr[1], values...);
-    }
-};
-
-template <typename vector_float_t>
-struct init_array_with_data<vector_float_t>
-{
-    static inline void init(
-        vector_float_t *arr)
-    {
-
-    }
-};
-
-}
+#include "variadic_initializer.hpp"
 
 template <typename vector_float_t, unsigned int _dimension>
 struct Vector {
@@ -184,6 +153,20 @@ struct Vector {
         Vector<out_float_t, dimension> result(*this);
         result -= oth;
         return result;
+    }
+
+    inline Vector operator-() const
+    {
+        Vector result(*this);
+        for (unsigned int i = 0; i < dimension; i++) {
+            result.as_array[i] = -result.as_array[i];
+        }
+        return result;
+    }
+
+    inline Vector operator+() const
+    {
+        return Vector(*this);
     }
 
     template <typename other_float_t>
@@ -313,6 +296,15 @@ struct Vector {
     inline vector_float_t operator*(vector_component_w_t) const
     {
         return (*this)[eW];
+    }
+
+    vector_float_t abssum() const
+    {
+        vector_float_t summed = 0;
+        for (unsigned int i = 0; i < dimension; i++) {
+            summed += abs(as_array[i]);
+        }
+        return summed;
     }
 };
 

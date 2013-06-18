@@ -178,6 +178,7 @@ if (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     set(CATCH_INCLUDE_DIRS "Catch/single_include")
     set(TEST_SOURCES
         "tests/Math/Vectors.cpp"
+        "tests/Math/Matrices.cpp"
         "tests/UI/Selectors.cpp"
         "tests/UI/CSS.cpp"
         "tests/UI/Shapes.cpp"

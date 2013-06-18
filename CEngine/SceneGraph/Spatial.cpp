@@ -71,32 +71,32 @@ void Spatial::updateWorldData()
 
 void Spatial::translate(double x, double y, double z)
 {
-    localTransformation = localTransformation * Matrix4().Translation(Vector3(x, y, z));
+    localTransformation = localTransformation * translation4(Vector3(x, y, z));
 }
 
 void Spatial::setTranslation(double x, double y, double z)
 {
-    localTransformation = localTransformation.Translation(Vector3(x,y,z));
+    localTransformation = translation4(Vector3(x,y,z));
 }
 
 void Spatial::rotate(double angle, double x, double y, double z)
 {
-    localTransformation = localTransformation * Matrix4().Rotation(Vector3(x, y, z), angle);
+    localTransformation = localTransformation * rotation4(Vector3(x, y, z), angle);
 }
 
 void Spatial::setRotation(double angle, double x, double y, double z)
 {
-    localTransformation = localTransformation.Rotation(Vector3(x, y, z), angle);
+    localTransformation = rotation4(Vector3(x, y, z), angle);
 }
 
 void Spatial::scale(double x, double y, double z)
 {
-    localTransformation = localTransformation * Matrix4().Scale(Vector3(x, y, z));
+    localTransformation = localTransformation * scale4(Vector3(x, y, z));
 }
 
 void Spatial::setScale(double x, double y, double z)
 {
-    localTransformation = localTransformation.Scale(Vector3(x, y, z));
+    localTransformation = scale4(Vector3(x, y, z));
 }
 
 void Spatial::resetTransformation()
