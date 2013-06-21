@@ -75,6 +75,7 @@ protected:
     Rect _absolute_rect;
     bool _visible;
     CSSState _state;
+    WidgetFlags _flags;
 
 protected:
     virtual void _parent_changed();
@@ -102,6 +103,14 @@ public:
 
     inline void set_absolute_rect(const Rect& value) {
         _absolute_rect = value;
+    };
+
+    inline WidgetFlags& flags() {
+        return _flags;
+    };
+
+    inline const WidgetFlags& flags() const {
+        return _flags;
     };
 
 public:

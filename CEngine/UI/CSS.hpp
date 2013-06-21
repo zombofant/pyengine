@@ -183,7 +183,8 @@ enum CSSStateFlag {
     Hovered,
     Focused,
     Active,
-    Disabled
+    Disabled,
+    HasFocusedChild
 };
 
 typedef std::bitset<std::numeric_limits<CSSStateFlag>::max()> _CSSStateBitset;

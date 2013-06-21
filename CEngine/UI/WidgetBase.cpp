@@ -381,8 +381,7 @@ void ParentWidget::render()
 /* PyEngine::Widget */
 
 Widget::Widget():
-    AbstractWidget(),
-    std::enable_shared_from_this<Widget>()
+    AbstractWidget()
 {
 
 }

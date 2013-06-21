@@ -38,4 +38,16 @@ enum CaretMotionStep {
     STEP_WORD
 };
 
+struct WidgetFlag {
+    WidgetFlag() = delete;
+    ~WidgetFlag() = delete;
+
+enum type : unsigned int {
+    CAPTURE_MOUSE = (1 << 0),
+    FOCUSABLE = (1 << 1),
+};
+};
+
+typedef unsigned int WidgetFlags;
+
 #endif
