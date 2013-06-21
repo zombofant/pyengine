@@ -351,6 +351,7 @@ bool ParentWidget::hittest_with_chain(const Point &p, HitChain &chain)
             continue;
         }
         if (child->hittest_with_chain(p, chain)) {
+            chain.push_back(shared_from_this());
             return true;
         }
     }
