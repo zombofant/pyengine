@@ -150,33 +150,73 @@ public:
         return EnumBitset(std::move(~_data));
     }
 
-    inline void set()
+    inline EnumBitset& set()
     {
         _data.set();
+        return *this;
     }
 
-    inline void set(enum_t bit, bool value = true)
+    inline EnumBitset& set(enum_t bit, bool value = true)
     {
         _data.set(bit-min_value, value);
+        return *this;
     }
-    inline void reset()
+    inline EnumBitset& reset()
     {
         _data.reset();
+        return *this;
     }
 
-    inline void reset(enum_t bit)
+    inline EnumBitset& reset(enum_t bit)
     {
         _data.reset(bit-min_value);
+        return *this;
     }
 
-    inline void flip()
+    inline EnumBitset& flip()
     {
         _data.flip();
+        return *this;
     }
 
-    inline void flip(enum_t bit)
+    inline EnumBitset& flip(enum_t bit)
     {
         _data.flip(bit-min_value);
+        return *this;
+    }
+
+    std::string to_string() const
+    {
+        return _data.to_string();
+    }
+
+    unsigned long to_ulong() const
+    {
+        return _data.to_ulong();
+    }
+
+    unsigned long long to_ullong() const
+    {
+        return _data.to_ullong();
+    }
+
+    friend struct std::hash<EnumBitset>;
+};
+
+}
+
+namespace std {
+
+template <typename enum_t, enum_t min_value, enum_t max_value>
+struct hash<PyEngine::EnumBitset<enum_t, min_value, max_value> >
+{
+    typedef PyEngine::EnumBitset<enum_t, min_value, max_value>
+        argument_type;
+    typedef size_t result_type;
+
+    inline result_type operator()(const argument_type &ref) const
+    {
+        return std::hash<typename argument_type::bitset_t>()(ref._data);
     }
 };
 

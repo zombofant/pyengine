@@ -58,4 +58,9 @@ TEST_CASE("Misc/EnumBitset"
 
     bitset.flip(FooB);
     CHECK(!bitset.test(FooB));
+
+    bitset.flip(FooA).set(FooB).reset(FooC);
+    CHECK(!bitset.test(FooA));
+    CHECK(bitset.test(FooB));
+    CHECK(!bitset.test(FooC));
 }
