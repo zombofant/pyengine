@@ -32,6 +32,8 @@ authors named in the AUTHORS file.
 #include <limits>
 #include <bitset>
 
+#include "CEngine/Misc/EnumBitset.hpp"
+
 namespace PyEngine {
 
 typedef int coord_int_t;
@@ -187,43 +189,7 @@ enum CSSStateFlag {
     HasFocusedChild
 };
 
-typedef std::bitset<std::numeric_limits<CSSStateFlag>::max()> _CSSStateBitset;
-
-class CSSState: public _CSSStateBitset
-{
-public:
-    CSSState();
-    CSSState(std::initializer_list<CSSStateFlag> flags);
-public:
-    inline CSSState& set(CSSStateFlag flag, bool value = true) {
-        this->_CSSStateBitset::set(size_t(flag), value);
-        return *this;
-    };
-
-    inline CSSState& set(std::initializer_list<CSSStateFlag> flags) {
-        for (auto flag: flags) {
-            this->_CSSStateBitset::set(size_t(flag));
-        }
-        return *this;
-    };
-
-    inline CSSState& reset(CSSStateFlag flag) {
-        this->_CSSStateBitset::reset(size_t(flag));
-        return *this;
-    };
-
-    inline CSSState& reset(std::initializer_list<CSSStateFlag> flags) {
-        for (auto flag: flags) {
-            this->_CSSStateBitset::reset(size_t(flag));
-        }
-        return *this;
-    };
-
-    inline CSSState& flip(CSSStateFlag flag) {
-        this->_CSSStateBitset::flip(size_t(flag));
-        return *this;
-    };
-};
+typedef EnumBitset<CSSStateFlag, Hovered, HasFocusedChild> CSSState;
 
 template <const char* name>
 struct css_attrib_element_name

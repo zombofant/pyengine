@@ -41,20 +41,4 @@ UnresolvedInheritable::UnresolvedInheritable(const char* what_arg):
 
 }
 
-/* PyEngine::CSSState */
-
-CSSState::CSSState():
-    _CSSStateBitset()
-{
-
-}
-
-CSSState::CSSState(std::initializer_list<CSSStateFlag> flags):
-    _CSSStateBitset()
-{
-    for (auto flag: flags) {
-        set(flag);
-    }
-}
-
 }
