@@ -9,6 +9,7 @@ add_library(pyengine_UI
   "Rules.cpp"
   "Theme.cpp"
   "WidgetBase.cpp"
+  "DragController.cpp"
   "RootWidget.cpp"
 )
 add_dependencies(pyengine_UI pyengine_GL)

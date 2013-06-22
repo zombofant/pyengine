@@ -25,6 +25,8 @@ authors named in the AUTHORS file.
 **********************************************************************/
 #include "RootWidget.hpp"
 
+#include <stdexcept>
+
 #include "CEngine/Misc/SetOperations.hpp"
 
 namespace PyEngine {
@@ -46,6 +48,7 @@ RootWidget::RootWidget():
     _cairo_surface(),
     _pango_ctx(),
     _resized(false),
+    _drag_controller(nullptr),
     _cursor(0, 0),
     _surface_dirty()
 {
@@ -166,6 +169,28 @@ void RootWidget::_update_hover_state(HitChain *chain)
     std::swap(_old_hit_chain, new_set);
 }
 
+void RootWidget::release_capture()
+{
+    _mouse_capture = nullptr;
+    _mouse_capture_button = 0;
+}
+
+void RootWidget::start_drag(
+    std::unique_ptr<DragControllerBase> &&controller)
+{
+    if (_drag_controller) {
+        throw std::invalid_argument("Dragging is already in progress.");
+    }
+    _drag_controller = std::move(controller);
+    release_capture();
+}
+
+void RootWidget::stop_drag()
+{
+    _drag_controller = nullptr;
+    release_capture();
+}
+
 /* event dispatching */
 
 void RootWidget::dispatch_caret_motion(
@@ -192,7 +217,11 @@ void RootWidget::dispatch_hide()
 void RootWidget::dispatch_key_down(unsigned int key,
                                    unsigned int modifiers)
 {
-    /* TODO: drag controller */
+    if (_drag_controller) {
+        _drag_controller->ev_key_down(key, modifiers);
+        return;
+    }
+
     /* TODO: dispatch caret motion (and other global bindings) */
 
     WidgetPtr target = _find_key_event_target();
@@ -209,7 +238,10 @@ void RootWidget::dispatch_key_down(unsigned int key,
 void RootWidget::dispatch_key_up(unsigned int key,
                                  unsigned int modifiers)
 {
-    /* TODO: drag controller */
+    if (_drag_controller) {
+        _drag_controller->ev_key_up(key, modifiers);
+        return;
+    }
 
     WidgetPtr target = _find_key_event_target();
     bool handled = false;
@@ -228,7 +260,9 @@ void RootWidget::dispatch_mouse_click(
     unsigned int modifiers,
     unsigned int nth)
 {
-    /* TODO: drag controller */
+    if (_drag_controller) {
+        return;
+    }
 
     WidgetPtr target = _find_mouse_event_target(x, y);
     bool handled = false;
@@ -246,7 +280,10 @@ void RootWidget::dispatch_mouse_down(
     unsigned int button,
     unsigned int modifiers)
 {
-    /* TODO: drag controller */
+    if (_drag_controller) {
+        _drag_controller->ev_mouse_down(x, y, button, modifiers);
+        return;
+    }
 
     std::unique_ptr<HitChain> hitchain;
     if (!_mouse_capture) {
@@ -286,7 +323,10 @@ void RootWidget::dispatch_mouse_move(
     unsigned int modifiers)
 {
     _cursor = std::move(Point(x, y));
-    /* TODO: drag controller */
+    if (_drag_controller) {
+        _drag_controller->ev_mouse_move(x, y, buttons, modifiers);
+        return;
+    }
 
     std::unique_ptr<HitChain> hitchain;
     if (!_mouse_capture) {
@@ -323,7 +363,10 @@ void RootWidget::dispatch_mouse_up(
     unsigned int button,
     unsigned int modifiers)
 {
-    /* TODO: drag controller */
+    if (_drag_controller) {
+        _drag_controller->ev_mouse_up(x, y, button, modifiers);
+        return;
+    }
 
     WidgetPtr target;
     target = _find_mouse_event_target(x, y);
@@ -373,6 +416,10 @@ void RootWidget::dispatch_show()
 
 void RootWidget::dispatch_text_input(const char *text)
 {
+    if (_drag_controller) {
+        return;
+    }
+
     WidgetPtr target = _find_key_event_target();
     if (target) {
         target->ev_text_input(text);

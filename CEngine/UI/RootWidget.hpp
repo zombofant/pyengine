@@ -34,6 +34,7 @@ authors named in the AUTHORS file.
 #include "Shapes.hpp"
 #include "WidgetBase.hpp"
 #include "Theme.hpp"
+#include "DragController.hpp"
 
 namespace PyEngine {
 
@@ -57,7 +58,7 @@ private:
     cairo_surface_t *_cairo_surface;
     PangoContext *_pango_ctx;
     bool _resized;
-    /* DragController */
+    std::unique_ptr<DragControllerBase> _drag_controller;
     Point _cursor;
     bool _surface_dirty;
 
@@ -72,6 +73,11 @@ protected:
 public:
     virtual void do_align() override;
     virtual RootPtr get_root();
+
+public:
+    void release_capture();
+    void start_drag(std::unique_ptr<DragControllerBase> &&controller);
+    void stop_drag();
 
 public:
     void dispatch_caret_motion(CaretMotionDirection direction,
