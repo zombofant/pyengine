@@ -26,6 +26,9 @@ authors named in the AUTHORS file.
 #ifndef _PYE_UI_DRAG_CONTROLLER_H
 #define _PYE_UI_DRAG_CONTROLLER_H
 
+#include "Key.hpp"
+#include "Static.hpp"
+
 namespace PyEngine {
 
 class RootWidget;
@@ -46,21 +49,21 @@ public:
     virtual void abort();
     virtual void release();
 public: /* event handlers */
-    virtual void ev_key_down(unsigned int symbol,
-                             unsigned int modifiers);
-    virtual void ev_key_up(unsigned int symbol,
-                           unsigned int modifiers);
+    virtual void ev_key_down(Key::Key key,
+                             KeyModifiers modifiers);
+    virtual void ev_key_up(Key::Key key,
+                           KeyModifiers modifiers);
     virtual void ev_mouse_down(int x, int y,
-                               unsigned int button,
-                               unsigned int modifiers);
+                               MouseButton button,
+                               KeyModifiers modifiers);
     virtual void ev_mouse_move(int x, int y,
-                               unsigned int buttons,
-                               unsigned int modifiers);
+                               MouseButtons buttons,
+                               KeyModifiers modifiers);
     virtual void ev_mouse_up(int x, int y,
-                             unsigned int button,
-                             unsigned int modifiers);
+                             MouseButton button,
+                             KeyModifiers modifiers);
     virtual void ev_drag_move(int x, int y,
-                              unsigned int modifiers);
+                              KeyModifiers modifiers);
 };
 
 }

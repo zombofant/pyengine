@@ -26,6 +26,10 @@ authors named in the AUTHORS file.
 #ifndef _PYE_UI_STATIC_H
 #define _PYE_UI_STATIC_H
 
+#include "CEngine/Misc/Int.hpp"
+
+namespace PyEngine {
+
 enum CaretMotionDirection {
     DIR_BEGIN,
     DIR_PREV,
@@ -48,6 +52,14 @@ enum type : unsigned int {
 };
 };
 
-typedef unsigned int WidgetFlags;
+typedef uint_fast32_t WidgetFlags;
+
+typedef uint_fast32_t KeySymbol;
+typedef uint_fast32_t KeyModifier;
+typedef uint_fast32_t KeyModifiers;
+typedef uint_fast32_t MouseButton;
+typedef uint_fast32_t MouseButtons;
+
+}
 
 #endif

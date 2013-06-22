@@ -25,9 +25,7 @@ authors named in the AUTHORS file.
 **********************************************************************/
 #include "DragController.hpp"
 
-#include "CEngine/UI/RootWidget.hpp"
-
-#include "CEngine/UI/Key.hpp"
+#include "RootWidget.hpp"
 
 namespace PyEngine {
 
@@ -58,41 +56,41 @@ void DragControllerBase::release()
 }
 
 void DragControllerBase::ev_key_down(
-    unsigned int symbol,
-    unsigned int modifiers)
+    Key::Key key,
+    KeyModifiers modifiers)
 {
-    if (symbol == Key::Escape) {
+    if (key == Key::Escape) {
         abort();
     }
 }
 
 void DragControllerBase::ev_key_up(
-    unsigned int symbol,
-    unsigned int modifiers)
+    Key::Key key,
+    KeyModifiers modifiers)
 {
 
 }
 
 void DragControllerBase::ev_mouse_down(
     int x, int y,
-    unsigned int button,
-    unsigned int modifiers)
+    MouseButton button,
+    KeyModifiers modifiers)
 {
 
 }
 
 void DragControllerBase::ev_mouse_move(
     int x, int y,
-    unsigned int buttons,
-    unsigned int modifiers)
+    MouseButtons buttons,
+    KeyModifiers modifiers)
 {
     ev_drag_move(x, y, modifiers);
 }
 
 void DragControllerBase::ev_mouse_up(
     int x, int y,
-    unsigned int button,
-    unsigned int modifiers)
+    MouseButton button,
+    KeyModifiers modifiers)
 {
     if (button == _mouse_button) {
         release();
@@ -101,7 +99,7 @@ void DragControllerBase::ev_mouse_up(
 
 void DragControllerBase::ev_drag_move(
     int x, int y,
-    unsigned int modifiers)
+    KeyModifiers modifiers)
 {
 
 }

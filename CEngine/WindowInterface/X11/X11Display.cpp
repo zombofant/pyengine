@@ -392,7 +392,8 @@ void X11Display::pullEvents(EventSink *sink) {
             // fprintf(stderr, "\n");
 
             if (ret_state == XLookupBoth || ret_state == XLookupKeySym) {
-                sink->dispatch_key_down(keysym, event.xkey.state);
+                sink->dispatch_key_down((Key::Key)(keysym),
+                                        event.xkey.state);
             }
 
             if (ret_state == XLookupBoth || ret_state == XLookupChars) {
@@ -412,8 +413,9 @@ void X11Display::pullEvents(EventSink *sink) {
             }
         } break;
         case KeyRelease:
-            sink->dispatch_key_up(XLookupKeysym(&event.xkey, /* ??? */ 0),
-                              event.xkey.state);
+            sink->dispatch_key_up(
+                (Key::Key)XLookupKeysym(&event.xkey, /* ??? */ 0),
+                event.xkey.state);
             break;
         case ConfigureNotify:
             sink->dispatch_resize(event.xconfigure.width, event.xconfigure.height);

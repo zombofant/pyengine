@@ -123,24 +123,24 @@ bool AbstractWidget::ev_deactivate()
     return false;
 }
 
-bool AbstractWidget::ev_key_down(unsigned int symbol, unsigned int modifiers)
+bool AbstractWidget::ev_key_down(Key::Key key, KeyModifiers modifiers)
 {
     return false;
 }
 
-bool AbstractWidget::ev_key_up(unsigned int symbol, unsigned int modifiers)
+bool AbstractWidget::ev_key_up(Key::Key key, KeyModifiers modifiers)
 {
     return false;
 }
 
-bool AbstractWidget::ev_mouse_click(int x, int y, unsigned int button,
-                                    unsigned int modifiers, unsigned int nth)
+bool AbstractWidget::ev_mouse_click(int x, int y, MouseButton button,
+                                    KeyModifiers modifiers, unsigned int nth)
 {
     return false;
 }
 
-bool AbstractWidget::ev_mouse_down(int x, int y, unsigned int button,
-                                    unsigned int modifiers)
+bool AbstractWidget::ev_mouse_down(int x, int y, MouseButton button,
+                                    KeyModifiers modifiers)
 {
     return false;
 }
@@ -155,14 +155,19 @@ bool AbstractWidget::ev_mouse_leave()
     return false;
 }
 
-bool AbstractWidget::ev_mouse_move(int x, int y, int dx, int dy,
-                                   unsigned int button, unsigned int modifiers)
+bool AbstractWidget::ev_mouse_move(
+    int x, int y,
+    int dx, int dy,
+    MouseButtons buttons,
+    KeyModifiers modifiers)
 {
     return false;
 }
 
-bool AbstractWidget::ev_mouse_up(int x, int y, unsigned int button,
-                                 unsigned int modifiers)
+bool AbstractWidget::ev_mouse_up(
+    int x, int y,
+    MouseButton button,
+    KeyModifiers modifiers)
 {
     return false;
 }

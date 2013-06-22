@@ -84,24 +84,24 @@ public:
                                CaretMotionStep step,
                                bool select);
     void dispatch_hide();
-    void dispatch_key_down(unsigned int key,
-                           unsigned int modifiers) override;
-    void dispatch_key_up(unsigned int key,
-                         unsigned int modifiers) override;
+    void dispatch_key_down(Key::Key key,
+                           KeyModifiers modifiers) override;
+    void dispatch_key_up(Key::Key key,
+                         KeyModifiers modifiers) override;
     void dispatch_mouse_click(int x, int y,
-                              unsigned int button,
-                              unsigned int modifiers,
+                              MouseButton button,
+                              KeyModifiers modifiers,
                               unsigned int nth) override;
     void dispatch_mouse_down(int x, int y,
-                             unsigned int button,
-                             unsigned int modifiers) override;
+                             MouseButton button,
+                             KeyModifiers modifiers) override;
     void dispatch_mouse_move(int x, int y,
                              int dx, int dy,
-                             unsigned int buttons,
-                             unsigned int modifiers) override;
+                             MouseButtons buttons,
+                             KeyModifiers modifiers) override;
     void dispatch_mouse_up(int x, int y,
-                           unsigned int button,
-                           unsigned int modifiers) override;
+                           MouseButton button,
+                           KeyModifiers modifiers) override;
     void dispatch_resize(unsigned int w, unsigned int h);
     void dispatch_scroll(int x, int y,
                          int scrollx, int scrolly) override;

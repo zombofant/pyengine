@@ -214,8 +214,8 @@ void RootWidget::dispatch_hide()
 
 }
 
-void RootWidget::dispatch_key_down(unsigned int key,
-                                   unsigned int modifiers)
+void RootWidget::dispatch_key_down(Key::Key key,
+                                   KeyModifiers modifiers)
 {
     if (_drag_controller) {
         _drag_controller->ev_key_down(key, modifiers);
@@ -235,8 +235,8 @@ void RootWidget::dispatch_key_down(unsigned int key,
     }
 }
 
-void RootWidget::dispatch_key_up(unsigned int key,
-                                 unsigned int modifiers)
+void RootWidget::dispatch_key_up(Key::Key key,
+                                 KeyModifiers modifiers)
 {
     if (_drag_controller) {
         _drag_controller->ev_key_up(key, modifiers);
@@ -256,8 +256,8 @@ void RootWidget::dispatch_key_up(unsigned int key,
 
 void RootWidget::dispatch_mouse_click(
     int x, int y,
-    unsigned int button,
-    unsigned int modifiers,
+    MouseButton button,
+    KeyModifiers modifiers,
     unsigned int nth)
 {
     if (_drag_controller) {
@@ -277,8 +277,8 @@ void RootWidget::dispatch_mouse_click(
 
 void RootWidget::dispatch_mouse_down(
     int x, int y,
-    unsigned int button,
-    unsigned int modifiers)
+    MouseButton button,
+    KeyModifiers modifiers)
 {
     if (_drag_controller) {
         _drag_controller->ev_mouse_down(x, y, button, modifiers);
@@ -319,8 +319,8 @@ void RootWidget::dispatch_mouse_down(
 void RootWidget::dispatch_mouse_move(
     int x, int y,
     int dx, int dy,
-    unsigned int buttons,
-    unsigned int modifiers)
+    MouseButtons buttons,
+    KeyModifiers modifiers)
 {
     _cursor = std::move(Point(x, y));
     if (_drag_controller) {
@@ -360,8 +360,8 @@ void RootWidget::dispatch_mouse_move(
 
 void RootWidget::dispatch_mouse_up(
     int x, int y,
-    unsigned int button,
-    unsigned int modifiers)
+    MouseButton button,
+    KeyModifiers modifiers)
 {
     if (_drag_controller) {
         _drag_controller->ev_mouse_up(x, y, button, modifiers);
