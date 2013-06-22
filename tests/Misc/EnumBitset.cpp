@@ -64,3 +64,15 @@ TEST_CASE("Misc/EnumBitset"
     CHECK(bitset.test(FooB));
     CHECK(!bitset.test(FooC));
 }
+
+TEST_CASE("Misc/EnumBitset/initializer_lists"
+          "Test the enum bitset with initializer_lists")
+{
+    EnumBitset<Foo, FooA, FooC> bitset({FooB});
+    CHECK(bitset.test(FooB));
+
+    bitset.reset().set({FooA, FooB}).flip({FooB, FooC});
+    CHECK(bitset.test(FooA));
+    CHECK(!bitset.test(FooB));
+    CHECK(bitset.test(FooC));
+}

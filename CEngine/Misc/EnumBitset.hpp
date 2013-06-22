@@ -44,6 +44,12 @@ public:
 
     };
 
+    EnumBitset(const std::initializer_list<enum_t> &init):
+        _data()
+    {
+        set(init);
+    };
+
     EnumBitset(const EnumBitset &ref):
         _data(ref._data)
     {
@@ -161,6 +167,15 @@ public:
         _data.set(bit-min_value, value);
         return *this;
     }
+
+    inline EnumBitset& set(const std::initializer_list<enum_t> &init)
+    {
+        for (auto value: init) {
+            set(value);
+        }
+        return *this;
+    }
+
     inline EnumBitset& reset()
     {
         _data.reset();
@@ -173,6 +188,14 @@ public:
         return *this;
     }
 
+    inline EnumBitset& reset(const std::initializer_list<enum_t> &init)
+    {
+        for (auto value: init) {
+            reset(value);
+        }
+        return *this;
+    }
+
     inline EnumBitset& flip()
     {
         _data.flip();
@@ -182,6 +205,14 @@ public:
     inline EnumBitset& flip(enum_t bit)
     {
         _data.flip(bit-min_value);
+        return *this;
+    }
+
+    inline EnumBitset& flip(const std::initializer_list<enum_t> &init)
+    {
+        for (auto value: init) {
+            flip(value);
+        }
         return *this;
     }
 
