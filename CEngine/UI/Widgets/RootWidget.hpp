@@ -31,9 +31,10 @@ authors named in the AUTHORS file.
 
 #include "CEngine/WindowInterface/EventSink.hpp"
 
-#include "Shapes.hpp"
+#include "CEngine/UI/CSS/Shapes.hpp"
+#include "CEngine/UI/CSS/Theme.hpp"
+
 #include "WidgetBase.hpp"
-#include "Theme.hpp"
 #include "DragController.hpp"
 
 namespace PyEngine {

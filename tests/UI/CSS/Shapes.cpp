@@ -25,11 +25,11 @@ authors named in the AUTHORS file.
 **********************************************************************/
 #include <catch.hpp>
 
-#include <CEngine/UI/Shapes.hpp>
+#include <CEngine/UI/CSS/Shapes.hpp>
 
 using namespace PyEngine;
 
-TEST_CASE("UI/Shapes/CSSBox",
+TEST_CASE("UI/CSS/Shapes/CSSBox",
           "Initialization of CSSBox")
 {
     CSSBox box(1, 2, 3, 4);
@@ -39,7 +39,7 @@ TEST_CASE("UI/Shapes/CSSBox",
     CHECK(box.get_bottom() == 4);
 }
 
-TEST_CASE("UI/Shapes/Rect/NotARect",
+TEST_CASE("UI/CSS/Shapes/Rect/NotARect",
           "Test NotARect semantics")
 {
     Rect not_a_rect(NotARect);
@@ -52,7 +52,7 @@ TEST_CASE("UI/Shapes/Rect/NotARect",
     CHECK(not_a_rect != r1);
 }
 
-TEST_CASE("UI/Shapes/Rect/operations",
+TEST_CASE("UI/CSS/Shapes/Rect/operations",
           "Initialization and some rectangle operations")
 {
     Rect r1(0, 0, 10, 10);

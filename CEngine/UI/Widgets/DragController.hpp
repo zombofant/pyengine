@@ -26,8 +26,8 @@ authors named in the AUTHORS file.
 #ifndef _PYE_UI_DRAG_CONTROLLER_H
 #define _PYE_UI_DRAG_CONTROLLER_H
 
-#include "Key.hpp"
-#include "Static.hpp"
+#include "CEngine/UI/Key.hpp"
+#include "CEngine/UI/Static.hpp"
 
 namespace PyEngine {
 

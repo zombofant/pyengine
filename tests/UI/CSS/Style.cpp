@@ -25,11 +25,11 @@ authors named in the AUTHORS file.
 **********************************************************************/
 #include <catch.hpp>
 
-#include <CEngine/UI/Style.hpp>
+#include <CEngine/UI/CSS/Style.hpp>
 
 using namespace PyEngine;
 
-TEST_CASE("UI/Style/DefaultStyle",
+TEST_CASE("UI/CSS/Style/DefaultStyle",
           "Test settings of default style")
 {
     Style style = DefaultStyle();
@@ -46,7 +46,7 @@ TEST_CASE("UI/Style/DefaultStyle",
     CHECK(style.get_vertical_align() == CSS_VERTICAL_ALIGN_TOP);
 }
 
-TEST_CASE("UI/Style/Style/construction",
+TEST_CASE("UI/CSS/Style/Style/construction",
           "Test settings of default-constructed style")
 {
     Style style;
@@ -71,7 +71,7 @@ TEST_CASE("UI/Style/Style/construction",
     CHECK(style.get_shear_y() == 0);
 }
 
-TEST_CASE("UI/Style/Style/deinherit"
+TEST_CASE("UI/CSS/Style/Style/deinherit"
           "Test deinheritance of style")
 {
     Style inheriting;

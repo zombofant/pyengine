@@ -32,10 +32,11 @@ authors named in the AUTHORS file.
 #include <list>
 #include <set>
 
-#include "Static.hpp"
-#include "CSS.hpp"
-#include "Shapes.hpp"
-#include "Key.hpp"
+#include "CEngine/UI/Key.hpp"
+#include "CEngine/UI/Static.hpp"
+
+#include "CEngine/UI/CSS/CSS.hpp"
+#include "CEngine/UI/CSS/Shapes.hpp"
 
 namespace PyEngine {
 

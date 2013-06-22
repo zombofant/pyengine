@@ -25,11 +25,11 @@ authors named in the AUTHORS file.
 **********************************************************************/
 #include <catch.hpp>
 
-#include <CEngine/UI/CSS.hpp>
+#include <CEngine/UI/CSS/CSS.hpp>
 
 using namespace PyEngine;
 
-TEST_CASE("UI/CSS/CSSInheritable/assignment_no_inherit",
+TEST_CASE("UI/CSS/CSS/CSSInheritable/assignment_no_inherit",
           "Assignment of not-inherited values")
 {
     css_coord_int_t a(10);
@@ -40,7 +40,7 @@ TEST_CASE("UI/CSS/CSSInheritable/assignment_no_inherit",
     CHECK(!b.is_inherit());
 }
 
-TEST_CASE("UI/CSS/CSSInheritable/assignment_inherit",
+TEST_CASE("UI/CSS/CSS/CSSInheritable/assignment_inherit",
           "Assignment of inherited values")
 {
     css_coord_int_t a(Inherit);
@@ -50,7 +50,7 @@ TEST_CASE("UI/CSS/CSSInheritable/assignment_inherit",
     CHECK(b.is_inherit());
 }
 
-TEST_CASE("UI/CSS/CSSInheritable/extract_inherit_throws",
+TEST_CASE("UI/CSS/CSS/CSSInheritable/extract_inherit_throws",
           "Attempt to convert an unresolved inherit to a value must "
           "throw")
 {
@@ -64,7 +64,7 @@ TEST_CASE("UI/CSS/CSSInheritable/extract_inherit_throws",
     // work and should throw accordingly...
 }
 
-TEST_CASE("UI/CSS/CSSInheritable/extract_and_assign_values"
+TEST_CASE("UI/CSS/CSS/CSSInheritable/extract_and_assign_values"
           "Test extraction and assignment of values")
 {
     css_coord_int_t a(Inherit);
@@ -77,7 +77,7 @@ TEST_CASE("UI/CSS/CSSInheritable/extract_and_assign_values"
     CHECK(av == 10);
 }
 
-TEST_CASE("UI/CSS/CSSInheritable/compare"
+TEST_CASE("UI/CSS/CSS/CSSInheritable/compare"
           "Test comparision with values and Inherit")
 {
     css_coord_int_t a(Inherit);
@@ -89,7 +89,7 @@ TEST_CASE("UI/CSS/CSSInheritable/compare"
     CHECK(a != Inherit);
 }
 
-TEST_CASE("UI/CSS/value_is_inherit",
+TEST_CASE("UI/CSS/CSS/value_is_inherit",
           "Test working of is_inherit value trait")
 {
     css_coord_int_t a(Inherit);
@@ -101,7 +101,7 @@ TEST_CASE("UI/CSS/value_is_inherit",
     CHECK(!value_is_inherit(c));
 }
 
-TEST_CASE("UI/CSS/CSSInheritable/deinherit",
+TEST_CASE("UI/CSS/CSS/CSSInheritable/deinherit",
           "Test de-inheritance")
 {
     css_coord_int_t inheriting(Inherit);

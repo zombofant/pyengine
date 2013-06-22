@@ -25,11 +25,11 @@ authors named in the AUTHORS file.
 **********************************************************************/
 #include <catch.hpp>
 
-#include <CEngine/UI/Rules.hpp>
+#include <CEngine/UI/CSS/Rules.hpp>
 
 using namespace PyEngine;
 
-TEST_CASE("UI/Rules/MarginRule"
+TEST_CASE("UI/CSS/Rules/MarginRule"
           "Test appliance of margin rule")
 {
     MarginRule rule;
@@ -50,7 +50,7 @@ TEST_CASE("UI/Rules/MarginRule"
     CHECK(style.margin() == Margin(4, 1, 2, 3));
 }
 
-TEST_CASE("UI/Rules/PaddingRule"
+TEST_CASE("UI/CSS/Rules/PaddingRule"
           "Test appliance of padding rule")
 {
     PaddingRule rule;
@@ -71,7 +71,7 @@ TEST_CASE("UI/Rules/PaddingRule"
     CHECK(style.padding() == Padding(4, 1, 2, 3));
 }
 
-TEST_CASE("UI/Rules/BoxSpacingXRule"
+TEST_CASE("UI/CSS/Rules/BoxSpacingXRule"
           "Test appliance of box spacing x rule")
 {
     BoxSpacingXRule rule;
@@ -87,7 +87,7 @@ TEST_CASE("UI/Rules/BoxSpacingXRule"
     CHECK(style.get_box_spacing_x() == 1);
 }
 
-TEST_CASE("UI/Rules/BoxSpacingYRule"
+TEST_CASE("UI/CSS/Rules/BoxSpacingYRule"
           "Test appliance of box spacing x rule")
 {
     BoxSpacingYRule rule;
@@ -103,7 +103,7 @@ TEST_CASE("UI/Rules/BoxSpacingYRule"
     CHECK(style.get_box_spacing_y() == 1);
 }
 
-TEST_CASE("UI/Rules/BackgroundRule"
+TEST_CASE("UI/CSS/Rules/BackgroundRule"
           "Test appliance of box spacing x rule")
 {
     Colour value = Colour(1, 1, 1, 1);
@@ -121,7 +121,7 @@ TEST_CASE("UI/Rules/BackgroundRule"
     CHECK(*style.get_background().get() == value);
 }
 
-TEST_CASE("UI/Rules/TextColourRule"
+TEST_CASE("UI/CSS/Rules/TextColourRule"
           "Test appliance of box spacing x rule")
 {
     Colour value = Colour(1, 1, 1, 1);

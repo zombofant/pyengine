@@ -32,7 +32,8 @@ authors named in the AUTHORS file.
 #include "Selectors.hpp"
 #include "Style.hpp"
 #include "Rules.hpp"
-#include "WidgetBase.hpp"
+
+#include "CEngine/UI/Widgets/WidgetBase.hpp"
 
 namespace PyEngine {
 
@@ -51,7 +52,10 @@ public:
     void add_rule(SelectorPtr selector, RulePtr &&rule);
 
     Style* get_widget_style(const AbstractWidgetPtr &widget) const;
+
 };
+
+typedef std::shared_ptr<Theme> ThemePtr;
 
 }
 

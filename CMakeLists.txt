@@ -181,12 +181,12 @@ if (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
         "tests/Misc/EnumBitset.cpp"
         "tests/Math/Vectors.cpp"
         "tests/Math/Matrices.cpp"
-        "tests/UI/Selectors.cpp"
-        "tests/UI/CSS.cpp"
-        "tests/UI/Shapes.cpp"
-        "tests/UI/Style.cpp"
-        "tests/UI/Rules.cpp"
-        "tests/UI/Theme.cpp"
+        "tests/UI/CSS/Selectors.cpp"
+        "tests/UI/CSS/CSS.cpp"
+        "tests/UI/CSS/Shapes.cpp"
+        "tests/UI/CSS/Style.cpp"
+        "tests/UI/CSS/Rules.cpp"
+        "tests/UI/CSS/Theme.cpp"
     )
 
 

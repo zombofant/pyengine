@@ -25,11 +25,11 @@ authors named in the AUTHORS file.
 **********************************************************************/
 #include <catch.hpp>
 
-#include <CEngine/UI/Selectors.hpp>
+#include <CEngine/UI/CSS/Selectors.hpp>
 
 using namespace PyEngine;
 
-TEST_CASE("UI/Selectors/Specifity/comparision",
+TEST_CASE("UI/CSS/Selectors/Specifity/comparision",
           "Comparision of Specifity objects")
 {
     Specifity a(1, 2, 3, 4), b(0, 0, 0, 0), c(1, 0, 0, 0),
@@ -42,7 +42,7 @@ TEST_CASE("UI/Selectors/Specifity/comparision",
     CHECK(b != d);
 }
 
-TEST_CASE("UI/Selectors/Specifity/addition",
+TEST_CASE("UI/CSS/Selectors/Specifity/addition",
           "Addition of Specifity objects")
 {
     Specifity a(1, 2, 3, 4), b(0, 0, 0, 0), c(1, 1, 1, 1);

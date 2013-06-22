@@ -25,7 +25,7 @@ authors named in the AUTHORS file.
 **********************************************************************/
 #include "Selectors.hpp"
 
-#include "WidgetBase.hpp"
+#include "CEngine/UI/Widgets/WidgetBase.hpp"
 
 namespace PyEngine {
 

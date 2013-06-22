@@ -25,11 +25,11 @@ authors named in the AUTHORS file.
 **********************************************************************/
 #include <catch.hpp>
 
-#include <CEngine/UI/Theme.hpp>
+#include <CEngine/UI/CSS/Theme.hpp>
 
 using namespace PyEngine;
 
-TEST_CASE("CEngine/UI/Theme/construction", "foo")
+TEST_CASE("CEngine/UI/CSS/Theme/construction", "foo")
 {
 
 }
