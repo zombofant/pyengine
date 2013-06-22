@@ -1,5 +1,5 @@
 /**********************************************************************
-File name: Int.hpp
+File name: SetOperations.hpp
 This file is part of: Pythonic Engine
 
 LICENSE

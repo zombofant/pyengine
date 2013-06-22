@@ -49,7 +49,7 @@ RootWidget::RootWidget():
     _cursor(0, 0),
     _surface_dirty()
 {
-    /* add layer widgets */
+    /* TODO: add layer widgets */
     _invalidated_rect = NotARect;
 }
 
