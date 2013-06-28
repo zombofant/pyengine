@@ -103,3 +103,17 @@ TEST_CASE("UI/CSS/Shapes/Rect/extend"
     r1.extend(r2);
     CHECK(rt == r1);
 }
+
+TEST_CASE("UI/CSS/Shapes/Rect/shrink"
+          "Test Rect shrink operation")
+{
+    Rect r1(0, 0, 10, 10);
+    Box b1(1, 2, 3, 4);
+    Box b2(3, 2, 1, 0);
+
+    r1.shrink(b1);
+    CHECK(r1 == Rect(1, 2, 6, 4));
+    r1.shrink(b2);
+    CHECK(r1 == Rect(4, 4, 2, 2));
+}
+

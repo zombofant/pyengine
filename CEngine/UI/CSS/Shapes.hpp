@@ -567,6 +567,16 @@ public:
         _height = std::max(_top + _height, b._top + b._height) - _top;
         return *this;
     }
+
+    template <typename other_coord_t>
+    GenericRect<coord_t>& shrink(const GenericBox<other_coord_t> &b)
+    {
+        _left += b.get_left();
+        _top += b.get_top();
+        _width -= b.get_horizontal();
+        _height -= b.get_vertical();
+        return *this;
+    }
 };
 
 class Rect: public GenericRect<coord_int_t>
