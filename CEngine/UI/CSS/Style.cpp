@@ -38,6 +38,18 @@ bool cmp_css_ptr(
     return *a.get() == *b.get();
 }
 
+template <typename A>
+void stream_css_ptr(
+    std::ostream &stream,
+    const CSSInheritable<A> &a)
+{
+    if (a.is_inherit()) {
+        stream << a;
+    } else {
+        stream << (*a.get());
+    }
+}
+
 /* PyEngine::Style */
 
 Style::Style():
@@ -226,6 +238,38 @@ Style DefaultStyle()
     result.set_ellipsize(PANGO_ELLIPSIZE_END);
     result.set_vertical_align(CSS_VERTICAL_ALIGN_TOP);
     return std::move(result);
+}
+
+}
+
+namespace std {
+
+ostream& operator<< (ostream &stream, const PyEngine::Style &style)
+{
+    stream << "Style("
+           << "padding=" << style.padding() << ", "
+           << "margin=" << style.margin() << ", "
+           << "border=" << style.border() << ", "
+           << "background=";
+    PyEngine::stream_css_ptr(stream, style.get_background());
+    stream << ", "
+           << "text_colour=";
+    PyEngine::stream_css_ptr(stream, style.get_text_colour());
+    stream << ", "
+           << "text_align=" << style.get_text_align() << ", "
+           << "box_spacing_x=" << style.get_box_spacing_x() << ", "
+           << "box_spacing_y=" << style.get_box_spacing_y() << ", "
+           << "flex=" << style.get_flex() << ", "
+           << "width=" << style.get_width() << ", "
+           << "height=" << style.get_height() << ", "
+           << "font_weight=" << style.get_font_weight() << ", "
+           << "font_size=" << style.get_font_size() << ", "
+           << "font_family=" << style.get_font_family() << ", "
+           << "vertical_align=" << style.get_vertical_align() << ", "
+           << "ellipsize=" << style.get_ellipsize() << ", "
+           << "shear_x=" << style.get_shear_x() << ", "
+           << "shear_y=" << style.get_shear_y() << ")";
+    return stream;
 }
 
 }

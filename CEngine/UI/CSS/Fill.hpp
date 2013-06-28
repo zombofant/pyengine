@@ -93,11 +93,14 @@ public:
     virtual void set_repeat_y(const RepeatMode value) {
         _repeat_y = value;
     };
+
 public:
     virtual bool operator==(const Fill& other) const = 0;
     inline bool operator!=(const Fill& other) const {
         return !(operator==(other));
     };
+
+    virtual void to_stream(std::ostream &stream) const;
 };
 
 typedef std::shared_ptr<Fill> FillPtr;
@@ -125,7 +128,8 @@ public:
 
     virtual Transparent* copy() const;
 public:
-    virtual bool operator==(const Fill& other) const;
+    bool operator==(const Fill& other) const override;
+    void to_stream(std::ostream &stream) const override;
 };
 
 /**
@@ -148,7 +152,8 @@ public:
     virtual Colour* copy() const;
 
 public:
-    virtual bool operator==(const Fill& oth) const;
+    bool operator==(const Fill& oth) const override;
+    void to_stream(std::ostream &stream) const override;
 
 public:
     inline double get_r() const {
@@ -214,7 +219,8 @@ public:
     virtual void set_repeat_y(RepeatMode value);
     virtual void set_source(cairo_t* ctx, const Rect& rect) const;
     virtual Gradient* copy() const;
-    virtual bool operator==(const Fill& oth) const;
+    bool operator==(const Fill& oth) const override;
+    void to_stream(std::ostream &stream) const override;
 
 };
 
@@ -234,8 +240,22 @@ private:
     cairo_surface_t* _image;
 public:
     virtual void set_source(cairo_t* ctx, const Rect& rect) const;
-    virtual bool operator==(const Fill& oth) const;
+    bool operator==(const Fill& oth) const override;
+    void to_stream(std::ostream &stream) const override;
 };
+
+}
+
+namespace std
+{
+
+inline std::ostream& operator<<(
+    std::ostream &stream,
+    const PyEngine::Fill &fill)
+{
+    fill.to_stream(stream);
+    return stream;
+}
 
 }
 

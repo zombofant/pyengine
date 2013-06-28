@@ -79,6 +79,11 @@ void Fill::in_cairo(cairo_t* ctx, const Rect& rect) const
     cairo_fill(ctx);
 }
 
+void Fill::to_stream(std::ostream &stream) const
+{
+    stream << "<unspecified fill>";
+}
+
 /* PyEngine::Transparent */
 
 Transparent::Transparent():
@@ -123,6 +128,11 @@ bool Transparent::operator==(const Fill& other) const
         return colour->get_a() == 0;
     }
     return false;
+}
+
+void Transparent::to_stream(std::ostream &stream) const
+{
+    stream << "transparent";
 }
 
 /* PyEngine::Colour */
@@ -185,6 +195,12 @@ bool Colour::operator==(const Fill& oth) const
             (_g == othc->_g) &&
             (_b == othc->_b) &&
             (_a == othc->_a));
+}
+
+void Colour::to_stream(std::ostream &stream) const
+{
+    stream << "rgba(" << _r << ", " << _g << ", " << _b << ", " << _a
+           << ")";
 }
 
 /* PyEngine::Gradient::Stop */
@@ -334,6 +350,11 @@ bool Gradient::operator==(const Fill& oth) const
     return true;
 }
 
+void Gradient::to_stream(std::ostream &stream) const
+{
+    stream << "<some gradient fill>";
+}
+
 /* PyEngine::Image */
 
 Image::Image():
@@ -410,6 +431,11 @@ bool Image::operator==(const Fill& oth) const
     return memcmp(cairo_image_surface_get_data(_image),
                   cairo_image_surface_get_data(othi->_image),
                   buffer_size) == 0;
+}
+
+void Image::to_stream(std::ostream &stream) const
+{
+    stream << "<image at " << _image << ">";
 }
 
 }
