@@ -76,6 +76,8 @@ public:
     virtual RootPtr get_root();
 
 public:
+    void focus(const WidgetPtr &widget);
+    void invalidate_rect(const Rect &ref);
     void release_capture();
     void start_drag(std::unique_ptr<DragControllerBase> &&controller);
     void stop_drag();

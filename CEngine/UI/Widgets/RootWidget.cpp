@@ -169,6 +169,18 @@ void RootWidget::_update_hover_state(HitChain *chain)
     std::swap(_old_hit_chain, new_set);
 }
 
+void RootWidget::focus(const WidgetPtr &ref)
+{
+    HitChain chain;
+    iter_upwards(ref, std::back_inserter(chain));
+    _focus(&chain);
+}
+
+void RootWidget::invalidate_rect(const Rect &ref)
+{
+    _invalidated_rect.extend(ref);
+}
+
 void RootWidget::release_capture()
 {
     _mouse_capture = nullptr;
