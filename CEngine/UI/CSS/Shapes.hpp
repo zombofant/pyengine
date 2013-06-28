@@ -555,6 +555,19 @@ public:
         result |= b;
         return std::move(result);
     }
+
+    template <typename other_t>
+    GenericRect<coord_t>& extend(const other_t &b)
+    {
+        if ((b == NotARect) || (*this == NotARect)) {
+            return *this;
+        }
+        _left = std::min(_left, b._left);
+        _top = std::min(_top, b._top);
+        _width = std::max(_left + _width, b._left + b._width) - _left;
+        _height = std::max(_top + _height, b._top + b._height) - _top;
+        return *this;
+    }
 };
 
 class Rect: public GenericRect<coord_int_t>

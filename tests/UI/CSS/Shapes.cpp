@@ -92,3 +92,14 @@ TEST_CASE("UI/CSS/Shapes/Rect/operations",
     CHECK((NotARect | r1) == r1);
     CHECK((NotARect & r1) == NotARect);
 }
+
+TEST_CASE("UI/CSS/Shapes/Rect/extend"
+          "Test Rect extend operation")
+{
+    Rect r1(0, 0, 5, 5);
+    Rect r2(5, 5, 10, 10);
+    Rect rt(0, 0, 10, 10);
+
+    r1.extend(r2);
+    CHECK(rt == r1);
+}
