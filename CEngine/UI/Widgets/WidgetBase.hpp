@@ -209,7 +209,6 @@ public:
     void send_to_back(const WidgetPtr &child);
 
 public:
-    virtual RootPtr get_root() const = 0;
     WidgetPtr hittest(const Point &p) override;
     bool hittest_with_chain(const Point &p, HitChain &chain) override;
     void realign() override;
