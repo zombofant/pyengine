@@ -25,7 +25,7 @@ authors named in the AUTHORS file.
 **********************************************************************/
 #include "WidgetBase.hpp"
 
-// #include "RootWidget.hpp"
+#include "RootWidget.hpp"
 
 namespace PyEngine {
 
@@ -90,6 +90,14 @@ void AbstractWidget::do_align()
 const char* AbstractWidget::element_name() const
 {
     return nullptr;
+}
+
+void AbstractWidget::invalidate()
+{
+    RootPtr root = get_root();
+    if (root) {
+        root->invalidate_rect(absolute_rect());
+    }
 }
 
 void AbstractWidget::realign()

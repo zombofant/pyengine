@@ -130,6 +130,7 @@ public:
     virtual const char* element_name() const;
     virtual WidgetPtr hittest(const Point &p) = 0;
     virtual bool hittest_with_chain(const Point &p, HitChain &chain) = 0;
+    void invalidate();
     virtual void realign();
     virtual void render();
 
