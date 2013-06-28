@@ -36,14 +36,17 @@ authors named in the AUTHORS file.
 
 #include "WidgetBase.hpp"
 #include "DragController.hpp"
+#include "LayerWidget.hpp"
 
 namespace PyEngine {
 
 class RootWidget: public ParentWidget,
                   public EventSink
 {
-public:
+protected:
     RootWidget();
+
+public:
     virtual ~RootWidget();
 
 private:
@@ -62,6 +65,10 @@ private:
     Point _cursor;
     bool _surface_dirty;
 
+    std::shared_ptr<DesktopLayer> _desktop_layer;
+    std::shared_ptr<WindowLayer> _window_layer;
+    std::shared_ptr<PopupLayer> _popup_layer;
+
 protected:
     void _capture(WidgetPtr capturee, unsigned int button);
     WidgetPtr _find_key_event_target();
@@ -76,6 +83,19 @@ public:
     ThemePtr get_theme() override;
     bool is_element(const std::string &name) const override;
     void set_theme(const ThemePtr &theme);
+
+public:
+    inline const std::shared_ptr<DesktopLayer>& desktop_layer() {
+        return _desktop_layer;
+    };
+
+    inline const std::shared_ptr<WindowLayer>& window_layer() {
+        return _window_layer;
+    };
+
+    inline const std::shared_ptr<PopupLayer>& popup_layer() {
+        return _popup_layer;
+    };
 
 public:
     void focus(const WidgetPtr &widget);
@@ -115,6 +135,9 @@ public:
     void dispatch_wm_quit();
     void frame_synced();
     void frame_unsynced(TimeFloat deltaT);
+
+public:
+    static RootPtr create();
 
 };
 

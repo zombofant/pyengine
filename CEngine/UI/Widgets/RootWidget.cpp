@@ -49,9 +49,11 @@ RootWidget::RootWidget():
     _resized(false),
     _drag_controller(nullptr),
     _cursor(0, 0),
-    _surface_dirty()
+    _surface_dirty(),
+    _desktop_layer(new DesktopLayer()),
+    _window_layer(new WindowLayer()),
+    _popup_layer(new PopupLayer())
 {
-    /* TODO: add layer widgets */
     _invalidated_rect = NotARect;
 }
 
@@ -165,7 +167,9 @@ void RootWidget::_update_hover_state(HitChain *chain)
 
 void RootWidget::do_align()
 {
-    /* TODO: align the layers */
+    for (auto& child: *this) {
+        child->absolute_rect() = absolute_rect();
+    }
 }
 
 RootPtr RootWidget::get_root()
@@ -470,6 +474,15 @@ void RootWidget::frame_synced()
 void RootWidget::frame_unsynced(TimeFloat deltaT)
 {
 
+}
+
+RootPtr RootWidget::create()
+{
+    RootPtr root(new RootWidget());
+    root->add(root->desktop_layer());
+    root->add(root->window_layer());
+    root->add(root->popup_layer());
+    return root;
 }
 
 }
