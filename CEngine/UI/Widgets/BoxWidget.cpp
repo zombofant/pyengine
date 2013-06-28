@@ -307,4 +307,18 @@ void AbstractVBox::do_align()
     );
 }
 
+/* PyEngine::HBox */
+
+bool HBox::is_element(const std::string &name) const
+{
+    return (name == "hbox") || AbstractHBox::is_element(name);
+}
+
+/* PyEngine::VBox */
+
+bool VBox::is_element(const std::string &name) const
+{
+    return (name == "vbox") || AbstractVBox::is_element(name);
+}
+
 }

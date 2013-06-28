@@ -156,9 +156,9 @@ void AbstractWidget::do_align()
 
 }
 
-const char* AbstractWidget::element_name() const
+bool AbstractWidget::is_element(const std::string &name) const
 {
-    return nullptr;
+    return (name == "*");
 }
 
 coord_dimensions_t AbstractWidget::get_dimensions()

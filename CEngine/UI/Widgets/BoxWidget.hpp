@@ -135,12 +135,20 @@ public:
 
 class HBox: public AbstractHBox
 {
+public:
     HBox() = default;
+
+public:
+    bool is_element(const std::string &name) const override;
 };
 
 class VBox: public AbstractVBox
 {
+public:
     VBox() = default;
+
+public:
+    bool is_element(const std::string &name) const override;
 };
 
 }

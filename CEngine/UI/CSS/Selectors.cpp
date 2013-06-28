@@ -200,8 +200,7 @@ Is::Is(const std::string& element_name):
 
 const AbstractWidget* Is::_test_widget(const AbstractWidget *widget) const
 {
-    const char* name = widget->element_name();
-    if (_element_name == name) {
+    if (widget->is_element(_element_name)) {
         return widget;
     } else {
         return nullptr;

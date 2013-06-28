@@ -179,6 +179,11 @@ ThemePtr RootWidget::get_theme()
     return _theme;
 }
 
+bool RootWidget::is_element(const std::string &name) const
+{
+    return (name == "root") || this->ParentWidget::is_element(name);
+}
+
 void RootWidget::focus(const WidgetPtr &ref)
 {
     HitChain chain;

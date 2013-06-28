@@ -75,6 +75,7 @@ public:
     virtual void do_align() override;
     RootPtr get_root() override;
     ThemePtr get_theme() override;
+    bool is_element(const std::string &name) const override;
 
 public:
     void focus(const WidgetPtr &widget);

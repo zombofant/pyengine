@@ -132,7 +132,7 @@ public:
 public:
     Style& computed_style();
     virtual void do_align();
-    virtual const char* element_name() const;
+    virtual bool is_element(const std::string &name) const;
     virtual coord_dimensions_t get_dimensions();
     virtual WidgetPtr hittest(const Point &p) = 0;
     virtual bool hittest_with_chain(const Point &p, HitChain &chain) = 0;
