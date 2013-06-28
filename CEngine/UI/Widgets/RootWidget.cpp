@@ -36,7 +36,6 @@ namespace PyEngine {
 RootWidget::RootWidget():
     ParentWidget(),
     EventSink(),
-    std::enable_shared_from_this<RootWidget>(),
     _theme(new Theme()),
     _invalidated_rect(),
     _mouse_capture(nullptr),
@@ -171,7 +170,7 @@ void RootWidget::do_align()
 
 RootPtr RootWidget::get_root()
 {
-    return this->std::enable_shared_from_this<RootWidget>::shared_from_this();
+    return std::static_pointer_cast<RootWidget>(shared_from_this());
 }
 
 ThemePtr RootWidget::get_theme()

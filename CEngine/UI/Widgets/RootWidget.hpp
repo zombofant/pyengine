@@ -40,8 +40,7 @@ authors named in the AUTHORS file.
 namespace PyEngine {
 
 class RootWidget: public ParentWidget,
-                  public EventSink,
-                  public std::enable_shared_from_this<RootWidget>
+                  public EventSink
 {
 public:
     RootWidget();
