@@ -71,7 +71,7 @@ TEST_CASE("UI/CSS/Style/Style/construction",
     CHECK(style.get_shear_y() == 0);
 }
 
-TEST_CASE("UI/CSS/Style/Style/deinherit"
+TEST_CASE("UI/CSS/Style/Style/deinherit",
           "Test deinheritance of style")
 {
     Style inheriting;

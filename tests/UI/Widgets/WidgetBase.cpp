@@ -48,14 +48,20 @@ TEST_CASE("UI/Widgets/WidgetBase/ParentWidget/children",
     CHECK(parent->size() == 0);
 
     parent->add(c1);
+    CHECK(c1->get_parent() == parent);
+
     parent->add(c2);
+    CHECK(c2->get_parent() == parent);
+
     parent->add(c3);
+    CHECK(c3->get_parent() == parent);
 
     CHECK(parent->size() == 3);
 
     CHECK_THROWS_AS(parent->add(c1), WidgetError);
 
     parent->remove(c2);
+    CHECK(c2->get_parent().get() == 0);
     CHECK(parent->size() == 2);
     CHECK_THROWS_AS(parent->remove(c2), WidgetError);
 

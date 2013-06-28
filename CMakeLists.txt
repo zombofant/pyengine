@@ -181,6 +181,7 @@ if (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
         "tests/Misc/EnumBitset.cpp"
         "tests/Math/Vectors.cpp"
         "tests/Math/Matrices.cpp"
+        "tests/UI/test_utils.cpp"
         "tests/UI/CSS/Selectors.cpp"
         "tests/UI/CSS/CSS.cpp"
         "tests/UI/CSS/Shapes.cpp"
@@ -188,6 +189,8 @@ if (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
         "tests/UI/CSS/Rules.cpp"
         "tests/UI/CSS/Theme.cpp"
         "tests/UI/Widgets/WidgetBase.cpp"
+        "tests/UI/Widgets/RootWidget.cpp"
+        "tests/UI/Widgets/BoxWidget.cpp"
     )
 
 

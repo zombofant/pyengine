@@ -1,5 +1,5 @@
 /**********************************************************************
-File name: Theme.cpp
+File name: RootWidget.cpp
 This file is part of: Pythonic Engine
 
 LICENSE
@@ -25,36 +25,17 @@ authors named in the AUTHORS file.
 **********************************************************************/
 #include <catch.hpp>
 
-#include <CEngine/UI/CSS/Theme.hpp>
+#include <CEngine/UI/Widgets/BoxWidget.hpp>
 
 #include "tests/UI/test_utils.hpp"
 
-#include <CEngine/UI/Widgets/BoxWidget.hpp>
-
 using namespace PyEngine;
 
-TEST_CASE("UI/CSS/Theme/Theme/theming",
-          "Test theming")
+TEST_CASE("UI/Widgets/RootWidget/RootWidget/propagate",
+          "Check propagation of root widget association")
 {
     RootPtr root = setup_test_env();
     ThemePtr theme = root->get_theme();
-
-    std::unique_ptr<FlexRule> rule1(new FlexRule());
-    rule1->set(1);
-
-
-    std::unique_ptr<TextColourRule> rule2(new TextColourRule());
-    rule2->set(FillPtr(new Colour(1, 0, 0, 1)));
-
-    theme->add_rule(
-        SelectorPtr(new ChildOf(SelectorPtr(new Is("vbox")))),
-        std::move(rule1)
-    );
-
-    theme->add_rule(
-        SelectorPtr(new ChildOf(SelectorPtr(new Is("root")))),
-        std::move(rule2)
-    );
 
     ParentPtr vbox(new VBox());
     WidgetPtr child1(new Widget());
@@ -64,11 +45,9 @@ TEST_CASE("UI/CSS/Theme/Theme/theming",
     vbox->add(child1);
     vbox->add(child2);
 
-    Style &vbox_style = vbox->computed_style();
-    Style ref = DefaultStyle();
-    ref.set_text_colour(FillPtr(new Colour(1, 0, 0, 1)));
-    CHECK(vbox_style == ref);
+    CHECK(vbox->get_root() == root);
+    CHECK(child1->get_root() == root);
+    CHECK(child1->get_theme() == theme);
 
-    ref.set_flex(1);
-    CHECK(child1->computed_style() == ref);
+
 }
