@@ -135,7 +135,7 @@ Style::~Style()
 StyleDiff Style::calc_diff(const Style& other) const
 {
     StyleDiff diffs;
-    if ((_background != other._background) ||
+    if ((!cmp_css_ptr(_background, other._background)) ||
         (_text_colour != other._text_colour) ||
         (_shear_x != other._shear_x) ||
         (_shear_y != other._shear_y) ||
@@ -144,6 +144,7 @@ StyleDiff Style::calc_diff(const Style& other) const
         (_font_weight != other._font_weight) ||
         (_font_family != other._font_family) ||
         (_text_align != other._text_align) ||
+        (!cmp_css_ptr(_text_colour, other._text_colour)) ||
         (_vertical_align != other._vertical_align))
     {
         diffs.set(SD_VISUAL);
@@ -186,6 +187,8 @@ void Style::deinherit_with(const Style &other_style)
         other_style.get_flex());
     _text_align.deinherit_with(
         other_style.get_text_align());
+    _text_colour.deinherit_with(
+        other_style.get_text_colour());
     _font_weight.deinherit_with(
         other_style.get_font_weight());
     _font_family.deinherit_with(
@@ -216,6 +219,7 @@ bool Style::operator==(const Style &other)
         (_height == other._height) &&
         (_flex == other._flex) &&
         (_text_align == other._text_align) &&
+        (cmp_css_ptr(_text_colour, other._text_colour)) &&
         (_font_weight == other._font_weight) &&
         (_font_family == other._font_family) &&
         (_font_size == other._font_size) &&
