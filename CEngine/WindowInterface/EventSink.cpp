@@ -26,8 +26,14 @@ authors named in the AUTHORS file.
 #include "EventSink.hpp"
 
 namespace PyEngine {
-EventSink::~EventSink() {
+
+/* PyEngine::EventSink */
+
+EventSink::~EventSink()
+{
+
 }
+
 }
 
 // Local Variables:

@@ -38,11 +38,11 @@ endif (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     )
     set(PYENGINE_MODULES
         "pyengine_PythonInterface"
-        "pyengine_WindowInterface"
         "pyengine_RenderGraph"
         "pyengine_SceneGraph"
         "pyengine_Resources"
         "pyengine_UI"
+        "pyengine_WindowInterface"
         "pyengine_GL"
         "pyengine_IO"
         "pyengine_Math"
@@ -187,6 +187,7 @@ if (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
         "tests/UI/CSS/Style.cpp"
         "tests/UI/CSS/Rules.cpp"
         "tests/UI/CSS/Theme.cpp"
+        "tests/UI/Widgets/WidgetBase.cpp"
     )
 
 

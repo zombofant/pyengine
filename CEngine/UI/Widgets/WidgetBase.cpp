@@ -31,6 +31,20 @@ authors named in the AUTHORS file.
 
 namespace PyEngine {
 
+/* PyEngine::WidgetError */
+
+WidgetError::WidgetError(const std::string &what_arg):
+    std::invalid_argument(what_arg)
+{
+
+}
+
+WidgetError::WidgetError(const char *what_arg):
+    std::invalid_argument(what_arg)
+{
+
+}
+
 /* PyEngine::AbstractWidget */
 
 AbstractWidget::AbstractWidget():
@@ -93,7 +107,7 @@ ThemePtr AbstractWidget::get_theme()
 
 void AbstractWidget::set_parent(ParentPtr parent)
 {
-    if (parent == _parent.lock()) {
+    if (parent.get() == _parent.lock().get()) {
         return;
     }
 
@@ -323,7 +337,7 @@ void ParentWidget::_root_changed()
 void ParentWidget::add(const WidgetPtr &child)
 {
     if (child->get_parent()) {
-        WidgetError("Cannot add a child which is already bound to a parent.");
+        throw WidgetError("Cannot add a child which is already bound to a parent.");
     }
     _children.push_back(child);
     child->set_parent(shared_from_this());
@@ -415,6 +429,11 @@ void ParentWidget::send_to_back(const WidgetPtr &child)
 
     _children.erase(child_it);
     _children.insert(begin(), child);
+}
+
+size_t ParentWidget::size() const
+{
+    return _children.size();
 }
 
 WidgetPtr ParentWidget::hittest(const Point& p)

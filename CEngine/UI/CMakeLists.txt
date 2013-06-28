@@ -14,4 +14,4 @@ add_library(pyengine_UI
   "Widgets/BoxWidget.cpp"
   "Widgets/RootWidget.cpp"
 )
-add_dependencies(pyengine_UI pyengine_GL)
+add_dependencies(pyengine_UI pyengine_GL pyengine_WindowInterface)

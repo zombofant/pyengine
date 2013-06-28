@@ -222,7 +222,7 @@ public:
     const_iterator find(const WidgetPtr &child) const;
     void remove(const WidgetPtr &child);
     void send_to_back(const WidgetPtr &child);
-    size_t size();
+    size_t size() const;
 
 public:
     WidgetPtr hittest(const Point &p) override;
