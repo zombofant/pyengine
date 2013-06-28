@@ -73,7 +73,8 @@ protected:
 
 public:
     virtual void do_align() override;
-    virtual RootPtr get_root();
+    RootPtr get_root() override;
+    ThemePtr get_theme() override;
 
 public:
     void focus(const WidgetPtr &widget);

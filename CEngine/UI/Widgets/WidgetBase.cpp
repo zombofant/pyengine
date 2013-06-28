@@ -25,6 +25,8 @@ authors named in the AUTHORS file.
 **********************************************************************/
 #include "WidgetBase.hpp"
 
+#include "CEngine/UI/CSS/Theme.hpp"
+
 #include "RootWidget.hpp"
 
 namespace PyEngine {
@@ -37,7 +39,10 @@ AbstractWidget::AbstractWidget():
     _alignment_invalidated(true),
     _computed_style_invalidated(true),
     _absolute_rect(0, 0, 0, 0),
-    _visible(true)
+    _visible(true),
+    _state(),
+    _flags(),
+    _computed_style()
 {
 
 }
@@ -70,6 +75,20 @@ void AbstractWidget::set_root(RootPtr root)
     }
     _root = root;
     _root_changed();
+}
+
+RootPtr AbstractWidget::get_root()
+{
+    return _root.lock();
+}
+
+ThemePtr AbstractWidget::get_theme()
+{
+    RootPtr root = get_root();
+    if (root) {
+        return root->get_theme();
+    }
+    return nullptr;
 }
 
 void AbstractWidget::set_parent(ParentPtr parent)

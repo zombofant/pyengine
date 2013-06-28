@@ -61,11 +61,6 @@ RootWidget::~RootWidget()
 
 }
 
-RootPtr RootWidget::get_root()
-{
-    return this->std::enable_shared_from_this<RootWidget>::shared_from_this();
-}
-
 void RootWidget::_capture(WidgetPtr capturee, unsigned int button)
 {
     if (!(capturee->flags() & WidgetFlag::CAPTURE_MOUSE)) {
@@ -167,6 +162,16 @@ void RootWidget::_update_hover_state(HitChain *chain)
     }
 
     std::swap(_old_hit_chain, new_set);
+}
+
+RootPtr RootWidget::get_root()
+{
+    return this->std::enable_shared_from_this<RootWidget>::shared_from_this();
+}
+
+ThemePtr RootWidget::get_theme()
+{
+    return _theme;
 }
 
 void RootWidget::focus(const WidgetPtr &ref)

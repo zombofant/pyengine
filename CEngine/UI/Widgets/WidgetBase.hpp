@@ -50,6 +50,7 @@ public:
 class AbstractWidget;
 class RootWidget;
 class ParentWidget;
+class Theme;
 
 typedef std::shared_ptr<ParentWidget> ParentPtr;
 typedef std::weak_ptr<ParentWidget> ParentWPtr;
@@ -120,9 +121,8 @@ public:
         return _parent.lock();
     };
 
-    virtual RootPtr get_root() {
-        return _root.lock();
-    };
+    virtual RootPtr get_root();
+    virtual std::shared_ptr<Theme> get_theme();
 
     void set_parent(ParentPtr parent);
 public:
