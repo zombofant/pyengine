@@ -178,6 +178,11 @@ public:
     typedef std::vector<WidgetPtr> container_type;
     typedef typename container_type::iterator iterator;
     typedef typename container_type::const_iterator const_iterator;
+    typedef WidgetPtr value_type;
+    typedef WidgetPtr& reference;
+    typedef const WidgetPtr& const_reference;
+    typedef WidgetPtr* pointer;
+    typedef const WidgetPtr* const_pointer;
 
 public:
     ParentWidget();
