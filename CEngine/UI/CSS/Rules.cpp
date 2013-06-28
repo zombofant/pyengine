@@ -77,4 +77,13 @@ void BoxSpacingYRule::apply_to(Style &to) const
     }
 }
 
+/* PyEngine::FlexRule */
+
+void FlexRule::apply_to(Style &to) const
+{
+    if (has_effect()) {
+        to.set_flex(value());
+    }
+}
+
 }

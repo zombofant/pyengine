@@ -78,6 +78,14 @@ public:
     virtual void apply_to(Style &to) const override;
 };
 
+struct FlexRule: public NonNegativeValueRule<css_coord_int_t> {
+public:
+    FlexRule() = default;
+
+public:
+    virtual void apply_to(Style &to) const override;
+};
+
 }
 
 #endif
