@@ -46,18 +46,18 @@ void Theme::add_rule(SelectorPtr selector, RulePtr &&rule)
     _rulesets.sort();
 }
 
-Style* Theme::get_widget_style(const AbstractWidgetPtr &widget) const
+std::unique_ptr<Style> Theme::get_widget_style(const AbstractWidget &widget) const
 {
     Style *style = new Style();
     for (auto& item: _rulesets) {
         Selector *selector = std::get<1>(item).get();
 
-        if (selector->test_widget(widget)) {
+        if (selector->test_widget(&widget)) {
             std::get<2>(item)->apply_to(*style);
         }
     }
 
-    return style;
+    return std::unique_ptr<Style>(style);
 }
 
 }

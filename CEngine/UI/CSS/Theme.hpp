@@ -51,7 +51,11 @@ private:
 public:
     void add_rule(SelectorPtr selector, RulePtr &&rule);
 
-    Style* get_widget_style(const AbstractWidgetPtr &widget) const;
+    std::unique_ptr<Style> get_widget_style(const AbstractWidget &widget) const;
+
+    inline std::unique_ptr<Style> get_widget_style(const WidgetPtr &widget) const {
+        return get_widget_style(*widget);
+    };
 
 };
 

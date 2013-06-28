@@ -103,7 +103,7 @@ bool Selector::operator==(const Selector& oth_) const
     return true;
 }
 
-AbstractWidgetPtr Selector::test_widget(AbstractWidgetPtr widget) const
+const AbstractWidget* Selector::test_widget(const AbstractWidget *widget) const
 {
     if (_chained) {
         widget = _chained->test_widget(widget);
@@ -154,16 +154,16 @@ ChildOf::ChildOf(SelectorPtr parent, SelectorPtr chained):
 
 }
 
-AbstractWidgetPtr ChildOf::_test_widget(AbstractWidgetPtr widget) const
+const AbstractWidget* ChildOf::_test_widget(const AbstractWidget *widget) const
 {
     ParentPtr p = widget->get_parent();
     while (p) {
-        if (_parent->test_widget(p)) {
-            return p;
+        if (_parent->test_widget(p.get())) {
+            return p.get();
         }
         p = p->get_parent();
     }
-    return AbstractWidgetPtr();
+    return nullptr;
 }
 
 /* PyEngine::DirectChildOf */
@@ -180,13 +180,13 @@ DirectChildOf::DirectChildOf(SelectorPtr parent, SelectorPtr chained):
 
 }
 
-AbstractWidgetPtr DirectChildOf::_test_widget(AbstractWidgetPtr widget) const
+const AbstractWidget* DirectChildOf::_test_widget(const AbstractWidget *widget) const
 {
     ParentPtr p = widget->get_parent();
-    if (_parent->test_widget(p)) {
-        return p;
+    if (_parent->test_widget(p.get())) {
+        return p.get();
     }
-    return AbstractWidgetPtr();
+    return nullptr;
 }
 
 /* PyEngine::Is */
@@ -198,13 +198,13 @@ Is::Is(const std::string& element_name):
 
 }
 
-AbstractWidgetPtr Is::_test_widget(AbstractWidgetPtr widget) const
+const AbstractWidget* Is::_test_widget(const AbstractWidget *widget) const
 {
     const char* name = widget->element_name();
     if (_element_name == name) {
         return widget;
     } else {
-        return AbstractWidgetPtr();
+        return nullptr;
     }
 }
 
@@ -228,10 +228,10 @@ State::State(CSSStateFlag flag, SelectorPtr chained):
     }
 }
 
-AbstractWidgetPtr State::_test_widget(AbstractWidgetPtr widget) const
+const AbstractWidget* State::_test_widget(const AbstractWidget *widget) const
 {
     if ((widget->state() & _states) != _states) {
-        return AbstractWidgetPtr();
+        return nullptr;
     }
     return widget;
 }

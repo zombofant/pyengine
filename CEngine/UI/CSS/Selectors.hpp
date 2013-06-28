@@ -62,7 +62,7 @@ protected:
     Specifity _specifity;
     SelectorPtr _chained;
 protected:
-    virtual AbstractWidgetPtr _test_widget(AbstractWidgetPtr widget) const = 0;
+    virtual const AbstractWidget* _test_widget(const AbstractWidget *widget) const = 0;
 public:
     virtual bool operator==(const Selector& oth_) const;
     inline bool operator!=(const Selector& oth_) const {
@@ -73,7 +73,7 @@ public:
         return _specifity;
     };
 
-    AbstractWidgetPtr test_widget(AbstractWidgetPtr widget) const;
+    const AbstractWidget* test_widget(const AbstractWidget *widget) const;
 };
 
 class ParentSelector: public Selector
@@ -93,7 +93,7 @@ public:
     ChildOf(SelectorPtr parent);
     ChildOf(SelectorPtr parent, SelectorPtr chained);
 protected:
-    virtual AbstractWidgetPtr _test_widget(AbstractWidgetPtr widget) const = 0;
+    virtual const AbstractWidget* _test_widget(const AbstractWidget *widget) const = 0;
 };
 
 class DirectChildOf: public ParentSelector
@@ -102,7 +102,7 @@ public:
     DirectChildOf(SelectorPtr parent);
     DirectChildOf(SelectorPtr parent, SelectorPtr chained);
 protected:
-    virtual AbstractWidgetPtr _test_widget(AbstractWidgetPtr widget) const = 0;
+    virtual const AbstractWidget* _test_widget(const AbstractWidget *widget) const = 0;
 };
 
 class Is: public Selector
@@ -112,7 +112,7 @@ public:
 private:
     const std::string _element_name;
 protected:
-    virtual AbstractWidgetPtr _test_widget(AbstractWidgetPtr widget) const = 0;
+    virtual const AbstractWidget* _test_widget(const AbstractWidget *widget) const = 0;
 };
 
 class State: public Selector
@@ -123,7 +123,7 @@ public:
 protected:
     CSSState _states;
 protected:
-    virtual AbstractWidgetPtr _test_widget(AbstractWidgetPtr widget) const = 0;
+    virtual const AbstractWidget* _test_widget(const AbstractWidget *widget) const = 0;
 };
 
 }
