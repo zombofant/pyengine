@@ -50,7 +50,7 @@ enum StyleDiffOption {
     SD_VISUAL
 };
 
-typedef std::bitset<std::numeric_limits<StyleDiffOption>::max()> StyleDiff;
+typedef EnumBitset<StyleDiffOption, SD_LAYOUT, SD_VISUAL> StyleDiff;
 
 class Style
 {
