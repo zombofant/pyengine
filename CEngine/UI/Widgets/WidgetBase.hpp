@@ -37,6 +37,7 @@ authors named in the AUTHORS file.
 
 #include "CEngine/UI/CSS/CSS.hpp"
 #include "CEngine/UI/CSS/Shapes.hpp"
+#include "CEngine/UI/CSS/Style.hpp"
 
 namespace PyEngine {
 
@@ -79,6 +80,7 @@ protected:
     bool _visible;
     CSSState _state;
     WidgetFlags _flags;
+    Style _computed_style;
 
 protected:
     virtual void _parent_changed();
@@ -104,8 +106,10 @@ public:
         return _absolute_rect;
     };
 
-    inline void set_absolute_rect(const Rect& value) {
-        _absolute_rect = value;
+    inline Rect get_client_rect() {
+        Rect result(get_absolute_rect());
+        result.shrink(computed_style().border().get_box());
+        return result;
     };
 
     inline WidgetFlags& flags() {
@@ -126,8 +130,10 @@ public:
 
     void set_parent(ParentPtr parent);
 public:
+    Style& computed_style();
     virtual void do_align();
     virtual const char* element_name() const;
+    virtual coord_dimensions_t get_dimensions();
     virtual WidgetPtr hittest(const Point &p) = 0;
     virtual bool hittest_with_chain(const Point &p, HitChain &chain) = 0;
     void invalidate();
@@ -140,6 +146,14 @@ public:
 
     inline const CSSState& state() const {
         return _state;
+    };
+
+    inline bool get_visible() const {
+        return _visible;
+    };
+
+    inline void set_visible(bool value) {
+        _visible = value;
     };
 
 public:
@@ -208,6 +222,7 @@ public:
     const_iterator find(const WidgetPtr &child) const;
     void remove(const WidgetPtr &child);
     void send_to_back(const WidgetPtr &child);
+    size_t size();
 
 public:
     WidgetPtr hittest(const Point &p) override;

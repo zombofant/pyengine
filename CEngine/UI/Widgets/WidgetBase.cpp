@@ -101,6 +101,42 @@ void AbstractWidget::set_parent(ParentPtr parent)
     _parent_changed();
 }
 
+Style& AbstractWidget::computed_style()
+{
+    if (_computed_style_invalidated) {
+        ThemePtr theme = get_theme();
+        Style new_style;
+        if (theme) {
+            new_style = *theme->get_widget_style(*this).get();
+        }
+        /* TODO: custom style rules */
+        ParentPtr parent = get_parent();
+        if (parent) {
+            new_style.deinherit_with(parent->computed_style());
+        } else {
+            new_style.deinherit_with(DefaultStyle());
+        }
+
+        StyleDiff diff = _computed_style.calc_diff(new_style);
+        if (diff.any()) {
+            _computed_style = new_style;
+            if (diff.test(SD_LAYOUT)) {
+                invalidate_alignment();
+                if (parent) {
+                    parent->invalidate_alignment();
+                }
+            }
+            if (diff.test(SD_VISUAL)) {
+                invalidate();
+            }
+        }
+
+        _computed_style_invalidated = false;
+    }
+
+    return _computed_style;
+}
+
 void AbstractWidget::do_align()
 {
 
@@ -109,6 +145,30 @@ void AbstractWidget::do_align()
 const char* AbstractWidget::element_name() const
 {
     return nullptr;
+}
+
+coord_dimensions_t AbstractWidget::get_dimensions()
+{
+    Style &mystyle = computed_style();
+    CSSBox border_box = mystyle.border().get_box();
+    coord_int_t width, height;
+    if (!Auto::is_auto(mystyle.get_width())) {
+        width = mystyle.get_width()
+              + mystyle.padding().get_horizontal()
+              + border_box.get_horizontal();
+    } else {
+        width = Auto();
+    }
+
+    if (!Auto::is_auto(mystyle.get_height())) {
+        height = mystyle.get_height()
+               + mystyle.padding().get_vertical()
+               + border_box.get_vertical();
+    } else {
+        height = Auto();
+    }
+
+    return std::make_pair(width, height);
 }
 
 void AbstractWidget::invalidate()
