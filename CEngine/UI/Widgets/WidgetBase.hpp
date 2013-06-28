@@ -232,6 +232,19 @@ public:
 
 };
 
+template <typename OutputIt>
+OutputIt iter_upwards(
+    const WidgetPtr &leaf,
+    OutputIt it)
+{
+    WidgetPtr curr = leaf;
+    while (curr) {
+        *it++ = curr;
+        curr = curr->get_parent();
+    }
+    return it;
+}
+
 }
 
 #endif
