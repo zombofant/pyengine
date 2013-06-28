@@ -192,16 +192,16 @@ protected:
     virtual void _root_changed();
 
 public:
-    void add(WidgetPtr child);
+    void add(const WidgetPtr &child);
     iterator begin();
-    void bring_to_front(WidgetPtr child);
+    void bring_to_front(const WidgetPtr &child);
     const_iterator cbegin() const;
     const_iterator cend() const;
     iterator end();
-    iterator find(WidgetPtr child);
-    const_iterator find(WidgetPtr child) const;
-    void remove(WidgetPtr child);
-    void send_to_back(WidgetPtr child);
+    iterator find(const WidgetPtr &child);
+    const_iterator find(const WidgetPtr &child) const;
+    void remove(const WidgetPtr &child);
+    void send_to_back(const WidgetPtr &child);
 
 public:
     virtual RootPtr get_root() const = 0;

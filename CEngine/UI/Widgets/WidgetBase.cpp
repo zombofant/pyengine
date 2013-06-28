@@ -233,7 +233,7 @@ void ParentWidget::_root_changed()
     }
 }
 
-void ParentWidget::add(WidgetPtr child)
+void ParentWidget::add(const WidgetPtr &child)
 {
     if (child->get_parent()) {
         WidgetError("Cannot add a child which is already bound to a parent.");
@@ -247,7 +247,7 @@ ParentWidget::iterator ParentWidget::begin()
     return _children.begin();
 }
 
-void ParentWidget::bring_to_front(WidgetPtr child)
+void ParentWidget::bring_to_front(const WidgetPtr &child)
 {
     auto child_it = find(child);
     if (child_it == end()) {
@@ -276,7 +276,7 @@ ParentWidget::iterator ParentWidget::end()
     return _children.end();
 }
 
-ParentWidget::iterator ParentWidget::find(WidgetPtr child)
+ParentWidget::iterator ParentWidget::find(const WidgetPtr &child)
 {
     for (auto it = begin(); it != end(); it++) {
         if (*it == child) {
@@ -286,7 +286,7 @@ ParentWidget::iterator ParentWidget::find(WidgetPtr child)
     return end();
 }
 
-ParentWidget::const_iterator ParentWidget::find(WidgetPtr child) const
+ParentWidget::const_iterator ParentWidget::find(const WidgetPtr &child) const
 {
     for (auto it = cbegin(); it != cend(); it++) {
         if (*it == child) {
@@ -296,7 +296,7 @@ ParentWidget::const_iterator ParentWidget::find(WidgetPtr child) const
     return cend();
 }
 
-void ParentWidget::remove(WidgetPtr child)
+void ParentWidget::remove(const WidgetPtr &child)
 {
     auto it = begin();
     for (;
@@ -319,7 +319,7 @@ void ParentWidget::remove(WidgetPtr child)
     _children.erase(it);
 }
 
-void ParentWidget::send_to_back(WidgetPtr child)
+void ParentWidget::send_to_back(const WidgetPtr &child)
 {
     auto child_it = find(child);
     if (child_it == end()) {
