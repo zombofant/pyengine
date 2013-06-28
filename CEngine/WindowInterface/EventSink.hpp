@@ -30,6 +30,8 @@ authors named in the AUTHORS file.
 
 #include <boost/shared_ptr.hpp>
 
+#include "CEngine/IO/Time.hpp"
+
 #include "CEngine/UI/Key.hpp"
 #include "CEngine/UI/Static.hpp"
 
@@ -39,7 +41,7 @@ class EventSink {
 public:
     virtual ~EventSink();
     virtual void frame_synced() = 0;
-    virtual void frame_unsynced(double deltaT) = 0;
+    virtual void frame_unsynced(TimeFloat deltaT) = 0;
     virtual void dispatch_key_down(Key::Key key,
                                    KeyModifiers modifiers) = 0;
     virtual void dispatch_key_up(Key::Key key,

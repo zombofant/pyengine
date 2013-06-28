@@ -75,6 +75,7 @@ public:
     RootPtr get_root() override;
     ThemePtr get_theme() override;
     bool is_element(const std::string &name) const override;
+    void set_theme(const ThemePtr &theme);
 
 public:
     void focus(const WidgetPtr &widget);
@@ -112,6 +113,8 @@ public:
     void dispatch_show();
     void dispatch_text_input(const char* text);
     void dispatch_wm_quit();
+    void frame_synced();
+    void frame_unsynced(TimeFloat deltaT);
 
 };
 

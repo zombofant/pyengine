@@ -183,6 +183,11 @@ bool RootWidget::is_element(const std::string &name) const
     return (name == "root") || this->ParentWidget::is_element(name);
 }
 
+void RootWidget::set_theme(const ThemePtr &theme)
+{
+    _theme = theme;
+}
+
 void RootWidget::focus(const WidgetPtr &ref)
 {
     HitChain chain;
@@ -453,6 +458,16 @@ void RootWidget::dispatch_text_input(const char *text)
 }
 
 void RootWidget::dispatch_wm_quit()
+{
+
+}
+
+void RootWidget::frame_synced()
+{
+
+}
+
+void RootWidget::frame_unsynced(TimeFloat deltaT)
 {
 
 }
