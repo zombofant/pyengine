@@ -253,22 +253,21 @@ public:
     {
     };
 
-    GenericRect(coord_t left, coord_t top):
-        _left(left),
-        _top(top),
+    GenericRect(coord_t x, coord_t y):
+        _left(x),
+        _top(y),
         _width(0),
         _height(0)
     {
     };
 
-    GenericRect(coord_t left, coord_t top, coord_t right, coord_t bottom):
-        _left(left),
-        _top(top),
-        _width(0),
-        _height(0)
+    GenericRect(coord_t x, coord_t y, coord_t width, coord_t height):
+        _left(x),
+        _top(y),
+        _width(width),
+        _height(height)
     {
-        set_right(right);
-        set_bottom(bottom);
+
     };
 
     GenericRect(const GenericRect<coord_t>& ref):
@@ -574,9 +573,9 @@ class Rect: public GenericRect<coord_int_t>
 {
 public:
     Rect();
-    Rect(coord_int_t top, coord_int_t left);
-    Rect(coord_int_t left, coord_int_t top,
-         coord_int_t right, coord_int_t bottom);
+    Rect(coord_int_t x, coord_int_t y);
+    Rect(coord_int_t x, coord_int_t y,
+         coord_int_t width, coord_int_t height);
     Rect(const Rect& ref);
     Rect(const not_a_rect_t&);
     Rect& operator=(const Rect& ref);

@@ -168,15 +168,15 @@ Rect::Rect():
 
 }
 
-Rect::Rect(coord_int_t top, coord_int_t left):
-    GenericRect<coord_int_t>(top, left)
+Rect::Rect(coord_int_t x, coord_int_t y):
+    GenericRect<coord_int_t>(x, y)
 {
 
 }
 
-Rect::Rect(coord_int_t left, coord_int_t top,
-           coord_int_t right, coord_int_t bottom):
-    GenericRect<coord_int_t>(left, top, right, bottom)
+Rect::Rect(coord_int_t x, coord_int_t y,
+           coord_int_t width, coord_int_t height):
+    GenericRect<coord_int_t>(x, y, width, height)
 {
 
 }

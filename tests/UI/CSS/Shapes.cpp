@@ -57,7 +57,7 @@ TEST_CASE("UI/CSS/Shapes/Rect/operations",
 {
     Rect r1(0, 0, 10, 10);
     Rect r2(0, 0, 5, 5);
-    Rect r3(5, 0, 10, 5);
+    Rect r3(5, 0, 5, 5);
 
     CHECK(r1.is_a_rect() == true);
     CHECK(r2.is_a_rect() == true);
@@ -81,7 +81,7 @@ TEST_CASE("UI/CSS/Shapes/Rect/operations",
 
     CHECK((r1 & r2) == r2);
     CHECK((r1 & r3) == r3);
-    CHECK((r2 & r3) == Rect(5, 0, 5, 5));
+    CHECK((r2 & r3) == Rect(5, 0, 0, 5));
 
     CHECK((r1 | r2) == r1);
     CHECK((r1 | r3) == r1);
@@ -97,7 +97,7 @@ TEST_CASE("UI/CSS/Shapes/Rect/extend"
           "Test Rect extend operation")
 {
     Rect r1(0, 0, 5, 5);
-    Rect r2(5, 5, 10, 10);
+    Rect r2(5, 5, 5, 5);
     Rect rt(0, 0, 10, 10);
 
     r1.extend(r2);
