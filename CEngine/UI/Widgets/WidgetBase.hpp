@@ -209,7 +209,7 @@ protected:
 protected:
     bool _hittest(const Point &p) const override;
     WidgetPtr _hittest_children(const Point &p) const;
-    virtual void _root_changed();
+    void _root_changed() override;
 
 public:
     void add(const WidgetPtr &child);

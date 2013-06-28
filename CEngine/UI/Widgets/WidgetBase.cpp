@@ -70,9 +70,9 @@ void AbstractWidget::_parent_changed()
 {
     ParentPtr parent = _parent.lock();
     if (parent) {
-        parent->get_root();
+        set_root(parent->get_root());
     } else {
-        set_root(RootPtr());
+        set_root(nullptr);
     }
 }
 
@@ -329,7 +329,9 @@ WidgetPtr ParentWidget::_hittest_children(const Point &p) const
 void ParentWidget::_root_changed()
 {
     this->AbstractWidget::_root_changed();
+    RootPtr root = get_root();
     for (auto child: *this) {
+        child->set_root(root);
         child->_root_changed();
     }
 }
@@ -418,6 +420,7 @@ void ParentWidget::remove(const WidgetPtr &child)
     }
 
     _children.erase(it);
+    child->set_parent(nullptr);
 }
 
 void ParentWidget::send_to_back(const WidgetPtr &child)
