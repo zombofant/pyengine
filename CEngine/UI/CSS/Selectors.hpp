@@ -93,7 +93,7 @@ public:
     ChildOf(SelectorPtr parent);
     ChildOf(SelectorPtr parent, SelectorPtr chained);
 protected:
-    virtual const AbstractWidget* _test_widget(const AbstractWidget *widget) const = 0;
+    const AbstractWidget* _test_widget(const AbstractWidget *widget) const override;
 };
 
 class DirectChildOf: public ParentSelector
@@ -102,7 +102,7 @@ public:
     DirectChildOf(SelectorPtr parent);
     DirectChildOf(SelectorPtr parent, SelectorPtr chained);
 protected:
-    virtual const AbstractWidget* _test_widget(const AbstractWidget *widget) const = 0;
+    const AbstractWidget* _test_widget(const AbstractWidget *widget) const override;
 };
 
 class Is: public Selector
@@ -112,7 +112,7 @@ public:
 private:
     const std::string _element_name;
 protected:
-    virtual const AbstractWidget* _test_widget(const AbstractWidget *widget) const = 0;
+    const AbstractWidget* _test_widget(const AbstractWidget *widget) const override;
 };
 
 class State: public Selector
@@ -123,7 +123,7 @@ public:
 protected:
     CSSState _states;
 protected:
-    virtual const AbstractWidget* _test_widget(const AbstractWidget *widget) const = 0;
+    const AbstractWidget* _test_widget(const AbstractWidget *widget) const override;
 };
 
 }
