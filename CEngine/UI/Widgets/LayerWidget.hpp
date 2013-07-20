@@ -101,7 +101,7 @@ public:
 class ModalWindowLayer: public ParentWidget
 {
 public:
-    typedef std::shared_ptr<Widget> WindowWidgetPtr;
+    typedef Widget* WindowWidgetPtr;
 
 public:
     ModalWindowLayer() = delete;

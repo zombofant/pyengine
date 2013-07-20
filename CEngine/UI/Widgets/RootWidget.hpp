@@ -43,10 +43,8 @@ namespace PyEngine {
 class RootWidget: public ParentWidget,
                   public EventSink
 {
-protected:
-    RootWidget();
-
 public:
+    RootWidget();
     virtual ~RootWidget();
 
 private:
@@ -65,9 +63,9 @@ private:
     Point _cursor;
     bool _surface_dirty;
 
-    std::shared_ptr<DesktopLayer> _desktop_layer;
-    std::shared_ptr<WindowLayer> _window_layer;
-    std::shared_ptr<PopupLayer> _popup_layer;
+    DesktopLayer *_desktop_layer;
+    WindowLayer *_window_layer;
+    PopupLayer *_popup_layer;
 
 protected:
     void _capture(WidgetPtr capturee, unsigned int button);
@@ -85,15 +83,15 @@ public:
     void set_theme(const ThemePtr &theme);
 
 public:
-    inline const std::shared_ptr<DesktopLayer>& desktop_layer() {
+    inline DesktopLayer *desktop_layer() {
         return _desktop_layer;
     };
 
-    inline const std::shared_ptr<WindowLayer>& window_layer() {
+    inline WindowLayer *window_layer() {
         return _window_layer;
     };
 
-    inline const std::shared_ptr<PopupLayer>& popup_layer() {
+    inline PopupLayer *popup_layer() {
         return _popup_layer;
     };
 
@@ -135,9 +133,6 @@ public:
     void dispatch_wm_quit();
     void frame_synced();
     void frame_unsynced(TimeFloat deltaT);
-
-public:
-    static RootPtr create();
 
 };
 

@@ -33,8 +33,8 @@ TEST_CASE("UI/Widgets/WidgetBase/Widget/init"
           "Widget initialization")
 {
     Widget widget;
-    CHECK(widget.get_parent().get() == 0);
-    CHECK(widget.get_root().get() == 0);
+    CHECK(widget.get_parent() == 0);
+    CHECK(widget.get_root() == 0);
     CHECK(widget.get_theme().get() == 0);
     CHECK(widget.computed_style() == DefaultStyle());
 }
@@ -61,7 +61,7 @@ TEST_CASE("UI/Widgets/WidgetBase/ParentWidget/children",
     CHECK_THROWS_AS(parent->add(c1), WidgetError);
 
     parent->remove(c2);
-    CHECK(c2->get_parent().get() == 0);
+    CHECK(c2->get_parent() == 0);
     CHECK(parent->size() == 2);
     CHECK_THROWS_AS(parent->remove(c2), WidgetError);
 

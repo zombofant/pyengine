@@ -45,8 +45,7 @@ void DesktopLayer::do_align()
 void WindowLayer::do_align()
 {
     for (auto& child: *this) {
-        std::shared_ptr<ModalWindowLayer> modal =
-            std::dynamic_pointer_cast<ModalWindowLayer>(child);
+        ModalWindowLayer *modal = dynamic_cast<ModalWindowLayer*>(child);
         if (modal) {
             modal->absolute_rect() = absolute_rect();
         }
@@ -59,7 +58,7 @@ WidgetPtr PopupLayer::hittest(const Point &p)
 {
     if (_current_root_menu) {
         WidgetPtr hit = LayerWidget::hittest(p);
-        if ((hit.get() == this) && (_current_root_menu->absolute_rect().contains(p)))
+        if ((hit == this) && (_current_root_menu->absolute_rect().contains(p)))
         {
             return _current_root_menu->hittest(p);
         }
@@ -79,7 +78,7 @@ bool PopupLayer::hittest_with_chain(const Point &p, HitChain &chain)
         _current_root_menu->hittest_with_chain(p, chain);
     }
 
-    chain.push_back(shared_from_this());
+    chain.push_back(this);
     return true;
 }
 
@@ -127,7 +126,7 @@ void ModalWindowLayer::_handle_window_close(const WidgetPtr &sender)
     invalidate();
     ParentPtr parent = get_parent();
     if (parent) {
-        parent->remove(shared_from_this());
+        parent->remove(this);
     }
 }
 

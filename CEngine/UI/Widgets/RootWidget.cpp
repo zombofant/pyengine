@@ -55,6 +55,9 @@ RootWidget::RootWidget():
     _popup_layer(new PopupLayer())
 {
     _invalidated_rect = NotARect;
+    add(_desktop_layer);
+    add(_window_layer);
+    add(_popup_layer);
 }
 
 RootWidget::~RootWidget()
@@ -73,7 +76,7 @@ void RootWidget::_capture(WidgetPtr capturee, unsigned int button)
 
 WidgetPtr RootWidget::_find_key_event_target()
 {
-    if (_focused && (_focused->get_root().get() != this)) {
+    if (_focused && (_focused->get_root() != this)) {
         _focused = nullptr;
     }
     return (_focused ? _focused : get_root());
@@ -174,7 +177,7 @@ void RootWidget::do_align()
 
 RootPtr RootWidget::get_root()
 {
-    return std::static_pointer_cast<RootWidget>(shared_from_this());
+    return this;
 }
 
 ThemePtr RootWidget::get_theme()
@@ -474,15 +477,6 @@ void RootWidget::frame_synced()
 void RootWidget::frame_unsynced(TimeFloat deltaT)
 {
 
-}
-
-RootPtr RootWidget::create()
-{
-    RootPtr root(new RootWidget());
-    root->add(root->desktop_layer());
-    root->add(root->window_layer());
-    root->add(root->popup_layer());
-    return root;
 }
 
 }

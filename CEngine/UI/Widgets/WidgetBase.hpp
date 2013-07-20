@@ -53,13 +53,11 @@ class RootWidget;
 class ParentWidget;
 class Theme;
 
-typedef std::shared_ptr<ParentWidget> ParentPtr;
-typedef std::weak_ptr<ParentWidget> ParentWPtr;
+typedef ParentWidget* ParentPtr;
 
-typedef std::shared_ptr<RootWidget> RootPtr;
-typedef std::weak_ptr<RootWidget> RootWPtr;
+typedef RootWidget* RootPtr;
 
-typedef std::shared_ptr<AbstractWidget> WidgetPtr;
+typedef AbstractWidget* WidgetPtr;
 
 typedef std::list<WidgetPtr> HitChain;
 typedef std::set<WidgetPtr> HitSet;
@@ -73,8 +71,8 @@ public:
     virtual ~AbstractWidget();
 
 protected:
-    ParentWPtr _parent;
-    RootWPtr _root;
+    ParentPtr _parent;
+    RootPtr _root;
     bool _alignment_invalidated, _computed_style_invalidated;
     Rect _absolute_rect;
     bool _visible;
@@ -122,7 +120,7 @@ public:
 
 public:
     inline ParentPtr get_parent() const {
-        return _parent.lock();
+        return _parent;
     };
 
     virtual RootPtr get_root();
@@ -186,8 +184,7 @@ public:
     friend class RootWidget;
 };
 
-class ParentWidget: public AbstractWidget,
-                    public std::enable_shared_from_this<ParentWidget>
+class ParentWidget: public AbstractWidget
 {
 public:
     typedef std::vector<WidgetPtr> container_type;
@@ -232,8 +229,7 @@ public:
 
 };
 
-class Widget: public AbstractWidget,
-              public std::enable_shared_from_this<Widget>
+class Widget: public AbstractWidget
 {
 public:
     Widget();

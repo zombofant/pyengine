@@ -103,7 +103,7 @@ bool Selector::operator==(const Selector& oth_) const
     return true;
 }
 
-const AbstractWidget* Selector::test_widget(const AbstractWidget *widget) const
+const AbstractWidget *Selector::test_widget(const AbstractWidget *widget) const
 {
     if (_chained) {
         widget = _chained->test_widget(widget);
@@ -154,12 +154,12 @@ ChildOf::ChildOf(SelectorPtr parent, SelectorPtr chained):
 
 }
 
-const AbstractWidget* ChildOf::_test_widget(const AbstractWidget *widget) const
+const AbstractWidget *ChildOf::_test_widget(const AbstractWidget *widget) const
 {
     ParentPtr p = widget->get_parent();
     while (p) {
-        if (_parent->test_widget(p.get())) {
-            return p.get();
+        if (_parent->test_widget(p)) {
+            return p;
         }
         p = p->get_parent();
     }
@@ -180,11 +180,11 @@ DirectChildOf::DirectChildOf(SelectorPtr parent, SelectorPtr chained):
 
 }
 
-const AbstractWidget* DirectChildOf::_test_widget(const AbstractWidget *widget) const
+const AbstractWidget *DirectChildOf::_test_widget(const AbstractWidget *widget) const
 {
     ParentPtr p = widget->get_parent();
-    if (_parent->test_widget(p.get())) {
-        return p.get();
+    if (_parent->test_widget(p)) {
+        return p;
     }
     return nullptr;
 }
@@ -198,7 +198,7 @@ Is::Is(const std::string& element_name):
 
 }
 
-const AbstractWidget* Is::_test_widget(const AbstractWidget *widget) const
+const AbstractWidget *Is::_test_widget(const AbstractWidget *widget) const
 {
     if (widget->is_element(_element_name)) {
         return widget;
@@ -227,7 +227,7 @@ State::State(CSSStateFlag flag, SelectorPtr chained):
     }
 }
 
-const AbstractWidget* State::_test_widget(const AbstractWidget *widget) const
+const AbstractWidget *State::_test_widget(const AbstractWidget *widget) const
 {
     if ((widget->state() & _states) != _states) {
         return nullptr;

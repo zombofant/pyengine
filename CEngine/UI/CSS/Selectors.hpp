@@ -50,7 +50,6 @@ class Selector;
 typedef std::shared_ptr<Selector> SelectorPtr;
 
 class AbstractWidget;
-typedef std::shared_ptr<AbstractWidget> AbstractWidgetPtr;
 
 class Selector: public std::enable_shared_from_this<Selector>
 {
@@ -62,7 +61,7 @@ protected:
     Specifity _specifity;
     SelectorPtr _chained;
 protected:
-    virtual const AbstractWidget* _test_widget(const AbstractWidget *widget) const = 0;
+    virtual const AbstractWidget *_test_widget(const AbstractWidget *widget) const = 0;
 public:
     virtual bool operator==(const Selector& oth_) const;
     inline bool operator!=(const Selector& oth_) const {
@@ -73,7 +72,7 @@ public:
         return _specifity;
     };
 
-    const AbstractWidget* test_widget(const AbstractWidget *widget) const;
+    const AbstractWidget *test_widget(const AbstractWidget *widget) const;
 };
 
 class ParentSelector: public Selector
@@ -93,7 +92,7 @@ public:
     ChildOf(SelectorPtr parent);
     ChildOf(SelectorPtr parent, SelectorPtr chained);
 protected:
-    const AbstractWidget* _test_widget(const AbstractWidget *widget) const override;
+    const AbstractWidget *_test_widget(const AbstractWidget *widget) const override;
 };
 
 class DirectChildOf: public ParentSelector
@@ -102,7 +101,7 @@ public:
     DirectChildOf(SelectorPtr parent);
     DirectChildOf(SelectorPtr parent, SelectorPtr chained);
 protected:
-    const AbstractWidget* _test_widget(const AbstractWidget *widget) const override;
+    const AbstractWidget *_test_widget(const AbstractWidget *widget) const override;
 };
 
 class Is: public Selector
@@ -112,7 +111,7 @@ public:
 private:
     const std::string _element_name;
 protected:
-    const AbstractWidget* _test_widget(const AbstractWidget *widget) const override;
+    const AbstractWidget *_test_widget(const AbstractWidget *widget) const override;
 };
 
 class State: public Selector
@@ -123,7 +122,7 @@ public:
 protected:
     CSSState _states;
 protected:
-    const AbstractWidget* _test_widget(const AbstractWidget *widget) const override;
+    const AbstractWidget *_test_widget(const AbstractWidget *widget) const override;
 };
 
 }

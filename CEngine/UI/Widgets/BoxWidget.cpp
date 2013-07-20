@@ -54,7 +54,7 @@ void AbstractBoxWidget::_get_spacing_list(
     results.reserve(size()+1);
 
     auto it = cbegin();
-    WidgetPtr left, curr;
+    WidgetPtr left = nullptr, curr = nullptr;
     bool term = false;
     for (; (!term) && ((it != cend()) || (curr)); ++it)
     {

@@ -29,7 +29,7 @@ namespace PyEngine {
 
 RootPtr setup_test_env()
 {
-    RootPtr root = RootWidget::create();
+    RootPtr root = new RootWidget();
     ThemePtr theme(new Theme());
 
     root->set_theme(theme);

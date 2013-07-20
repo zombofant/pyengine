@@ -68,9 +68,8 @@ AbstractWidget::~AbstractWidget()
 
 void AbstractWidget::_parent_changed()
 {
-    ParentPtr parent = _parent.lock();
-    if (parent) {
-        set_root(parent->get_root());
+    if (_parent) {
+        set_root(_parent->get_root());
     } else {
         set_root(nullptr);
     }
@@ -84,7 +83,7 @@ void AbstractWidget::_root_changed()
 
 void AbstractWidget::set_root(RootPtr root)
 {
-    if (_root.lock() == root) {
+    if (_root == root) {
         return;
     }
     _root = root;
@@ -93,21 +92,20 @@ void AbstractWidget::set_root(RootPtr root)
 
 RootPtr AbstractWidget::get_root()
 {
-    return _root.lock();
+    return _root;
 }
 
 ThemePtr AbstractWidget::get_theme()
 {
-    RootPtr root = get_root();
-    if (root) {
-        return root->get_theme();
+    if (_root) {
+        return _root->get_theme();
     }
     return nullptr;
 }
 
 void AbstractWidget::set_parent(ParentPtr parent)
 {
-    if (parent.get() == _parent.lock().get()) {
+    if (parent == _parent) {
         return;
     }
 
@@ -292,7 +290,6 @@ bool AbstractWidget::ev_text_input(const char* buf)
 
 ParentWidget::ParentWidget():
     AbstractWidget(),
-    std::enable_shared_from_this<ParentWidget>(),
     _children()
 {
 
@@ -300,7 +297,9 @@ ParentWidget::ParentWidget():
 
 ParentWidget::~ParentWidget()
 {
-
+    for (auto& child: _children) {
+        delete child;
+    }
 }
 
 bool ParentWidget::_hittest(const Point &p) const
@@ -323,7 +322,7 @@ WidgetPtr ParentWidget::_hittest_children(const Point &p) const
             return hit;
         }
     }
-    return WidgetPtr();
+    return nullptr;
 }
 
 void ParentWidget::_root_changed()
@@ -342,7 +341,7 @@ void ParentWidget::add(const WidgetPtr &child)
         throw WidgetError("Cannot add a child which is already bound to a parent.");
     }
     _children.push_back(child);
-    child->set_parent(shared_from_this());
+    child->set_parent(this);
 }
 
 ParentWidget::iterator ParentWidget::begin()
@@ -414,8 +413,7 @@ void ParentWidget::remove(const WidgetPtr &child)
         throw WidgetError("Attempt to remove a widget which is not a child.");
     }
 
-    ParentPtr me = shared_from_this();
-    if (me != child->get_parent()) {
+    if (this != child->get_parent()) {
         throw std::logic_error("Parenthood was not announced at child.");
     }
 
@@ -442,12 +440,12 @@ size_t ParentWidget::size() const
 WidgetPtr ParentWidget::hittest(const Point& p)
 {
     if (!_hittest(p)) {
-        return WidgetPtr();
+        return nullptr;
     }
     realign();
     WidgetPtr hit = _hittest_children(p);
     if (!hit) {
-        return shared_from_this();
+        return this;
     } else {
         return std::move(hit);
     }
@@ -469,7 +467,7 @@ bool ParentWidget::hittest_with_chain(const Point &p, HitChain &chain)
         }
     }
 
-    chain.push_back(shared_from_this());
+    chain.push_back(this);
     return true;
 }
 
@@ -512,13 +510,13 @@ bool Widget::_hittest(const Point &p) const
 
 WidgetPtr Widget::hittest(const Point &p)
 {
-    return (_hittest(p) ? shared_from_this() : WidgetPtr());
+    return (_hittest(p) ? this : nullptr);
 }
 
 bool Widget::hittest_with_chain(const Point &p, HitChain &chain)
 {
     if (_hittest(p)) {
-        chain.push_back(shared_from_this());
+        chain.push_back(this);
         return true;
     } else {
         return false;
