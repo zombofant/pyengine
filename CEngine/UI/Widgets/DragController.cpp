@@ -104,4 +104,40 @@ void DragControllerBase::ev_drag_move(
 
 }
 
+/* PyEngine::DragMoveWidget */
+
+DragMoveWidget::DragMoveWidget(
+        RootWidget *root_widget,
+        unsigned int mouse_button,
+        int x, int y,
+        const WidgetPtr &widget):
+    DragControllerBase(root_widget, mouse_button),
+    _startx(x),
+    _starty(y),
+    _widget(widget),
+    _startxoffs(0),
+    _startyoffs(0)
+{
+    const Rect &widget_rect = _widget->get_absolute_rect();
+    _startxoffs = _startx - widget_rect.get_x();
+    _startyoffs = _starty - widget_rect.get_y();
+}
+
+void DragMoveWidget::ev_widget_move(int x, int y)
+{
+    Rect &widget_rect = _widget->absolute_rect();
+    _widget->invalidate();
+    widget_rect.set_x(x);
+    widget_rect.set_y(y);
+    _widget->invalidate();
+}
+
+void DragMoveWidget::ev_drag_move(int x, int y, KeyModifiers modifiers)
+{
+    int px = x - _startx;
+    int py = y - _starty;
+    ev_widget_move(px, py);
+}
+
+
 }

@@ -29,6 +29,8 @@ authors named in the AUTHORS file.
 #include "CEngine/UI/Key.hpp"
 #include "CEngine/UI/Static.hpp"
 
+#include "WidgetBase.hpp"
+
 namespace PyEngine {
 
 class RootWidget;
@@ -42,12 +44,15 @@ public:
     DragControllerBase& operator=(const DragControllerBase &ref)
         = delete;
     virtual ~DragControllerBase();
+
 protected:
     RootWidget *_root_widget;
     unsigned int _mouse_button;
+
 public:
     virtual void abort();
     virtual void release();
+
 public: /* event handlers */
     virtual void ev_key_down(Key::Key key,
                              KeyModifiers modifiers);
@@ -64,6 +69,29 @@ public: /* event handlers */
                              KeyModifiers modifiers);
     virtual void ev_drag_move(int x, int y,
                               KeyModifiers modifiers);
+
+};
+
+class DragMoveWidget: public DragControllerBase
+{
+public:
+    DragMoveWidget(
+        RootWidget *root_widget,
+        unsigned int mouse_button,
+        int x, int y,
+        const WidgetPtr &widget);
+
+private:
+    int _startx, _starty;
+    WidgetPtr _widget;
+    int _startxoffs, _startyoffs;
+
+protected:
+    void ev_widget_move(int x, int y);
+
+public:
+    void ev_drag_move(int x, int y, KeyModifiers modifiers) override;
+
 };
 
 }
