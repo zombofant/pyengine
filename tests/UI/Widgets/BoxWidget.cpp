@@ -59,3 +59,32 @@ TEST_CASE("UI/Widgets/BoxWidget/VBox/align",
     CHECK(child1->absolute_rect() == Rect(0, 0, 256, 128));
     CHECK(child2->absolute_rect() == Rect(0, 128, 256, 128));
 }
+
+TEST_CASE("UI/Widgets/BoxWidget/HBox/align",
+          "Test alignment in hboxes")
+{
+    RootPtr root = setup_test_env();
+    ThemePtr theme = root->get_theme();
+
+    std::unique_ptr<FlexRule> rule(new FlexRule());
+    rule->set(1);
+
+    theme->add_rule(
+        SelectorPtr(new ChildOf(SelectorPtr(new Is("hbox")))),
+        std::move(rule)
+    );
+
+    ParentPtr hbox(new HBox());
+    WidgetPtr child1(new Widget());
+    WidgetPtr child2(new Widget());
+
+    root->desktop_layer()->add(hbox);
+    hbox->add(child1);
+    hbox->add(child2);
+
+    hbox->absolute_rect() = Rect(0, 0, 256, 256);
+    hbox->do_align();
+
+    CHECK(child1->absolute_rect() == Rect(0, 0, 128, 256));
+    CHECK(child2->absolute_rect() == Rect(128, 0, 128, 256));
+}
