@@ -25,6 +25,8 @@ authors named in the AUTHORS file.
 **********************************************************************/
 #include "Style.hpp"
 
+#include <cmath>
+
 namespace PyEngine {
 
 template <typename A>
@@ -227,6 +229,23 @@ bool Style::operator==(const Style &other)
         (_vertical_align == other._vertical_align) &&
         (_shear_x == other._shear_x) &&
         (_shear_y == other._shear_y));
+}
+
+coord_int_t Style::apply_vertical_align(
+        VerticalAlign align,
+        coord_int_t obj_height,
+        coord_int_t cont_height)
+{
+    switch (align) {
+    case CSS_VERTICAL_ALIGN_TOP:
+        return 0;
+    case CSS_VERTICAL_ALIGN_MIDDLE:
+        return round((cont_height / 2.) - (obj_height / 2.));
+    case CSS_VERTICAL_ALIGN_BOTTOM:
+        return cont_height - obj_height;
+    default:
+        assert(false);
+    }
 }
 
 /* free functions */

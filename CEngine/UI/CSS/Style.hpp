@@ -207,6 +207,10 @@ public:
 
     PangoFontDescription* get_font();
 
+    static coord_int_t apply_vertical_align(
+        VerticalAlign align,
+        coord_int_t obj_height,
+        coord_int_t cont_height);
 };
 
 Style DefaultStyle();
