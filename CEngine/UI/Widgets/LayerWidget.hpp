@@ -32,8 +32,6 @@ authors named in the AUTHORS file.
 
 namespace PyEngine {
 
-static const char *foo;
-
 class LayerWidget: public ParentWidget
 {
 public:
