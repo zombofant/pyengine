@@ -83,7 +83,6 @@ void AbstractBoxWidget::_get_spacing_list(
         if (curr) {
             Style &curr_style = curr->computed_style();
             coord_int_t my_left_margin = get_aa_box_min_edge(curr_style.margin());
-            coord_int_t my_right_margin = get_aa_box_max_edge(curr_style.margin());
             info.flex = curr_style.get_flex();
             info.size = get_aa_dimension(curr->get_dimensions());
 

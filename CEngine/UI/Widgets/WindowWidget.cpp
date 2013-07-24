@@ -53,7 +53,9 @@ bool TitleBar::ev_mouse_down(int x, int y, MouseButton button,
         get_root()->start_drag(std::unique_ptr<DragMoveWidget>(
             new DragMoveWidget(get_root(), button, x, y, get_parent())
             ));
+        return true;
     }
+    return false;
 }
 
 /* PyEngine::Window */
@@ -97,16 +99,17 @@ void Window::close()
 bool Window::ev_activate()
 {
     get_parent()->bring_to_front(this);
+    return true;
 }
 
 bool Window::ev_deactivate()
 {
-
+    return true;
 }
 
 bool Window::ev_show_modal()
 {
-
+    return true;
 }
 
 }
