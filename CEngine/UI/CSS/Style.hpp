@@ -76,7 +76,7 @@ private:
     CSSInheritable<PangoEllipsizeMode> _ellipsize;
     CSSInheritable<VerticalAlign> _vertical_align;
     css_coord_int_t _shear_x, _shear_y;
-    PangoFontDescription* _font_cache;
+    PangoFontDescription *_font_cache;
 
 protected:
     inline void _invalidate_font() {

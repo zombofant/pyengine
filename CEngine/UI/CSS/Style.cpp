@@ -231,6 +231,26 @@ bool Style::operator==(const Style &other)
         (_shear_y == other._shear_y));
 }
 
+PangoFontDescription* Style::get_font()
+{
+    if (_font_cache != nullptr) {
+        return _font_cache;
+    }
+
+    _font_cache = pango_font_description_new();
+    pango_font_description_set_weight(_font_cache, _font_weight);
+    pango_font_description_set_size(_font_cache, _font_size * PANGO_SCALE);
+    try {
+        pango_font_description_set_family(_font_cache, _font_family.get().c_str());
+    } catch (const UnresolvedInheritable&) {
+        pango_font_description_free(_font_cache);
+        _font_cache = nullptr;
+        throw;
+    }
+
+    return _font_cache;
+}
+
 coord_int_t Style::apply_vertical_align(
         VerticalAlign align,
         coord_int_t obj_height,
