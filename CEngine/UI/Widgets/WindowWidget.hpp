@@ -31,7 +31,7 @@ authors named in the AUTHORS file.
 #include "BoxWidget.hpp"
 #include "LabelWidget.hpp"
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
 class TitleBar: public HBox
 {
@@ -101,6 +101,7 @@ public:
 
 };
 
+}
 }
 
 #endif

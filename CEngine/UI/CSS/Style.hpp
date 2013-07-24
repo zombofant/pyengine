@@ -37,7 +37,7 @@ authors named in the AUTHORS file.
 #include "Border.hpp"
 #include "Shapes.hpp"
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
 enum VerticalAlign {
     CSS_VERTICAL_ALIGN_TOP,
@@ -216,10 +216,11 @@ public:
 Style DefaultStyle();
 
 }
+}
 
 namespace std {
 
-ostream& operator<<(ostream& stream, const PyEngine::Style &style);
+ostream& operator<<(ostream& stream, const PyEngine::UI::Style &style);
 
 
 }

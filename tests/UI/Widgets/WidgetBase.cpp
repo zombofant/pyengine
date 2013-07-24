@@ -27,7 +27,7 @@ authors named in the AUTHORS file.
 
 #include <CEngine/UI/Widgets/WidgetBase.hpp>
 
-using namespace PyEngine;
+using namespace PyEngine::UI;
 
 TEST_CASE("UI/Widgets/WidgetBase/Widget/init"
           "Widget initialization")

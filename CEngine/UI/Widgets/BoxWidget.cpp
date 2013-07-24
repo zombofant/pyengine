@@ -25,9 +25,9 @@ authors named in the AUTHORS file.
 **********************************************************************/
 #include "BoxWidget.hpp"
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
-/* PyEngine::AbstractBoxWidget */
+/* PyEngine::UI::AbstractBoxWidget */
 
 AbstractBoxWidget::FlexInfo
     AbstractBoxWidget::_get_space_flex_info(
@@ -166,7 +166,7 @@ void AbstractBoxWidget::_do_box_align(
     }
 }
 
-/* PyEngine::AbstractHBox */
+/* PyEngine::UI::AbstractHBox */
 
 coord_int_t AbstractHBox::get_aa_box_min_edge(const CSSBox &box)
 {
@@ -237,7 +237,7 @@ void AbstractHBox::do_align()
     );
 }
 
-/* PyEngine::AbstractVBox */
+/* PyEngine::UI::AbstractVBox */
 
 coord_int_t AbstractVBox::get_aa_box_min_edge(const CSSBox &box)
 {
@@ -308,18 +308,19 @@ void AbstractVBox::do_align()
     );
 }
 
-/* PyEngine::HBox */
+/* PyEngine::UI::HBox */
 
 bool HBox::is_element(const std::string &name) const
 {
     return (name == "hbox") || AbstractHBox::is_element(name);
 }
 
-/* PyEngine::VBox */
+/* PyEngine::UI::VBox */
 
 bool VBox::is_element(const std::string &name) const
 {
     return (name == "vbox") || AbstractVBox::is_element(name);
 }
 
+}
 }

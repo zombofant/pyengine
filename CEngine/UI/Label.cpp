@@ -29,9 +29,9 @@ authors named in the AUTHORS file.
 
 #include "CEngine/UI/CSS/Style.hpp"
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
-/* PyEngine::Label */
+/* PyEngine::UI::Label */
 
 Label::Label(Widget *widget):
     _widget(widget),
@@ -174,4 +174,5 @@ void Label::set_width(coord_int_t value)
     invalidate_layout();
 }
 
+}
 }

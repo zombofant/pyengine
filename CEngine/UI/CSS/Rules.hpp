@@ -28,7 +28,7 @@ authors named in the AUTHORS file.
 
 #include "BaseRules.hpp"
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
 struct MarginRule: public BoxRule {
 public:
@@ -86,6 +86,7 @@ public:
     virtual void apply_to(Style &to) const override;
 };
 
+}
 }
 
 #endif

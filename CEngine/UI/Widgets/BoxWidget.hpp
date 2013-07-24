@@ -30,7 +30,7 @@ authors named in the AUTHORS file.
 
 #include "WidgetBase.hpp"
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
 class AbstractBoxWidget: public ParentWidget
 {
@@ -151,6 +151,7 @@ public:
     bool is_element(const std::string &name) const override;
 };
 
+}
 }
 
 #endif

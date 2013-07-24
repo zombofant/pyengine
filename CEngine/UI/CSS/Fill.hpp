@@ -32,7 +32,7 @@ authors named in the AUTHORS file.
 
 #include "Shapes.hpp"
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
 enum RepeatMode {
     RM_REPEAT,
@@ -245,13 +245,14 @@ public:
 };
 
 }
+}
 
 namespace std
 {
 
 inline std::ostream& operator<<(
     std::ostream &stream,
-    const PyEngine::Fill &fill)
+    const PyEngine::UI::Fill &fill)
 {
     fill.to_stream(stream);
     return stream;

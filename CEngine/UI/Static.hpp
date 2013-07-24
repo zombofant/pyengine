@@ -28,7 +28,7 @@ authors named in the AUTHORS file.
 
 #include "CEngine/Misc/Int.hpp"
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
 enum CaretMotionDirection {
     DIR_BEGIN,
@@ -60,6 +60,7 @@ typedef uint_fast32_t KeyModifiers;
 typedef uint_fast32_t MouseButton;
 typedef uint_fast32_t MouseButtons;
 
+}
 }
 
 #endif

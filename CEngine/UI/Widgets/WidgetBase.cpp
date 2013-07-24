@@ -29,9 +29,9 @@ authors named in the AUTHORS file.
 
 #include "RootWidget.hpp"
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
-/* PyEngine::WidgetError */
+/* PyEngine::UI::WidgetError */
 
 WidgetError::WidgetError(const std::string &what_arg):
     std::invalid_argument(what_arg)
@@ -45,7 +45,7 @@ WidgetError::WidgetError(const char *what_arg):
 
 }
 
-/* PyEngine::AbstractWidget */
+/* PyEngine::UI::AbstractWidget */
 
 AbstractWidget::AbstractWidget():
     _parent(),
@@ -318,7 +318,7 @@ bool AbstractWidget::ev_text_input(const char* buf)
     return false;
 }
 
-/* PyEngine::ParentWidget */
+/* PyEngine::UI::ParentWidget */
 
 ParentWidget::ParentWidget():
     AbstractWidget(),
@@ -522,7 +522,7 @@ void ParentWidget::render()
     }
 }
 
-/* PyEngine::Widget */
+/* PyEngine::UI::Widget */
 
 Widget::Widget():
     AbstractWidget()
@@ -555,4 +555,5 @@ bool Widget::hittest_with_chain(const Point &p, HitChain &chain)
     }
 }
 
+}
 }

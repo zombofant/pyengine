@@ -25,9 +25,9 @@ authors named in the AUTHORS file.
 **********************************************************************/
 #include "LabelWidget.hpp"
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
-/* PyEngine::LabelledWidget */
+/* PyEngine::UI::LabelledWidget */
 
 LabelledWidget::LabelledWidget():
     Widget(),
@@ -89,7 +89,7 @@ void LabelledWidget::render()
     _label.render(_label_rect);
 }
 
-/* PyEngine::LabelWidget */
+/* PyEngine::UI::LabelWidget */
 
 LabelWidget::LabelWidget():
     LabelledWidget()
@@ -108,4 +108,5 @@ void LabelWidget::set_text(const std::string &value)
     _label.set_text(value);
 }
 
+}
 }

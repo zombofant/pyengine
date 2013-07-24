@@ -33,7 +33,7 @@ authors named in the AUTHORS file.
 #include "Shapes.hpp"
 #include "Fill.hpp"
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
 class BorderComponent
 {
@@ -176,17 +176,18 @@ public:
 };
 
 }
+}
 
 namespace std {
 
-inline ostream& operator<<(ostream &stream, const PyEngine::BorderEdge &edge)
+inline ostream& operator<<(ostream &stream, const PyEngine::UI::BorderEdge &edge)
 {
     return stream << "BorderEdge("
                   << "width=" << edge.get_width() << ", "
                   << "fill=" << edge.get_fill() << ")";
 }
 
-inline ostream& operator<<(ostream &stream, const PyEngine::Border &border)
+inline ostream& operator<<(ostream &stream, const PyEngine::UI::Border &border)
 {
     return stream << "Border("
                   << "top=" << border.top() << ", "

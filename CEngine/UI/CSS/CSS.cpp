@@ -25,9 +25,9 @@ authors named in the AUTHORS file.
 **********************************************************************/
 #include "CSS.hpp"
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
-/* PyEngine::UnresolvedInheritable */
+/* PyEngine::UI::UnresolvedInheritable */
 
 UnresolvedInheritable::UnresolvedInheritable(const std::string& what_arg):
     std::runtime_error(what_arg)
@@ -41,4 +41,5 @@ UnresolvedInheritable::UnresolvedInheritable(const char* what_arg):
 
 }
 
+}
 }

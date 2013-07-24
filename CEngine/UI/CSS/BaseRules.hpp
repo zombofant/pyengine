@@ -33,7 +33,7 @@ authors named in the AUTHORS file.
 #include "Fill.hpp"
 #include "Style.hpp"
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
 /**
  * Abstract base class for a CSS rule. Each rule type must inherit
@@ -230,6 +230,7 @@ public:
 
 };
 
+}
 }
 
 #endif

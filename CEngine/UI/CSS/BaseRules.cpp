@@ -25,16 +25,16 @@ authors named in the AUTHORS file.
 **********************************************************************/
 #include "BaseRules.hpp"
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
-/* PyEngine::AbstractRule */
+/* PyEngine::UI::AbstractRule */
 
 AbstractRule::~AbstractRule()
 {
 
 }
 
-/* PyEngine::RuleGroup */
+/* PyEngine::UI::RuleGroup */
 
 void RuleGroup::apply_to(Style &to) const
 {
@@ -58,7 +58,7 @@ void RuleGroup::add(std::unique_ptr<AbstractRule> &&rule)
     _rules.push_back(std::move(rule));
 }
 
-/* PyEngine::BoxRule */
+/* PyEngine::UI::BoxRule */
 
 BoxRule::BoxRule():
     AbstractRule(),
@@ -172,7 +172,7 @@ bool BoxRule::has_effect() const
     return (_set_top || _set_right || _set_bottom || _set_left);
 }
 
-/* PyEngine::FillRule */
+/* PyEngine::UI::FillRule */
 
 FillRule::FillRule():
     AbstractRule(),
@@ -196,4 +196,5 @@ bool FillRule::has_effect() const
     return (_fill.is_inherit() || (_fill != nullptr));
 }
 
+}
 }

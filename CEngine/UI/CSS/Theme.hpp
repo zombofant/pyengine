@@ -35,7 +35,7 @@ authors named in the AUTHORS file.
 
 #include "CEngine/UI/Widgets/WidgetBase.hpp"
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
 class Theme
 {
@@ -61,6 +61,7 @@ public:
 
 typedef std::shared_ptr<Theme> ThemePtr;
 
+}
 }
 
 #endif

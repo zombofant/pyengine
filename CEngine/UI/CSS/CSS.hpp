@@ -34,7 +34,7 @@ authors named in the AUTHORS file.
 
 #include "CEngine/Misc/EnumBitset.hpp"
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
 typedef int coord_int_t;
 typedef double coord_float_t;
@@ -240,13 +240,14 @@ inline std::ostream& operator<<(std::ostream& stream, const Auto &auto_)
 }
 
 }
+}
 
 namespace std {
 
 template <typename T1>
 inline ostream& operator<<(
     ostream& stream,
-    const PyEngine::CSSInheritable<T1> &v)
+    const PyEngine::UI::CSSInheritable<T1> &v)
 {
     if (v.is_inherit()) {
         return stream << "<css inherit>";
@@ -262,24 +263,24 @@ template <typename T1, typename T2>
 struct cmp_css_inheritable;
 
 template <typename T1, typename T2>
-struct cmp_css_inheritable<PyEngine::CSSInheritable<T1>, T2>
+struct cmp_css_inheritable<PyEngine::UI::CSSInheritable<T1>, T2>
 {
-    static inline bool eq(const PyEngine::CSSInheritable<T1> &me, const T2 &oth)
+    static inline bool eq(const PyEngine::UI::CSSInheritable<T1> &me, const T2 &oth)
     {
         return me.get() == oth;
     }
 
-    static inline bool ne(const PyEngine::CSSInheritable<T1> &me, const T2 &oth)
+    static inline bool ne(const PyEngine::UI::CSSInheritable<T1> &me, const T2 &oth)
     {
         return !eq(me, oth);
     }
 };
 
 template <typename T1, typename T2>
-struct cmp_css_inheritable<PyEngine::CSSInheritable<T1>, PyEngine::CSSInheritable<T2>>
+struct cmp_css_inheritable<PyEngine::UI::CSSInheritable<T1>, PyEngine::UI::CSSInheritable<T2>>
 {
-    static inline bool eq(const PyEngine::CSSInheritable<T1> &me,
-                          const PyEngine::CSSInheritable<T2> &oth)
+    static inline bool eq(const PyEngine::UI::CSSInheritable<T1> &me,
+                          const PyEngine::UI::CSSInheritable<T2> &oth)
     {
         if (me.is_inherit() || oth.is_inherit()) {
             return false;
@@ -287,8 +288,8 @@ struct cmp_css_inheritable<PyEngine::CSSInheritable<T1>, PyEngine::CSSInheritabl
         return me.get() == oth.get();
     }
 
-    static inline bool ne(const PyEngine::CSSInheritable<T1> &me,
-                          const PyEngine::CSSInheritable<T2> &oth)
+    static inline bool ne(const PyEngine::UI::CSSInheritable<T1> &me,
+                          const PyEngine::UI::CSSInheritable<T2> &oth)
     {
         if (me.is_inherit() || oth.is_inherit()) {
             return false;
@@ -298,32 +299,32 @@ struct cmp_css_inheritable<PyEngine::CSSInheritable<T1>, PyEngine::CSSInheritabl
 };
 
 template <typename T1>
-struct cmp_css_inheritable<PyEngine::CSSInheritable<T1>, PyEngine::inherit_t>
+struct cmp_css_inheritable<PyEngine::UI::CSSInheritable<T1>, PyEngine::UI::inherit_t>
 {
-    static inline bool eq(const PyEngine::CSSInheritable<T1> &me,
-                          const PyEngine::inherit_t &oth)
+    static inline bool eq(const PyEngine::UI::CSSInheritable<T1> &me,
+                          const PyEngine::UI::inherit_t &oth)
     {
         return me.is_inherit();
     }
 
-    static inline bool ne(const PyEngine::CSSInheritable<T1> &me,
-                          const PyEngine::inherit_t &oth)
+    static inline bool ne(const PyEngine::UI::CSSInheritable<T1> &me,
+                          const PyEngine::UI::inherit_t &oth)
     {
         return !eq(me, oth);
     }
 };
 
 template <typename T1>
-struct cmp_css_inheritable<PyEngine::CSSInheritable<T1>, PyEngine::Auto>
+struct cmp_css_inheritable<PyEngine::UI::CSSInheritable<T1>, PyEngine::UI::Auto>
 {
-    static inline bool eq(const PyEngine::CSSInheritable<T1> &me,
-                          const PyEngine::Auto &oth)
+    static inline bool eq(const PyEngine::UI::CSSInheritable<T1> &me,
+                          const PyEngine::UI::Auto &oth)
     {
         return me.get() == static_cast<const T1&>(oth);
     }
 
-    static inline bool ne(const PyEngine::CSSInheritable<T1> &me,
-                          const PyEngine::Auto &oth)
+    static inline bool ne(const PyEngine::UI::CSSInheritable<T1> &me,
+                          const PyEngine::UI::Auto &oth)
     {
         return !eq(me, oth);
     }
@@ -332,15 +333,15 @@ struct cmp_css_inheritable<PyEngine::CSSInheritable<T1>, PyEngine::Auto>
 }
 
 template <typename T1, typename T2>
-bool operator==(const PyEngine::CSSInheritable<T1> &me, const T2 &oth)
+bool operator==(const PyEngine::UI::CSSInheritable<T1> &me, const T2 &oth)
 {
-    return cmp_css_inheritable<PyEngine::CSSInheritable<T1>, T2>::eq(me, oth);
+    return cmp_css_inheritable<PyEngine::UI::CSSInheritable<T1>, T2>::eq(me, oth);
 }
 
 template <typename T1, typename T2>
-bool operator!=(const PyEngine::CSSInheritable<T1> &me, const T2 &oth)
+bool operator!=(const PyEngine::UI::CSSInheritable<T1> &me, const T2 &oth)
 {
-    return cmp_css_inheritable<PyEngine::CSSInheritable<T1>, T2>::ne(me, oth);
+    return cmp_css_inheritable<PyEngine::UI::CSSInheritable<T1>, T2>::ne(me, oth);
 }
 
 #endif

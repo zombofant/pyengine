@@ -27,7 +27,7 @@ authors named in the AUTHORS file.
 
 #include <cstring>
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
 static const int GRADIENT_DIRECTION_WH[2][2] = {
     {1, 0},
@@ -43,7 +43,7 @@ inline cairo_pattern_t* cairo_pattern_linear_for_direction(
         GRADIENT_DIRECTION_WH[1][int(dir)]);
 }
 
-/* PyEngine::Fill */
+/* PyEngine::UI::Fill */
 
 Fill::Fill():
     _repeat_x(RM_STRETCH),
@@ -84,7 +84,7 @@ void Fill::to_stream(std::ostream &stream) const
     stream << "<unspecified fill>";
 }
 
-/* PyEngine::Transparent */
+/* PyEngine::UI::Transparent */
 
 Transparent::Transparent():
     Fill()
@@ -135,7 +135,7 @@ void Transparent::to_stream(std::ostream &stream) const
     stream << "transparent";
 }
 
-/* PyEngine::Colour */
+/* PyEngine::UI::Colour */
 
 Colour::Colour():
     Fill(),
@@ -203,7 +203,7 @@ void Colour::to_stream(std::ostream &stream) const
            << ")";
 }
 
-/* PyEngine::Gradient::Stop */
+/* PyEngine::UI::Gradient::Stop */
 
 Gradient::Stop::Stop(double position, const Colour& colour):
     position(position),
@@ -217,7 +217,7 @@ bool Gradient::Stop::operator< (const Stop& ref)
     return position < ref.position;
 }
 
-/* PyEngine::Gradient */
+/* PyEngine::UI::Gradient */
 
 Gradient::Gradient(GradientDirection dir, std::initializer_list<Stop> stops):
     Fill(),
@@ -355,7 +355,7 @@ void Gradient::to_stream(std::ostream &stream) const
     stream << "<some gradient fill>";
 }
 
-/* PyEngine::Image */
+/* PyEngine::UI::Image */
 
 Image::Image():
     _image()
@@ -438,4 +438,5 @@ void Image::to_stream(std::ostream &stream) const
     stream << "<image at " << _image << ">";
 }
 
+}
 }

@@ -38,7 +38,7 @@ authors named in the AUTHORS file.
 #include "DragController.hpp"
 #include "LayerWidget.hpp"
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
 class RootWidget: public ParentWidget,
                   public EventSink
@@ -138,6 +138,7 @@ public:
 
 };
 
+}
 }
 
 #endif

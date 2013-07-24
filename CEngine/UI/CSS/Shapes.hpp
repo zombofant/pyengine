@@ -32,7 +32,7 @@ authors named in the AUTHORS file.
 
 #include "CSS.hpp"
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
 class BoxError: public std::invalid_argument
 {
@@ -674,29 +674,30 @@ GenericRect<coord_t> operator| (const not_a_rect_t&, const GenericRect<coord_t>&
 }
 
 }
+}
 
 namespace std {
 
-inline ostream& operator<<(ostream& stream, const PyEngine::CSSBox &pad)
+inline ostream& operator<<(ostream& stream, const PyEngine::UI::CSSBox &pad)
 {
-    return PyEngine::box_to_stream(stream << "CSSBox(", pad) << ")";
+    return PyEngine::UI::box_to_stream(stream << "CSSBox(", pad) << ")";
 }
 
-inline ostream& operator<<(ostream& stream, const PyEngine::Margin &margin)
+inline ostream& operator<<(ostream& stream, const PyEngine::UI::Margin &margin)
 {
-    return PyEngine::box_to_stream(stream << "Margin(", margin) << ")";
+    return PyEngine::UI::box_to_stream(stream << "Margin(", margin) << ")";
 }
 
-inline ostream& operator<<(ostream& stream, const PyEngine::not_a_rect_t&)
+inline ostream& operator<<(ostream& stream, const PyEngine::UI::not_a_rect_t&)
 {
     return stream << "NotARect";
 }
 
 template <typename coord_t>
-inline ostream& operator<<(ostream& stream, const PyEngine::GenericRect<coord_t> &rect)
+inline ostream& operator<<(ostream& stream, const PyEngine::UI::GenericRect<coord_t> &rect)
 {
-    if (rect == PyEngine::NotARect) {
-        return stream << PyEngine::NotARect;
+    if (rect == PyEngine::UI::NotARect) {
+        return stream << PyEngine::UI::NotARect;
     } else {
         return stream << "GenericRect("
                       << "x=" << rect.get_left() << ", "

@@ -27,9 +27,9 @@ authors named in the AUTHORS file.
 
 #include "CEngine/UI/Widgets/WidgetBase.hpp"
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
-/* PyEngine::Specifity */
+/* PyEngine::UI::Specifity */
 
 Specifity::Specifity():
     std::array<unsigned int, 4>{{0, 0, 0, 0}}
@@ -71,7 +71,7 @@ Specifity Specifity::operator+(const Specifity& other)
     return std::move(result);
 }
 
-/* PyEngine::Selector */
+/* PyEngine::UI::Selector */
 
 Selector::Selector():
     _specifity(0, 0, 0, 0),
@@ -114,7 +114,7 @@ const AbstractWidget *Selector::test_widget(const AbstractWidget *widget) const
     return _test_widget(widget);
 }
 
-/* PyEngine::ParentSelector */
+/* PyEngine::UI::ParentSelector */
 
 ParentSelector::ParentSelector(SelectorPtr parent):
     Selector(),
@@ -140,7 +140,7 @@ bool ParentSelector::operator==(const Selector& oth_) const
     return this->Selector::operator==(oth_) && (_parent == oth->_parent);
 }
 
-/* PyEngine::ChildOf */
+/* PyEngine::UI::ChildOf */
 
 ChildOf::ChildOf(SelectorPtr parent):
     ParentSelector(parent)
@@ -166,7 +166,7 @@ const AbstractWidget *ChildOf::_test_widget(const AbstractWidget *widget) const
     return nullptr;
 }
 
-/* PyEngine::DirectChildOf */
+/* PyEngine::UI::DirectChildOf */
 
 DirectChildOf::DirectChildOf(SelectorPtr parent):
     ParentSelector(parent)
@@ -189,7 +189,7 @@ const AbstractWidget *DirectChildOf::_test_widget(const AbstractWidget *widget) 
     return nullptr;
 }
 
-/* PyEngine::Is */
+/* PyEngine::UI::Is */
 
 Is::Is(const std::string& element_name):
     Selector(),
@@ -207,7 +207,7 @@ const AbstractWidget *Is::_test_widget(const AbstractWidget *widget) const
     }
 }
 
-/* PyEngine::State */
+/* PyEngine::UI::State */
 
 State::State(CSSStateFlag flag):
     Selector(),
@@ -235,4 +235,5 @@ const AbstractWidget *State::_test_widget(const AbstractWidget *widget) const
     return widget;
 }
 
+}
 }

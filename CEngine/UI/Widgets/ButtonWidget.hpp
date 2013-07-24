@@ -30,7 +30,7 @@ authors named in the AUTHORS file.
 
 #include "LabelWidget.hpp"
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
 class AbstractButton: public LabelledWidget
 {
@@ -65,6 +65,7 @@ public:
 
 };
 
+}
 }
 
 #endif

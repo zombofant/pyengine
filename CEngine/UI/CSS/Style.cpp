@@ -27,7 +27,7 @@ authors named in the AUTHORS file.
 
 #include <cmath>
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
 template <typename A>
 bool cmp_css_ptr(
@@ -52,7 +52,7 @@ void stream_css_ptr(
     }
 }
 
-/* PyEngine::Style */
+/* PyEngine::UI::Style */
 
 Style::Style():
     _background(new Transparent()),
@@ -284,20 +284,21 @@ Style DefaultStyle()
 }
 
 }
+}
 
 namespace std {
 
-ostream& operator<< (ostream &stream, const PyEngine::Style &style)
+ostream& operator<< (ostream &stream, const PyEngine::UI::Style &style)
 {
     stream << "Style("
            << "padding=" << style.padding() << ", "
            << "margin=" << style.margin() << ", "
            << "border=" << style.border() << ", "
            << "background=";
-    PyEngine::stream_css_ptr(stream, style.get_background());
+    PyEngine::UI::stream_css_ptr(stream, style.get_background());
     stream << ", "
            << "text_colour=";
-    PyEngine::stream_css_ptr(stream, style.get_text_colour());
+    PyEngine::UI::stream_css_ptr(stream, style.get_text_colour());
     stream << ", "
            << "text_align=" << style.get_text_align() << ", "
            << "box_spacing_x=" << style.get_box_spacing_x() << ", "

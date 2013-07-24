@@ -30,7 +30,7 @@ authors named in the AUTHORS file.
 
 #include "CEngine/UI/Label.hpp"
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
 class LabelledWidget: public Widget
 {
@@ -66,6 +66,7 @@ public:
     void set_text(const std::string &value);
 };
 
+}
 }
 
 #endif

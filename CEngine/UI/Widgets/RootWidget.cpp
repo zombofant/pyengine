@@ -29,9 +29,9 @@ authors named in the AUTHORS file.
 
 #include "CEngine/Misc/SetOperations.hpp"
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
-/* PyEngine::RootWidget */
+/* PyEngine::UI::RootWidget */
 
 RootWidget::RootWidget():
     ParentWidget(),
@@ -489,4 +489,5 @@ void RootWidget::frame_unsynced(TimeFloat deltaT)
 
 }
 
+}
 }

@@ -25,9 +25,9 @@ authors named in the AUTHORS file.
 **********************************************************************/
 #include "Shapes.hpp"
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
-/* PyEngine::BoxError */
+/* PyEngine::UI::BoxError */
 
 BoxError::BoxError(const std::string& what_arg):
     std::invalid_argument(what_arg)
@@ -41,7 +41,7 @@ BoxError::BoxError(const char* what_arg):
 
 }
 
-/* PyEngine::RectError */
+/* PyEngine::UI::RectError */
 
 RectError::RectError(const std::string& what_arg):
     std::invalid_argument(what_arg)
@@ -55,7 +55,7 @@ RectError::RectError(const char* what_arg):
 
 }
 
-/* PyEngine::Point */
+/* PyEngine::UI::Point */
 
 Point::Point():
     GenericPoint<coord_int_t>()
@@ -81,7 +81,7 @@ Point& Point::operator=(const Point& ref)
     return *this;
 }
 
-/* PyEngine::Box */
+/* PyEngine::UI::Box */
 
 Box::Box():
     GenericBox<coord_int_t>()
@@ -114,7 +114,7 @@ Box& Box::operator= (const Box& ref)
     return *this;
 }
 
-/* PyEngine::FloatBox */
+/* PyEngine::UI::FloatBox */
 
 FloatBox::FloatBox():
     GenericBox<coord_float_t>()
@@ -160,7 +160,7 @@ bool FloatBox::operator!=(const Box& b) const
     return !(operator==(b));
 }
 
-/* PyEngine::Rect */
+/* PyEngine::UI::Rect */
 
 Rect::Rect():
     GenericRect<coord_int_t>()
@@ -205,7 +205,7 @@ Rect& Rect::operator=(const not_a_rect_t&)
     return *this;
 }
 
-/* PyEngine::CSSBox */
+/* PyEngine::UI::CSSBox */
 
 CSSBox::CSSBox():
     GenericBox<css_coord_int_t>()
@@ -265,7 +265,7 @@ void CSSBox::deinherit_with(const CSSBox& other)
     _bottom.deinherit_with(other.get_bottom());
 }
 
-/* PyEngine::Margin */
+/* PyEngine::UI::Margin */
 
 Margin::Margin():
     CSSBox()
@@ -327,4 +327,5 @@ void Margin::_check_value(const css_coord_int_t value) const
 
 }
 
+}
 }

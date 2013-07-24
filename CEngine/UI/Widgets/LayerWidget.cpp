@@ -28,11 +28,11 @@ authors named in the AUTHORS file.
 #include "RootWidget.hpp"
 #include "WindowWidget.hpp"
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
-/* PyEngine::LayerWidget */
+/* PyEngine::UI::LayerWidget */
 
-/* PyEngine::DesktopLayer */
+/* PyEngine::UI::DesktopLayer */
 
 void DesktopLayer::do_align()
 {
@@ -41,7 +41,7 @@ void DesktopLayer::do_align()
     }
 }
 
-/* PyEngine::WindowLayer */
+/* PyEngine::UI::WindowLayer */
 
 void WindowLayer::do_align()
 {
@@ -53,7 +53,7 @@ void WindowLayer::do_align()
     }
 }
 
-/* PyEngine::PopupLayer */
+/* PyEngine::UI::PopupLayer */
 
 WidgetPtr PopupLayer::hittest(const Point &p)
 {
@@ -92,9 +92,10 @@ bool PopupLayer::ev_mouse_click(
     if (_current_root_menu) {
         /* TODO: close menu */
     }
+    return false;
 }
 
-/* PyEngine::ModalWindowLayer */
+/* PyEngine::UI::ModalWindowLayer */
 
 ModalWindowLayer::ModalWindowLayer(
         ModalWindowLayer::WindowWidgetPtr window):
@@ -138,4 +139,5 @@ void ModalWindowLayer::_handle_window_close(WidgetPtr sender)
     }
 }
 
+}
 }

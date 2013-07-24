@@ -51,30 +51,30 @@ class EventSinkWrap: public EventSink, public boost::python::wrapper<EventSink>
 
     void dispatch_key_down(
         Key::Key key,
-        KeyModifiers modifiers) override
+        UI::KeyModifiers modifiers) override
     {
         this->get_override("dispatch_key_down")(key, modifiers);
     }
 
     void dispatch_key_up(
         Key::Key key,
-        KeyModifiers modifiers) override
+        UI::KeyModifiers modifiers) override
     {
         this->get_override("dispatch_key_up")(key, modifiers);
     }
 
     void dispatch_mouse_down(
         int x, int y,
-        MouseButton button,
-        KeyModifiers modifiers) override
+        UI::MouseButton button,
+        UI::KeyModifiers modifiers) override
     {
         this->get_override("dispatch_mouse_down")(x, y, button, modifiers);
     }
 
     void dispatch_mouse_click(
         int x, int y,
-        MouseButton button,
-        KeyModifiers modifiers,
+        UI::MouseButton button,
+        UI::KeyModifiers modifiers,
         unsigned int nth) override
     {
         this->get_override("dispatch_mouse_click")(x, y, button, modifiers, nth);
@@ -83,16 +83,16 @@ class EventSinkWrap: public EventSink, public boost::python::wrapper<EventSink>
     void dispatch_mouse_move(
         int x, int y,
         int dx, int dy,
-        MouseButtons buttons,
-        KeyModifiers modifiers) override
+        UI::MouseButtons buttons,
+        UI::KeyModifiers modifiers) override
     {
         this->get_override("dispatch_mouse_move")(x, y, dx, dy, buttons, modifiers);
     }
 
     void dispatch_mouse_up(
         int x, int y,
-        MouseButton button,
-        KeyModifiers modifiers) override
+        UI::MouseButton button,
+        UI::KeyModifiers modifiers) override
     {
         this->get_override("dispatch_mouse_up")(x, y, button, modifiers);
     }

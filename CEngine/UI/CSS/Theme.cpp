@@ -27,9 +27,9 @@ authors named in the AUTHORS file.
 
 #include <forward_list>
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
-/* PyEngine::Theme */
+/* PyEngine::UI::Theme */
 
 Theme::Theme():
     _rulesets()
@@ -60,4 +60,5 @@ std::unique_ptr<Style> Theme::get_widget_style(const AbstractWidget &widget) con
     return std::unique_ptr<Style>(style);
 }
 
+}
 }

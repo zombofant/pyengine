@@ -25,16 +25,16 @@ authors named in the AUTHORS file.
 **********************************************************************/
 #include "Border.hpp"
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
-/* PyEngine::BorderComponent */
+/* PyEngine::UI::BorderComponent */
 
 BorderComponent::~BorderComponent()
 {
 
 }
 
-/* PyEngine::BorderEdge */
+/* PyEngine::UI::BorderEdge */
 
 BorderEdge::BorderEdge():
     _width(0),
@@ -118,7 +118,7 @@ void BorderEdge::deinherit_with(const BorderEdge &other)
 
 }
 
-/* PyEngine::Border */
+/* PyEngine::UI::Border */
 
 Border::Border():
     _edges(),
@@ -247,4 +247,5 @@ void Border::deinherit_with(const Border &other)
     }
 }
 
+}
 }

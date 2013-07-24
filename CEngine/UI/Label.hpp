@@ -31,7 +31,7 @@ authors named in the AUTHORS file.
 
 #include "CEngine/UI/Widgets/WidgetBase.hpp"
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
 class Label
 {
@@ -81,6 +81,7 @@ public:
     void set_width(coord_int_t value);
 };
 
+}
 }
 
 #endif

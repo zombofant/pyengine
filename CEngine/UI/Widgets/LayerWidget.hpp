@@ -30,7 +30,7 @@ authors named in the AUTHORS file.
 
 #include "CEngine/UI/Events.hpp"
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
 class LayerWidget: public ParentWidget
 {
@@ -119,6 +119,7 @@ protected:
     void _parent_changed() override;
 };
 
+}
 }
 
 #endif

@@ -31,7 +31,7 @@ authors named in the AUTHORS file.
 
 #include "CSS.hpp"
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
 class Specifity: public std::array<unsigned int, 4>
 {
@@ -125,6 +125,7 @@ protected:
     const AbstractWidget *_test_widget(const AbstractWidget *widget) const override;
 };
 
+}
 }
 
 #endif

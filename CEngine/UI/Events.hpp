@@ -28,13 +28,14 @@ authors named in the AUTHORS file.
 
 #include <sigc++/sigc++.h>
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
 class AbstractWidget;
 typedef AbstractWidget* WidgetPtr;
 
 typedef sigc::signal<void, WidgetPtr> NotifyEvent;
 
+}
 }
 
 #endif

@@ -39,7 +39,7 @@ authors named in the AUTHORS file.
 #include "CEngine/UI/CSS/Shapes.hpp"
 #include "CEngine/UI/CSS/Style.hpp"
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
 class WidgetError: public std::invalid_argument
 {
@@ -255,6 +255,7 @@ OutputIt iter_upwards(
     return it;
 }
 
+}
 }
 
 #endif

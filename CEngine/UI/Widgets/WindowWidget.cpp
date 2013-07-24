@@ -28,9 +28,9 @@ authors named in the AUTHORS file.
 #include "DragController.hpp"
 #include "RootWidget.hpp"
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
-/* PyEngine::TitleBar */
+/* PyEngine::UI::TitleBar */
 
 TitleBar::TitleBar():
     HBox(),
@@ -58,7 +58,7 @@ bool TitleBar::ev_mouse_down(int x, int y, MouseButton button,
     return false;
 }
 
-/* PyEngine::Window */
+/* PyEngine::UI::Window */
 
 Window::Window():
     VBox(),
@@ -112,4 +112,5 @@ bool Window::ev_show_modal()
     return true;
 }
 
+}
 }

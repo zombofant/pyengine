@@ -25,9 +25,9 @@ authors named in the AUTHORS file.
 **********************************************************************/
 #include "ButtonWidget.hpp"
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
-/* PyEngine::AbstractButton */
+/* PyEngine::UI::AbstractButton */
 
 AbstractButton::AbstractButton():
     LabelledWidget(),
@@ -55,4 +55,5 @@ bool AbstractButton::ev_mouse_click(int x, int y, MouseButton button,
     return false;
 }
 
+}
 }

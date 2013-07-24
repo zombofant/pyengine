@@ -25,23 +25,23 @@ authors named in the AUTHORS file.
 **********************************************************************/
 #include "Rules.hpp"
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
-/* PyEngine::MarginRule */
+/* PyEngine::UI::MarginRule */
 
 void MarginRule::apply_to(Style &to) const
 {
     apply_to_box(to.margin());
 }
 
-/* PyEngine::PaddingRule */
+/* PyEngine::UI::PaddingRule */
 
 void PaddingRule::apply_to(Style &to) const
 {
     apply_to_box(to.padding());
 }
 
-/* PyEngine::BackgroundRule */
+/* PyEngine::UI::BackgroundRule */
 
 void BackgroundRule::apply_to(Style &to) const
 {
@@ -50,7 +50,7 @@ void BackgroundRule::apply_to(Style &to) const
     }
 }
 
-/* PyEngine::TextColourRule */
+/* PyEngine::UI::TextColourRule */
 
 void TextColourRule::apply_to(Style &to) const
 {
@@ -59,7 +59,7 @@ void TextColourRule::apply_to(Style &to) const
     }
 }
 
-/* PyEngine::BoxSpacingXRule */
+/* PyEngine::UI::BoxSpacingXRule */
 
 void BoxSpacingXRule::apply_to(Style &to) const
 {
@@ -68,7 +68,7 @@ void BoxSpacingXRule::apply_to(Style &to) const
     }
 }
 
-/* PyEngine::BoxSpacingYRule */
+/* PyEngine::UI::BoxSpacingYRule */
 
 void BoxSpacingYRule::apply_to(Style &to) const
 {
@@ -77,7 +77,7 @@ void BoxSpacingYRule::apply_to(Style &to) const
     }
 }
 
-/* PyEngine::FlexRule */
+/* PyEngine::UI::FlexRule */
 
 void FlexRule::apply_to(Style &to) const
 {
@@ -86,4 +86,5 @@ void FlexRule::apply_to(Style &to) const
     }
 }
 
+}
 }

@@ -27,9 +27,9 @@ authors named in the AUTHORS file.
 
 #include "RootWidget.hpp"
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
-/* PyEngine::DragControllerBase */
+/* PyEngine::UI::DragControllerBase */
 
 DragControllerBase::DragControllerBase(
         RootWidget *root_widget,
@@ -104,7 +104,7 @@ void DragControllerBase::ev_drag_move(
 
 }
 
-/* PyEngine::DragMoveWidget */
+/* PyEngine::UI::DragMoveWidget */
 
 DragMoveWidget::DragMoveWidget(
         RootWidget *root_widget,
@@ -139,5 +139,5 @@ void DragMoveWidget::ev_drag_move(int x, int y, KeyModifiers modifiers)
     ev_widget_move(px, py);
 }
 
-
+}
 }

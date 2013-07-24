@@ -29,7 +29,7 @@ authors named in the AUTHORS file.
 
 #include "tests/UI/test_utils.hpp"
 
-using namespace PyEngine;
+using namespace PyEngine::UI;
 
 TEST_CASE("UI/Widgets/BoxWidget/VBox/align",
           "Test alignment in vboxes")
