@@ -28,6 +28,8 @@ authors named in the AUTHORS file.
 
 #include "WidgetBase.hpp"
 
+#include "CEngine/UI/Events.hpp"
+
 namespace PyEngine {
 
 static const char *foo;
@@ -98,20 +100,24 @@ public:
 
 };
 
+class Window;
+
 class ModalWindowLayer: public ParentWidget
 {
 public:
-    typedef Widget* WindowWidgetPtr;
+    typedef Window* WindowWidgetPtr;
 
 public:
     ModalWindowLayer() = delete;
-    ModalWindowLayer(const WindowWidgetPtr &window);
+    ModalWindowLayer(WindowWidgetPtr window);
+    virtual ~ModalWindowLayer();
 
 private:
     WindowWidgetPtr _window;
+    sigc::connection _close_hook;
 
 protected:
-    void _handle_window_close(const WidgetPtr &sender);
+    void _handle_window_close(WidgetPtr sender);
     void _parent_changed() override;
 };
 

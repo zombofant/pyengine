@@ -26,6 +26,7 @@ authors named in the AUTHORS file.
 #include "LayerWidget.hpp"
 
 #include "RootWidget.hpp"
+#include "WindowWidget.hpp"
 
 namespace PyEngine {
 
@@ -96,15 +97,21 @@ bool PopupLayer::ev_mouse_click(
 /* PyEngine::ModalWindowLayer */
 
 ModalWindowLayer::ModalWindowLayer(
-        const ModalWindowLayer::WindowWidgetPtr &ref):
-    _window(ref)
+        ModalWindowLayer::WindowWidgetPtr window):
+    _window(window),
+    _close_hook(_window->on_close_hook().connect(
+        sigc::mem_fun(this, &ModalWindowLayer::_handle_window_close)))
 {
-    /* TODO: hook into window close */
     add(_window);
     RootPtr root = get_root();
     if (root) {
         root->focus(_window);
     }
+}
+
+ModalWindowLayer::~ModalWindowLayer()
+{
+    _close_hook.disconnect();
 }
 
 void ModalWindowLayer::_parent_changed()
@@ -121,9 +128,10 @@ void ModalWindowLayer::_parent_changed()
     }
 }
 
-void ModalWindowLayer::_handle_window_close(const WidgetPtr &sender)
+void ModalWindowLayer::_handle_window_close(WidgetPtr sender)
 {
     invalidate();
+    _close_hook.disconnect();
     ParentPtr parent = get_parent();
     if (parent) {
         parent->remove(this);
