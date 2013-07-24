@@ -102,6 +102,15 @@ endif (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
         ${Boost_PYTHON_LIBRARY}
     )
 
+    # sigc++
+    # we could also use a boosty mechanism for this, but as we also use
+    # gtk, it seems reasonable to pick sigc++, which is also used there
+    find_package(SIGC++ REQUIRED)
+    set(PYENGINE_INCLUDE_DIRS ${PYENGINE_INCLUDE_DIRS}
+        ${SIGC++_INCLUDE_DIR}
+        ${SIGC++_CONFIG_INCLUDE_DIR})
+    set(LIBS ${LIBS} ${SIGC++_LIBRARY})
+
     # PLATFORM: linux
     find_package(rt REQUIRED)
     set(LIBS ${LIBS}
