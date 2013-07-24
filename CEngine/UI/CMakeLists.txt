@@ -11,6 +11,7 @@ add_library(pyengine_UI
   "Label.cpp"
   "Widgets/WidgetBase.cpp"
   "Widgets/LabelWidget.cpp"
+  "Widgets/ButtonWidget.cpp"
   "Widgets/DragController.cpp"
   "Widgets/WindowWidget.cpp"
   "Widgets/LayerWidget.cpp"
