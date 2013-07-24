@@ -175,6 +175,16 @@ void RootWidget::do_align()
     }
 }
 
+cairo_t* RootWidget::get_cairo_context()
+{
+    return _cairo_ctx;
+}
+
+PangoContext* RootWidget::get_pango_context()
+{
+    return _pango_ctx;
+}
+
 RootPtr RootWidget::get_root()
 {
     return this;

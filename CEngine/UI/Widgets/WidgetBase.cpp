@@ -79,6 +79,7 @@ void AbstractWidget::_root_changed()
 {
     _state.reset({Hovered, Focused, Active});
     invalidate_computed_style();
+    invalidate_context();
 }
 
 void AbstractWidget::set_root(RootPtr root)
@@ -88,6 +89,21 @@ void AbstractWidget::set_root(RootPtr root)
     }
     _root = root;
     _root_changed();
+}
+
+void AbstractWidget::invalidate_alignment()
+{
+    _alignment_invalidated = true;
+}
+
+void AbstractWidget::invalidate_context()
+{
+
+}
+
+void AbstractWidget::invalidate_computed_style()
+{
+    _computed_style_invalidated = true;
 }
 
 RootPtr AbstractWidget::get_root()
@@ -152,6 +168,22 @@ Style& AbstractWidget::computed_style()
 void AbstractWidget::do_align()
 {
 
+}
+
+cairo_t* AbstractWidget::get_cairo_context()
+{
+    if (_parent) {
+        return _parent->get_cairo_context();
+    }
+    return nullptr;
+}
+
+PangoContext* AbstractWidget::get_pango_context()
+{
+    if (_parent) {
+        return _parent->get_pango_context();
+    }
+    return nullptr;
 }
 
 bool AbstractWidget::is_element(const std::string &name) const

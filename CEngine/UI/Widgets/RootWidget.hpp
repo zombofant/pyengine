@@ -77,6 +77,8 @@ protected:
 
 public:
     virtual void do_align() override;
+    cairo_t* get_cairo_context() override;
+    PangoContext* get_pango_context() override;
     RootPtr get_root() override;
     ThemePtr get_theme() override;
     bool is_element(const std::string &name) const override;

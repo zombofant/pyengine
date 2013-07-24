@@ -87,13 +87,9 @@ protected:
     virtual bool _hittest(const Point &p) const = 0;
 
 public:
-    inline void invalidate_alignment() {
-        _alignment_invalidated = true;
-    };
-
-    inline void invalidate_computed_style() {
-        _computed_style_invalidated = true;
-    };
+    virtual void invalidate_alignment();
+    virtual void invalidate_computed_style();
+    virtual void invalidate_context();
 
 public:
     inline const Rect& get_absolute_rect() const {
@@ -130,6 +126,8 @@ public:
 public:
     Style& computed_style();
     virtual void do_align();
+    virtual cairo_t* get_cairo_context();
+    virtual PangoContext* get_pango_context();
     virtual bool is_element(const std::string &name) const;
     virtual coord_dimensions_t get_dimensions();
     virtual WidgetPtr hittest(const Point &p) = 0;
