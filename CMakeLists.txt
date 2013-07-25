@@ -34,7 +34,7 @@ endif (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     set(PYENGINE_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
     set(LIBS ${LIBS} ${PYENGINE_MODULES})
     set(CONTRIB_MODULES
-        "contrib_BinPack"
+    #    "contrib_BinPack"
     )
     set(PYENGINE_MODULES
         "pyengine_PythonInterface"
