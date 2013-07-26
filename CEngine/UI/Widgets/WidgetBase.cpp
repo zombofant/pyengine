@@ -503,6 +503,13 @@ bool ParentWidget::hittest_with_chain(const Point &p, HitChain &chain)
     return true;
 }
 
+void ParentWidget::invalidate_context()
+{
+    for (auto child: *this) {
+        child->invalidate_context();
+    }
+}
+
 void ParentWidget::realign()
 {
     this->AbstractWidget::realign();

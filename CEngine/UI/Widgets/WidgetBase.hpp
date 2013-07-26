@@ -222,6 +222,7 @@ public:
 public:
     WidgetPtr hittest(const Point &p) override;
     bool hittest_with_chain(const Point &p, HitChain &chain) override;
+    void invalidate_context() override;
     void realign() override;
     void render() override;
 

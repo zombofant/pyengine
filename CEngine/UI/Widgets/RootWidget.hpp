@@ -69,10 +69,15 @@ private:
 
 protected:
     void _capture(WidgetPtr capturee, unsigned int button);
+    void _clear_cairo_surface();
     WidgetPtr _find_key_event_target();
     WidgetPtr _find_mouse_event_target(int x, int y,
                                        HitChain *chain = nullptr);
     void _focus(HitChain *chain);
+    virtual void _recreate_cairo_surface(unsigned int width,
+                                         unsigned int height);
+    void _require_cairo_context();
+    void _setup_clipping();
     void _update_hover_state(HitChain *chain);
 
 public:
@@ -82,6 +87,7 @@ public:
     RootPtr get_root() override;
     ThemePtr get_theme() override;
     bool is_element(const std::string &name) const override;
+    void render() override;
     void set_theme(const ThemePtr &theme);
 
 public:
@@ -95,6 +101,14 @@ public:
 
     inline PopupLayer *popup_layer() {
         return _popup_layer;
+    };
+
+    inline bool get_surface_dirty() const {
+        return _surface_dirty;
+    };
+
+    inline cairo_surface_t* get_cairo_surface() const {
+        return _cairo_surface;
     };
 
 public:

@@ -27,6 +27,8 @@ authors named in the AUTHORS file.
 
 #include <stdexcept>
 
+#include <pango/pangocairo.h>
+
 #include "CEngine/Misc/SetOperations.hpp"
 
 namespace PyEngine { namespace UI {
@@ -72,6 +74,15 @@ void RootWidget::_capture(WidgetPtr capturee, unsigned int button)
     }
     _mouse_capture = capturee;
     _mouse_capture_button = button;
+}
+
+void RootWidget::_clear_cairo_surface()
+{
+    cairo_set_source_rgba(_cairo_ctx, 0, 0, 0, 0);
+    cairo_set_operator(_cairo_ctx, CAIRO_OPERATOR_SOURCE);
+    cairo_paint(_cairo_ctx);
+    cairo_set_operator(_cairo_ctx, CAIRO_OPERATOR_OVER);
+    cairo_set_line_cap(_cairo_ctx, CAIRO_LINE_CAP_SQUARE);
 }
 
 WidgetPtr RootWidget::_find_key_event_target()
@@ -144,6 +155,56 @@ void RootWidget::_focus(HitChain *chain)
     std::swap(_old_focus_chain, new_set);
 }
 
+void RootWidget::_recreate_cairo_surface(unsigned int width,
+        unsigned int height)
+{
+    if (_cairo_surface) {
+        g_object_unref(_cairo_surface);
+    }
+    if (_cairo_ctx) {
+        g_object_unref(_cairo_ctx);
+    }
+    if (_pango_ctx) {
+        g_object_unref(_pango_ctx);
+    }
+
+    _cairo_surface = cairo_image_surface_create(
+        CAIRO_FORMAT_ARGB32,
+        width,
+        height);
+    _cairo_ctx = cairo_create(_cairo_surface);
+    _pango_ctx = pango_cairo_create_context(_cairo_ctx);
+
+    invalidate_context();
+}
+
+void RootWidget::_require_cairo_context()
+{
+    coord_int_t w = absolute_rect().get_width();
+    coord_int_t h = absolute_rect().get_height();
+
+    assert(w >= 0);
+    assert(h >= 0);
+
+    if ((_cairo_surface == nullptr) ||
+        (cairo_image_surface_get_width(_cairo_surface) != w) ||
+        (cairo_image_surface_get_height(_cairo_surface) != h))
+    {
+        _recreate_cairo_surface(w, h);
+    }
+}
+
+void RootWidget::_setup_clipping()
+{
+    cairo_rectangle(
+        _cairo_ctx,
+        _invalidated_rect.get_x(),
+        _invalidated_rect.get_y(),
+        _invalidated_rect.get_width(),
+        _invalidated_rect.get_height());
+    cairo_clip(_cairo_ctx);
+}
+
 void RootWidget::_update_hover_state(HitChain *chain)
 {
     if (chain == nullptr) {
@@ -173,6 +234,10 @@ void RootWidget::do_align()
     for (auto& child: *this) {
         child->absolute_rect() = absolute_rect();
     }
+
+    _require_cairo_context();
+    _invalidated_rect = Rect(0, 0, 0, 0);
+    _resized = true;
 }
 
 cairo_t* RootWidget::get_cairo_context()
@@ -198,6 +263,30 @@ ThemePtr RootWidget::get_theme()
 bool RootWidget::is_element(const std::string &name) const
 {
     return (name == "root") || this->ParentWidget::is_element(name);
+}
+
+void RootWidget::render()
+{
+    realign();
+    _surface_dirty = false;
+    if ((_invalidated_rect == NotARect) || (_invalidated_rect.area() == 0))
+    {
+        return;
+    }
+
+    if (!_resized) {
+        _setup_clipping();
+    }
+
+    _clear_cairo_surface();
+    _desktop_layer->render();
+    _window_layer->render();
+    _popup_layer->render();
+    _invalidated_rect = Rect(0, 0, 0, 0);
+    _resized = false;
+
+    cairo_reset_clip(_cairo_ctx);
+    _surface_dirty = true;
 }
 
 void RootWidget::set_theme(const ThemePtr &theme)
