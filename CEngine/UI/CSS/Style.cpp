@@ -268,6 +268,83 @@ coord_int_t Style::apply_vertical_align(
     }
 }
 
+void Style::in_cairo(cairo_t *ctx, const Rect &rect)
+{
+    float cl = rect.get_left(),
+          cr = rect.get_right(),
+          ct = rect.get_top(),
+          cb = rect.get_bottom();
+
+    const std::array<coord_int_t, 4> widths = border().get_widths();
+
+    float bl = widths[0],
+          br = widths[2],
+          bt = widths[1],
+          bb = widths[3];
+
+    cl += bl / 2;
+    cr -= br / 2;
+    ct += bt / 2;
+    cb -= bb / 2;
+
+    const float ch = cb - ct;
+    const float cw = cr - cl;
+
+    const float shear_top_left = (_shear_x.get() > 0 ? _shear_x.get() : 0);
+    const float shear_top_right = (_shear_y.get() < 0 ? -_shear_y.get() : 0);
+    const float shear_bottom_left = (_shear_x.get() < 0 ? -_shear_x.get() : 0);
+    const float shear_bottom_right = (_shear_y.get() > 0 ? _shear_y.get() : 0);
+
+    const std::array<FillPtr, 4> fills = border().get_fills();
+
+    const std::array<Point, 4> corners{{
+        Point(
+            cl + shear_top_left + border().get_top_left_radius(),
+            ct + border().get_top_left_radius()),
+        Point(
+            cr + shear_top_right - border().get_top_right_radius(),
+            ct + border().get_top_right_radius()),
+        Point(
+            cr + shear_bottom_right - border().get_bottom_right_radius(),
+            cb - border().get_bottom_right_radius()),
+        Point(
+            cl + shear_bottom_left + border().get_bottom_left_radius(),
+            cb - border().get_bottom_left_radius())
+    }};
+
+    const Rect crect(cl, ct, cw, ch);
+
+    /* TODO: rounded corners */
+
+    // background
+    const FillPtr background = _background.get();
+    if (background) {
+        cairo_move_to(ctx, corners[0].get_x(), corners[0].get_y());
+        for (unsigned int i = 1; i < 4; i++)
+        {
+            cairo_line_to(ctx, corners[i].get_x(), corners[i].get_y());
+        }
+        cairo_close_path(ctx);
+        background->set_source(ctx, crect);
+        cairo_fill(ctx);
+    }
+
+    for (unsigned int i = 0; i < 4; i++) {
+        if ((widths[i] <= 0) || (!fills[i])) {
+            continue;
+        }
+
+        const int corner_a = (i == 0 ? 3 : i-1);
+
+        cairo_set_line_width(ctx, widths[i]);
+        fills[i]->set_source(ctx, crect);
+        cairo_move_to(ctx, corners[corner_a].get_x(), corners[corner_a].get_y());
+        cairo_line_to(ctx, corners[i].get_x(), corners[i].get_y());
+        cairo_stroke(ctx);
+    }
+
+}
+
 /* free functions */
 
 Style DefaultStyle()

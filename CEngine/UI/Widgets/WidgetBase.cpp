@@ -233,7 +233,7 @@ void AbstractWidget::realign()
 
 void AbstractWidget::render()
 {
-
+    computed_style().in_cairo(get_cairo_context(), absolute_rect());
 }
 
 bool AbstractWidget::ev_activate()

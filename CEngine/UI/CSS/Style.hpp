@@ -211,6 +211,9 @@ public:
         VerticalAlign align,
         coord_int_t obj_height,
         coord_int_t cont_height);
+
+public:
+    void in_cairo(cairo_t *ctx, const Rect& rect);
 };
 
 Style DefaultStyle();
