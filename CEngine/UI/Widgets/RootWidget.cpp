@@ -524,7 +524,8 @@ void RootWidget::dispatch_resize(
     unsigned int w,
     unsigned int h)
 {
-
+    absolute_rect() = Rect(0, 0, w, h);
+    invalidate_alignment();
 }
 
 void RootWidget::dispatch_scroll(
