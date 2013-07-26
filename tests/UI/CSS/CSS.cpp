@@ -44,7 +44,6 @@ TEST_CASE("UI/CSS/CSS/CSSInheritable/assignment_inherit",
           "Assignment of inherited values")
 {
     css_coord_int_t a(Inherit);
-    int av = 0;
     CHECK(a.is_inherit());
     css_coord_int_t b = a;
     CHECK(b.is_inherit());
@@ -56,7 +55,7 @@ TEST_CASE("UI/CSS/CSS/CSSInheritable/extract_inherit_throws",
 {
     css_coord_int_t a(Inherit);
     int av = 0;
-    CHECK_THROWS_AS(av = a, UnresolvedInheritable);
+    CHECK_THROWS_AS((volatile void)(av == a), UnresolvedInheritable);
     CHECK_THROWS_AS(static_cast<int>(a), UnresolvedInheritable);
     //~ CHECK_THROWS_AS(int(a), UnresolvedInheritable);
     // the above doesn't throw, maybe it's a compiler bug?
