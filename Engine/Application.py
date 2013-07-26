@@ -162,50 +162,26 @@ class Application(RootWidget, CWindow.EventSink):
     def run(self):
         self._event_loop.run()
 
-    def frameSynced(self):
+    def frame_synced(self):
         pass
 
-    def frameUnsynced(self, deltaT):
+    def frame_unsynced(self, deltaT):
         pass
 
-    def handleKeyDown(self, key, modifiers):
-        self.dispatch_key_down(key, modifiers)
-
-    def handleKeyUp(self, key, modifiers):
-        self.dispatch_key_up(key, modifiers)
-
-    def handleMouseDown(self, x, y, button, modifiers):
-        self.dispatch_mouse_down(x, y, button, modifiers)
-
-    def handleMouseClick(self, x, y, button, modifiers, nth):
-        self.dispatch_mouse_click(x, y, button, modifiers, nth)
-
-    def handleMouseMove(self, x, y, dx, dy, buttons, modifiers):
-        self.dispatch_mouse_move(x, y, dx, dy, buttons, modifiers)
-
-    def handleMouseUp(self, x, y, button, modifiers):
-        self.dispatch_mouse_up(x, y, button, modifiers)
-
-    def handleMouseScroll(self, x, y, scrollX, scrollY):
-        self.dispatch_scroll(x, y, scrollX, scrollY)
-
-    def handleResize(self, width, height):
+    def dispatch_resize(self, width, height):
         self.AbsoluteRect = Rect(0, 0, width, height)
         glViewport(0, 0, width, height)
         # FIXME: this can be removed when rendering cairo is supported
         for widget in self.tree_depth_first():
             widget.realign()
 
-    def handleTextInput(self, text):
-        self.dispatch_text_input(text)
-
-    def handleHide(self):
+    def dispatch_hide(self):
         pass
 
-    def handleShow(self):
+    def dispatch_show(self):
         pass
 
-    def handleWMQuit(self):
+    def dispatch_wm_quit(self):
         self._event_loop.terminate()
 
     def get_current_fps(self):
