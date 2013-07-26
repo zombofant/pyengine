@@ -235,8 +235,7 @@ void RootWidget::do_align()
     }
 
     _require_cairo_context();
-    _invalidated_rect = Rect(0, 0, 0, 0);
-    _resized = true;
+    _invalidated_rect = NotARect;
 }
 
 cairo_t* RootWidget::get_cairo_context()
@@ -268,12 +267,13 @@ void RootWidget::render()
 {
     realign();
     _surface_dirty = false;
-    if ((_invalidated_rect == NotARect) || (_invalidated_rect.area() == 0))
+    bool full_repaint = (_invalidated_rect == NotARect);
+    if ((!full_repaint) && (_invalidated_rect.area() == 0))
     {
         return;
     }
 
-    if (!_resized) {
+    if (!full_repaint) {
         _setup_clipping();
     }
 
@@ -282,7 +282,6 @@ void RootWidget::render()
     _window_layer->render();
     _popup_layer->render();
     _invalidated_rect = Rect(0, 0, 0, 0);
-    _resized = false;
 
     cairo_reset_clip(_cairo_ctx);
     _surface_dirty = true;

@@ -58,7 +58,6 @@ private:
     cairo_t *_cairo_ctx;
     cairo_surface_t *_cairo_surface;
     PangoContext *_pango_ctx;
-    bool _resized;
     std::unique_ptr<DragControllerBase> _drag_controller;
     Point _cursor;
     bool _surface_dirty;
