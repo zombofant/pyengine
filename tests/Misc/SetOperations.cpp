@@ -31,7 +31,62 @@ using namespace PyEngine;
 
 typedef std::set<int> set_t;
 
-TEST_CASE("Misc/SetOperations/set_difference"
+TEST_CASE("Misc/SetOperations/SetDifferenceIterator/invariants",
+          "Test some invariants on the SetDifferenceIterator")
+{
+    typedef SetDifferenceIterator<typename set_t::iterator, set_t>
+        iterator_t;
+
+    iterator_t iter_a;
+    iterator_t iter_b;
+
+    CHECK(iter_a == iter_b);
+
+    set_t non_empty({1, 2, 3});
+    set_t empty({});
+
+    iter_a = iterator_t(empty.begin(), empty.end(), non_empty);
+    CHECK(iter_a == iterator_t());
+
+    iter_a = iterator_t(non_empty.begin(), non_empty.end(), empty);
+    CHECK(iter_a != iterator_t());
+    CHECK(iter_a != iter_b);
+    ++iter_a;
+    CHECK(iter_a != iterator_t());
+    ++iter_a;
+    CHECK(iter_a != iterator_t());
+    ++iter_a;
+    CHECK(iter_a == iterator_t());
+
+    iter_a = iterator_t(non_empty.begin(), non_empty.end(), non_empty);
+    CHECK(iter_a == iterator_t());
+}
+
+TEST_CASE("Misc/SetOperations/SetDifferenceIterator/normal",
+          "Test creation of a set difference using the SetDifferenceIterator")
+{
+    typedef SetDifferenceIterator<typename set_t::const_iterator, set_t>
+        iterator_t;
+
+    const set_t set_a({1, 2, 3});
+    const set_t set_b({1, 4});
+
+    set_t c;
+    set_t ref({2,3});
+
+    auto out = std::inserter(c, c.begin());
+
+    for (iterator_t iter(set_a.begin(), set_a.end(), set_b);
+         iter != iterator_t();
+         ++iter)
+    {
+        *out++ = *iter;
+    }
+
+    CHECK(c == ref);
+}
+
+TEST_CASE("Misc/SetOperations/set_difference/normal",
           "Test creation of a set difference to an output iterator")
 {
     set_t a({1,2,3});
@@ -46,3 +101,21 @@ TEST_CASE("Misc/SetOperations/set_difference"
     CHECK(a != c);
     CHECK(b != c);
 }
+
+TEST_CASE("Misc/SetOperations/set_difference/empty_result",
+          "Test creation of a set difference to an output iterator, "
+          "with empty result")
+{
+    set_t a({});
+    set_t b({1,2,3});
+
+    set_t c;
+    set_difference(a, b, std::inserter(c, c.begin()));
+
+    set_t ref({});
+
+    CHECK(c == ref);
+    CHECK(a == c);
+    CHECK(b != c);
+}
+

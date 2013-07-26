@@ -27,6 +27,7 @@ authors named in the AUTHORS file.
 #define _PYE_MISC_SET_OPERATIONS_H
 
 #include <set>
+#include <cassert>
 
 namespace PyEngine {
 
@@ -54,9 +55,14 @@ struct SetDifferenceIterator
         _b(&b),
         _bend(_b->cend())
     {
+        if (_aiter == _aend) {
+            _aiter = InputIterator();
+            _aend = InputIterator();
+            assert(_aiter == InputIterator());
+        }
         // if the current iterator position isn't a hit, we need to
         // move forward until we find what we need.
-        if (_b->find(*_aiter) != _bend) {
+        if ((_aiter != _aend) && (_b->find(*_aiter) != _bend)) {
             ++(*this);
         }
     }
@@ -111,7 +117,7 @@ public:
         return *this;
     }
 
-    SetDifferenceIterator operator++(int) const
+    SetDifferenceIterator operator++(int)
     {
         SetDifferenceIterator result(*this);
         ++(*this);
@@ -120,7 +126,8 @@ public:
 
     bool operator==(const SetDifferenceIterator &oth) const
     {
-        return (_aiter == oth._aiter);
+        return (_aiter == oth._aiter)
+            || ((_aiter == _aend) && (oth._aiter == oth._aend));
     }
 
     bool operator!=(const SetDifferenceIterator &oth) const
@@ -139,12 +146,13 @@ OutputIterator set_difference(
     typedef SetDifferenceIterator<
         typename set_t::const_iterator,
         set_t> iterator_t;
-    typename set_t::const_iterator end_of_b = b.end();
 
     iterator_t iter(a.begin(), a.end(), b);
     for (; iter != iterator_t(); ++iter) {
         *out++ = *iter;
     }
+
+    return out;
 }
 
 template <typename InputIt, typename set_type>
@@ -171,10 +179,12 @@ std::ostream& operator<<(std::ostream& stream,
                          const std::set<value_type> &set)
 {
     stream << "set{";
-    auto it = set.cbegin();
-    stream << *it++;
-    while (it != set.cend()) {
-        stream << ", " << *it++;
+    if (set.cbegin() != set.cend()) {
+        auto it = set.cbegin();
+        stream << *it++;
+        while (it != set.cend()) {
+            stream << ", " << *it++;
+        }
     }
     stream << "}";
     return stream;
