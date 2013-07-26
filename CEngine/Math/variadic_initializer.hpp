@@ -50,8 +50,7 @@ struct init_array_with_data<data_t, other_data_t,
 template <typename data_t>
 struct init_array_with_data<data_t>
 {
-    static inline void init(
-        data_t *arr)
+    static inline void init(data_t*)
     {
 
     }
