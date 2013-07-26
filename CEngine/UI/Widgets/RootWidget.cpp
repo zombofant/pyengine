@@ -45,10 +45,9 @@ RootWidget::RootWidget():
     _focused(nullptr),
     _old_hit_chain(),
     _old_focus_chain(),
-    _cairo_ctx(),
-    _cairo_surface(),
-    _pango_ctx(),
-    _resized(false),
+    _cairo_ctx(nullptr),
+    _cairo_surface(nullptr),
+    _pango_ctx(nullptr),
     _drag_controller(nullptr),
     _cursor(0, 0),
     _surface_dirty(),
@@ -159,10 +158,10 @@ void RootWidget::_recreate_cairo_surface(unsigned int width,
         unsigned int height)
 {
     if (_cairo_surface) {
-        g_object_unref(_cairo_surface);
+        cairo_surface_destroy(_cairo_surface);
     }
     if (_cairo_ctx) {
-        g_object_unref(_cairo_ctx);
+        cairo_destroy(_cairo_ctx);
     }
     if (_pango_ctx) {
         g_object_unref(_pango_ctx);
