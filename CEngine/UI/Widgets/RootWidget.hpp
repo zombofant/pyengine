@@ -144,11 +144,11 @@ public:
     void dispatch_resize(unsigned int w, unsigned int h);
     void dispatch_scroll(int x, int y,
                          int scrollx, int scrolly) override;
-    void dispatch_show();
-    void dispatch_text_input(const char* text);
-    void dispatch_wm_quit();
-    void frame_synced();
-    void frame_unsynced(TimeFloat deltaT);
+    void dispatch_show() override;
+    void dispatch_text_input(const char* text) override;
+    void dispatch_wm_quit() override;
+    void frame_synced() override;
+    void frame_unsynced(TimeFloat deltaT) override;
 
 };
 
