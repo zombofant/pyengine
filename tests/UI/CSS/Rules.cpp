@@ -27,7 +27,7 @@ authors named in the AUTHORS file.
 
 #include <CEngine/UI/CSS/Rules.hpp>
 
-using namespace PyEngine;
+using namespace PyEngine::UI;
 
 TEST_CASE("UI/CSS/Rules/MarginRule"
           "Test appliance of margin rule")

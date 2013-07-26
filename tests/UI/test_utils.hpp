@@ -29,10 +29,11 @@ authors named in the AUTHORS file.
 #include <CEngine/UI/CSS/Theme.hpp>
 #include <CEngine/UI/Widgets/RootWidget.hpp>
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
 RootPtr setup_test_env();
 
+}
 }
 
 #endif

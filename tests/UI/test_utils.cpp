@@ -25,7 +25,7 @@ authors named in the AUTHORS file.
 **********************************************************************/
 #include "test_utils.hpp"
 
-namespace PyEngine {
+namespace PyEngine { namespace UI {
 
 RootPtr setup_test_env()
 {
@@ -37,4 +37,5 @@ RootPtr setup_test_env()
     return root;
 }
 
+}
 }

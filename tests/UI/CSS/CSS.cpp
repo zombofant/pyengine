@@ -27,7 +27,7 @@ authors named in the AUTHORS file.
 
 #include <CEngine/UI/CSS/CSS.hpp>
 
-using namespace PyEngine;
+using namespace PyEngine::UI;
 
 TEST_CASE("UI/CSS/CSS/CSSInheritable/assignment_no_inherit",
           "Assignment of not-inherited values")

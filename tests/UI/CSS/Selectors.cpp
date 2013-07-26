@@ -27,7 +27,7 @@ authors named in the AUTHORS file.
 
 #include <CEngine/UI/CSS/Selectors.hpp>
 
-using namespace PyEngine;
+using namespace PyEngine::UI;
 
 TEST_CASE("UI/CSS/Selectors/Specifity/comparision",
           "Comparision of Specifity objects")

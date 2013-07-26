@@ -31,7 +31,7 @@ authors named in the AUTHORS file.
 
 #include <CEngine/UI/Widgets/BoxWidget.hpp>
 
-using namespace PyEngine;
+using namespace PyEngine::UI;
 
 TEST_CASE("UI/CSS/Theme/Theme/theming",
           "Test theming")

@@ -27,7 +27,7 @@ authors named in the AUTHORS file.
 
 #include <CEngine/UI/CSS/Shapes.hpp>
 
-using namespace PyEngine;
+using namespace PyEngine::UI;
 
 TEST_CASE("UI/CSS/Shapes/CSSBox",
           "Initialization of CSSBox")
