@@ -41,6 +41,11 @@ void DesktopLayer::do_align()
     }
 }
 
+bool DesktopLayer::is_element(const std::string &name) const
+{
+    return (name == "desktoplayer");
+}
+
 /* PyEngine::UI::WindowLayer */
 
 void WindowLayer::do_align()
@@ -51,6 +56,11 @@ void WindowLayer::do_align()
             modal->absolute_rect() = absolute_rect();
         }
     }
+}
+
+bool WindowLayer::is_element(const std::string &name) const
+{
+    return (name == "windowlayer");
 }
 
 /* PyEngine::UI::PopupLayer */
@@ -81,6 +91,11 @@ bool PopupLayer::hittest_with_chain(const Point &p, HitChain &chain)
 
     chain.push_back(this);
     return true;
+}
+
+bool PopupLayer::is_element(const std::string &name) const
+{
+    return (name == "popuplayer");
 }
 
 bool PopupLayer::ev_mouse_click(
@@ -137,6 +152,11 @@ void ModalWindowLayer::_handle_window_close(WidgetPtr sender)
     if (parent) {
         parent->remove(this);
     }
+}
+
+bool ModalWindowLayer::is_element(const std::string &name) const
+{
+    return (name == "modalwindowlayer");
 }
 
 }

@@ -46,6 +46,7 @@ public:
 
 public:
     void do_align() override;
+    bool is_element(const std::string &name) const override;
 
 };
 
@@ -56,6 +57,7 @@ public:
 
 public:
     void do_align() override;
+    bool is_element(const std::string &name) const override;
 
 };
 
@@ -88,6 +90,7 @@ public:
 public:
     WidgetPtr hittest(const Point &p) override;
     bool hittest_with_chain(const Point &p, HitChain &chain) override;
+    bool is_element(const std::string &name) const override;
 
 public:
     bool ev_mouse_click(
@@ -117,6 +120,10 @@ private:
 protected:
     void _handle_window_close(WidgetPtr sender);
     void _parent_changed() override;
+
+public:
+    bool is_element(const std::string &name) const override;
+
 };
 
 }
