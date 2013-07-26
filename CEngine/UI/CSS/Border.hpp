@@ -166,6 +166,24 @@ public:
         _corners[3] = value;
     };
 
+    inline std::array<coord_int_t, 4> get_widths() const {
+        return std::array<coord_int_t, 4>{{
+            _edges[0].get_width(),
+            _edges[1].get_width(),
+            _edges[2].get_width(),
+            _edges[3].get_width()
+        }};
+    };
+
+    inline std::array<FillPtr, 4> get_fills() const {
+        return std::array<FillPtr, 4>{{
+            _edges[0].get_fill().get(),
+            _edges[1].get_fill().get(),
+            _edges[2].get_fill().get(),
+            _edges[3].get_fill().get()
+        }};
+    };
+
 public:
     bool operator==(const Border& other) const;
     inline bool operator!=(const Border& other) const {
