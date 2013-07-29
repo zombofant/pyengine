@@ -297,17 +297,17 @@ void Style::in_cairo(cairo_t *ctx, const Rect &rect)
 
     const std::array<FillPtr, 4> fills = border().get_fills();
 
-    const std::array<Point, 4> corners{{
-        Point(
+    const std::array<Pointf, 4> corners{{
+        Pointf(
             cl + shear_top_left + border().get_top_left_radius(),
             ct + border().get_top_left_radius()),
-        Point(
+        Pointf(
             cr + shear_top_right - border().get_top_right_radius(),
             ct + border().get_top_right_radius()),
-        Point(
+        Pointf(
             cr + shear_bottom_right - border().get_bottom_right_radius(),
             cb - border().get_bottom_right_radius()),
-        Point(
+        Pointf(
             cl + shear_bottom_left + border().get_bottom_left_radius(),
             cb - border().get_bottom_left_radius())
     }};

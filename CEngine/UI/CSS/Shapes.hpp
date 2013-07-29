@@ -107,6 +107,15 @@ public:
     Point& operator=(const Point& ref);
 };
 
+class Pointf: public GenericPoint<coord_float_t>
+{
+public:
+    Pointf();
+    Pointf(coord_float_t x, coord_float_t y);
+    Pointf(const Pointf &ref);
+    Pointf& operator=(const Pointf &ref);
+};
+
 template <typename coord_t>
 class GenericBox
 {

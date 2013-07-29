@@ -81,6 +81,32 @@ Point& Point::operator=(const Point& ref)
     return *this;
 }
 
+/* PyEngine::UI::Pointf */
+
+Pointf::Pointf():
+    GenericPoint<coord_float_t>()
+{
+
+}
+
+Pointf::Pointf(coord_float_t x, coord_float_t y):
+    GenericPoint<coord_float_t>(x, y)
+{
+
+}
+
+Pointf::Pointf(const Pointf& ref):
+    GenericPoint<coord_float_t>(ref)
+{
+
+}
+
+Pointf& Pointf::operator=(const Pointf &ref)
+{
+    this->GenericPoint::operator=(ref);
+    return *this;
+}
+
 /* PyEngine::UI::Box */
 
 Box::Box():
