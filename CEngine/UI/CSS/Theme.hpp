@@ -31,7 +31,7 @@ authors named in the AUTHORS file.
 
 #include "Selectors.hpp"
 #include "Style.hpp"
-#include "Rules.hpp"
+#include "BaseRules.hpp"
 
 #include "CEngine/UI/Widgets/WidgetBase.hpp"
 
