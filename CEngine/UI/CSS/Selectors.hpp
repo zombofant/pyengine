@@ -55,7 +55,7 @@ class Selector: public std::enable_shared_from_this<Selector>
 {
 public:
     Selector();
-    Selector(SelectorPtr chained);
+    Selector(const SelectorPtr &chained);
     virtual ~Selector();
 protected:
     Specifity _specifity;
@@ -78,8 +78,8 @@ public:
 class ParentSelector: public Selector
 {
 public:
-    ParentSelector(SelectorPtr parent);
-    ParentSelector(SelectorPtr parent, SelectorPtr chained);
+    ParentSelector(const SelectorPtr &parent);
+    ParentSelector(const SelectorPtr &parent, const SelectorPtr &chained);
 protected:
     SelectorPtr _parent;
 public:
@@ -89,8 +89,8 @@ public:
 class ChildOf: public ParentSelector
 {
 public:
-    ChildOf(SelectorPtr parent);
-    ChildOf(SelectorPtr parent, SelectorPtr chained);
+    ChildOf(const SelectorPtr &parent);
+    ChildOf(const SelectorPtr &parent, const SelectorPtr &chained);
 protected:
     const AbstractWidget *_test_widget(const AbstractWidget *widget) const override;
 };
@@ -98,8 +98,8 @@ protected:
 class DirectChildOf: public ParentSelector
 {
 public:
-    DirectChildOf(SelectorPtr parent);
-    DirectChildOf(SelectorPtr parent, SelectorPtr chained);
+    DirectChildOf(const SelectorPtr &parent);
+    DirectChildOf(const SelectorPtr &parent, const SelectorPtr &chained);
 protected:
     const AbstractWidget *_test_widget(const AbstractWidget *widget) const override;
 };
@@ -108,6 +108,7 @@ class Is: public Selector
 {
 public:
     Is(const std::string& element_name);
+    Is(const std::string& element_name, const SelectorPtr &chained);
 private:
     const std::string _element_name;
 protected:
@@ -118,7 +119,7 @@ class State: public Selector
 {
 public:
     State(CSSStateFlag flag);
-    State(CSSStateFlag flag, SelectorPtr chained);
+    State(CSSStateFlag flag, const SelectorPtr &chained);
 protected:
     CSSState _states;
 protected:

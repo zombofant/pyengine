@@ -80,7 +80,7 @@ Selector::Selector():
 
 }
 
-Selector::Selector(SelectorPtr chained):
+Selector::Selector(const SelectorPtr &chained):
     _specifity(chained->specifity()),
     _chained(chained)
 {
@@ -116,14 +116,14 @@ const AbstractWidget *Selector::test_widget(const AbstractWidget *widget) const
 
 /* PyEngine::UI::ParentSelector */
 
-ParentSelector::ParentSelector(SelectorPtr parent):
+ParentSelector::ParentSelector(const SelectorPtr &parent):
     Selector(),
     _parent(parent)
 {
     _specifity += Specifity(0, 0, 0, 1);
 }
 
-ParentSelector::ParentSelector(SelectorPtr parent, SelectorPtr chained):
+ParentSelector::ParentSelector(const SelectorPtr &parent, const SelectorPtr &chained):
     Selector(chained),
     _parent(parent)
 {
@@ -142,13 +142,13 @@ bool ParentSelector::operator==(const Selector& oth_) const
 
 /* PyEngine::UI::ChildOf */
 
-ChildOf::ChildOf(SelectorPtr parent):
+ChildOf::ChildOf(const SelectorPtr &parent):
     ParentSelector(parent)
 {
 
 }
 
-ChildOf::ChildOf(SelectorPtr parent, SelectorPtr chained):
+ChildOf::ChildOf(const SelectorPtr &parent, const SelectorPtr &chained):
     ParentSelector(parent, chained)
 {
 
@@ -168,13 +168,13 @@ const AbstractWidget *ChildOf::_test_widget(const AbstractWidget *widget) const
 
 /* PyEngine::UI::DirectChildOf */
 
-DirectChildOf::DirectChildOf(SelectorPtr parent):
+DirectChildOf::DirectChildOf(const SelectorPtr &parent):
     ParentSelector(parent)
 {
 
 }
 
-DirectChildOf::DirectChildOf(SelectorPtr parent, SelectorPtr chained):
+DirectChildOf::DirectChildOf(const SelectorPtr &parent, const SelectorPtr &chained):
     ParentSelector(parent, chained)
 {
 
@@ -198,6 +198,13 @@ Is::Is(const std::string& element_name):
 
 }
 
+Is::Is(const std::string& element_name, const SelectorPtr &chained):
+    Selector(chained),
+    _element_name(element_name)
+{
+
+}
+
 const AbstractWidget *Is::_test_widget(const AbstractWidget *widget) const
 {
     if (widget->is_element(_element_name)) {
@@ -216,7 +223,7 @@ State::State(CSSStateFlag flag):
 
 }
 
-State::State(CSSStateFlag flag, SelectorPtr chained):
+State::State(CSSStateFlag flag, const SelectorPtr &chained):
     Selector(chained),
     _states({flag})
 {
