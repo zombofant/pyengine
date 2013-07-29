@@ -242,5 +242,32 @@ const AbstractWidget *State::_test_widget(const AbstractWidget *widget) const
     return widget;
 }
 
+/* PyEngine::UI::HasCSSClass */
+
+HasCSSClass::HasCSSClass(const std::string &class_name):
+    Selector(),
+    _class_name(class_name)
+{
+
+}
+
+HasCSSClass::HasCSSClass(const std::string &class_name,
+                         const SelectorPtr &chained):
+    Selector(chained),
+    _class_name(class_name)
+{
+
+}
+
+const AbstractWidget *HasCSSClass::_test_widget(const AbstractWidget *widget) const
+{
+    const CSSClasses &classes = widget->css_classes();
+    if (classes.find(_class_name) != classes.end()) {
+        return widget;
+    } else {
+        return nullptr;
+    }
+}
+
 }
 }

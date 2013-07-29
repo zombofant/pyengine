@@ -126,6 +126,20 @@ protected:
     const AbstractWidget *_test_widget(const AbstractWidget *widget) const override;
 };
 
+class HasCSSClass: public Selector
+{
+public:
+    HasCSSClass(const std::string &class_name);
+    HasCSSClass(const std::string &class_name, const SelectorPtr &chained);
+
+protected:
+    std::string _class_name;
+
+protected:
+    const AbstractWidget *_test_widget(const AbstractWidget *widget) const override;
+
+};
+
 }
 }
 
