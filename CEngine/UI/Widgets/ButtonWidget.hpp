@@ -62,6 +62,10 @@ class Button: public AbstractButton
 {
 public:
     Button();
+    Button(const std::string &caption);
+
+public:
+    bool is_element(const std::string &name) const override;
 
 };
 

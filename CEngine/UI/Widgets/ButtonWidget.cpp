@@ -36,6 +36,11 @@ AbstractButton::AbstractButton():
     _flags = WidgetFlag::FOCUSABLE;
 }
 
+void AbstractButton::set_caption(const std::string &value)
+{
+    _label.set_text(value);
+}
+
 void AbstractButton::ev_click()
 {
     _on_click(this);
@@ -53,6 +58,25 @@ bool AbstractButton::ev_mouse_click(int x, int y, MouseButton button,
         return true;
     }
     return false;
+}
+
+/* PyEngine::UI::Button */
+
+Button::Button():
+    AbstractButton()
+{
+
+}
+
+Button::Button(const std::string &caption):
+    AbstractButton()
+{
+    set_caption(caption);
+}
+
+bool Button::is_element(const std::string &name) const
+{
+    return (name == "button");
 }
 
 }
