@@ -143,12 +143,14 @@ void RootWidget::_focus(HitChain *chain)
     for (; diff != decltype(diff)(); ++diff) {
         const WidgetPtr &focused = *diff;
         focused->state().set(HasFocusedChild);
+        focused->invalidate_computed_style();
     }
 
     diff = set_difference_iterator(_old_focus_chain, new_set);
     for (; diff != decltype(diff)(); ++diff) {
         const WidgetPtr &unfocused = *diff;
         unfocused->state().reset(HasFocusedChild);
+        unfocused->invalidate_computed_style();
     }
 
     std::swap(_old_focus_chain, new_set);
@@ -217,12 +219,14 @@ void RootWidget::_update_hover_state(HitChain *chain)
     for (; diff != decltype(diff)(); ++diff) {
         const WidgetPtr &hovered = *diff;
         hovered->state().set(Hovered);
+        hovered->invalidate_computed_style();
     }
 
     diff = set_difference_iterator(_old_hit_chain, new_set);
     for (; diff != decltype(diff)(); ++diff) {
         const WidgetPtr &hovered = *diff;
         hovered->state().reset(Hovered);
+        hovered->invalidate_computed_style();
     }
 
     std::swap(_old_hit_chain, new_set);
@@ -232,6 +236,7 @@ void RootWidget::do_align()
 {
     for (auto& child: *this) {
         child->absolute_rect() = absolute_rect();
+        child->invalidate_alignment();
     }
 
     _require_cairo_context();

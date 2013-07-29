@@ -74,6 +74,7 @@ void AbstractWidget::_parent_changed()
     } else {
         set_root(nullptr);
     }
+    invalidate_alignment();
 }
 
 void AbstractWidget::_root_changed()
@@ -105,6 +106,14 @@ void AbstractWidget::invalidate_context()
 void AbstractWidget::invalidate_computed_style()
 {
     _computed_style_invalidated = true;
+    invalidate_rect();
+}
+
+void AbstractWidget::invalidate_rect()
+{
+    if (_root) {
+        _root->invalidate_rect(absolute_rect());
+    }
 }
 
 RootPtr AbstractWidget::get_root()
@@ -506,6 +515,7 @@ bool ParentWidget::hittest_with_chain(const Point &p, HitChain &chain)
 
 void ParentWidget::invalidate_context()
 {
+    AbstractWidget::invalidate_context();
     for (auto child: *this) {
         child->invalidate_context();
     }

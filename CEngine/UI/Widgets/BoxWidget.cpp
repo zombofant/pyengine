@@ -25,6 +25,8 @@ authors named in the AUTHORS file.
 **********************************************************************/
 #include "BoxWidget.hpp"
 
+#include <CEngine/IO/Log.hpp>
+
 namespace PyEngine { namespace UI {
 
 /* PyEngine::UI::AbstractBoxWidget */
@@ -36,7 +38,7 @@ AbstractBoxWidget::FlexInfo
     FlexInfo info{0, 0, 0};
     for (auto& spacing: spacing_infos) {
         info.space_sum += spacing.margin;
-        if (spacing.size < 0) {
+        if ((spacing.size < 0) || (spacing.flex > 0)) {
             info.flex_sum += spacing.flex;
         } else {
             info.static_width_sum += spacing.size;
@@ -121,8 +123,22 @@ void AbstractBoxWidget::_do_box_align(
     if (ceil(widget_width_per_flex) <= 0) {
         for (auto& widget: *this) {
             widget->absolute_rect() = Rect(0, 0, 0, 0);
+            widget->invalidate_alignment();
         }
-        /* TODO: log warning here */
+        PyEngine::log->getChannel("ui")->log(PyEngine::Warning)
+            << "Layout failed: not enough space for all widgets ("
+            << "widget_width_per_flex = " << widget_width_per_flex
+            << ")"
+            << PyEngine::submit;
+        PyEngine::log->getChannel("ui")->log(PyEngine::Debug)
+            << "total.flex_sum = " << total.flex_sum
+            << PyEngine::submit;
+        PyEngine::log->getChannel("ui")->log(PyEngine::Debug)
+            << "total.space_sum = " << total.space_sum
+            << PyEngine::submit;
+        PyEngine::log->getChannel("ui")->log(PyEngine::Debug)
+            << "total.static_width_sum = " << total.static_width_sum
+            << PyEngine::submit;
         return;
     }
 
@@ -130,14 +146,18 @@ void AbstractBoxWidget::_do_box_align(
     coord_int_t fa_pos_b = fa_pos_a + my_fa_size;
     coord_float_t aa_pos_a = spacing_list[0].margin + my_aa_pos;
 
+    //~ std::cout << std::endl << "LAYOUT START" << std::endl;
     for (auto& spacing: spacing_list) {
         if (!spacing.widget) {
             continue;
         }
+        //~ std::cout << "margin: " << spacing.margin << std::endl;
+        //~ std::cout << "flex: " << spacing.flex << std::endl;
+        //~ std::cout << "size: " << spacing.size << std::endl;
         aa_pos_a += spacing.margin;
 
         coord_float_t widget_width = (
-            spacing.size < 0 ? spacing.flex * widget_width_per_flex
+            spacing.flex > 0 ? spacing.flex * widget_width_per_flex
                              : spacing.size);
 
         Margin &widget_margin = spacing.widget->computed_style().margin();
@@ -161,9 +181,11 @@ void AbstractBoxWidget::_do_box_align(
         } else {
             spacing.widget->absolute_rect() = Rect(0, 0, 0, 0);
         }
+        spacing.widget->invalidate_alignment();
 
         aa_pos_a += widget_width;
     }
+    //~ std::cout << "LAYOUT END" << std::endl;
 }
 
 /* PyEngine::UI::AbstractHBox */
@@ -267,7 +289,7 @@ coord_int_t AbstractVBox::get_aa_size(const Rect &rect)
 coord_int_t AbstractVBox::get_aa_dimension(
     const coord_dimensions_t &dim)
 {
-    return dim.first;
+    return dim.second;
 }
 
 void AbstractVBox::set_aa_position(

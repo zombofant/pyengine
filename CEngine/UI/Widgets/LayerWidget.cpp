@@ -36,8 +36,17 @@ namespace PyEngine { namespace UI {
 
 void DesktopLayer::do_align()
 {
+    const Rect r = absolute_rect();
     for (auto& child: *this) {
-        child->absolute_rect() = absolute_rect();
+        Margin m = child->computed_style().margin();
+        coord_int_t w, h;
+        std::tie(w, h) = child->get_dimensions();
+        Rect obj = Rect(r.get_left(), r.get_top(), w, h);
+        m.deautoify(obj, r);
+        obj = r;
+        obj.shrink(m);
+        child->absolute_rect() = obj;
+        child->invalidate_alignment();
     }
 }
 

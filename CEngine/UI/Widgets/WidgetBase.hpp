@@ -91,6 +91,7 @@ public:
     virtual void invalidate_alignment();
     virtual void invalidate_computed_style();
     virtual void invalidate_context();
+    void invalidate_rect();
 
 public:
     inline const Rect& get_absolute_rect() const {
