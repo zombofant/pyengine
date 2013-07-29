@@ -31,6 +31,8 @@ authors named in the AUTHORS file.
 #include <memory>
 #include <limits>
 #include <bitset>
+#include <unordered_set>
+#include <string>
 
 #include "CEngine/Misc/EnumBitset.hpp"
 
@@ -40,6 +42,8 @@ typedef int coord_int_t;
 typedef double coord_float_t;
 typedef std::pair<coord_int_t, coord_int_t> coord_int_pair_t;
 typedef coord_int_pair_t coord_dimensions_t;
+
+typedef std::unordered_set<std::string> CSSClasses;
 
 struct Auto
 {

@@ -56,7 +56,8 @@ AbstractWidget::AbstractWidget():
     _visible(true),
     _state(),
     _flags(),
-    _computed_style()
+    _computed_style(),
+    _css_classes()
 {
 
 }

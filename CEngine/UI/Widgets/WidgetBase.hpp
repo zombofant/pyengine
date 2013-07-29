@@ -79,6 +79,7 @@ protected:
     CSSState _state;
     WidgetFlags _flags;
     Style _computed_style;
+    CSSClasses _css_classes;
 
 protected:
     virtual void _parent_changed();
@@ -150,6 +151,14 @@ public:
 
     inline void set_visible(bool value) {
         _visible = value;
+    };
+
+    inline CSSClasses& css_classes() {
+        return _css_classes;
+    };
+
+    inline const CSSClasses& css_classes() const {
+        return _css_classes;
     };
 
 public:
