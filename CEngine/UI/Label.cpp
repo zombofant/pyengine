@@ -111,12 +111,12 @@ coord_dimensions_t Label::get_dimensions()
 
 void Label::invalidate_context()
 {
-    _context_invalidated = false;
+    _context_invalidated = true;
 }
 
 void Label::invalidate_layout()
 {
-    _layout_invalidated = false;
+    _layout_invalidated = true;
 }
 
 void Label::render(const Rect &in_box)
