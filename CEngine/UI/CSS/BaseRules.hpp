@@ -142,7 +142,7 @@ public:
 struct FillRule: public AbstractRule
 {
 public:
-    typedef FillPtr value_type;
+    typedef CSSFillPtr value_type;
 
 public:
     FillRule();
