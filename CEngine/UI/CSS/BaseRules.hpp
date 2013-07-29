@@ -73,13 +73,13 @@ public:
     virtual ~RuleGroup() override = default;
 
 private:
-    std::list<std::unique_ptr<AbstractRule>> _rules;
+    std::list<RulePtr> _rules;
 
 public:
     virtual void apply_to(Style &to) const override;
     virtual bool has_effect() const override;
 
-    void add(std::unique_ptr<AbstractRule> &&rule);
+    void add(RulePtr &&rule);
 };
 
 /**
@@ -142,6 +142,9 @@ public:
 struct FillRule: public AbstractRule
 {
 public:
+    typedef FillPtr value_type;
+
+public:
     FillRule();
     virtual ~FillRule() override = default;
 
@@ -169,6 +172,9 @@ public:
 template <typename value_t>
 struct PrimitiveRule: public AbstractRule
 {
+public:
+    typedef value_t value_type;
+
 public:
     PrimitiveRule():
         AbstractRule(),
@@ -213,6 +219,9 @@ template <typename value_t, typename subrule_t = PrimitiveRule<value_t>>
 struct NonNegativeValueRule: public subrule_t
 {
 public:
+    typedef value_t value_type;
+
+public:
     NonNegativeValueRule():
         subrule_t()
     {
@@ -229,6 +238,9 @@ public:
     }
 
 };
+
+std::unique_ptr<RuleGroup> rule_group(std::initializer_list<AbstractRule*> rules);
+std::unique_ptr<RuleGroup> rule_group(std::initializer_list<RulePtr> rules);
 
 }
 }

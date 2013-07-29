@@ -171,6 +171,12 @@ public:
     inline void set_box_spacing_y(const css_coord_int_t& value) {
         _box_spacing_y = value;
     };
+    inline void set_height(const css_coord_int_t &value) {
+        _height = value;
+    };
+    inline void set_width(const css_coord_int_t &value) {
+        _width = value;
+    };
     inline void set_flex(const CSSInheritable<uint32_t>& value) {
         _flex = value;
     };

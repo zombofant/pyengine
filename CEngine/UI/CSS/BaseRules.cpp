@@ -196,5 +196,32 @@ bool FillRule::has_effect() const
     return (_fill.is_inherit() || (_fill != nullptr));
 }
 
+/* free functions */
+
+std::unique_ptr<RuleGroup> rule_group(
+        std::initializer_list<AbstractRule*> rules)
+{
+    RuleGroup *result = new RuleGroup();
+    for (auto ruleptr: rules)
+    {
+        result->add(RulePtr(ruleptr));
+    }
+    return std::unique_ptr<RuleGroup>(result);
+}
+
+std::unique_ptr<RuleGroup> rule_group(
+        std::initializer_list<RulePtr> rules)
+{
+    RuleGroup *result = new RuleGroup();
+    for (auto it = rules.begin();
+         it != rules.end();
+         ++it)
+    {
+        RulePtr &ruleptr = const_cast<RulePtr&>(*it);
+        result->add(std::move(ruleptr));
+    }
+    return std::unique_ptr<RuleGroup>(result);
+}
+
 }
 }
