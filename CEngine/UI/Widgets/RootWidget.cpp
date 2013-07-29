@@ -265,7 +265,7 @@ ThemePtr RootWidget::get_theme()
 
 bool RootWidget::is_element(const std::string &name) const
 {
-    return (name == "root") || this->ParentWidget::is_element(name);
+    return (name == "root");
 }
 
 void RootWidget::render()

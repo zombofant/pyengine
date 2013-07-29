@@ -108,5 +108,10 @@ void LabelWidget::set_text(const std::string &value)
     _label.set_text(value);
 }
 
+bool LabelWidget::is_element(const std::string &name) const
+{
+    return (name == "label");
+}
+
 }
 }

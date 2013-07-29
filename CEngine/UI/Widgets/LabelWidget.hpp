@@ -64,6 +64,10 @@ public:
     };
 
     void set_text(const std::string &value);
+
+public:
+    bool is_element(const std::string &name) const override;
+
 };
 
 }
