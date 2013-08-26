@@ -44,9 +44,7 @@ def absolutify(path):
     i = 0
     while i < len(segments):
         segment = segments[i]
-        if len(segment) == 0:
-            continue
-        if segment == '.':
+        if len(segment) == 0 or segment == '.':
             del segments[i]
             continue
         if segment == '..':

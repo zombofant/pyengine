@@ -45,6 +45,11 @@ class Absolutify(unittest.TestCase):
         path_rel = "/some/test/../other/test/../test/path"
         self.assertEqual(path_abs, absolutify(path_rel))
 
+    def test_single_file(self):
+        path_bad = "test.txt"
+        path_good = "/test.txt"
+        self.assertEqual(path_good, absolutify(path_bad))
+
 class NormalizeVFSPath(unittest.TestCase):
     def test_keeps_normalized_paths(self):
         path = "/some/normalized/path"
@@ -53,11 +58,6 @@ class NormalizeVFSPath(unittest.TestCase):
     def test_remove_trailing(self):
         path = "/with/trailing/slash/"
         self.assertEqual(path[:-1], normalize_vfs_path(path))
-
-    def test_single_file(self):
-        path_bad = "test.txt"
-        path_good = "/test.txt"
-        self.assertEqual(path_good, absolutify(path_bad))
 
 class ValidateVFSPath(unittest.TestCase):
     def test_good_path(self):
