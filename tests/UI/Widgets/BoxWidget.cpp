@@ -29,6 +29,8 @@ authors named in the AUTHORS file.
 
 #include "tests/UI/test_utils.hpp"
 
+#include <CEngine/UI/CSS/Rules.hpp>
+
 using namespace PyEngine::UI;
 
 TEST_CASE("UI/Widgets/BoxWidget/VBox/align",

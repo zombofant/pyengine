@@ -30,6 +30,7 @@ authors named in the AUTHORS file.
 #include "tests/UI/test_utils.hpp"
 
 #include <CEngine/UI/Widgets/BoxWidget.hpp>
+#include <CEngine/UI/CSS/Rules.hpp>
 
 using namespace PyEngine::UI;
 
