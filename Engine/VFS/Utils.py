@@ -73,7 +73,7 @@ def validate_vfs_path(path):
             raise ValueError("Invalid VFS path {0!r}: relative paths are not allowed".format(path))
         if len(node) == 0:
             raise ValueError("Invalid VFS path {0!r}: \"//\" must not occur in a path".format(path))
-    
+
 
 def normalize_vfs_path(path):
     """
@@ -95,7 +95,7 @@ def is_write_flag(flag):
 
     # FIXME: Verify that this is sufficient
     return flag.startswith("w") or flag.startswith("a") or "+" in flag
-    
+
 def join(*segments):
     """
     Works like os.path.join, except that it does not use the platforms
