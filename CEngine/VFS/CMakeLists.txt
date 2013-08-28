@@ -1,4 +1,5 @@
 add_library(pyengine_VFS
+    "Common.cpp"
     "Errors.cpp"
     "Utils.cpp"
     "FileSystem.cpp"

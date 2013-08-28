@@ -7,6 +7,8 @@
 #include "CEngine/IO/Stream.hpp"
 #include "CEngine/IO/FileStream.hpp"
 
+#include "Common.hpp"
+
 namespace PyEngine {
 
 class Mount
@@ -26,6 +28,8 @@ public:
         const std::string &local_path,
         const OpenMode open_mode,
         const WriteMode write_mode) = 0;
+
+    virtual void stat(const std::string &local_path, VFSStat &stat) = 0;
 };
 
 class MountDirectory: public Mount
@@ -51,6 +55,7 @@ public:
         const std::string &local_path,
         const OpenMode open_mode,
         const WriteMode write_mode) override;
+    void stat(const std::string &local_path, VFSStat &stat) override;
 };
 
 typedef std::unique_ptr<Mount> MountPtr;

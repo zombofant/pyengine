@@ -29,7 +29,7 @@ void FileSystem::iter_file_mounts(
             }
             bool finish = handler(
                 path_mount.second.get(),
-                path.substr(mountpoint.size()));
+                path.substr(mountpoint.size()+1));
             if (finish) {
                 return;
             }
@@ -37,6 +37,46 @@ void FileSystem::iter_file_mounts(
     }
 }
 
+void FileSystem::sort_mount_list(FileSystem::MountList &list)
+{
+    std::sort(list.begin(), list.end(),
+        [](const MountItem &a, const MountItem &b){
+            return a.first.size() < b.first.size();
+        });
+}
+
+void FileSystem::listdir(
+    const std::string &path, std::vector<std::string> &items)
+{
+    bool found = false;
+    bool had_permission_denied = false;
+
+    iter_file_mounts(
+        path,
+        [&found, &items, &had_permission_denied](
+            Mount *mount,
+            const std::string &local_path) mutable -> bool
+        {
+            try {
+                mount->listdir(local_path, items);
+            } catch (const VFSPermissionDeniedError &err) {
+                had_permission_denied = true;
+                return false;
+            } catch (const VFSIOError &err) {
+                return false;
+            }
+            found = true;
+            return true;
+        });
+
+    if (!found) {
+        if (had_permission_denied) {
+            throw VFSPermissionDeniedError(path);
+        } else {
+            throw VFSFileNotFoundError(path);
+        }
+    }
+}
 
 void FileSystem::mount(
         const std::string &mount_point,
@@ -60,7 +100,7 @@ StreamHandle FileSystem::open(
 
     iter_file_mounts(
         path,
-        [result, had_permission_denied, open_mode, write_mode](
+        [&result, &had_permission_denied, &open_mode, &write_mode](
             Mount *mount,
             const std::string &local_path) mutable -> bool
         {
@@ -85,6 +125,39 @@ StreamHandle FileSystem::open(
         }
     }
     return result;
+}
+
+void FileSystem::stat(const std::string &path, VFSStat &stat)
+{
+    bool had_permission_denied = false;
+    bool success = false;
+
+    iter_file_mounts(
+        path,
+        [&stat, &success, &had_permission_denied](
+            Mount *mount,
+            const std::string &local_path) mutable -> bool
+        {
+            try {
+                mount->stat(local_path, stat);
+                success = true;
+                return true;
+            } catch (const VFSPermissionDeniedError &err) {
+                had_permission_denied = true;
+                return false;
+            } catch (const VFSIOError &err) {
+                return false;
+            }
+            return false;
+        });
+
+    if (!success) {
+        if (had_permission_denied) {
+            throw VFSPermissionDeniedError(path);
+        } else {
+            throw VFSFileNotFoundError(path);
+        }
+    }
 }
 
 }
