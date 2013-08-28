@@ -232,7 +232,7 @@ void GeometryBufferView::AttributeSlice::set(const GLVertexFloat *data)
         const GLsizei actualIndex = map->map(i);
         minIndex = ((actualIndex<minIndex) || (minIndex < 0)?actualIndex:minIndex);
         maxIndex = ((actualIndex>maxIndex) || (maxIndex < 0)?actualIndex:maxIndex);
-        
+
         const GLsizei floatIndex = actualIndex * vertexLength + attribOffset;
         memcpy(&dest[floatIndex], src, copySize);
         src += srcStep;

@@ -29,7 +29,7 @@ authors named in the AUTHORS file.
 #include <boost/format.hpp>
 
 namespace PyEngine {
-    
+
 /* PyEngine::Utils::Exception */
 
 Exception::Exception(const std::string message):
@@ -53,39 +53,39 @@ Exception::Exception(const char *message):
 IndexError::IndexError(const int given, const int min, const int max):
     Exception::Exception((boost::format("Index (%d) out of range (%d..%d).") % given % min % max).str())
 {
-    
+
 }
 
 IndexError::IndexError(const int given):
     Exception::Exception((boost::format("Index (%d) out of range.") % given).str())
 {
-    
+
 }
 
 /* PyEngine::Utils::ExternalError */
 ExternalError::ExternalError(const char *libraryName):
     Exception::Exception((boost::format("External error in %s.") % libraryName).str())
 {
-    
+
 }
 
 ExternalError::ExternalError(const char *libraryName, const char *externalMsg):
     Exception::Exception((boost::format("External error in %s: %s") % libraryName % externalMsg).str())
 {
-    
+
 }
 
 /* PyEngine::Utils::OSError */
 OSError::OSError(const std::string message):
     Exception::Exception((boost::format("OS error: %s.") % message).str())
 {
-    
+
 }
 
 /* free functions */
 
 std::string getErrorName(const int errorNumber) {
-    
+
     switch (errorNumber) {
         case EACCES:
         {

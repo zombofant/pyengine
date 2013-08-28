@@ -43,7 +43,7 @@ GenericBuffer::GenericBuffer(const GLsizei aItemSize, const GLenum aKind, const 
     bufferKind(aKind),
     itemSize(aItemSize)
 {
-    
+
 }
 
 GenericBuffer::~GenericBuffer() {
@@ -78,20 +78,20 @@ void GenericBuffer::expand() {
     const GLsizei newCapacity = (capacity ? capacity * 2 : 128);
     const GLsizei oldSize = capacity * itemSize;
     const GLsizei newSize = newCapacity * itemSize;
-    
+
     data = (unsigned char*)realloc(data, newSize);
-    
+
     if (glID != 0) {
         glBindBuffer(bufferKind, glID);
         glBufferData(bufferKind, newSize, 0, bufferPurpose);
         glBufferSubData(bufferKind, 0, oldSize, data);
     }
-    
+
     const GLsizei oldCapacity = capacity;
     capacity = newCapacity;
     doExpand(oldCapacity, newCapacity);
 }
-    
+
 void GenericBuffer::freeBuffer() {
     glDeleteBuffers(1, &glID);
     glID = 0;

@@ -38,79 +38,91 @@ class GeometryBufferView;
 typedef boost::shared_ptr<GeometryBufferView> GeometryBufferViewHandle;
 
 class GeometryBufferView {
-    public:
-        class AttributeSlice;
-        
-        class AttributeView {
-            public:
-                AttributeView(GeometryBufferView *view,
-                    const GLsizei attribOffset,
-                    const GLsizei attribLength);
-            private:
-                GeometryBufferView *_view;
-                GLsizei _attribOffset, _attribLength;
-                AttributeSlice *_slice;
-                GLsizei _vertexCount, _vertexLength;
-                GLVertexFloat *_data;
-            public:
-                void get(GLVertexFloat *data);
-                GLsizei getAttributeLength();
-                GLsizei getLength();
-                GLsizei getSize();
-                AttributeSlice *slice(const GLsizei start,
-                    const GLsizei stop, const GLsizei step = 1,
-                    const GLsizei attribOffset = 0,
-                    const GLsizei attribLength = -1);
-                void set(const GLVertexFloat *data);
+public:
+    class AttributeSlice;
 
-            friend class AttributeSlice;
-        };
-        class AttributeSlice {
-            public:
-                AttributeSlice(AttributeView *view);
-            private:
-                AttributeView *_view;
-                GLsizei _start, _stop, _step, _attribOffset, _attribLength;
-            protected:
-                void setUp(const GLsizei start, const GLsizei stop, const GLsizei step,
-                    const GLsizei attribOffset, const GLsizei attribLength);
-            public:
-                void get(GLVertexFloat *data);
-                GLsizei getAttributeLength();
-                GLsizei getLength();
-                GLsizei getSize();
-                void set(const GLVertexFloat *data);
-
-            friend class AttributeView;
-        };
+    class AttributeView {
     public:
-        GeometryBufferView(const GeometryBufferHandle bufferHandle,
-            VertexIndexListHandle indicies);
-        virtual ~GeometryBufferView();
+        AttributeView(GeometryBufferView *view,
+            const GLsizei attribOffset,
+            const GLsizei attribLength);
+
     private:
-        GeometryBufferHandle _buffer;
-        const VertexFormat *_bufferFormat;
-        VertexIndexListHandle _indicies;
-        BufferMap *_map;
+        GeometryBufferView *_view;
+        GLsizei _attribOffset, _attribLength;
+        AttributeSlice *_slice;
+        GLsizei _vertexCount, _vertexLength;
+        GLVertexFloat *_data;
+
+    public:
+        void get(GLVertexFloat *data);
+        GLsizei getAttributeLength();
+        GLsizei getLength();
+        GLsizei getSize();
+        AttributeSlice *slice(const GLsizei start,
+            const GLsizei stop, const GLsizei step = 1,
+            const GLsizei attribOffset = 0,
+            const GLsizei attribLength = -1);
+        void set(const GLVertexFloat *data);
+
+        friend class AttributeSlice;
+    };
+
+    class AttributeSlice {
+    public:
+        AttributeSlice(AttributeView *view);
+
     private:
-        AttributeView
-            *_position,
-            *_colour,
-            *_texCoord[BUFFER_TEX_COORD_COUNT],
-            *_normal,
-            *_vertexAttrib[BUFFER_VERTEX_ATTRIB_COUNT];
-    private:
-        AttributeView *newAttribView(
+        AttributeView *_view;
+        GLsizei _start, _stop, _step, _attribOffset, _attribLength;
+
+    protected:
+        void setUp(const GLsizei start, const GLsizei stop, const GLsizei step,
             const GLsizei attribOffset, const GLsizei attribLength);
+
     public:
-        GeometryBufferHandle getHandle() { return _buffer; }
-        GLsizei getLength() const { return _indicies->size(); }
-    public:
-        AttributeView *getPositionView() { return _position; };
-        AttributeView *getColourView() { return _colour; };
-        AttributeView *getTexCoordView(const unsigned int texCoordIndex);
-        AttributeView *getNormalView() { return _normal; };
-        AttributeView *getVertexAttribView(const unsigned int attribIndex);
+        void get(GLVertexFloat *data);
+        GLsizei getAttributeLength();
+        GLsizei getLength();
+        GLsizei getSize();
+        void set(const GLVertexFloat *data);
+
+        friend class AttributeView;
+    };
+
+public:
+    GeometryBufferView(const GeometryBufferHandle bufferHandle,
+        VertexIndexListHandle indicies);
+    virtual ~GeometryBufferView();
+
+private:
+    GeometryBufferHandle _buffer;
+    const VertexFormat *_bufferFormat;
+    VertexIndexListHandle _indicies;
+    BufferMap *_map;
+
+private:
+    AttributeView
+        *_position,
+        *_colour,
+        *_texCoord[BUFFER_TEX_COORD_COUNT],
+        *_normal,
+        *_vertexAttrib[BUFFER_VERTEX_ATTRIB_COUNT];
+
+private:
+    AttributeView *newAttribView(
+        const GLsizei attribOffset, const GLsizei attribLength);
+
+public:
+    GeometryBufferHandle getHandle() { return _buffer; }
+    GLsizei getLength() const { return _indicies->size(); }
+
+public:
+    AttributeView *getPositionView() { return _position; };
+    AttributeView *getColourView() { return _colour; };
+    AttributeView *getTexCoordView(const unsigned int texCoordIndex);
+    AttributeView *getNormalView() { return _normal; };
+    AttributeView *getVertexAttribView(const unsigned int attribIndex);
 
     friend class AttributeView;
     friend class AttributeSlice;

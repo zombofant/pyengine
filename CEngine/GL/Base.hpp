@@ -38,7 +38,7 @@ authors named in the AUTHORS file.
 
 namespace PyEngine {
 namespace GL {
-    
+
 class Error: public Exception {
     public:
         Error(const std::string aMessage);
