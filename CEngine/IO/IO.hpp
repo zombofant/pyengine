@@ -34,7 +34,7 @@ template <class HandleT>
 struct KeepAlive {
     public:
         KeepAlive(HandleT aHandle):
-            handle(handle) {};
+            handle(aHandle) {};
     public:
         HandleT handle;
 };

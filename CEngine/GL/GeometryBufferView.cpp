@@ -41,20 +41,20 @@ GeometryBufferView::GeometryBufferView(
     _bufferFormat(buffer->getFormat()),
     _indicies(indicies),
     _map(new VertexIndexListMap(indicies)),
-    _position(newAttribView(_bufferFormat->posOffset, _bufferFormat->nPosition, _bufferFormat->vertexSize)),
-    _colour(newAttribView(_bufferFormat->colourOffset, _bufferFormat->nColour, _bufferFormat->vertexSize)),
+    _position(newAttribView(_bufferFormat->posOffset, _bufferFormat->nPosition)),
+    _colour(newAttribView(_bufferFormat->colourOffset, _bufferFormat->nColour)),
     _texCoord{
-        newAttribView(_bufferFormat->texCoord0Offset, _bufferFormat->nTexCoord0, _bufferFormat->vertexSize),
-        newAttribView(_bufferFormat->texCoord1Offset, _bufferFormat->nTexCoord1, _bufferFormat->vertexSize),
-        newAttribView(_bufferFormat->texCoord2Offset, _bufferFormat->nTexCoord2, _bufferFormat->vertexSize),
-        newAttribView(_bufferFormat->texCoord3Offset, _bufferFormat->nTexCoord3, _bufferFormat->vertexSize)
+        newAttribView(_bufferFormat->texCoord0Offset, _bufferFormat->nTexCoord0),
+        newAttribView(_bufferFormat->texCoord1Offset, _bufferFormat->nTexCoord1),
+        newAttribView(_bufferFormat->texCoord2Offset, _bufferFormat->nTexCoord2),
+        newAttribView(_bufferFormat->texCoord3Offset, _bufferFormat->nTexCoord3)
     },
-    _normal(newAttribView(_bufferFormat->normalOffset, (_bufferFormat->normal?3:0), _bufferFormat->vertexSize)),
+    _normal(newAttribView(_bufferFormat->normalOffset, (_bufferFormat->normal?3:0))),
     _vertexAttrib{
-        newAttribView(_bufferFormat->vertexAttrib0Offset, _bufferFormat->nVertexAttrib0, _bufferFormat->vertexSize),
-        newAttribView(_bufferFormat->vertexAttrib1Offset, _bufferFormat->nVertexAttrib1, _bufferFormat->vertexSize),
-        newAttribView(_bufferFormat->vertexAttrib2Offset, _bufferFormat->nVertexAttrib2, _bufferFormat->vertexSize),
-        newAttribView(_bufferFormat->vertexAttrib3Offset, _bufferFormat->nVertexAttrib3, _bufferFormat->vertexSize)
+        newAttribView(_bufferFormat->vertexAttrib0Offset, _bufferFormat->nVertexAttrib0),
+        newAttribView(_bufferFormat->vertexAttrib1Offset, _bufferFormat->nVertexAttrib1),
+        newAttribView(_bufferFormat->vertexAttrib2Offset, _bufferFormat->nVertexAttrib2),
+        newAttribView(_bufferFormat->vertexAttrib3Offset, _bufferFormat->nVertexAttrib3)
     }
 {
     // std::cerr << "uc: " << _indicies.use_count() << std::endl;
@@ -70,12 +70,11 @@ GeometryBufferView::~GeometryBufferView()
 
 GeometryBufferView::AttributeView *GeometryBufferView::newAttribView(
     const GLsizei attribOffset,
-    const GLsizei attribLength,
-    const GLsizei vertexSize)
+    const GLsizei attribLength)
 {
     if (attribLength == 0)
         return 0;
-    return new AttributeView(this, attribOffset / sizeof(GLVertexFloat), attribLength, vertexSize);
+    return new AttributeView(this, attribOffset / sizeof(GLVertexFloat), attribLength);
 }
 
 GeometryBufferView::AttributeView *GeometryBufferView::getTexCoordView(const unsigned int texCoordIndex)
@@ -101,12 +100,10 @@ GeometryBufferView::AttributeView *GeometryBufferView::getVertexAttribView(const
 GeometryBufferView::AttributeView::AttributeView(
         GeometryBufferView *view,
         const GLsizei attribOffset,
-        const GLsizei attribLength,
-        const GLsizei vertexSize):
+        const GLsizei attribLength):
     _view(view),
     _attribOffset(attribOffset),
     _attribLength(attribLength),
-    _vertexSize(vertexSize),
     _slice(new AttributeSlice(this)),
     _vertexCount(view->getLength()),
     _vertexLength(view->getHandle()->getFormat()->vertexLength),

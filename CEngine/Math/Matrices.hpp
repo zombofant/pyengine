@@ -383,7 +383,7 @@ inline void matrix_data_to_stream(
 template <typename float_t, unsigned int rows, unsigned int columns>
 inline void matrix_dim_to_stream(
     std::ostream &stream,
-    const Matrix<float_t, rows, columns> &mat)
+    const Matrix<float_t, rows, columns>&)
 {
     if (rows == columns) {
         stream << rows;

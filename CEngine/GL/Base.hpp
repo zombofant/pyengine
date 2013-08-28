@@ -46,7 +46,7 @@ class Error: public Exception {
     private:
         const std::string message;
     public:
-        const char *what() {
+        const char *what() const throw() override {
             return message.c_str();
         }
 };

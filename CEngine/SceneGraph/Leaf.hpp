@@ -61,6 +61,7 @@ namespace std {
 template <>
 struct hash<PyEngine::GL::StateGroupHandle>
 {
+public:
     size_t operator() (const PyEngine::GL::StateGroupHandle handle) const
     {
         return (size_t)handle.get();
@@ -71,6 +72,7 @@ struct hash<PyEngine::GL::StateGroupHandle>
 template <>
 struct hash<PyEngine::GL::VertexIndexListHandle>
 {
+public:
     size_t operator() (const PyEngine::GL::VertexIndexListHandle handle) const
     {
         return (size_t)handle.get();

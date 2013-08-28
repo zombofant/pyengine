@@ -59,8 +59,8 @@ void GenericBuffer::autoFlush() {
     doFlushAll();
 }
 
-void GenericBuffer::doExpand(const GLsizei oldCapacity, const GLsizei newCapacity) {
-    
+void GenericBuffer::doExpand(const GLsizei, const GLsizei) {
+
 }
 
 void GenericBuffer::doFlushAll() {

@@ -93,6 +93,10 @@ StreamHandle MountDirectory::open(
     const OpenMode open_mode,
     const WriteMode write_mode)
 {
+    if (_read_only && (open_mode != OM_READ)) {
+        throw VFSPermissionDeniedError(local_path);
+    }
+
     const std::string full_dir_path = join({_root, local_path});
     try {
         return StreamHandle(new FileStream(

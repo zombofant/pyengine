@@ -93,7 +93,7 @@ void Label::update_layout()
     Style &style = _widget->computed_style();
     pango_layout_set_alignment(_layout, style.get_text_align());
     pango_layout_set_ellipsize(_layout, style.get_ellipsize());
-    pango_layout_set_justify(_layout, false);
+    pango_layout_set_justify(_layout, _justify);
     pango_layout_set_wrap(_layout, PANGO_WRAP_WORD);
     pango_layout_set_font_description(_layout, style.get_font());
     pango_layout_set_text(_layout, _text.c_str(), _text.length());

@@ -193,41 +193,21 @@ ImageHandle Image::PNGImage(StreamHandle stream)
         png_set_swap(data);
 
     // detect opengl format and type
-    switch (color)
-    {
-        case true:
-        {
-            switch (alpha)
-            {
-                case true:
-                    format = GL_RGBA;
-                    break;
-                case false:
-                    format = GL_RGB;
-                    break;
-                default:
-                    format = 0;
-            }
-            break;
+
+    if (color) {
+        if (alpha) {
+            format = GL_RGBA;
+        } else {
+            format = GL_RGB;
         }
-        case false:
-        {
-            switch (alpha)
-            {
-                case true:
-                    format = GL_LUMINANCE_ALPHA;
-                    break;
-                case false:
-                    format = GL_LUMINANCE;
-                    break;
-                default:
-                    format = 0;
-            }
-            break;
+    } else {
+        if (alpha) {
+            format = GL_LUMINANCE_ALPHA;
+        } else {
+            format = GL_LUMINANCE;
         }
-        default:
-            format = 0;
     }
+
     switch (bit_depth)
     {
         case 8:

@@ -45,11 +45,10 @@ class GeometryBufferView {
             public:
                 AttributeView(GeometryBufferView *view,
                     const GLsizei attribOffset,
-                    const GLsizei attribLength,
-                    const GLsizei vertexSize);
+                    const GLsizei attribLength);
             private:
                 GeometryBufferView *_view;
-                GLsizei _attribOffset, _attribLength, _vertexSize;
+                GLsizei _attribOffset, _attribLength;
                 AttributeSlice *_slice;
                 GLsizei _vertexCount, _vertexLength;
                 GLVertexFloat *_data;
@@ -102,8 +101,7 @@ class GeometryBufferView {
             *_vertexAttrib[BUFFER_VERTEX_ATTRIB_COUNT];
     private:
         AttributeView *newAttribView(
-            const GLsizei attribOffset, const GLsizei attribLength,
-            const GLsizei vertexSize);
+            const GLsizei attribOffset, const GLsizei attribLength);
     public:
         GeometryBufferHandle getHandle() { return _buffer; }
         GLsizei getLength() const { return _indicies->size(); }

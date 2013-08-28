@@ -31,6 +31,7 @@ authors named in the AUTHORS file.
 namespace PyEngine {
 namespace GL {
 
+/*
 void transfer32BitImagePart(
     GLenum target,
     GLint level,
@@ -47,6 +48,7 @@ void transfer32BitImagePart(
     free(partbuffer);
     raiseLastGLError();
 }
+*/
 
 void glTexCairoSurfaceSubImage2D(GLenum target,
     GLint level,
@@ -85,6 +87,7 @@ void glTexCairoSurfaceSubImage2D(GLenum target,
     raiseLastGLError();
 }
 
+/*
 void glTexSubCairoSurfaceSubImage2D(
     GLenum target,
     GLint level,
@@ -96,6 +99,7 @@ void glTexSubCairoSurfaceSubImage2D(
     assert(false);
     // this is a stub
 }
+*/
 
 }
 }
