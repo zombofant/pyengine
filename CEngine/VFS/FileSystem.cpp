@@ -14,6 +14,11 @@ FileSystem::FileSystem():
 
 }
 
+FileSystem::~FileSystem()
+{
+
+}
+
 void FileSystem::iter_file_mounts(
     const std::string &path,
     const std::function<bool (Mount*, const std::string&)> &handler)

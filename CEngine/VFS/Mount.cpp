@@ -120,13 +120,9 @@ void MountDirectory::stat(const std::string &local_path, VFSStat &stat)
     const std::string full_dir_path = join({_root, local_path});
     // FIXME: portability
 
-    std::cout << full_dir_path << std::endl;
-
     struct stat os_buf;
     int result = ::stat(full_dir_path.c_str(), &os_buf);
     if (result != 0) {
-        std::cout << "failure: " << errno << " " << strerror(errno)
-                  << std::endl;
         switch (errno) {
         case EACCES:
             throw VFSPermissionDeniedError(local_path);
