@@ -27,6 +27,7 @@ authors named in the AUTHORS file.
 
 #include <execinfo.h>
 #include <boost/format.hpp>
+#include <string.h>
 
 namespace PyEngine {
 
@@ -76,8 +77,18 @@ ExternalError::ExternalError(const char *libraryName, const char *externalMsg):
 }
 
 /* PyEngine::Utils::OSError */
+
 OSError::OSError(const std::string message):
     Exception::Exception((boost::format("OS error: %s.") % message).str())
+{
+
+}
+
+/* PyEngine::Utils::OSError */
+
+OSError::OSError(int errno_value):
+    Exception::Exception("OS Error: " + std::to_string(errno_value) +
+        std::string(": ") + strerror(errno_value))
 {
 
 }
@@ -97,7 +108,7 @@ std::string getErrorName(const int errorNumber) {
 }
 
 void raiseLastOSError() {
-    throw OSError(getErrorName(errno));
+    throw OSError(errno);
 }
 
 void raiseLastOSError(const std::string prefix) {

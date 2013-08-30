@@ -66,7 +66,8 @@ public:
 
 class OSError: public Exception {
 public:
-    OSError(const std::string message);
+    explicit OSError(const std::string message);
+    explicit OSError(int errno_value);
     virtual ~OSError() throw() {};
 };
 
