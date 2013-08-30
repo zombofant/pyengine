@@ -54,6 +54,15 @@ std::string absolutify(const std::string &path)
     return result;
 }
 
+std::string basename(const std::string &path)
+{
+    std::string::size_type pos = path.rfind("/");
+    if (pos == std::string::npos) {
+        return path;
+    }
+    return path.substr(pos+1);
+}
+
 std::string join(const std::initializer_list<std::string> &segments)
 {
     std::string full_path = "";

@@ -6,6 +6,7 @@
 namespace PyEngine {
 
 std::string absolutify(const std::string &path);
+std::string basename(const std::string &path);
 std::string join(const std::initializer_list<std::string> &segments);
 std::string normalize_vfs_path(const std::string &path);
 std::pair<std::string, std::string> splitext(const std::string &path);

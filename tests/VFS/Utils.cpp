@@ -35,6 +35,21 @@ TEST_CASE("VFS/Utils/absolutify/single_file",
     CHECK(path_norm == absolutify(path));
 }
 
+TEST_CASE("VFS/Utils/basename/only_basename",
+          "basename must find the basename of a file without path")
+{
+    std::string path = "test.txt";
+    std::string basenamed = "test.txt";
+    CHECK(basenamed == basename(path));
+}
+
+TEST_CASE("VFS/Utils/basename/long_path",
+          "basename must find the basename of a usual long path")
+{
+    std::string path = "/foo/bar/baz/test.txt";
+    std::string basenamed = "test.txt";
+    CHECK(basenamed == basename(path));
+}
 
 TEST_CASE("VFS/Utils/normalize_vfs_path/keeps_normalized_paths",
           "normalize_vfs_path must keep absolute paths")
