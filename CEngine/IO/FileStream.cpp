@@ -95,7 +95,7 @@ void FDStream::close() {
 /* PyEngine::FileStream */
 
 // note that throwing the exception on a failed open is done in checkFD
-FileStream::FileStream(const std::string fileName,
+FileStream::FileStream(const std::string &fileName,
     const OpenMode openMode, const WriteMode writeMode,
     const ShareMode shareMode):
     FDStream::FDStream(

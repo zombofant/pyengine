@@ -106,7 +106,7 @@ class FDStream: public Stream {
  */
 class FileStream: public FDStream {
     public:
-        FileStream(const std::string fileName, const OpenMode openMode,
+        FileStream(const std::string &fileName, const OpenMode openMode,
             const WriteMode writeMode = WM_IGNORE,
             const ShareMode shareMode = SM_DONT_CARE);
     private:
