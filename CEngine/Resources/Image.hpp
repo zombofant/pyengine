@@ -40,36 +40,43 @@ typedef boost::shared_ptr<Image> ImageHandle;
 
 class Image: public PyEngine::GL::AbstractImage2D
 {
-    public:
-        Image(GLvoid *pixelData,
-            const GLsizei aWidth, const GLsizei aHeight,
-            const GLenum aFormat, const GLenum aType,
-            const GLsizei aPixelSize);
-        virtual ~Image();
-    protected:
-        GLvoid *_pixelData;
-    public:
-        const GLsizei width, height;
-        const GLenum format, type;
-        const GLsizei pixelSize;
-    public: // to comply with AbstractImage2D specification
-        virtual GLenum getFormat() const { return format; };
-        virtual GLsizei getHeight() const { return height; };
-        virtual const void *getPixelData() const { return _pixelData; };
-        virtual GLsizei getPixelSize() const { return pixelSize; };
-        virtual GLenum getType() const { return type; };
-        virtual GLsizei getWidth() const { return width; };
-    public:
-        bool getIsValid() const;
-        void dropData();
-    public:
-        virtual void texImage2D(const GLenum target, const GLint level,
-            const GLint internalFormat) const;
-        virtual void texSubImage2D(const GLenum target,
-            const GLint level, const GLint internalFormat,
-            const GLint x, const GLint y) const;
-    public:
-        static ImageHandle PNGImage(StreamHandle stream);
+public:
+    Image(GLvoid *pixelData,
+        const GLsizei aWidth, const GLsizei aHeight,
+        const GLenum aFormat, const GLenum aType,
+        const GLsizei aPixelSize);
+    virtual ~Image();
+
+protected:
+    GLvoid *_pixelData;
+
+public:
+    const GLsizei width, height;
+    const GLenum format, type;
+    const GLsizei pixelSize;
+
+public: // to comply with AbstractImage2D specification
+    virtual GLenum getFormat() const { return format; };
+    virtual GLsizei getHeight() const { return height; };
+    virtual const void *getPixelData() const { return _pixelData; };
+    virtual GLsizei getPixelSize() const { return pixelSize; };
+    virtual GLenum getType() const { return type; };
+    virtual GLsizei getWidth() const { return width; };
+
+public:
+    bool getIsValid() const;
+    void dropData();
+
+public:
+    virtual void texImage2D(const GLenum target, const GLint level,
+        const GLint internalFormat) const;
+    virtual void texSubImage2D(const GLenum target,
+        const GLint level, const GLint internalFormat,
+        const GLint x, const GLint y) const;
+
+public:
+    static ImageHandle PNGImage(StreamHandle stream);
+
 };
 
 }

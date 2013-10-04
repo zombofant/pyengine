@@ -210,14 +210,14 @@ ImageHandle Image::PNGImage(StreamHandle stream)
 
     switch (bit_depth)
     {
-        case 8:
-            type = GL_UNSIGNED_BYTE;
-            break;
-        case 16:
-            type = GL_UNSIGNED_SHORT;
-            break;
-        default:
-            type = 0;
+    case 8:
+        type = GL_UNSIGNED_BYTE;
+        break;
+    case 16:
+        type = GL_UNSIGNED_SHORT;
+        break;
+    default:
+        type = 0;
     }
     assert(format != 0);
     assert(type != 0);
