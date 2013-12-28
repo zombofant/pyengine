@@ -189,6 +189,7 @@ if (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     set(TEST_SOURCES
         "tests/Misc/SetOperations.cpp"
         "tests/Misc/EnumBitset.cpp"
+        "tests/Misc/UUID.cpp"
         "tests/Math/Vectors.cpp"
         "tests/Math/Matrices.cpp"
         "tests/VFS/Utils.cpp"
