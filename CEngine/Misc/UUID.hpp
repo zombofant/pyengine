@@ -1,7 +1,9 @@
 #ifndef _PYE_MISC_UUID_H
+#define _PYE_MISC_UUID_H
 
 #include <cstdint>
 #include <stdexcept>
+#include <cstring>
 
 namespace PyEngine {
 
@@ -84,6 +86,11 @@ public:
         return data.octets;
     }
 
+    inline UUIDOctetArray& octets()
+    {
+        return data.octets;
+    }
+
     inline const UUIDRFC4122& rfc4122() const
     {
         return data.rfc4122;
@@ -104,23 +111,23 @@ public:
     {
         switch ((data.rfc4122.clock_seq_hi_and_reserved & RFC4122_MASK_VARIANT) >> RFC4122_SHIFT_VARIANT)
         {
-        case 0b000:
-        case 0b001:
-        case 0b010:
-        case 0b011:
+        case 0: //0b000:
+        case 1: //0b001:
+        case 2: //0b010:
+        case 3: //0b011:
         {
             return RESERVED_MCS;
         }
-        case 0b100:
-        case 0b101:
+        case 4: //0b100:
+        case 5: //0b101:
         {
             return RFC4122_ORIGINAL;
         }
-        case 0b110:
+        case 6: //0b110:
         {
             return RESERVED_MICROSOFT_CORP;
         }
-        case 0b111:
+        case 7: //0b111:
         {
             return RESERVED_FUTURE;
         }
@@ -131,7 +138,9 @@ public:
         }
     }
 
-    std::string to_string();
+    bool is_nil() const;
+
+    std::string to_string() const;
 };
 
 bool parse_uuid(const std::string &str, UUID &dest);
@@ -142,6 +151,41 @@ inline bool operator!=(const UUID &a, const UUID &b)
 {
     return !(a == b);
 }
+
+}
+
+namespace std {
+
+template <>
+struct hash<PyEngine::UUID>
+{
+    typedef PyEngine::UUID argument_type;
+    typedef size_t result_type;
+
+    size_t operator()(const PyEngine::UUID &uuid) const
+    {
+        static constexpr unsigned int array_size =
+            sizeof(PyEngine::UUIDOctetArray);
+        size_t prev = 0;
+        int j = 0;
+        const PyEngine::UUIDOctetArray &arr = uuid.octets();
+        for (
+            size_t i = 0;
+            i < (array_size + sizeof(size_t) - 1) / sizeof(size_t);
+            i++)
+        {
+            size_t curr = 0;
+            if (array_size - j >= sizeof(size_t)) {
+                memcpy(&curr, &arr[j], sizeof(size_t));
+            } else {
+                memcpy(&curr, &arr[j], array_size - j);
+            }
+            prev ^= curr;
+        }
+        return prev;
+    }
+
+};
 
 }
 

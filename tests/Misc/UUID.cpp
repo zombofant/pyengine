@@ -13,6 +13,7 @@ TEST_CASE("Misc/UUID/nil",
     }
 
     CHECK(test.to_string() == std::string("00000000-0000-0000-0000-000000000000"));
+    CHECK(test.is_nil());
 }
 
 TEST_CASE("Misc/UUID/copy_construction",
@@ -41,6 +42,7 @@ TEST_CASE("Misc/UUID/random",
         test.get_rfc4122_version() == UUID::RFC4122_VERSION_RANDOM);
     CHECK(
         test.get_rfc4122_variant() == UUID::RFC4122_ORIGINAL);
+    CHECK(!test.is_nil());
 }
 
 TEST_CASE("Misc/UUID/constant",

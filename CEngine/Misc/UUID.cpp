@@ -8,6 +8,9 @@
 
 namespace PyEngine {
 
+static const UUIDOctetArray nil_uuid = {
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
 std::random_device uint8_rng;
 // std::independent_bits_engine<std::random_device, 8, uint8_t> uint8_rng(true_rng);
 
@@ -79,7 +82,12 @@ UUID& UUID::operator=(const UUIDOctetArray &ref)
     return *this;
 }
 
-std::string UUID::to_string()
+bool UUID::is_nil() const
+{
+    return memcmp(&data.octets[0], &nil_uuid[0], sizeof(UUIDOctetArray)) == 0;
+}
+
+std::string UUID::to_string() const
 {
     constexpr int size = 16*2+4;
     std::string result(size, '\0');
