@@ -51,6 +51,22 @@ TEST_CASE("VFS/Utils/basename/long_path",
     CHECK(basenamed == basename(path));
 }
 
+TEST_CASE("VFS/Utils/dirname/only_basename",
+          "dirname must return empty result for a file without path")
+{
+    std::string path = "test.txt";
+    std::string dirnamed = "";
+    CHECK(dirnamed == dirname(path));
+}
+
+TEST_CASE("VFS/Utils/dirname/long_path",
+          "dirname must find the dirname of a usual long path")
+{
+    std::string path = "/foo/bar/baz/test.txt";
+    std::string dirnamed = "/foo/bar/baz";
+    CHECK(dirnamed == dirname(path));
+}
+
 TEST_CASE("VFS/Utils/normalize_vfs_path/keeps_normalized_paths",
           "normalize_vfs_path must keep absolute paths")
 {

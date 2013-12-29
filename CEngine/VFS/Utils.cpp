@@ -63,6 +63,15 @@ std::string basename(const std::string &path)
     return path.substr(pos+1);
 }
 
+std::string dirname(const std::string &path)
+{
+    std::string::size_type pos = path.rfind("/");
+    if (pos == std::string::npos) {
+        return "";
+    }
+    return path.substr(0, pos);
+}
+
 std::string join(const std::initializer_list<std::string> &segments)
 {
     std::string full_path = "";
