@@ -57,11 +57,11 @@ endif (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     set(LIBS ${LIBS} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} ${GLEW_LIBRARY})
 
     # glib
-    find_package(glib REQUIRED)
-    set(PYENGINE_INCLUDE_DIRS ${PYENGINE_INCLUDE_DIRS} ${glib_INCLUDE_DIRS})
-    set(LIBS ${LIBS}
-        ${glib_LIBRARIES}
-    )
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(GLIB glib-2.0)
+    # find_package(glib REQUIRED)
+    set(PYENGINE_INCLUDE_DIRS ${PYENGINE_INCLUDE_DIRS} ${GLIB_INCLUDE_DIRS})
+    set(LIBS ${LIBS} ${GTKMM_LIBRARIES})
 
     # pango
     find_package(Pango REQUIRED)
