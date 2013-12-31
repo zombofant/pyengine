@@ -41,31 +41,41 @@ cmake_minimum_required(VERSION 2.6)
         "pyengine_Misc"
     )
 
+    find_package(PkgConfig REQUIRED)
+
     # opengl + glew
-    find_package(OpenGL REQUIRED)
-    find_package(GLEW REQUIRED)
-    set(PYENGINE_INCLUDE_DIRS ${PYENGINE_INCLUDE_DIRS} ${OpenGL_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS})
-    set(LIBS ${LIBS} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} ${GLEW_LIBRARY})
+    pkg_check_modules(OPENGL glu)
+    pkg_check_modules(GLEW glew)
+    set(PYENGINE_INCLUDE_DIRS
+      ${PYENGINE_INCLUDE_DIRS}
+      ${OPENGL_INCLUDE_DIRS}
+      ${GLEW_INCLUDE_DIRS})
+    set(LIBS ${LIBS}
+      ${OPENGL_LIBRARIES}
+      ${GLEW_LIBRARIES})
 
     # glib
-    find_package(glib REQUIRED)
-    set(PYENGINE_INCLUDE_DIRS ${PYENGINE_INCLUDE_DIRS} ${glib_INCLUDE_DIRS})
-    set(LIBS ${LIBS}
-        ${glib_LIBRARIES}
-    )
+    pkg_check_modules(GLIB glib-2.0)
+    # find_package(glib REQUIRED)
+    set(PYENGINE_INCLUDE_DIRS ${PYENGINE_INCLUDE_DIRS} ${GLIB_INCLUDE_DIRS})
+    set(LIBS ${LIBS} ${GTKMM_LIBRARIES})
 
     # pango
-    find_package(Pango REQUIRED)
-    set(PYENGINE_INCLUDE_DIRS ${PYENGINE_INCLUDE_DIRS} ${Pango_INCLUDE_DIRS})
+    pkg_check_modules(PANGO pango)
+    set(PYENGINE_INCLUDE_DIRS ${PYENGINE_INCLUDE_DIRS} ${PANGO_INCLUDE_DIRS})
     set(LIBS ${LIBS}
-        ${Pango_LIBRARIES}
+        ${PANGO_LIBRARIES}
     )
 
     # cairo
-    find_package(Cairo REQUIRED)
-    set(PYENGINE_INCLUDE_DIRS ${PYENGINE_INCLUDE_DIRS} ${Cairo_INCLUDE_DIRS})
+    pkg_check_modules(CAIRO cairo)
+    pkg_check_modules(PANGOCAIRO pangocairo)
+    set(PYENGINE_INCLUDE_DIRS ${PYENGINE_INCLUDE_DIRS}
+      ${CAIRO_INCLUDE_DIRS}
+      ${PANGOCAIRO_INCLUDE_DIRS})
     set(LIBS ${LIBS}
-        ${Cairo_LIBRARY}
+        ${CAIRO_LIBRARIES}
+        ${PANGOCAIRO_LIBRARIES}
     )
 
     # python
@@ -77,9 +87,9 @@ cmake_minimum_required(VERSION 2.6)
     )
 
     # pycairo
-    set(PYTHON_EXEC "/usr/bin/python2")
-    find_package(pycairo REQUIRED)
-    set(PYENGINE_INCLUDE_DIRS ${PYENGINE_INCLUDE_DIRS} ${pycairo_INCLUDE_DIRS})
+    set(PYTHON_EXEC ${PYTHON_EXECUTABLE})
+    pkg_check_modules(PYCAIRO pycairo)
+    set(PYENGINE_INCLUDE_DIRS ${PYENGINE_INCLUDE_DIRS} ${PYCAIRO_INCLUDE_DIRS})
 
     # boost
     find_package(Boost COMPONENTS system python REQUIRED)
@@ -94,10 +104,7 @@ cmake_minimum_required(VERSION 2.6)
     )
 
     # PLATFORM: linux
-    find_package(rt REQUIRED)
-    set(LIBS ${LIBS}
-        ${rt_LIBRARY}
-    )
+    set(LIBS ${LIBS} -lrt)
 
     # PLATFORM: X11
 
@@ -113,11 +120,6 @@ cmake_minimum_required(VERSION 2.6)
     set(LIBS ${LIBS} ${PNG_LIBRARIES})
     set(PYENGINE_INCLUDE_DIRS ${PYENGINE_INCLUDE_DIRS} ${PNG_INCLUDE_DIRS})
     set(PYENGINE_DEFINITIONS ${PNG_DEFINITIONS})
-
-    # freetype
-    find_package(Freetype REQUIRED)
-    set(LIBS ${LIBS} ${FREETYPE_LIBRARIES})
-    set(PYENGINE_INCLUDE_DIRS ${PYENGINE_INCLUDE_DIRS} ${FREETYPE_INCLUDE_DIRS})
 
 # configuration
     configure_file(CEngine/pyengineConfig.template
