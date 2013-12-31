@@ -50,31 +50,41 @@ endif (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
         "pyengine_Misc"
     )
 
+    find_package(PkgConfig REQUIRED)
+
     # opengl + glew
-    find_package(OpenGL REQUIRED)
-    find_package(GLEW REQUIRED)
-    set(PYENGINE_INCLUDE_DIRS ${PYENGINE_INCLUDE_DIRS} ${OpenGL_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS})
-    set(LIBS ${LIBS} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} ${GLEW_LIBRARY})
+    pkg_check_modules(OPENGL glu)
+    pkg_check_modules(GLEW glew)
+    set(PYENGINE_INCLUDE_DIRS
+      ${PYENGINE_INCLUDE_DIRS}
+      ${OPENGL_INCLUDE_DIRS}
+      ${GLEW_INCLUDE_DIRS})
+    set(LIBS ${LIBS}
+      ${OPENGL_LIBRARIES}
+      ${GLEW_LIBRARIES})
 
     # glib
-    find_package(PkgConfig REQUIRED)
     pkg_check_modules(GLIB glib-2.0)
     # find_package(glib REQUIRED)
     set(PYENGINE_INCLUDE_DIRS ${PYENGINE_INCLUDE_DIRS} ${GLIB_INCLUDE_DIRS})
     set(LIBS ${LIBS} ${GTKMM_LIBRARIES})
 
     # pango
-    find_package(Pango REQUIRED)
-    set(PYENGINE_INCLUDE_DIRS ${PYENGINE_INCLUDE_DIRS} ${Pango_INCLUDE_DIRS})
+    pkg_check_modules(PANGO pango)
+    set(PYENGINE_INCLUDE_DIRS ${PYENGINE_INCLUDE_DIRS} ${PANGO_INCLUDE_DIRS})
     set(LIBS ${LIBS}
-        ${Pango_LIBRARIES}
+        ${PANGO_LIBRARIES}
     )
 
     # cairo
-    find_package(Cairo REQUIRED)
-    set(PYENGINE_INCLUDE_DIRS ${PYENGINE_INCLUDE_DIRS} ${Cairo_INCLUDE_DIRS})
+    pkg_check_modules(CAIRO cairo)
+    pkg_check_modules(PANGOCAIRO pangocairo)
+    set(PYENGINE_INCLUDE_DIRS ${PYENGINE_INCLUDE_DIRS}
+      ${CAIRO_INCLUDE_DIRS}
+      ${PANGOCAIRO_INCLUDE_DIRS})
     set(LIBS ${LIBS}
-        ${Cairo_LIBRARY}
+        ${CAIRO_LIBRARIES}
+        ${PANGOCAIRO_LIBRARIES}
     )
 
     # python
@@ -88,8 +98,8 @@ endif (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
 
     # pycairo
     set(PYTHON_EXEC ${PYTHON_EXECUTABLE})
-    find_package(pycairo REQUIRED)
-    set(PYENGINE_INCLUDE_DIRS ${PYENGINE_INCLUDE_DIRS} ${pycairo_INCLUDE_DIRS})
+    pkg_check_modules(PYCAIRO pycairo)
+    set(PYENGINE_INCLUDE_DIRS ${PYENGINE_INCLUDE_DIRS} ${PYCAIRO_INCLUDE_DIRS})
 
     # boost
     find_package(Boost COMPONENTS system python REQUIRED)
@@ -106,17 +116,13 @@ endif (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     # sigc++
     # we could also use a boosty mechanism for this, but as we also use
     # gtk, it seems reasonable to pick sigc++, which is also used there
-    find_package(SIGC++ REQUIRED)
+    pkg_check_modules(SIGC++ sigc++-2.0)
     set(PYENGINE_INCLUDE_DIRS ${PYENGINE_INCLUDE_DIRS}
-        ${SIGC++_INCLUDE_DIR}
-        ${SIGC++_CONFIG_INCLUDE_DIR})
-    set(LIBS ${LIBS} ${SIGC++_LIBRARY})
+        ${SIGC++_INCLUDE_DIRS})
+    set(LIBS ${LIBS} ${SIGC++_LIBRARIES})
 
     # PLATFORM: linux
-    find_package(rt REQUIRED)
-    set(LIBS ${LIBS}
-        ${rt_LIBRARY}
-    )
+    set(LIBS ${LIBS} -lrt)
 
     # PLATFORM: X11
 
@@ -132,11 +138,6 @@ endif (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     set(LIBS ${LIBS} ${PNG_LIBRARIES})
     set(PYENGINE_INCLUDE_DIRS ${PYENGINE_INCLUDE_DIRS} ${PNG_INCLUDE_DIRS})
     set(PYENGINE_DEFINITIONS ${PNG_DEFINITIONS})
-
-    # freetype
-    find_package(Freetype REQUIRED)
-    set(LIBS ${LIBS} ${FREETYPE_LIBRARIES})
-    set(PYENGINE_INCLUDE_DIRS ${PYENGINE_INCLUDE_DIRS} ${FREETYPE_INCLUDE_DIRS})
 
 # configuration
     configure_file(CEngine/pyengineConfig.template
