@@ -34,7 +34,7 @@ authors named in the AUTHORS file.
 #include <cstdio>
 #include <iostream>
 
-#define MAXBUTTONS 8
+#define MAXBUTTONS 16
 
 #include "CEngine/WindowInterface/Display.hpp"
 #include "CEngine/Misc/Int.hpp"
