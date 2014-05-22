@@ -35,9 +35,9 @@ namespace PyEngine {
 
 /* PyEngine::FDStream */
 
-FDStream::FDStream(int fd, bool ownsFD):
+FDStream::FDStream(int fd, bool owns_fd):
     _fd(fd),
-    _ownsFD(ownsFD)
+    _owns_fd(owns_fd)
 {
 
 }
@@ -86,7 +86,7 @@ sizeuint FDStream::write(const void *data, const sizeuint length) {
 }
 
 void FDStream::close() {
-    if (_ownsFD) {
+    if (_owns_fd) {
         ::close(_fd);
     }
     _fd = 0;
@@ -95,29 +95,32 @@ void FDStream::close() {
 /* PyEngine::FileStream */
 
 // note that throwing the exception on a failed open is done in checkFD
-FileStream::FileStream(const std::string &fileName,
-    const OpenMode openMode, const WriteMode writeMode,
-    const ShareMode shareMode):
+FileStream::FileStream(const std::string &filename,
+                       const OpenMode openmode,
+                       const WriteMode writemode,
+                       const ShareMode sharemode):
     FDStream::FDStream(
         checkFD(open(
-            fileName.c_str(),
-            (openMode==OM_BOTH?O_RDWR:(openMode==OM_READ?O_RDONLY:O_WRONLY)) |
-            (((openMode!=OM_READ) && ((writeMode==WM_OVERWRITE) || (writeMode==WM_IGNORE)))?O_TRUNC:O_APPEND) | O_CREAT,
-            (S_IRWXU | S_IRWXG | S_IRWXO) & (~(S_IXUSR | S_IXGRP | S_IXOTH))
-        )), true),
-    _openMode(openMode)
+                    filename.c_str(),
+                    (openmode==OM_BOTH?O_RDWR:(openmode==OM_READ?O_RDONLY:O_WRONLY)) |
+                    (((openmode!=OM_READ) && ((writemode==WM_OVERWRITE) || (writemode==WM_IGNORE)))?O_TRUNC:O_APPEND) | O_CREAT,
+                    (S_IRWXU | S_IRWXG | S_IRWXO) & (~(S_IXUSR | S_IXGRP | S_IXOTH))
+                )), true),
+    _openmode(openmode)
 {
-    if (shareMode != SM_DONT_CARE) {
+    if (sharemode != SM_DONT_CARE) {
         // log << ML_WARNING << "File stream for `" << fileName << "' opened with a ShareMode nonequal to SM_DONT_CARE. This is ignored." << submit;
     }
     struct stat fileStat;
     fileStat.st_mode = 0;
     fstat(_fd, &fileStat);
-    _seekable = !(S_ISFIFO(fileStat.st_mode) || S_ISSOCK(fileStat.st_mode) || S_ISCHR(fileStat.st_mode));
+    _seekable = !(S_ISFIFO(fileStat.st_mode)
+                  || S_ISSOCK(fileStat.st_mode)
+                  || S_ISCHR(fileStat.st_mode));
 }
 
 bool FileStream::isReadable() const {
-    return (_openMode != OM_WRITE);
+    return (_openmode != OM_WRITE);
 }
 
 bool FileStream::isSeekable() const {

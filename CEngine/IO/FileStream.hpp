@@ -59,30 +59,30 @@ enum ShareMode {
 };
 
 class FileError: public StreamError {
-    public:
-        FileError(const std::string message):
-            StreamError(message) {};
-        FileError(const char *message):
-            StreamError(message) {};
-        virtual ~FileError() throw() {};
+public:
+    FileError(const std::string message):
+        StreamError(message) {};
+    FileError(const char *message):
+        StreamError(message) {};
+    virtual ~FileError() throw() {};
 };
 
 class FDStream: public Stream {
-    public:
-        FDStream(int fd, bool ownsFD = true);
-        virtual ~FDStream() throw();
-    protected:
-        int _fd;
-        bool _ownsFD;
-    public:
-        virtual void flush();
-        inline int fileno() const { return _fd; };
-        virtual sizeuint read(void *data, const sizeuint length) override;
-        virtual sizeuint seek(const int whence, const sizeint offset) override;
-        virtual sizeuint size() const override;
-        virtual sizeuint tell() const override;
-        virtual sizeuint write(const void *data, const sizeuint length) override;
-        virtual void close() override;
+public:
+    FDStream(int fd, bool owns_fd = true);
+    virtual ~FDStream() throw();
+protected:
+    int _fd;
+    bool _owns_fd;
+public:
+    virtual void flush();
+    inline int fileno() const { return _fd; };
+    virtual sizeuint read(void *data, const sizeuint length) override;
+    virtual sizeuint seek(const int whence, const sizeint offset) override;
+    virtual sizeuint size() const override;
+    virtual sizeuint tell() const override;
+    virtual sizeuint write(const void *data, const sizeuint length) override;
+    virtual void close() override;
 };
 
 /**
@@ -105,17 +105,18 @@ class FDStream: public Stream {
  * All considerations which can be found in the open(2) man page apply.
  */
 class FileStream: public FDStream {
-    public:
-        FileStream(const std::string &fileName, const OpenMode openMode,
-            const WriteMode writeMode = WM_IGNORE,
-            const ShareMode shareMode = SM_DONT_CARE);
-    private:
-        const OpenMode _openMode;
-        bool _seekable;
-    public:
-        virtual bool isReadable() const;
-        virtual bool isSeekable() const;
-        virtual bool isWritable() const;
+public:
+    FileStream(const std::string &filename,
+               const OpenMode openmode,
+               const WriteMode writemode = WM_IGNORE,
+               const ShareMode sharemode = SM_DONT_CARE);
+private:
+    const OpenMode _openmode;
+    bool _seekable;
+public:
+    virtual bool isReadable() const;
+    virtual bool isSeekable() const;
+    virtual bool isWritable() const;
 };
 
 }
