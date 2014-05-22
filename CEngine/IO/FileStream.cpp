@@ -100,12 +100,12 @@ FileStream::FileStream(const std::string &filename,
                        const WriteMode writemode,
                        const ShareMode sharemode):
     FDStream::FDStream(
-        checkFD(open(
-                    filename.c_str(),
-                    (openmode==OM_BOTH?O_RDWR:(openmode==OM_READ?O_RDONLY:O_WRONLY)) |
-                    (((openmode!=OM_READ) && ((writemode==WM_OVERWRITE) || (writemode==WM_IGNORE)))?O_TRUNC:O_APPEND) | O_CREAT,
-                    (S_IRWXU | S_IRWXG | S_IRWXO) & (~(S_IXUSR | S_IXGRP | S_IXOTH))
-                )), true),
+        checkFD(open_file_with_modes(
+                    filename,
+                    openmode,
+                    writemode,
+                    sharemode)),
+        true),
     _openmode(openmode)
 {
     if (sharemode != SM_DONT_CARE) {
@@ -128,7 +128,55 @@ bool FileStream::isSeekable() const {
 }
 
 bool FileStream::isWritable() const {
-    return (_openMode != OM_READ);
+    return (_openmode != OM_READ);
+}
+
+/* free functions */
+
+
+int open_file_with_modes(const std::string &filename,
+                         const OpenMode openmode,
+                         const WriteMode writemode,
+                         const ShareMode sharemode)
+{
+    int flags = 0;
+
+    switch (openmode) {
+    case OM_READ:
+    {
+        flags = O_RDONLY;
+        break;
+    }
+    case OM_WRITE:
+    case OM_BOTH:
+    {
+        flags = O_CREAT;
+        switch (writemode) {
+        case WM_IGNORE:
+        case WM_OVERWRITE:
+        {
+            flags |= O_TRUNC;
+        }
+        case WM_APPEND:
+        {
+            flags |= O_APPEND;
+        }
+        }
+
+        if (openmode == OM_BOTH) {
+            flags |= O_RDWR;
+        } else {
+            flags |= O_WRONLY;
+        }
+
+        break;
+    }
+    }
+
+    return open(
+        filename.c_str(),
+        flags,
+        (S_IRWXU | S_IRWXG | S_IRWXO) & (~(S_IXUSR | S_IXGRP | S_IXOTH)));
 }
 
 }

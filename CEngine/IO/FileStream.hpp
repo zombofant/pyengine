@@ -113,11 +113,22 @@ public:
 private:
     const OpenMode _openmode;
     bool _seekable;
+
 public:
     virtual bool isReadable() const;
     virtual bool isSeekable() const;
     virtual bool isWritable() const;
 };
+
+/**
+ * Use the OS API to open a file using the given mode specifiers. For a detailed
+ * meaning of the modes with respect to the POSIX API, see the FileStream class.
+ */
+int open_file_with_modes(const std::string &filename,
+                         const OpenMode openmode,
+                         const WriteMode writemode,
+                         const ShareMode sharemode);
+
 
 }
 
