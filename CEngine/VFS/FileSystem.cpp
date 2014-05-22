@@ -75,37 +75,6 @@ void FileSystem::sort_mount_list(FileSystem::MountList &list)
         });
 }
 
-bool FileSystem::file_readable(const std::string &path)
-{
-    VFSStat filestat;
-    try {
-        stat(path, filestat);
-    } catch (const VFSIOError &err) {
-        return false;
-    }
-
-    return (filestat.mode & VSM_READABLE) != 0;
-}
-
-bool FileSystem::file_writable(const std::string &path)
-{
-    VFSStat filestat;
-    try {
-        stat(path, filestat);
-    } catch (const VFSPermissionDeniedError &err) {
-        return false;
-    } catch (const VFSFileNotFoundError &err) {
-        try {
-            stat(dirname(path), filestat);
-        } catch (const VFSIOError &err) {
-            return false;
-        }
-    }
-
-    return (filestat.mode & VSM_WRITABLE) != 0;
-
-}
-
 void FileSystem::listdir(
     const std::string &path, std::vector<std::string> &items)
 {

@@ -61,12 +61,6 @@ protected:
     void sort_mount_list(MountList &list);
 
 public:
-    bool file_readable(
-        const std::string &path);
-
-    bool file_writable(
-        const std::string &path);
-
     void listdir(const std::string &path,
                  std::vector<std::string> &items);
 
