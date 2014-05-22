@@ -34,29 +34,34 @@ authors named in the AUTHORS file.
 namespace PyEngine {
 
 class EventLoop {
-    public:
-        EventLoop(DisplayHandle display, EventSinkHandle eventSink);
-        virtual ~EventLoop();
-    private:
-        DisplayHandle _display;
-        EventSinkHandle _eventSink;
-        TimeFloat _deltaT;
-        uint64_t _frameCount, _currentFrameCount;
-        bool _terminated;
-    public:
-        void terminate();
-        void run();
-    public:
-        double getSyncedFrameLength();
-        void setSyncedFrameLength(const TimeFloat deltaT);
+public:
+    EventLoop(DisplayHandle display, EventSinkHandle eventSink);
+    virtual ~EventLoop();
 
-        /**
-         * Set a frame count. Until this count of further frames, the
-         * event loop will send a WMQuit event.
-         */
-        void setFrameCount(const uint64_t frameCount);
-    public:
-        double displayFPS, syncedFPS;
+private:
+    DisplayHandle _display;
+    EventSinkHandle _eventSink;
+    TimeFloat _deltaT;
+    uint64_t _frameCount, _currentFrameCount;
+    bool _terminated;
+
+public:
+    void terminate();
+    void run();
+
+public:
+    double getSyncedFrameLength();
+    void setSyncedFrameLength(const TimeFloat deltaT);
+
+    /**
+     * Set a frame count. Until this count of further frames, the
+     * event loop will send a WMQuit event.
+     */
+    void setFrameCount(const uint64_t frameCount);
+
+public:
+    double displayFPS, syncedFPS;
+
 };
 
 
