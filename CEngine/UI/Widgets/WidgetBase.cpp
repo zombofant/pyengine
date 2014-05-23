@@ -589,3 +589,19 @@ bool Widget::hittest_with_chain(const Point &p, HitChain &chain)
 
 }
 }
+
+namespace std {
+
+/* std */
+
+ostream &operator<<(ostream &stream, const PyEngine::UI::AbstractWidget &widget)
+{
+    return stream << "widget(typeid=" << typeid(widget).name() << ", ptr=" << (void*)(&widget) << ")";
+}
+
+ostream &operator<<(ostream &stream, const PyEngine::UI::AbstractWidget *const widget)
+{
+    return stream << "&" << *widget;
+}
+
+}

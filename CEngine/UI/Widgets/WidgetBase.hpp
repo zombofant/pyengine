@@ -271,4 +271,12 @@ OutputIt iter_upwards(
 }
 }
 
+namespace std {
+
+ostream &operator<<(ostream &stream, const PyEngine::UI::AbstractWidget &widget);
+ostream &operator<<(ostream &stream,
+                    const PyEngine::UI::AbstractWidget *const widget);
+
+}
+
 #endif
