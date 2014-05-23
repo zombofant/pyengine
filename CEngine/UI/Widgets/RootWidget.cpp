@@ -442,11 +442,11 @@ void RootWidget::dispatch_mouse_down(
 
     bool handled = false;
     while (target && !handled) {
-        const Rect &abs_rect = target->get_absolute_rect();
-        coord_int_t tx = x - abs_rect.get_left(),
-                    ty = y - abs_rect.get_top();
+        const Point &translated = target->absolute_to_client(x, y);
 
-        handled = target->ev_mouse_down(tx, ty, button, modifiers);
+        handled = target->ev_mouse_down(translated.get_x(),
+                                        translated.get_y(),
+                                        button, modifiers);
         if (handled) {
             // we must break here as we need the actual target for
             // capturing
@@ -483,11 +483,12 @@ void RootWidget::dispatch_mouse_move(
 
     bool handled = false;
     while (target && !handled) {
-        const Rect &abs_rect = target->get_absolute_rect();
-        coord_int_t tx = x - abs_rect.get_left(),
-                    ty = y - abs_rect.get_top();
+        const Point &translated = target->absolute_to_client(x, y);
 
-        handled = target->ev_mouse_move(tx, ty, dx, dy, buttons, modifiers);
+        handled = target->ev_mouse_move(translated.get_x(),
+                                        translated.get_y(),
+                                        dx, dy,
+                                        buttons, modifiers);
         if (_mouse_capture) {
             // no hover update and no propagation upwards on captured
             // mouse!
@@ -517,11 +518,11 @@ void RootWidget::dispatch_mouse_up(
 
     bool handled = false;
     while (target && !handled) {
-        const Rect &abs_rect = target->get_absolute_rect();
-        coord_int_t tx = x - abs_rect.get_left(),
-                    ty = y - abs_rect.get_top();
+        const Point &translated = target->absolute_to_client(x, y);
 
-        handled = target->ev_mouse_up(tx, ty, button, modifiers);
+        handled = target->ev_mouse_up(translated.get_x(),
+                                      translated.get_y(),
+                                      button, modifiers);
         if (handled) {
             break;
         }
