@@ -126,6 +126,8 @@ public:
 
     void set_parent(ParentPtr parent);
 public:
+    Point absolute_to_client(int x, int y);
+    Point absolute_to_client(const Point &p);
     Style& computed_style();
     virtual void do_align();
     virtual cairo_t* get_cairo_context();

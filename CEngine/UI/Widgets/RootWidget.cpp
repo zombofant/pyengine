@@ -407,7 +407,11 @@ void RootWidget::dispatch_mouse_click(
     WidgetPtr target = _find_mouse_event_target(x, y);
     bool handled = false;
     while (target && !handled) {
-        handled = target->ev_mouse_click(x, y, button, modifiers, nth);
+        const Point &translated = target->absolute_to_client(x, y);
+
+        handled = target->ev_mouse_click(translated.get_x(),
+                                         translated.get_y(),
+                                         button, modifiers, nth);
         if (handled) {
             break;
         }

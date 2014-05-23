@@ -139,6 +139,17 @@ void AbstractWidget::set_parent(ParentPtr parent)
     _parent_changed();
 }
 
+Point AbstractWidget::absolute_to_client(int x, int y)
+{
+    return absolute_to_client(Point(x, y));
+}
+
+Point AbstractWidget::absolute_to_client(const Point &p)
+{
+    return Point(p.get_x() - _absolute_rect.get_x(),
+                 p.get_y() - _absolute_rect.get_y());
+}
+
 Style& AbstractWidget::computed_style()
 {
     if (_computed_style_invalidated) {
