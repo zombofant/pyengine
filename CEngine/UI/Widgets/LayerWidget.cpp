@@ -32,6 +32,39 @@ namespace PyEngine { namespace UI {
 
 /* PyEngine::UI::LayerWidget */
 
+WidgetPtr LayerWidget::hittest(const Point &p)
+{
+    if (!_hittest(p)) {
+        return nullptr;
+    }
+
+    realign();
+    return _hittest_children(p);
+}
+
+bool LayerWidget::hittest_with_chain(const Point &p, HitChain &chain)
+{
+    if (!_hittest(p)) {
+        return false;
+    }
+
+    for (auto it = _children.crbegin();
+         it != _children.crend();
+         ++it)
+    {
+        const WidgetPtr &child = *it;
+        if (!child->get_visible()) {
+            continue;
+        }
+        if (child->hittest_with_chain(p, chain)) {
+            chain.push_back(this);
+            return true;
+        }
+    }
+
+    return false;
+}
+
 /* PyEngine::UI::DesktopLayer */
 
 void DesktopLayer::do_align()
@@ -73,34 +106,6 @@ bool WindowLayer::is_element(const std::string &name) const
 }
 
 /* PyEngine::UI::PopupLayer */
-
-WidgetPtr PopupLayer::hittest(const Point &p)
-{
-    if (_current_root_menu) {
-        WidgetPtr hit = LayerWidget::hittest(p);
-        if ((hit == this) && (_current_root_menu->absolute_rect().contains(p)))
-        {
-            return _current_root_menu->hittest(p);
-        }
-        return hit;
-    } else {
-        return LayerWidget::hittest(p);
-    }
-}
-
-bool PopupLayer::hittest_with_chain(const Point &p, HitChain &chain)
-{
-    if (!_hittest(p)) {
-        return false;
-    }
-
-    if (_current_root_menu) {
-        _current_root_menu->hittest_with_chain(p, chain);
-    }
-
-    chain.push_back(this);
-    return true;
-}
 
 bool PopupLayer::is_element(const std::string &name) const
 {

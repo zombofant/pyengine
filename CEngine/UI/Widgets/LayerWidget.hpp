@@ -32,10 +32,22 @@ authors named in the AUTHORS file.
 
 namespace PyEngine { namespace UI {
 
+/**
+ * A LayerWidget is a widget which is transparent, except for its children. This
+ * implies that all hittests return negative results, unless a child is hit.
+ *
+ * The use case is to have the ability to easily stack widgets inside the root
+ * widget, e.g. for having movable windows and below that widgets, but above any
+ * windows we want popups e.g. from menus.
+ */
 class LayerWidget: public ParentWidget
 {
 public:
     LayerWidget() = default;
+
+public:
+    WidgetPtr hittest(const Point &p);
+    bool hittest_with_chain(const Point &p, HitChain &chain);
 
 };
 
@@ -88,8 +100,6 @@ public:
     };
 
 public:
-    WidgetPtr hittest(const Point &p) override;
-    bool hittest_with_chain(const Point &p, HitChain &chain) override;
     bool is_element(const std::string &name) const override;
 
 public:

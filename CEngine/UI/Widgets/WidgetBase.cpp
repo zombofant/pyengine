@@ -353,9 +353,9 @@ WidgetPtr ParentWidget::_hittest_children(const Point &p) const
 {
     for (auto it = _children.crbegin();
          it != _children.crend();
-         it++)
+         ++it)
     {
-        const WidgetPtr child = *it;
+        const WidgetPtr &child = *it;
         if (!child->_visible) {
             continue;
         }
@@ -499,8 +499,11 @@ bool ParentWidget::hittest_with_chain(const Point &p, HitChain &chain)
         return false;
     }
 
-    for (auto &child: *this)
+    for (auto it = _children.crbegin();
+         it != _children.crend();
+         ++it)
     {
+        const WidgetPtr &child = *it;
         if (!child->_visible) {
             continue;
         }
