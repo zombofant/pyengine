@@ -8,4 +8,4 @@ add_library(pyengine_WindowInterface STATIC
     "X11/X11Display.cpp"
     "X11/X11Window.cpp"
     )
-add_dependencies(pyengine_WindowInterface pyengine_Misc pyengine_IO)
+add_dependencies(pyengine_WindowInterface pyengine_IO)

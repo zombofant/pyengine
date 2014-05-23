@@ -31,7 +31,6 @@ authors named in the AUTHORS file.
 
 #include "CEngine/IO/Log.hpp"
 
-#include "CEngine/Misc/Exception.hpp"
 #include "Display.hpp"
 
 namespace PyEngine {
@@ -51,7 +50,7 @@ EventLoop::EventLoop(DisplayHandle display, EventSinkHandle eventSink):
 
 EventLoop::~EventLoop()
 {
-    throw Exception("Being destructed");
+
 }
 
 double EventLoop::getSyncedFrameLength()
