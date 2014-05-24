@@ -94,6 +94,8 @@ void StreamIndexBuffer::add(const VertexIndexListHandle vertices) {
         *dataptr = *it;
         dataptr++;
     }
+
+    count += len;
 }
 
 /* PyEngine::GL::StaticIndexBuffer */
