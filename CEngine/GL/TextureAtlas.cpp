@@ -60,7 +60,7 @@ TextureAtlas::~TextureAtlas()
 void TextureAtlas::grow()
 {
     /*void *buffer = malloc(_width * _height);
-    glGetTexImage2D(GL_TEXTURE_2D, 
+    glGetTexImage2D(GL_TEXTURE_2D,
     GLsizei newWidth, newHeight;
     if (_width < _height)
     {
@@ -148,7 +148,7 @@ TextureAtlas::AllocationHandle TextureAtlas::upload(AbstractImage2D *image, uint
     const GLsizei width = image->getWidth();
     const GLsizei height = image->getHeight();
     // TODO: Evaluate which parameters are best / make them configurable
-    Rect r = _packer.Insert(width, height, false, 
+    Rect r = _packer.Insert(width, height, false,
         GuillotineBinPack::RectBestAreaFit,
         GuillotineBinPack::SplitMinimizeArea);
     if ((r.height == 0) || (r.width == 0))
@@ -162,7 +162,7 @@ TextureAtlas::AllocationHandle TextureAtlas::upload(AbstractImage2D *image, uint
             return AllocationHandle();
         }
     }
-    if (r.height == width)
+    if (r.height == width && width != height)
     {
         // we must do some magic to rotate the quad...
         const GLsizei pixelSize = image->getPixelSize();

@@ -27,7 +27,7 @@ authors named in the AUTHORS file.
 
 namespace PyEngine {
 namespace GL {
-    
+
 using namespace PyEngine;
 
 /* PyEngine::GL::IndexEntry */
@@ -37,7 +37,7 @@ IndexEntry::IndexEntry(const VertexIndex aStart, const VertexIndexListHandle aVe
     vertices(aVertices),
     count(aVertices->size())
 {
-    
+
 }
 
 /* PyEngine::GL::GenericIndexBuffer */
@@ -46,7 +46,7 @@ GenericIndexBuffer::GenericIndexBuffer(const GLenum aPurpose):
     GenericBuffer(sizeof(GLuint), GL_ELEMENT_ARRAY_BUFFER, aPurpose),
     count(0)
 {
-    
+
 }
 
 void GenericIndexBuffer::clear() {
@@ -76,7 +76,7 @@ void GenericIndexBuffer::dump() {
 StreamIndexBuffer::StreamIndexBuffer(const GLenum aPurpose):
     GenericIndexBuffer(aPurpose)
 {
-    
+
 }
 
 void StreamIndexBuffer::add(const VertexIndexListHandle vertices) {
@@ -102,7 +102,7 @@ StaticIndexBuffer::StaticIndexBuffer(const GLenum aPurpose):
     GenericIndexBuffer(aPurpose),
     handles(new IndexEntryHandles())
 {
-    
+
 }
 
 StaticIndexBuffer::~StaticIndexBuffer() {
@@ -118,14 +118,14 @@ void StaticIndexBuffer::compress() {
     {
         const IndexEntryHandle handle = *it;
         IndexEntry *entry = handle.get();
-        
+
         if (entry->start > nextStart) {
             if ((minChange > nextStart) || (minChange == -1)) {
                 minChange = nextStart;
             }
             updateHandles(it, (entry->start - nextStart));
         }
-        
+
         nextStart = entry->start + entry->count;
     }
     count = nextStart;
@@ -149,21 +149,21 @@ void StaticIndexBuffer::updateHandles(const IndexEntryHandles::iterator startAt,
 const IndexEntryHandle StaticIndexBuffer::add(const VertexIndexListHandle vertices) {
     VertexIndexList *list = vertices.get();
     const GLsizei addCount = (GLsizei)vertices->size();
-    
-    
+
+
     if (count + addCount > capacity) {
         gc();
         while (count + addCount > capacity) {
             expand();
         }
     }
-    
+
     const IndexEntryHandle handle(new IndexEntry(count, vertices));
     IndexEntry *entry = handle.get();
-    
+
     GLuint *dataptr = (GLuint *)data;
     dataptr += entry->start;
-    
+
     for (VertexIndexList::iterator it = list->begin();
         it != list->end();
         it++)
@@ -178,9 +178,9 @@ const IndexEntryHandle StaticIndexBuffer::add(const VertexIndexListHandle vertic
         glBufferSubData(bufferKind, entry->start * sizeof(GLuint), entry->count * sizeof(GLuint), (unsigned char *)( ((GLuint *)dataptr)+entry->start));
         glBindBuffer(bufferKind, 0);
     }
-    
+
     handles->push_back(handle);
-    
+
     return handle;
 }
 
@@ -227,10 +227,10 @@ void StaticIndexBuffer::remove(const IndexEntryHandle handle, const bool autoCom
     if (it == handles->end()) {
         return;
     }
-    
+
     handles->erase(it);
-    
-    // We must not change count here, as for now we allow removing 
+
+    // We must not change count here, as for now we allow removing
     // handles without deallocating their space (see autoCompress)
     if (autoCompress) {
         compress();

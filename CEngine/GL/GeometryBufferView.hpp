@@ -35,7 +35,7 @@ namespace GL {
 
 class GeometryBufferView;
 
-typedef boost::shared_ptr<GeometryBufferView> GeometryBufferViewHandle;
+typedef std::shared_ptr<GeometryBufferView> GeometryBufferViewHandle;
 
 class GeometryBufferView {
 public:
@@ -44,8 +44,8 @@ public:
     class AttributeView {
     public:
         AttributeView(GeometryBufferView *view,
-            const GLsizei attribOffset,
-            const GLsizei attribLength);
+                      const GLsizei attribOffset,
+                      const GLsizei attribLength);
 
     private:
         GeometryBufferView *_view;
@@ -60,9 +60,9 @@ public:
         GLsizei getLength();
         GLsizei getSize();
         AttributeSlice *slice(const GLsizei start,
-            const GLsizei stop, const GLsizei step = 1,
-            const GLsizei attribOffset = 0,
-            const GLsizei attribLength = -1);
+                              const GLsizei stop, const GLsizei step = 1,
+                              const GLsizei attribOffset = 0,
+                              const GLsizei attribLength = -1);
         void set(const GLVertexFloat *data);
 
         friend class AttributeSlice;
@@ -78,7 +78,7 @@ public:
 
     protected:
         void setUp(const GLsizei start, const GLsizei stop, const GLsizei step,
-            const GLsizei attribOffset, const GLsizei attribLength);
+                   const GLsizei attribOffset, const GLsizei attribLength);
 
     public:
         void get(GLVertexFloat *data);

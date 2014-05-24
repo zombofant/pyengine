@@ -42,35 +42,44 @@ namespace PyEngine {
 namespace GL {
 
 class GenericBuffer: public Class {
-    public:
-        GenericBuffer(const GLsizei aItemSize, const GLenum aKind, const GLenum aPurpose);
-        virtual ~GenericBuffer();
-    protected:
-        GLsizei capacity;
-        unsigned char *data;
-    protected:
-        const GLenum bufferPurpose;
-        const GLenum bufferKind;
-        const GLsizei itemSize;
-    protected:
-        virtual void autoFlush();
-        virtual void doExpand(const GLsizei oldCapacity, const GLsizei newCapacity);
-        void doFlushAll();
-        void doFlushRange(const GLsizei minItem, const GLsizei count);
-        void expand();
-        virtual void freeBuffer();
-        virtual void initBuffer();
-        virtual bool needsFlush() const { return false; };
-        void rangeCheck(const GLsizei index);
-        virtual void requireBuffer();
-    public:
-        virtual void bind();
-        void flush();
-        void readBack();
-        virtual void unbind();
-    public:
-        GLsizei getCapacity() const { return capacity; }
-        GLsizei getItemSize() const { return itemSize; }
+public:
+    GenericBuffer(
+        const GLsizei aItemSize,
+        const GLenum aKind,
+        const GLenum aPurpose);
+    virtual ~GenericBuffer();
+
+protected:
+    GLsizei capacity;
+    unsigned char *data;
+
+protected:
+    const GLenum bufferPurpose;
+    const GLenum bufferKind;
+    const GLsizei itemSize;
+
+protected:
+    virtual void autoFlush();
+    virtual void doExpand(const GLsizei oldCapacity, const GLsizei newCapacity);
+    void doFlushAll();
+    void doFlushRange(const GLsizei minItem, const GLsizei count);
+    void expand();
+    virtual void freeBuffer();
+    virtual void initBuffer();
+    virtual bool needsFlush() const { return false; };
+    void rangeCheck(const GLsizei index);
+    virtual void requireBuffer();
+
+public:
+    virtual void bind();
+    void flush();
+    void readBack();
+    virtual void unbind();
+
+public:
+    GLsizei getCapacity() const { return capacity; }
+    GLsizei getItemSize() const { return itemSize; }
+
 };
 
 

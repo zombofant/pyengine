@@ -46,54 +46,82 @@ struct IndexEntry {
     VertexIndex start;
     const VertexIndexListHandle vertices;
     const VertexIndex count;
-    
+
     IndexEntry(const VertexIndex aStart, const VertexIndexListHandle aVertices);
 };
-typedef boost::shared_ptr<IndexEntry> IndexEntryHandle;
+
+typedef std::shared_ptr<IndexEntry> IndexEntryHandle;
 typedef std::list<IndexEntryHandle> IndexEntryHandles;
 
 class GenericIndexBuffer: public GenericBuffer {
-    public:
-        GenericIndexBuffer(const GLenum aPurpose);
-    protected:
-        GLsizei count;
-    public:
-        virtual void clear();
-        void draw(const GLenum mode);
-        void drawUnbound(const GLenum mode);
-        void dump();
-    public:
-        GLsizei getCount() const { return count; };
+public:
+    GenericIndexBuffer(const GLenum aPurpose);
+
+protected:
+    GLsizei count;
+
+public:
+    virtual void clear();
+    void draw(const GLenum mode);
+    void drawUnbound(const GLenum mode);
+    void dump();
+
+public:
+    GLsizei getCount() const { return count; };
+
 };
-typedef boost::shared_ptr<GenericIndexBuffer> GenericIndexBufferHandle;
+
+typedef std::shared_ptr<GenericIndexBuffer> GenericIndexBufferHandle;
 
 class StreamIndexBuffer: public GenericIndexBuffer {
-    public:
-        StreamIndexBuffer(const GLenum aPurpose = GL_STREAM_DRAW);
-    public:
-        void add(const VertexIndexListHandle vertices);
+public:
+    StreamIndexBuffer(const GLenum aPurpose = GL_STREAM_DRAW);
+
+public:
+    void add(const VertexIndexListHandle vertices);
+
 };
-typedef boost::shared_ptr<StreamIndexBuffer> StreamIndexBufferHandle;
+
+typedef std::shared_ptr<StreamIndexBuffer> StreamIndexBufferHandle;
 
 class StaticIndexBuffer: public GenericIndexBuffer {
-    public:
-        StaticIndexBuffer(const GLenum aPurpose = GL_DYNAMIC_DRAW);
-        virtual ~StaticIndexBuffer();
-    private:
-        IndexEntryHandles *handles;
-    protected:
-        void compress();
-        void updateHandles(const IndexEntryHandles::iterator startAt, const VertexIndex offset);
-    public:
-        const IndexEntryHandle add(const VertexIndexListHandle vertices);
-        virtual void clear();
-        void drawHandle(const IndexEntryHandle handle, const GLenum mode);
-        void gc();
-        GLsizei getIndex(const GLsizei index) const { return ((GLuint *)data)[index]; }
-        void remove(const IndexEntryHandle handle, const bool autoCompress = true);
-        const VertexIndexListHandle resolveIndexEntry(const IndexEntryHandle handle) const;
+public:
+    StaticIndexBuffer(const GLenum aPurpose = GL_DYNAMIC_DRAW);
+    virtual ~StaticIndexBuffer();
+
+private:
+    IndexEntryHandles *handles;
+
+protected:
+    void compress();
+    void updateHandles(
+        const IndexEntryHandles::iterator startAt,
+        const VertexIndex offset);
+
+public:
+    const IndexEntryHandle add(const VertexIndexListHandle vertices);
+
+    virtual void clear();
+
+    void drawHandle(const IndexEntryHandle handle,
+                    const GLenum mode);
+
+    void gc();
+
+    inline GLsizei getIndex(const GLsizei index) const
+    {
+        return ((GLuint *)data)[index];
+    }
+
+    void remove(const IndexEntryHandle handle,
+                const bool autoCompress = true);
+
+    const VertexIndexListHandle resolveIndexEntry(
+        const IndexEntryHandle handle) const;
+
 };
-typedef boost::shared_ptr<StaticIndexBuffer> StaticIndexBufferHandle;
+
+typedef std::shared_ptr<StaticIndexBuffer> StaticIndexBufferHandle;
 
 }
 }

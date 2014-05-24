@@ -33,16 +33,20 @@ namespace PyEngine {
 namespace GL {
 
 class VertexIndexListMap: public BufferMap {
-    public:
-        VertexIndexListMap(const VertexIndexListHandle vertices);
-        virtual ~VertexIndexListMap();
-    private:
-        const VertexIndexListHandle _verticesHandle;
-        VertexIndexList *_vertices;
-    protected:
-        void rangeCheck(const size_t index);
-    public:
-        virtual size_t map(const size_t index);
+public:
+    VertexIndexListMap(const VertexIndexListHandle vertices);
+    virtual ~VertexIndexListMap();
+
+private:
+    const VertexIndexListHandle _verticesHandle;
+    VertexIndexList *_vertices;
+
+protected:
+    void rangeCheck(const size_t index);
+
+public:
+    virtual size_t map(const size_t index);
+
 };
 
 }
