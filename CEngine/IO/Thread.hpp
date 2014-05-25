@@ -27,66 +27,56 @@ authors named in the AUTHORS file.
 #ifndef _PYE_IO_THREAD_H
 #define _PYE_IO_THREAD_H
 
-#include <semaphore.h>
-
-#include "CEngine/Misc/Exception.hpp"
+#include <mutex>
+#include <thread>
+#include <atomic>
+#include <condition_variable>
 
 namespace PyEngine {
 
-class PThreadError: public ExternalError {
-public:
-    PThreadError(const std::string &message): ExternalError("pthread", message.c_str()) {};
-    PThreadError(const char *message): ExternalError("pthread", message) {};
-    PThreadError(const char *functionName, const int error);
-};
-
 class Semaphore {
 public:
-    Semaphore(const unsigned int value = 0);
-    ~Semaphore();
-private:
-    sem_t _sem;
+    typedef unsigned int value_type;
+
 public:
-    void post();
-    bool tryWait();
+    Semaphore(const value_type value = 0);
+
+private:
+    std::mutex _cv_lock;
+    std::condition_variable _cv;
+    value_type _value;
+    std::function<bool(void)> _checker;
+
+private:
+    bool check_and_decrease();
+
+public:
+    void post(const value_type amount = 1);
     void wait();
+
+    template <typename Rep, typename Period>
+    bool wait_for(const std::chrono::duration<Rep, Period> &rel_time)
+    {
+        std::unique_lock<std::mutex> lock;
+        return _cv.wait_for(
+            lock,
+            rel_time,
+            _checker);
+    }
+
+    template <typename Clock, typename Duration>
+    bool wait_until(const std::chrono::time_point<Clock, Duration> &timeout_time)
+    {
+        std::unique_lock<std::mutex> lock;
+        return _cv.wait_until(
+            lock,
+            timeout_time,
+            _checker);
+    }
+
 };
 
-class Thread {
-public:
-    Thread();
-    virtual ~Thread();
-private:
-    Semaphore _resume;
-    pthread_t _thread;
-    bool _deleteOnTerminate;
-private:
-    static bool _hardwareThreadCountKnown;
-    static unsigned int _hardwareThreadCount;
-protected:
-    void suspend();
-public:
-    bool getDeleteOnTerminate() { return _deleteOnTerminate; };
-    void setDeleteOnTerminate(bool value) { _deleteOnTerminate = value; };
-public:
-    virtual void *execute();
-    void *main();
-    void resume();
-public:
-    static unsigned int getHardwareThreadCount();
-};
-
-class Mutex {
-public:
-    Mutex();
-    ~Mutex();
-private:
-    pthread_mutex_t _mutex;
-public:
-    void lock();
-    bool tryLock();
-    void unlock();
-};
+unsigned int get_hardware_thread_count();
 
 }
 

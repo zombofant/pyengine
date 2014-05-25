@@ -28,184 +28,78 @@ authors named in the AUTHORS file.
 
 #include <thread>
 
-#include <boost/format.hpp>
-
 #include "CEngine/IO/Log.hpp"
 
 namespace PyEngine {
 
-void *bootstrap(void *thread)
-{
-    return ((Thread*)thread)->main();
-}
+static bool _hardware_thread_count_known = false;
+static unsigned int _hardware_thread_count = 0;
 
-void cleanup(void *thread)
-{
-    Thread * const threadObj = (Thread*)thread;
-    if (threadObj->getDeleteOnTerminate())
-        delete threadObj;
-}
+/* PyEngine::Semaphore */
 
-/* PyEngine::PThreadError */
-
-PThreadError::PThreadError(const char *functionName, const int error):
-    ExternalError::ExternalError("pthread", (boost::format("%s returned error code %d") % functionName % error).str().c_str())
+Semaphore::Semaphore(const unsigned int value):
+    _cv_lock(),
+    _cv(),
+    _value(value),
+    _checker(std::bind(&Semaphore::check_and_decrease, this))
 {
 
 }
 
-/* PyEngine::Thread */
-
-Thread::Thread():
-    _resume(),
-    _thread(),
-    _deleteOnTerminate(true)
+bool Semaphore::check_and_decrease()
 {
-    int error = pthread_create(&_thread, 0, &bootstrap, this);
-    if (error != 0) {
-        throw PThreadError("pthread_create", error);
+    if (_value) {
+        --_value;
+        return true;
     }
+    return false;
 }
 
-Thread::~Thread()
+void Semaphore::post(const value_type amount)
 {
-    std::cout << "destroying thread" << std::endl;
+    std::lock_guard<std::mutex> lock(_cv_lock);
+    _value += amount;
+    _cv.notify_all();
 }
 
-void Thread::suspend()
+void Semaphore::wait()
 {
-    _resume.wait();
-}
-
-void *Thread::execute()
-{
-    return 0;
-}
-
-void *Thread::main()
-{
-    void *retval = 0;
-    pthread_cleanup_push(&cleanup, this);
-    try {
-        retval = execute();
-    } catch (Exception const& err) {
-        std::cerr << err.what() << std::endl;
-        log->logException(err, Panic);
+    std::unique_lock<std::mutex> lock(_cv_lock);
+    while (!_value) {
+        _cv.wait(lock);
     }
-    pthread_cleanup_pop(1);
-    return retval;
+    --_value;
 }
 
-void Thread::resume()
+unsigned int get_hardware_thread_count()
 {
-    _resume.post();
-}
-
-unsigned int Thread::getHardwareThreadCount()
-{
-    if (_hardwareThreadCountKnown)
-        return _hardwareThreadCount;
+    if (_hardware_thread_count_known)
+        return _hardware_thread_count;
 
     unsigned int count = std::thread::hardware_concurrency();
     if (count == 0) {
         // lets fall back to platform-dependent shit
         // TODO: win & macos stuff, see source here:
-        // http://stackoverflow.com/questions/150355/programmatically-find-the-number-of-cores-on-a-machine
-        log->getChannel("system")->logf(Hint, "Falling back to custom methods for hardware thread count detection");
+        // https://stackoverflow.com/questions/150355/programmatically-find-the-number-of-cores-on-a-machine
+        log->getChannel("system")->logf(
+            Hint,
+            "Falling back to custom methods for hardware thread count detection");
         count = sysconf(_SC_NPROCESSORS_ONLN);
     }
 
     if (count == 0) {
-        log->getChannel("system")->logf(Warning, "Unknown amount of hardware threads, falling back to 1.");
+        log->getChannel("system")->logf(
+            Warning,
+            "Unknown amount of hardware threads, falling back to 1.");
         count = 1;
     }
 
-    _hardwareThreadCountKnown = true;
-    _hardwareThreadCount = count;
-    log->getChannel("system")->log(Information) << "Detected " << count << " hardware threads." << submit;
+    _hardware_thread_count_known = true;
+    _hardware_thread_count = count;
+    log->getChannel("system")->log(Information)
+        << "Detected " << count << " hardware threads." << submit;
+
     return count;
 }
-
-/* PyEngine::Mutex */
-
-Mutex::Mutex():
-    _mutex()
-{
-    int error = 0;
-    error = pthread_mutex_init(&_mutex, 0);
-    if (error != 0) {
-        throw PThreadError("pthread_mutex_init", error);
-    }
-}
-
-Mutex::~Mutex()
-{
-    pthread_mutex_destroy(&_mutex);
-}
-
-void Mutex::lock()
-{
-    const int status = pthread_mutex_lock(&_mutex);
-    if (status == 0) return;
-    throw PThreadError("pthread_mutex_lock", status);
-}
-
-bool Mutex::tryLock()
-{
-    const int status = pthread_mutex_trylock(&_mutex);
-    if (status == EBUSY) {
-        return false;
-    }
-    assert(status == 0);
-    return true;
-}
-
-void Mutex::unlock()
-{
-    const int status = pthread_mutex_unlock(&_mutex);
-    if (status == 0) return;
-    throw PThreadError("pthread_mutex_unlock", status);
-}
-
-/* PyEngine::Semaphore */
-
-Semaphore::Semaphore(const unsigned int value):
-    _sem()
-{
-    if (sem_init(&_sem, 0, value)) {
-        raiseLastOSError();
-    }
-}
-
-Semaphore::~Semaphore()
-{
-    sem_destroy(&_sem);
-}
-
-void Semaphore::post()
-{
-    assert(sem_post(&_sem) == 0);
-}
-
-bool Semaphore::tryWait()
-{
-    if (sem_trywait(&_sem)) {
-        const int error = errno;
-        if (error == EAGAIN) {
-            return false;
-        }
-        raiseLastOSError();
-    }
-    return true;
-}
-
-void Semaphore::wait()
-{
-    assert(sem_wait(&_sem) == 0);
-}
-
-
-bool Thread::_hardwareThreadCountKnown = false;
-unsigned int Thread::_hardwareThreadCount = 0;
 
 }
