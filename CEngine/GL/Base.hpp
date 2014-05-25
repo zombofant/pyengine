@@ -40,28 +40,40 @@ namespace PyEngine {
 namespace GL {
 
 class Error: public Exception {
-    public:
-        Error(const std::string aMessage);
-        ~Error() throw() {};
-    private:
-        const std::string message;
-    public:
-        const char *what() const throw() override {
-            return message.c_str();
-        }
+public:
+    Error(const std::string aMessage);
+    ~Error() throw() {};
+
+private:
+    const std::string message;
+
+public:
+    const char *what() const throw() override {
+        return message.c_str();
+    }
+
 };
 
 class Struct {
-    public:
-        virtual void bind() = 0;
-        virtual void unbind() = 0;
+public:
+    virtual void bind() = 0;
+    virtual void unbind() = 0;
+
 };
 
 class Class: public Struct {
-    public:
-        Class();
-    public:
-        GLuint glID;
+public:
+    Class();
+
+protected:
+    GLuint _glid;
+
+public:
+    inline GLuint get_glid() const
+    {
+        return _glid;
+    }
+
 };
 
 typedef boost::shared_ptr<Struct> StructHandle;

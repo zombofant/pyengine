@@ -7,9 +7,11 @@ add_library(pyengine_GL
     "GeometryBufferView.cpp"
     "GeometryObject.cpp"
     "AbstractImage.cpp"
-#    "TextureAtlas.cpp"
+    "TextureAtlas.cpp"
     "CairoUtils.cpp"
 )
-add_dependencies(pyengine_GL pyengine_Math pyengine_Misc
-#    contrib_BinPack
+add_dependencies(pyengine_GL
+  pyengine_Math
+  pyengine_Misc
+  contrib_BinPack
 )

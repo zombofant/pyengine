@@ -43,21 +43,21 @@ void parseSlice(slice *slice, GLsizei *start, GLsizei *stop, GLsizei *step, cons
     object  pyStart = slice->start(),
             pyStop = slice->stop(),
             pyStep = slice->step();
-    
+
     if (!pyStart.is_none())
     {
         *start = extract<GLsizei>(pyStart)();
         if (*start < 0)
             *start = len - *start;
     }
-    
+
     if (!pyStop.is_none())
     {
         *stop = extract<GLsizei>(pyStop)();
         if (*stop < 0)
             *stop = len - *stop;
     }
-    
+
     if (!pyStep.is_none())
     {
         if (!step)
@@ -77,7 +77,7 @@ GeometryBufferView::AttributeSlice *AttributeView_slice(GeometryBufferView::Attr
     GLsizei len = view.getLength();
     GLsizei start = 0, stop = len, step = 1;
     GLsizei attribOffset = 0, attribLength = view.getAttributeLength();
-    
+
     extract<int> getInt(arg);
     if (getInt.check())
     {
@@ -186,7 +186,7 @@ PyObject *__bp_AbstractImage2D__cairoSurface(AbstractImage2DHandle image) {
 BOOST_PYTHON_MODULE(_cuni_gl)
 {
     /* Base.hpp */
-    
+
     class_<StructWrap, boost::shared_ptr<StructWrap>, boost::noncopyable>("Struct")
         .def("bind", pure_virtual(&Struct::bind))
         .def("unbind", pure_virtual(&Struct::unbind))
@@ -194,7 +194,7 @@ BOOST_PYTHON_MODULE(_cuni_gl)
     implicitly_convertible<boost::shared_ptr<StructWrap>, StructHandle>();
 
     class_<ClassWrap, bases<Struct>, boost::shared_ptr<ClassWrap>, boost::noncopyable>("Class", init<>())
-        .def_readwrite("id", &Class::glID)
+        .def_readonly("id", &Class::get_glid)
     ;
     implicitly_convertible<boost::shared_ptr<ClassWrap>, ClassHandle>();
 
@@ -207,10 +207,10 @@ BOOST_PYTHON_MODULE(_cuni_gl)
         .def("flush", &GenericBuffer::flush)
         .def("readBack", &GenericBuffer::readBack)
     ;
-    
+
 
     /* GeometryBuffer.hpp */
-    
+
     class_<VertexFormat, VertexFormatHandle, boost::noncopyable>("VertexFormat",
         init<const unsigned int, const unsigned int, const unsigned int,
             const unsigned int, const unsigned int, const unsigned int,
@@ -219,7 +219,7 @@ BOOST_PYTHON_MODULE(_cuni_gl)
     ;
 
     class_<VertexIndexList, VertexIndexListHandle, boost::noncopyable>("VertexIndexList", no_init);
-    
+
     class_<GeometryBuffer, bases<GenericBuffer>, boost::noncopyable>("GeometryBuffer",
             init<const VertexFormatHandle, GLenum>())
         .def("allocateVertices", &GeometryBuffer::allocateVertices)
@@ -231,7 +231,7 @@ BOOST_PYTHON_MODULE(_cuni_gl)
 
 
     /* GeomertyBufferView.hpp */
-    
+
     class_<GeometryBufferView::AttributeView, boost::noncopyable>("AttributeView", no_init)
         .def("__getitem__", &AttributeView_slice, return_value_policy<reference_existing_object>())
         .def("__len__", &GeometryBufferView::AttributeView::getLength)
@@ -303,7 +303,7 @@ BOOST_PYTHON_MODULE(_cuni_gl)
 
 
     /* StateManagement.hpp */
-    
+
     class_<GroupWrap, boost::shared_ptr<GroupWrap>, boost::noncopyable>("Group", init<int>())
         // .def("__init__", init<>())
         .def("execute", &GroupWrap::__bp_execute)
@@ -319,7 +319,7 @@ BOOST_PYTHON_MODULE(_cuni_gl)
         .def("add", &ParentGroup::add)
         .def("remove", &ParentGroup::remove)
     ;
-    
+
     class_<StateGroup, bases<ParentGroup>, StateGroupHandle, boost::noncopyable>("StateGroup", init<StructHandle, int>())
         // .def("__init__", init<StructHandle>())
         .def("setUp", &StateGroup::setUp)

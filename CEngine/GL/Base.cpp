@@ -38,15 +38,15 @@ namespace GL {
 Error::Error(const std::string aMessage):
     Exception("OpenGL error: "+aMessage)
 {
-    
+
 }
 
 /* PyEngine::GL::Class */
 
 Class::Class():
-    glID(0)
+    _glid()
 {
-    
+
 }
 
 /* free functions */
@@ -57,7 +57,7 @@ Class::Class():
         std::cerr << (const char *)gluErrorString(error) << std::endl;
         // throw Error((const char *)gluErrorString(error));
     }
-    
+
 }*/
 
 }

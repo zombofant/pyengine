@@ -47,7 +47,7 @@ GenericBuffer::GenericBuffer(const GLsizei aItemSize, const GLenum aKind, const 
 }
 
 GenericBuffer::~GenericBuffer() {
-    if (glID != 0) {
+    if (_glid != 0) {
         freeBuffer();
     }
     if (data) {
@@ -81,8 +81,8 @@ void GenericBuffer::expand() {
 
     data = (unsigned char*)realloc(data, newSize);
 
-    if (glID != 0) {
-        glBindBuffer(bufferKind, glID);
+    if (_glid != 0) {
+        glBindBuffer(bufferKind, _glid);
         glBufferData(bufferKind, newSize, 0, bufferPurpose);
         glBufferSubData(bufferKind, 0, oldSize, data);
     }
@@ -93,16 +93,16 @@ void GenericBuffer::expand() {
 }
 
 void GenericBuffer::freeBuffer() {
-    glDeleteBuffers(1, &glID);
-    glID = 0;
+    glDeleteBuffers(1, &_glid);
+    _glid = 0;
 }
 
 void GenericBuffer::initBuffer() {
-    glGenBuffers(1, &glID);
-    // std::cout << "initialized buffer " << glID << " capacity is currently " << capacity << std::endl;
+    glGenBuffers(1, &_glid);
+    // std::cout << "initialized buffer " << _glid << " capacity is currently " << capacity << std::endl;
     raiseLastGLError();
     if (capacity > 0) {
-        glBindBuffer(bufferKind, glID);
+        glBindBuffer(bufferKind, _glid);
         // std::cout << "writing " << capacity * itemSize << " bytes ( = " << capacity << " items) to the buffer as initalization" << std::endl;
         raiseLastGLError();
         glBufferData(bufferKind, capacity * itemSize, data, bufferPurpose);
@@ -117,11 +117,11 @@ void GenericBuffer::rangeCheck(const GLsizei index) {
 }
 
 void GenericBuffer::requireBuffer() {
-    if (glID == 0) {
+    if (_glid == 0) {
         initBuffer();
         raiseLastGLError();
     }
-    if (glID == 0) {
+    if (_glid == 0) {
         // throw Exception("buffer initialized with id 0.");
         std::cerr << "buffer initialized with id 0." << std::endl;
     }
@@ -129,14 +129,14 @@ void GenericBuffer::requireBuffer() {
 
 void GenericBuffer::bind() {
     requireBuffer();
-    glBindBuffer(bufferKind, glID);
+    glBindBuffer(bufferKind, _glid);
     if (needsFlush()) {
         autoFlush();
     }
 }
 
 void GenericBuffer::flush() {
-    if (glID == 0) {
+    if (_glid == 0) {
         return;
     }
     bind();
@@ -145,11 +145,11 @@ void GenericBuffer::flush() {
 
 void GenericBuffer::readBack() {
     requireBuffer();
-    if (glID == 0) {
+    if (_glid == 0) {
         return;
     }
     bind();
-    // std::cout << "reading back " << capacity * itemSize << " bytes from GPU buffer #" << glID << std::endl;
+    // std::cout << "reading back " << capacity * itemSize << " bytes from GPU buffer #" << _glid << std::endl;
     glGetBufferSubData(bufferKind, 0, capacity * itemSize, data);
 }
 

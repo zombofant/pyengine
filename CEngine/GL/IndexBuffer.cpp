@@ -174,8 +174,8 @@ const IndexEntryHandle StaticIndexBuffer::add(const VertexIndexListHandle vertic
         dataptr++;
     }
     count += entry->count;
-    if (glID != 0) {
-        glBindBuffer(bufferKind, glID);
+    if (_glid != 0) {
+        glBindBuffer(bufferKind, _glid);
         // std::cout << "writethrough" << std::endl;
         glBufferSubData(bufferKind, entry->start * sizeof(GLuint), entry->count * sizeof(GLuint), (unsigned char *)( ((GLuint *)dataptr)+entry->start));
         glBindBuffer(bufferKind, 0);

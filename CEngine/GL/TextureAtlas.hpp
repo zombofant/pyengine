@@ -26,71 +26,93 @@ authors named in the AUTHORS file.
 #ifndef _PYE_GL_TEXTURE_ATLAS_H
 #define _PYE_GL_TEXTURE_ATLAS_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
-#include "CEngine/Contrib/BinPack/SkylineBinPack.h"
-
 #include "CEngine/Misc/Int.hpp"
+typedef std::size_t size_t;
+#include "CEngine/Contrib/BinPack/GuillotineBinPack.h"
+
 #include "Base.hpp"
-#include "GeometryBuffer.hpp"
 #include "AbstractImage.hpp"
+#include "GeometryBuffer.hpp"
 
 namespace PyEngine {
 namespace GL {
 
 class TextureAtlas: public Class
 {
+public:
+    struct Allocation
+    {
     public:
-        struct Allocation {
-            public:
-                Allocation(Rect aRect, bool aRotated,
-                    const GLVertexFloat armin,
-                    const GLVertexFloat armax,
-                    const GLVertexFloat asmin,
-                    const GLVertexFloat asmax);
-            public:
-                const Rect rect;
-                const bool rotated;
-                const GLVertexFloat rmin, rmax, smin, smax; 
-        };
-        typedef boost::shared_ptr<Allocation> AllocationHandle;
-    public:
-        TextureAtlas(const GLuint textureID,
-            const GLsizei initialWidth = 1024,
-            const GLsizei initialHeight = 1024);
-        ~TextureAtlas();
-    private:
-        GuillotineBinPack _packer;
-        const GLsizei _width, _height;
-        std::vector<AllocationHandle> _handles;
-    protected:
-        void grow();
-        void setSegment(const Rect &rect, const void *data,
-            bool rotated,
-            GLVertexFloat *rmin, GLVertexFloat *rmax,
-            GLVertexFloat *smin, GLVertexFloat *smax);
-    public:
-        bool ownsTexture;
-    public:
-        inline GLsizei getHeight() const { return _height; };
-        inline GLsizei getWidth() const { return _width; };
-    public:
-        virtual void bind();
-        
-        void gc();
+        Allocation(rbp::Rect aRect, bool aRotated,
+                   const GLVertexFloat armin,
+                   const GLVertexFloat armax,
+                   const GLVertexFloat asmin,
+                   const GLVertexFloat asmax);
 
-        virtual void unbind();
-        
-        /**
-         * Assumes the texture is bound
-         */
-        AllocationHandle upload(AbstractImage2D *image, uint32 *grew);
+    public:
+        const rbp::Rect rect;
+        const bool rotated;
+        const GLVertexFloat rmin, rmax, smin, smax;
+
+    };
+
+    typedef std::shared_ptr<Allocation> AllocationHandle;
+
+public:
+    TextureAtlas(const GLenum internal_format,
+                 const GLsizei initial_width = 1024,
+                 const GLsizei initial_height = 1024);
+    TextureAtlas(const GLuint textureid,
+                 bool take_ownership);
+    ~TextureAtlas();
+
+private:
+    rbp::GuillotineBinPack _packer;
+    const GLsizei _width, _height;
+    std::vector<AllocationHandle> _handles;
+
+protected:
+    void grow();
+    void set_segment(
+        const rbp::Rect &rect,
+        const void *data,
+        bool rotated,
+        GLVertexFloat *rmin, GLVertexFloat *rmax,
+        GLVertexFloat *smin, GLVertexFloat *smax);
+
+public:
+    bool owns_texture;
+
+public:
+    inline GLsizei get_height() const
+    {
+        return _height;
+    }
+
+    inline GLsizei get_width() const
+    {
+        return _width;
+    }
+
+public:
+    void bind() override;
+
+    void gc();
+
+    void unbind() override;
+
+    /**
+     * Assumes the texture is bound
+     */
+    AllocationHandle upload(AbstractImage2D *image);
+
 };
-typedef boost::shared_ptr<TextureAtlas> TextureAtlasHandle;
 
-bool operator == (const Rect &a, const Rect &b);
+typedef std::shared_ptr<TextureAtlas> TextureAtlasHandle;
 
 }
 }
+
+bool operator == (const rbp::Rect &a, const rbp::Rect &b);
 
 #endif
