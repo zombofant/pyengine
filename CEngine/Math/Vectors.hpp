@@ -26,8 +26,9 @@ authors named in the AUTHORS file.
 #ifndef _PYE_MATH_VECTORS_H
 #define _PYE_MATH_VECTORS_H
 
-#include <vector>
+#include <cmath>
 #include <ostream>
+#include <vector>
 
 namespace PyEngine {
 
@@ -306,6 +307,7 @@ struct Vector {
         }
         return summed;
     }
+
 };
 
 template <typename vector_float_t1, typename vector_float_t2,

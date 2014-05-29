@@ -77,7 +77,7 @@ struct Matrix
         coeff()
     {
         *this = ref;
-    };
+    }
 
     template <typename other_float_t>
     Matrix& operator=(const Matrix<other_float_t, rows, columns> &ref)
@@ -85,6 +85,7 @@ struct Matrix
         for (unsigned int i = 0; i < rows*columns; i++) {
             coeff[i] = ref.coeff[i];
         }
+        return *this;
     }
 
     float_t coeff[_rows*_columns];
@@ -331,6 +332,7 @@ struct Matrix
 typedef Matrix<float, 3, 3> Matrix3f;
 typedef Matrix<float, 4, 4> Matrix4f;
 
+typedef Matrix<VectorFloat, 2, 2> Matrix2;
 typedef Matrix<VectorFloat, 3, 3> Matrix3;
 typedef Matrix<VectorFloat, 4, 4> Matrix4;
 
