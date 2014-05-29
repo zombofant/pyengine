@@ -56,23 +56,46 @@ public:
     const GLsizei pixelSize;
 
 public: // to comply with AbstractImage2D specification
-    virtual GLenum getFormat() const { return format; };
-    virtual GLsizei getHeight() const { return height; };
-    virtual const void *getPixelData() const { return _pixelData; };
-    virtual GLsizei getPixelSize() const { return pixelSize; };
-    virtual GLenum getType() const { return type; };
-    virtual GLsizei getWidth() const { return width; };
+    GLenum getFormat() const override
+    {
+        return format;
+    }
+
+    GLsizei getHeight() const override
+    {
+        return height;
+    }
+
+    const void *getPixelData() const override
+    {
+        return _pixelData;
+    }
+
+    GLsizei getPixelSize() const override
+    {
+        return pixelSize;
+    }
+
+    GLenum getType() const override
+    {
+        return type;
+    }
+
+    GLsizei getWidth() const override
+    {
+        return width;
+    }
 
 public:
     bool getIsValid() const;
     void dropData();
 
 public:
-    virtual void texImage2D(const GLenum target, const GLint level,
-        const GLint internalFormat) const;
-    virtual void texSubImage2D(const GLenum target,
+    void texImage2D(const GLenum target, const GLint level,
+        const GLint internalFormat) const override;
+    void texSubImage2D(const GLenum target,
         const GLint level, const GLint internalFormat,
-        const GLint x, const GLint y) const;
+        const GLint x, const GLint y) const override;
 
 public:
     static ImageHandle PNGImage(StreamHandle stream);
