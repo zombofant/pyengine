@@ -122,11 +122,11 @@ void EventLoop::run()
                 usleep(1);
             }
         }
-    } catch (boost::python::error_already_set) {
+    } catch (const boost::python::error_already_set&) {
         std::cerr << "During mainloop call-in: " << std::endl;
         throw;
-    } catch (std::exception e) {
-        std::cerr << e.what() << " during runtime." << std::endl;
+    } catch (const std::exception &e) {
+        std::cerr << "'" << e.what() << "' during runtime." << std::endl;
         throw;
     } catch (...) {
         std::cerr << "unknown exception during runtime." << std::endl;
