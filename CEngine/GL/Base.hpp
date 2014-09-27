@@ -81,7 +81,7 @@ typedef boost::shared_ptr<Class> ClassHandle;
 
 static inline void raiseLastGLError()
 {
-    #ifdef GL_ERROR_CHECK
+#ifdef GL_ERROR_CHECK
     GLuint error = glGetError();
     if (error != GL_NO_ERROR)
     {
@@ -89,9 +89,9 @@ static inline void raiseLastGLError()
         std::cerr << exc << std::endl;
         throw exc;
     }
-    #else
-    #error "GL_ERROR_CHECK disabled!"
-    #endif
+#else
+#error "GL_ERROR_CHECK disabled!"
+#endif
 }
 
 }
