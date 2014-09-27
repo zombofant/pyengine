@@ -73,6 +73,8 @@ struct DisplayMode {
     int samples;
     bool doubleBuffered;
 
+    DisplayMode() = default;
+
     DisplayMode(int aRedBits,
             int aGreenBits,
             int aBlueBits,
